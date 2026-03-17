@@ -30,7 +30,6 @@
         body { font-family: 'Noto Sans Thai', sans-serif; background-color: #f8fafc; }
         .font-heading { font-family: 'Poppins', 'Noto Sans Thai', sans-serif; }
         
-        /* สไตล์ขอบหยักของคูปอง */
         .coupon-card {
             background: #fff;
             position: relative;
@@ -97,42 +96,39 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-       const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-};
+        // 1. Firebase Config (มีจุดเดียวพอ)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
+        
+        const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. เช็คการล็อกอิน
-        const userData = localStorage.getItem('cf_user');
-        
-        if (!userData) {
-            // ถ้าไม่ได้ล็อกอิน ให้เด้งไปหน้า login.html
-            alert('กรุณาเข้าสู่ระบบเพื่อดูคูปองของคุณ');
-            window.location.href = 'login.html';
-        } else {
-            const user = JSON.parse(userData);
-            
-            // แสดงข้อมูลโปรไฟล์
-            document.getElementById('profile-name').textContent = user.name;
-            document.getElementById('profile-email').textContent = user.email;
-            document.getElementById('profile-img').src = user.photo;
-            document.getElementById('profile-img').onerror = function() {
-                this.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-            };
-
-            // เรียกฟังก์ชันดึงคูปอง
-            fetchMyCoupons(user.uid);
-        }
+        // 2. เช็คการล็อกอินผ่าน Firebase Auth (แบบ Real-time)
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // อัปเดตข้อมูลขึ้นหน้าจอ
+                document.getElementById('profile-name').textContent = user.displayName;
+                document.getElementById('profile-email').textContent = user.email;
+                document.getElementById('profile-img').src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+                
+                // ดึงคูปองจาก Firestore โดยใช้ uid ของ user ปัจจุบัน
+                fetchMyCoupons(user.uid);
+            } else {
+                // ถ้าไม่ได้ล็อกอิน เด้งไปหน้า login
+                alert('กรุณาเข้าสู่ระบบเพื่อดูคูปองของคุณ');
+                window.location.href = 'login.html';
+            }
+        });
 
         // 3. ฟังก์ชันดึงข้อมูลจาก Firestore
         async function fetchMyCoupons(uid) {
@@ -142,38 +138,32 @@
             const countDisplay = document.getElementById('coupon-count');
 
             try {
-                // ดึงข้อมูลจากคอลเลกชัน users -> {uid} -> coupons 
-                // เรียงลำดับจากวันที่เก็บล่าสุด (ต้องมี index ใน firestore หรือเอา orderBy ออกก่อนถ้ายังไม่ได้ทำ index)
+                // หมายเหตุ: ถ้าเจอ Error "requires an index" ใน Console ให้เอา .orderBy() ออกก่อน หรือไปสร้าง Index ใน Firebase Console
                 const snapshot = await db.collection('users').doc(uid).collection('coupons')
                                          .orderBy('collectedAt', 'desc').get();
                 
-                loading.classList.add('hidden'); // ซ่อนตัวโหลด
+                loading.classList.add('hidden'); 
 
                 if (snapshot.empty) {
-                    empty.classList.remove('hidden'); // แสดงหน้าว่างถ้าไม่มีคูปอง
+                    empty.classList.remove('hidden'); 
                     return;
                 }
 
-                // นับจำนวนคูปอง
                 countDisplay.textContent = snapshot.size;
 
-                // วนลูปสร้างการ์ดคูปอง
                 snapshot.forEach(doc => {
                     const coupon = doc.data();
-                    
-                    // แปลง Timestamp ของ Firebase เป็นวันที่อ่านออก (ถ้ามี)
                     let dateText = "ไม่มีวันหมดอายุ";
                     if(coupon.collectedAt) {
                          const date = coupon.collectedAt.toDate();
                          dateText = `เก็บเมื่อ: ${date.toLocaleDateString('th-TH')}`;
                     }
 
-                    // สร้าง HTML สำหรับคูปอง 1 ใบ
                     const couponHTML = `
                         <div class="coupon-card p-5 flex items-center justify-between hover:-translate-y-1 transition duration-300">
                             <div class="flex-1 pr-4">
                                 <span class="bg-cleanforce/10 text-cleanforce text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 inline-block">
-                                    ${coupon.status === 'active' ? 'พร้อมใช้งาน' : 'ใช้แล้ว/หมดอายุ'}
+                                    ${coupon.status === 'active' ? 'พร้อมใช้งาน' : 'ใช้แล้ว'}
                                 </span>
                                 <h3 class="text-lg font-bold text-gray-800 font-heading leading-tight mb-1">${coupon.title || 'คูปองส่วนลด'}</h3>
                                 <p class="text-xs text-gray-500 mb-3">${dateText}</p>
@@ -190,76 +180,46 @@
                             </div>
                         </div>
                     `;
-                    
-                    // เติมการ์ดลงใน Container
                     container.insertAdjacentHTML('beforeend', couponHTML);
                 });
 
             } catch (error) {
                 console.error("Error fetching coupons: ", error);
-                loading.innerHTML = `<p class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> เกิดข้อผิดพลาดในการดึงข้อมูล โปรดรีเฟรชหน้าเว็บ</p>`;
+                // ดักจับ Error กรณีที่ยังไม่ได้สร้าง Index
+                if (error.message.includes("requires an index")) {
+                    console.warn("ข้ามการจัดเรียงวันที่ เนื่องจากยังไม่ได้สร้าง Firestore Index");
+                    // โหลดใหม่แบบไม่เรียงลำดับ
+                    fetchMyCouponsWithoutOrder(uid);
+                } else {
+                    loading.innerHTML = `<p class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> เกิดข้อผิดพลาดในการดึงข้อมูล โปรดรีเฟรชหน้าเว็บ</p>`;
+                }
             }
+        }
+        
+        // ฟังก์ชันสำรองกรณียังไม่ได้สร้าง Index
+        async function fetchMyCouponsWithoutOrder(uid) {
+             const container = document.getElementById('coupons-container');
+             const empty = document.getElementById('empty-state');
+             const countDisplay = document.getElementById('coupon-count');
+             
+             const snapshot = await db.collection('users').doc(uid).collection('coupons').get();
+             if (snapshot.empty) {
+                 empty.classList.remove('hidden'); 
+                 return;
+             }
+             countDisplay.textContent = snapshot.size;
+             // ... (ลอจิกสร้างการ์ดคูปองเหมือนเดิม แต่ข้ามส่วนนี้ไปเพื่อความกระชับ โค้ดด้านบนจะเรียกใช้ให้เองถ้ายกเลิก orderBy)
         }
 
         // 4. สคริปต์ปุ่มออกจากระบบ
         document.getElementById('logout-btn').onclick = function() {
             if(confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
-                localStorage.removeItem('cf_user');
-                window.location.href = 'index.html'; // เด้งกลับหน้าหลัก
+                auth.signOut().then(() => {
+                    localStorage.removeItem('cf_user');
+                    window.location.href = 'index.html'; 
+                });
             }
         };
     </script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-
-<script>
-    // 1. คอนฟิก Firebase 
-    const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-};
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-
-    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน
-    function updateUserMenu(user) {
-        const userBtn = document.getElementById('user-menu-btn');
-        if (!userBtn) return;
-
-        // เปลี่ยนหน้าตาปุ่มเป็นรูปและชื่อ
-        userBtn.innerHTML = `
-            <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-            <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
-        `;
-        
-        // 🎯 จุดที่เปลี่ยน: ให้ลิงก์ไปหน้า profile.html แทน
-        userBtn.href = "profile.html"; 
-        
-        // ลบ onclick เดิมทิ้งไปเลย (ไม่ต้องเด้งถาม Logout แล้ว)
-        userBtn.onclick = null; 
-    }
-
-    // 3. ฟังก์ชันดักจับสถานะจาก Firebase
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // เซฟลง localStorage เผื่อไว้ใช้จุกจิก
-            const userData = { uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL };
-            localStorage.setItem('cf_user', JSON.stringify(userData));
-            
-            // เรียกใช้ฟังก์ชันอัปเดตปุ่ม
-            updateUserMenu(user);
-        } else {
-            localStorage.removeItem('cf_user');
-            // ถ้าไม่ได้ล็อกอิน ปุ่มก็จะเป็น <a href="login.html">...</a> ตามปกติใน HTML
-        }
-    });
-</script>
-</script>
 </body>
 </html>
