@@ -8,56 +8,72 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Kanit', sans-serif; }</style>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
 
     <div class="bg-white p-10 rounded-[2rem] shadow-xl max-w-md w-full text-center relative overflow-hidden">
-        <a href="index.html" class="absolute top-6 left-6 text-gray-400 hover:text-blue-600 transition">
+        <button onclick="window.history.back()" class="absolute top-6 left-6 text-gray-400 hover:text-blue-600 transition">
             <i class="fa-solid fa-arrow-left text-xl"></i>
-        </a>
+        </button>
 
-        <img src="logo-cleanforce.png" alt="Cleanforce" class="h-16 mx-auto mb-6 object-contain">
+        <img src="logo-cleanforce.png" alt="Cleanforce" class="h-16 mx-auto mb-6 object-contain" onerror="this.src='https://placehold.co/200x80?text=CLEANFORCE'">
         
         <h2 class="text-2xl font-bold text-gray-800 mb-2">ยินดีต้อนรับสู่ Cleanforce</h2>
         <p class="text-gray-500 text-sm mb-8">เข้าสู่ระบบเพื่อจัดการคูปองและดูประวัติการจองของคุณ</p>
 
-        <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 px-6 py-3 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition shadow-sm hover:shadow-md">
+        <button id="login-btn" onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 px-6 py-3 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition shadow-sm hover:shadow-md">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" alt="Google">
-            เข้าสู่ระบบด้วย Google
+            <span>เข้าสู่ระบบด้วย Google</span>
         </button>
 
         <p class="text-xs text-gray-400 mt-8">การเข้าสู่ระบบแสดงว่าคุณยอมรับเงื่อนไขการให้บริการของเรา</p>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+
     <script>
+        // 1. Firebase Config
         const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
         };
-        // -----------------------------------------------------
 
-        // เปิดเครื่อง Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // ฟังก์ชันเมื่อกดปุ่มล็อกอิน
+        // เช็คว่าถ้าล็อกอินอยู่แล้ว ให้เด้งไปหน้าแรกเลย ไม่ต้องกดซ้ำ
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // ถ้าต้องการให้กลับไปหน้าที่จากมา (เช่น กดเก็บคูปองแล้วเด้งมาหน้าล็อกอิน พอเสร็จให้เด้งกลับไปหน้าเดิม)
+                // ในที่นี้จะให้เด้งกลับไปหน้าหลัก (index.html) ชั่วคราวก่อนครับ
+                window.location.href = "index.html"; 
+            }
+        });
+
+        // 2. ฟังก์ชันเมื่อกดปุ่มล็อกอิน
         function loginWithGoogle() {
+            const loginBtn = document.getElementById('login-btn');
+            const btnSpan = loginBtn.querySelector('span');
+            
+            // เปลี่ยนสถานะปุ่มตอนกำลังโหลด
+            loginBtn.disabled = true;
+            btnSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังเข้าสู่ระบบ...';
+
             auth.signInWithPopup(provider)
             .then((result) => {
-                // ถ้าล็อกอินสำเร็จ
                 const user = result.user;
-                alert("ยินดีต้อนรับคุณ " + user.displayName + " 🎉");
                 
-                // บันทึกข้อมูลลูกค้าลงในเครื่อง (เพื่อให้หน้าอื่นรู้ว่าล็อกอินแล้ว)
+                // อัปเดต localStorage (เผื่อไว้ใช้ด่วน)
                 localStorage.setItem('cf_user', JSON.stringify({
                     name: user.displayName,
                     email: user.email,
@@ -65,66 +81,17 @@
                     uid: user.uid
                 }));
 
-                // ล็อกอินเสร็จ ให้เด้งกลับไปหน้าแรก
-                window.location.href = "index.html";
+                // เมื่อ onAuthStateChanged ตรวจพบว่า user มาแล้ว มันจะทำการ redirect เอง (ในบล็อกด้านบน)
             })
             .catch((error) => {
-                // ถ้ามีข้อผิดพลาด
                 console.error("Error: ", error);
-                alert("เกิดข้อผิดพลาด: " + error.message);
+                alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง");
+                
+                // คืนค่าปุ่มกลับมาเหมือนเดิมถ้า Error
+                loginBtn.disabled = false;
+                btnSpan.innerHTML = 'เข้าสู่ระบบด้วย Google';
             });
         }
     </script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-
-    <script>
-    // 1. คอนฟิก Firebase 
-    const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-};
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-
-    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน
-    function updateUserMenu(user) {
-        const userBtn = document.getElementById('user-menu-btn');
-        if (!userBtn) return;
-
-        // เปลี่ยนหน้าตาปุ่มเป็นรูปและชื่อ
-        userBtn.innerHTML = `
-            <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-            <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
-        `;
-        
-        // 🎯 จุดที่เปลี่ยน: ให้ลิงก์ไปหน้า profile.html แทน
-        userBtn.href = "profile.html"; 
-        
-        // ลบ onclick เดิมทิ้งไปเลย (ไม่ต้องเด้งถาม Logout แล้ว)
-        userBtn.onclick = null; 
-    }
-
-    // 3. ฟังก์ชันดักจับสถานะจาก Firebase
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // เซฟลง localStorage เผื่อไว้ใช้จุกจิก
-            const userData = { uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL };
-            localStorage.setItem('cf_user', JSON.stringify(userData));
-            
-            // เรียกใช้ฟังก์ชันอัปเดตปุ่ม
-            updateUserMenu(user);
-        } else {
-            localStorage.removeItem('cf_user');
-            // ถ้าไม่ได้ล็อกอิน ปุ่มก็จะเป็น <a href="login.html">...</a> ตามปกติใน HTML
-        }
-    });
-</script>
 </body>
 </html>

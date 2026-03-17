@@ -82,73 +82,66 @@
 <body class="bg-background text-text overflow-x-hidden">
 
     <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
-    <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
-        <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] -z-10"></div>
+        <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
+            <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] -z-10"></div>
 
-        <div class="flex items-center gap-4">
-            <a href="index.html" class="bg-groupPrimary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition" title="Back to AllForce Hub">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
-            <a href="#home-cf">
-                <img src="logo-cleanforce.png" alt="Cleanforce Logo" class="h-10 md:h-12 w-auto object-contain">
-            </a>
-        </div>
-        
-        <nav class="hidden lg:flex items-center space-x-6 font-medium text-[13px] text-gray-700">
-            <a href="#home-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-home">หน้าแรก</a>
-            <a href="#about-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-about">เกี่ยวกับเรา</a>
-            <a href="#services-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-services">บริการ</a>
-            <a href="#booking-cf" class="bg-blue-500 text-white px-5 py-2 rounded-full font-bold transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.8)] [text-shadow:0_0_8px_rgba(255,255,255,0.5)]" data-i18n="nav-btn">จองบริการ</a>
-            <a href="#portfolio-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-portfolio">ผลงาน</a>
-            <a href="#feed-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-feed">ข่าวสาร</a>
-            <a href="#contact-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-contact">ติดต่อเรา</a>
-        </nav>
-
-        <div class="flex items-center gap-4">
-            <div class="hidden lg:flex items-center gap-4 text-gray-400 mr-2 border-r border-gray-200 pr-6">
-                <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-lg" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-lg" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-lg" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-lg" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-            </div>
-
-            <div class="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full text-[10px] font-bold border border-gray-200">
-                <button onclick="changeLanguage('mix')" id="lang-mix-cf" class="lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary">TH/EN</button>
-                <button onclick="changeLanguage('th')" id="lang-th-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">TH</button>
-                <button onclick="changeLanguage('en')" id="lang-en-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">EN</button>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="bg-groupPrimary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition" title="Back to AllForce Hub">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="#home-cf">
+                    <img src="logo-cleanforce.png" alt="Cleanforce Logo" class="h-10 md:h-12 w-auto object-contain">
+                </a>
             </div>
             
-            <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition font-bold bg-white/60 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm" id="user-menu-btn">
-                <i class="fa-regular fa-user-circle text-xl"></i> 
-                <span id="user-name-display" class="text-xs sm:text-sm hidden sm:inline">เข้าสู่ระบบ</span>
-            </a>
-            
-            <button id="mobile-menu-toggle" class="lg:hidden text-2xl text-primary"><i class="fa-solid fa-bars-staggered"></i></button>
-        </div>
-    </div>
-    
-    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
-        <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
-            <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
-            <span id="mobile-user-name-display">เข้าสู่ระบบ / สมัครสมาชิก</span>
-        </a>
+            <nav class="hidden lg:flex items-center space-x-6 font-medium text-[13px] text-gray-700">
+                <a href="#home-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-home">หน้าแรก</a>
+                <a href="#about-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-about">เกี่ยวกับเรา</a>
+                <a href="#services-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-services">บริการ</a>
+                <a href="#booking-cf" class="bg-blue-500 text-white px-5 py-2 rounded-full font-bold transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.8)] [text-shadow:0_0_8px_rgba(255,255,255,0.5)]" data-i18n="nav-btn">จองบริการ</a>
+                <a href="#portfolio-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-portfolio">ผลงาน</a>
+                <a href="#feed-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-feed">ข่าวสาร</a>
+                <a href="#contact-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-contact">ติดต่อเรา</a>
+            </nav>
 
-        <a href="#home-cf" class="block font-bold" data-i18n="nav-home">หน้าแรก</a>
-        <a href="#about-cf" class="block font-bold" data-i18n="nav-about">เกี่ยวกับเรา</a>
-        <a href="#services-cf" class="block font-bold" data-i18n="nav-services">บริการ</a>
-        <a href="#booking-cf" class="block font-bold text-primary" data-i18n="nav-btn">จองบริการ</a>
-        <a href="#portfolio-cf" class="block font-bold" data-i18n="nav-portfolio">ผลงาน</a>
-        <a href="#feed-cf" class="block font-bold" data-i18n="nav-feed">ข่าวสาร</a>
-        <a href="#contact-cf" class="block font-bold" data-i18n="nav-contact">ติดต่อเรา</a>
-        
-        <div class="flex items-center gap-6 pt-4 mt-2 border-t border-gray-100 text-gray-400">
-            <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-xl"><i class="fa-brands fa-facebook"></i></a>
-            <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-xl"><i class="fa-brands fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-xl"><i class="fa-brands fa-tiktok"></i></a>
-            <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-xl"><i class="fa-brands fa-youtube"></i></a>
+            <div class="flex items-center gap-4">
+                <div class="hidden lg:flex items-center gap-4 text-gray-400 mr-2 border-r border-gray-200 pr-6">
+                    <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-lg" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-lg" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-lg" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-lg" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+
+                <div class="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full text-[10px] font-bold border border-gray-200">
+                    <button onclick="changeLanguage('mix')" id="lang-mix-cf" class="lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary">TH/EN</button>
+                    <button onclick="changeLanguage('th')" id="lang-th-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">TH</button>
+                    <button onclick="changeLanguage('en')" id="lang-en-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">EN</button>
+                </div>
+                
+                <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition font-bold bg-white/60 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm" id="user-menu-btn">
+                    <i class="fa-regular fa-user-circle text-xl"></i> 
+                    <span id="user-name-display" class="text-xs sm:text-sm hidden sm:inline">เข้าสู่ระบบ</span>
+                </a>
+                
+                <button id="mobile-menu-toggle" class="lg:hidden text-2xl text-primary"><i class="fa-solid fa-bars-staggered"></i></button>
+            </div>
         </div>
-    </div>
-</header>
+        
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
+            <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
+                <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
+                <span id="mobile-user-name-display">เข้าสู่ระบบ / สมัครสมาชิก</span>
+            </a>
+
+            <a href="#home-cf" class="block font-bold" data-i18n="nav-home">หน้าแรก</a>
+            <a href="#about-cf" class="block font-bold" data-i18n="nav-about">เกี่ยวกับเรา</a>
+            <a href="#services-cf" class="block font-bold" data-i18n="nav-services">บริการ</a>
+            <a href="#booking-cf" class="block font-bold text-primary" data-i18n="nav-btn">จองบริการ</a>
+            <a href="#portfolio-cf" class="block font-bold" data-i18n="nav-portfolio">ผลงาน</a>
+            <a href="#feed-cf" class="block font-bold" data-i18n="nav-feed">ข่าวสาร</a>
+            <a href="#contact-cf" class="block font-bold" data-i18n="nav-contact">ติดต่อเรา</a>
+        </div>
+    </header>
 
     <section id="home-cf" class="hero-bg-cf pt-40 pb-20 md:pt-56 md:pb-32 relative px-6">
         <div class="max-w-7xl mx-auto text-center relative z-10">
@@ -185,126 +178,112 @@
     </section>
 
     <section id="feed-cf" class="py-24 px-6 bg-white border-t border-gray-100 overflow-hidden">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between items-end mb-12">
-            <div>
-                <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-feed">ข่าวสาร & อัปเดต</h2>
-                <p class="text-gray-500 font-body mt-4" data-i18n="feed-sub">ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce</p>
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-feed">ข่าวสาร & อัปเดต</h2>
+                    <p class="text-gray-500 font-body mt-4" data-i18n="feed-sub">ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce</p>
+                </div>
             </div>
-        </div>
 
-        <div id="feed-container" class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory hide-scroll">
-            
-            <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
-                <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promo-phuket-15.png" alt="Feed Promo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                    <div class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-md">
-                        <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Hot
+            <div id="feed-container" class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory hide-scroll">
+                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                        <img src="promotion/promo-phuket-15.png" alt="Feed Promo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-md">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Hot
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-center">
+                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Promotion</p>
+                        <h3 class="text-xl font-bold font-heading mb-2 text-text">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
+                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้</p>
                     </div>
                 </div>
-                <div class="p-6 flex-1 flex flex-col justify-center">
-                    <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Promotion</p>
-                    <h3 class="text-xl font-bold font-heading mb-2 text-text">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
-                    <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้</p>
+
+                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                        <img src="promotion/promo-renovate.png" alt="Feed News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-center">
+                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">News</p>
+                        <h3 class="text-xl font-bold font-heading mb-2 text-text">บริการใหม่</h3>
+                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที</p>
+                    </div>
+                </div>
+
+                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                        <img src="promotion/promo-activity.png" alt="Feed Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-center">
+                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Activity</p>
+                        <h3 class="text-xl font-bold font-heading mb-2 text-text">ภาพบรรยากาศ Cleaning office</h3>
+                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
-                <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promotion:promo-renovate.png" alt="Feed News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-center">
-                    <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">News</p>
-                    <h3 class="text-xl font-bold font-heading mb-2 text-text">บริการใหม่</h3>
-                    <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที</p>
-                </div>
-            </div>
-
-            <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
-                <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promotion:promo-activity.png" alt="Feed Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-center">
-                    <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Activity</p>
-                    <h3 class="text-xl font-bold font-heading mb-2 text-text">ภาพบรรยากาศ Cleaning office</h3>
-                    <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex items-center justify-between mt-4">
-            <div class="flex gap-4">
-                <button onclick="document.getElementById('feed-container').scrollBy({left: -400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                <button onclick="document.getElementById('feed-container').scrollBy({left: 400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-            <a href="news.html" class="text-groupPrimary font-bold hover:underline flex items-center gap-2">
-               ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i>
-            </a>
-        </div>
-
-    </div>
-</section>
-
-<section id="promotions-cf" class="py-20 px-6 bg-gray-50">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold font-heading text-groupPrimary mb-4">โปรโมชั่นพิเศษสำหรับคุณ</h2>
-            <p class="text-gray-500">กดเก็บคูปองส่วนลดเพื่อนำไปใช้ในขั้นตอนการจองบริการ</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 bg-cleanforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">NEW MEMBER</div>
-                <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-cleanforce flex-shrink-0">
-                    <i class="fa-solid fa-ticket text-3xl"></i>
-                </div>
-                <div class="flex-1 text-center sm:text-left">
-                    <h3 class="text-xl font-bold font-heading text-gray-800">ส่วนลดลูกค้าใหม่ 100 บาท</h3>
-                    <p class="text-xs text-gray-500 mt-1 mb-2">เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท</p>
-                    <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">NEWCLEAN100</span></div>
-                    
-                    <button onclick="collectCoupon(this, { 
-                        code: 'NEWCLEAN100', 
-                        title: 'ส่วนลดลูกค้าใหม่ 100 บาท', 
-                        discount: 100, 
-                        condition: 'เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท' 
-                    })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
-                        เก็บคูปอง
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex gap-4">
+                    <button onclick="document.getElementById('feed-container').scrollBy({left: -400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button onclick="document.getElementById('feed-container').scrollBy({left: 400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
+                        <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
+                <a href="news.html" class="text-groupPrimary font-bold hover:underline flex items-center gap-2">
+                   ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i>
+                </a>
             </div>
-
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 bg-buildforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">HOT DEAL</div>
-                <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-buildforce flex-shrink-0">
-                    <i class="fa-solid fa-snowflake text-3xl"></i>
-                </div>
-                <div class="flex-1 text-center sm:text-left">
-                    <h3 class="text-xl font-bold font-heading text-gray-800">ล้างแอร์ 3 เครื่อง ลด 150.-</h3>
-                    <p class="text-xs text-gray-500 mt-1 mb-2">สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป</p>
-                    <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">AIRCOOL150</span></div>
-                    
-                    <button onclick="collectCoupon(this, { 
-                        code: 'AIRCOOL150', 
-                        title: 'ส่วนลดล้างแอร์ 150 บาท', 
-                        discount: 150, 
-                        condition: 'สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป' 
-                    })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
-                        เก็บคูปอง
-                    </button>
-                </div>
-            </div>
-
         </div>
-    </div>
-</section>
+    </section>
 
-<section id="about-cf" class="py-24 px-6 bg-white text-text">
+    <section id="promotions-cf" class="py-20 px-6 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold font-heading text-groupPrimary mb-4">โปรโมชั่นพิเศษสำหรับคุณ</h2>
+                <p class="text-gray-500">กดเก็บคูปองส่วนลดเพื่อนำไปใช้ในขั้นตอนการจองบริการ</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-cleanforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">NEW MEMBER</div>
+                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-cleanforce flex-shrink-0">
+                        <i class="fa-solid fa-ticket text-3xl"></i>
+                    </div>
+                    <div class="flex-1 text-center sm:text-left">
+                        <h3 class="text-xl font-bold font-heading text-gray-800">ส่วนลดลูกค้าใหม่ 100 บาท</h3>
+                        <p class="text-xs text-gray-500 mt-1 mb-2">เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท</p>
+                        <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">NEWCLEAN100</span></div>
+                        
+                        <button onclick="collectCoupon(this, { code: 'NEWCLEAN100', title: 'ส่วนลดลูกค้าใหม่ 100 บาท', discount: 100, condition: 'เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท' })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
+                            เก็บคูปอง
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-buildforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">HOT DEAL</div>
+                    <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-buildforce flex-shrink-0">
+                        <i class="fa-solid fa-snowflake text-3xl"></i>
+                    </div>
+                    <div class="flex-1 text-center sm:text-left">
+                        <h3 class="text-xl font-bold font-heading text-gray-800">ล้างแอร์ 3 เครื่อง ลด 150.-</h3>
+                        <p class="text-xs text-gray-500 mt-1 mb-2">สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป</p>
+                        <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">AIRCOOL150</span></div>
+                        
+                        <button onclick="collectCoupon(this, { code: 'AIRCOOL150', title: 'ส่วนลดล้างแอร์ 150 บาท', discount: 150, condition: 'สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป' })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
+                            เก็บคูปอง
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about-cf" class="py-24 px-6 bg-white text-text">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
             <div class="flex-1">
                 <div class="relative">
@@ -329,7 +308,7 @@
         </div>
     </section>
 
-<section id="services-cf" class="py-24 px-6 bg-background rounded-t-[3rem] md:rounded-t-[5rem] text-text border-t border-gray-100">
+    <section id="services-cf" class="py-24 px-6 bg-background rounded-t-[3rem] md:rounded-t-[5rem] text-text border-t border-gray-100">
         <div class="max-w-7xl mx-auto text-center">
             <h2 class="text-3xl md:text-5xl font-bold font-heading mb-16 text-text" data-i18n="services-title">บริการระดับมืออาชีพ</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -479,6 +458,7 @@
                                     </div>
                                     <i class="fa-solid fa-circle-check text-xl text-gray-200 check-icon opacity-50"></i>
                                 </div>
+                                
                                 <div class="addon-card bg-white p-4 rounded-xl flex items-center justify-between cursor-pointer" onclick="toggleAddonItem('h_balcony', this, event)">
                                     <div class="flex items-center gap-4">
                                         <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-primary"><i class="fa-solid fa-seedling"></i></div>
@@ -548,23 +528,23 @@
                                 </div>
 
                                 <div class="addon-card bg-white p-4 rounded-xl flex flex-col justify-between cursor-pointer" onclick="toggleAddonItem('h_curtain', this, event)">
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-primary"><i class="fa-solid fa-window-maximize"></i></div>
-            <div>
-                <p class="font-bold text-sm" data-i18n="add-curtain">ซักผ้าม่าน</p>
-                <p class="text-[10px] text-gray-400 mt-1">*ความสูงไม่เกิน 3 เมตร</p>
-            </div>
-        </div>
-        <i class="fa-solid fa-circle-check text-xl text-gray-200 check-icon opacity-50"></i>
-    </div>
-    <div class="addon-options hidden mt-3 pt-3 border-t border-gray-100">
-        <select id="sel_h_curtain" class="w-full text-xs p-2 rounded border border-gray-200 outline-none focus:border-primary bg-white" onclick="event.stopPropagation()" onchange="calculateBooking(); event.stopPropagation();">
-            <option value="660">ลูกค้าจัดการถอดเอง คู่ละ (660 ฿)</option>
-            <option value="1120">ร้านจัดการให้ คู่ละ (1,120 ฿)</option>
-        </select>
-    </div>
-</div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-primary"><i class="fa-solid fa-window-maximize"></i></div>
+                                            <div>
+                                                <p class="font-bold text-sm" data-i18n="add-curtain">ซักผ้าม่าน</p>
+                                                <p class="text-[10px] text-gray-400 mt-1">*ความสูงไม่เกิน 3 เมตร</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-circle-check text-xl text-gray-200 check-icon opacity-50"></i>
+                                    </div>
+                                    <div class="addon-options hidden mt-3 pt-3 border-t border-gray-100">
+                                        <select id="sel_h_curtain" class="w-full text-xs p-2 rounded border border-gray-200 outline-none focus:border-primary bg-white" onclick="event.stopPropagation()" onchange="calculateBooking(); event.stopPropagation();">
+                                            <option value="660">ลูกค้าจัดการถอดเอง คู่ละ (660 ฿)</option>
+                                            <option value="1120">ร้านจัดการให้ คู่ละ (1,120 ฿)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div> 
@@ -593,7 +573,7 @@
                                         <input type="number" id="qty_f_sofa" value="1" min="1" class="w-20 text-sm border border-gray-200 rounded p-1.5 outline-none focus:border-primary" onclick="event.stopPropagation()" onchange="calculateBooking(); event.stopPropagation();" oninput="calculateBooking()">
                                     </div>
                                 </div>
-
+                                
                                 <div class="addon-card bg-white p-4 rounded-xl flex flex-col justify-between cursor-pointer" onclick="toggleAddonItem('f_mattress', this, event)">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-4">
@@ -1362,149 +1342,231 @@
         });
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
-<script>
-    // 1. ใส่ Config ของคุณ
-    const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-};
+    <script>
+        // ==========================================
+        // 1. Firebase Configuration & Init
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore(); // ประกาศ db ไว้ใช้ร่วมกันทั้งหน้า
 
-    // 2. ฟังก์ชันอัปเดตปุ่ม
-    function updateUserMenu(user) {
-        // อัปเดตปุ่ม Desktop
-        const userBtn = document.getElementById('user-menu-btn');
-        if (userBtn) {
-            userBtn.innerHTML = `
-                <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-                <span class="text-sm font-bold text-gray-800 hidden sm:inline">${user.displayName}</span>
-            `;
-            userBtn.href = "profile.html"; 
+        // ==========================================
+        // 2. Authentication & User UI Update
+        // ==========================================
+        function updateUserMenu(user) {
+            const userBtn = document.getElementById('user-menu-btn');
+            if (userBtn) {
+                userBtn.innerHTML = `
+                    <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                    <span class="text-sm font-bold text-gray-800 hidden sm:inline">${user.displayName}</span>
+                `;
+                userBtn.href = "profile.html"; 
+            }
+
+            const mobileUserBtn = document.getElementById('mobile-user-menu-btn');
+            if (mobileUserBtn) {
+                mobileUserBtn.innerHTML = `
+                    <img src="${user.photoURL}" alt="Profile" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
+                        <span class="text-[10px] text-gray-400">ดูโปรไฟล์และคูปองของฉัน</span>
+                    </div>
+                `;
+                mobileUserBtn.href = "profile.html";
+            }
         }
 
-        // อัปเดตปุ่ม Mobile Menu (ที่เพิ่งเพิ่มเข้าไปใหม่)
-        const mobileUserBtn = document.getElementById('mobile-user-menu-btn');
-        if (mobileUserBtn) {
-            mobileUserBtn.innerHTML = `
-                <img src="${user.photoURL}" alt="Profile" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-                <div class="flex flex-col">
-                    <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
-                    <span class="text-[10px] text-gray-400">ดูโปรไฟล์และคูปองของฉัน</span>
-                </div>
-            `;
-            mobileUserBtn.href = "profile.html";
-        }
-    }
-
-    // 3. เช็คสถานะ
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            updateUserMenu(user);
-        }
-    });
-    // ฟังก์ชันสำหรับกดเก็บคูปอง
-async function collectCoupon(btnElement, couponData) {
-    // 1. เช็คว่าล็อกอินหรือยัง จาก localStorage (ที่ SSO เราเซ็ตไว้)
-    const userData = localStorage.getItem('cf_user');
-    
-    if (!userData) {
-        alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ");
-        // เด้งไปหน้า login และส่งพารามิเตอร์บอกให้กลับมาหน้าเดิมได้ถ้าต้องการ
-        window.location.href = 'login.html';
-        return;
-    }
-
-    const user = JSON.parse(userData);
-    const uid = user.uid;
-
-    // 2. เปลี่ยนสถานะปุ่มเป็นกำลังโหลด ป้องกันคนกดรัวๆ
-    const originalText = btnElement.innerHTML;
-    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเก็บ...';
-    btnElement.disabled = true;
-
-    try {
-        const db = firebase.firestore();
-        const couponsRef = db.collection('users').doc(uid).collection('coupons');
-
-        // 3. เช็คว่าเคยเก็บคูปองรหัสนี้ไปแล้วหรือยัง
-        const checkExist = await couponsRef.where('code', '==', couponData.code).get();
-        if (!checkExist.empty) {
-            alert("คุณได้เก็บคูปองนี้ไปแล้ว! สามารถดูได้ที่หน้าโปรไฟล์ครับ");
-            btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
-            btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
-            return;
-        }
-
-        // 4. บันทึกข้อมูลคูปองลง Firestore
-        await couponsRef.add({
-            code: couponData.code,
-            title: couponData.title,
-            discount: couponData.discount,
-            condition: couponData.condition,
-            status: 'active', 
-            collectedAt: firebase.firestore.FieldValue.serverTimestamp() // บันทึกเวลาที่กดเก็บ
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                updateUserMenu(user);
+                
+                // ดึงข้อมูลจาก LocalStorage มาเติมในฟอร์มจองอัตโนมัติ (เพิ่มความสะดวกให้ลูกค้า)
+                const userData = JSON.parse(localStorage.getItem('cf_user') || '{}');
+                if(userData.name) document.getElementById('bk-name-input').value = userData.name;
+                if(userData.phone) document.getElementById('bk-phone-input').value = userData.phone;
+            }
         });
 
-        // 5. เปลี่ยนปุ่มเป็นสีเทาและเปลี่ยนข้อความว่าเก็บแล้ว
-        btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
-        btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
+        // ==========================================
+        // 3. ระบบกดเก็บคูปอง (Coupon System)
+        // ==========================================
+        async function collectCoupon(btnElement, couponData) {
+            const userData = localStorage.getItem('cf_user');
+            if (!userData) {
+                alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ");
+                window.location.href = 'login.html';
+                return;
+            }
 
-        // 6. โชว์ Popup ยินดีด้วย
-        openCouponModal(couponData);
+            const user = JSON.parse(userData);
+            const uid = user.uid;
 
-    } catch (error) {
-        console.error("Error saving coupon: ", error);
-        alert("เกิดข้อผิดพลาดขัดข้อง กรุณาลองใหม่อีกครั้ง");
-        btnElement.innerHTML = originalText;
-        btnElement.disabled = false;
-    }
-}
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเก็บ...';
+            btnElement.disabled = true;
 
-// ฟังก์ชันเปิด Popup Modal
-function openCouponModal(couponData) {
-    const modal = document.getElementById('coupon-modal');
-    const modalContent = document.getElementById('coupon-modal-content');
-    
-    // ใส่ข้อมูลคูปองลงใน Popup
-    document.getElementById('modal-coupon-title').textContent = couponData.title;
-    document.getElementById('modal-coupon-condition').textContent = couponData.condition;
-    
-    // แสดง Modal แบบมีแอนิเมชัน
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    
-    // หน่วงเวลาเล็กน้อยเพื่อให้ Transition ทำงาน
-    setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
+            try {
+                const couponsRef = db.collection('users').doc(uid).collection('coupons');
+                const checkExist = await couponsRef.where('code', '==', couponData.code).get();
+                
+                if (!checkExist.empty) {
+                    alert("คุณได้เก็บคูปองนี้ไปแล้ว! สามารถดูได้ที่หน้าโปรไฟล์ครับ");
+                    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+                    btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
+                    return;
+                }
 
-// ฟังก์ชันปิด Popup Modal
-function closeCouponModal() {
-    const modal = document.getElementById('coupon-modal');
-    const modalContent = document.getElementById('coupon-modal-content');
-    
-    // เล่นแอนิเมชันหดกลับ
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.classList.add('scale-95', 'opacity-0');
-    
-    // ซ่อน Modal หลังจากแอนิเมชันจบ (300ms ตามที่เซ็ตในคลาส duration-300)
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }, 300);
-}
-</script>
+                await couponsRef.add({
+                    code: couponData.code,
+                    title: couponData.title,
+                    discount: couponData.discount,
+                    condition: couponData.condition,
+                    status: 'active', 
+                    isUsed: false, // เพิ่ม flag สำหรับเช็คการใช้งาน
+                    collectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+                btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
+                openCouponModal(couponData);
+
+            } catch (error) {
+                console.error("Error saving coupon: ", error);
+                alert("เกิดข้อผิดพลาดขัดข้อง กรุณาลองใหม่อีกครั้ง");
+                btnElement.innerHTML = originalText;
+                btnElement.disabled = false;
+            }
+        }
+
+        function openCouponModal(couponData) {
+            const modal = document.getElementById('coupon-modal');
+            const modalContent = document.getElementById('coupon-modal-content');
+            
+            document.getElementById('modal-coupon-title').textContent = couponData.title;
+            document.getElementById('modal-coupon-condition').textContent = couponData.condition;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeCouponModal() {
+            const modal = document.getElementById('coupon-modal');
+            const modalContent = document.getElementById('coupon-modal-content');
+            
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // ==========================================
+        // 4. ระบบจองบริการ (Booking & GPS)
+        // ==========================================
+        window.getLocation = function() {
+            const statusText = document.getElementById('location-status');
+            const gpsInput = document.getElementById('bk-gps-link');
+            
+            statusText.classList.remove('hidden');
+            statusText.textContent = "กำลังดึงพิกัด...";
+            statusText.className = "text-[10px] text-blue-500 mt-1"; 
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        gpsInput.value = `http://googleusercontent.com/maps.google.com/maps?q=${lat},${lng}`;
+                        statusText.textContent = "✅ ปักพิกัดปัจจุบันเรียบร้อยแล้ว";
+                        statusText.className = "text-[10px] text-green-500 mt-1 font-bold";
+                    },
+                    (error) => {
+                        statusText.textContent = "❌ ไม่สามารถดึงพิกัดได้ กรุณาอนุญาต Location หรือระบุในที่อยู่";
+                        statusText.className = "text-[10px] text-red-500 mt-1";
+                    }
+                );
+            } else {
+                statusText.textContent = "เบราว์เซอร์ของคุณไม่รองรับการดึงพิกัด";
+            }
+        }
+
+        window.calculateBooking = function() {
+            // TODO: ปรับค่า 1000 นี้ให้ดึงจาก Service ที่ลูกค้าเลือกด้านบน
+            let subtotal = 1000; 
+            let finalDiscount = 0;
+
+            const reviewCheckbox = document.getElementById('bk-review-discount');
+            if (reviewCheckbox && reviewCheckbox.checked) {
+                finalDiscount += 200;
+            }
+
+            let totalPrice = subtotal - finalDiscount;
+            if (totalPrice < 0) totalPrice = 0; 
+
+            const originalPriceEl = document.getElementById('sum-original-price');
+            const priceEl = document.getElementById('sum-price');
+
+            priceEl.textContent = totalPrice.toLocaleString();
+            
+            if (finalDiscount > 0) {
+                originalPriceEl.textContent = subtotal.toLocaleString();
+                originalPriceEl.style.display = 'inline';
+            } else {
+                originalPriceEl.style.display = 'none';
+            }
+        }
+
+        window.submitBooking = async function() {
+            const name = document.getElementById('bk-name-input').value.trim();
+            const phone = document.getElementById('bk-phone-input').value.trim();
+            const taxid = document.getElementById('bk-taxid-input').value.trim();
+            const address = document.getElementById('bk-address-input').value.trim();
+            const gpsLink = document.getElementById('bk-gps-link').value;
+            
+            const isKeyDrop = document.getElementById('bk-key-drop').checked;
+            const keyDetail = document.getElementById('bk-key-detail').value.trim();
+            const isReview = document.getElementById('bk-review-discount').checked;
+
+            if(!name || !phone || !address) {
+                return alert('กรุณาระบุ ชื่อ, เบอร์โทรศัพท์ และที่อยู่ ให้ครบถ้วนเพื่อความรวดเร็วในการให้บริการครับ');
+            }
+
+            let message = `🔔 รายการจองใหม่ (Cleanforce)\n\n`;
+            message += `👤 ชื่อลูกค้า: ${name}\n📞 เบอร์ติดต่อ: ${phone}\n`;
+            if(taxid) message += `📝 Tax ID: ${taxid}\n`;
+            message += `🏠 ที่อยู่: ${address}\n`;
+            if(gpsLink) message += `📍 พิกัด: ${gpsLink}\n`;
+            if(isKeyDrop) message += `🔑 จุดรับกุญแจ: ${keyDetail || 'ไม่ได้ระบุ'}\n`;
+            
+            message += `\n🧹 [สรุปบริการ]\n`;
+            if(isReview) message += `⭐ ลูกค้ายินดีรีวิว (รับส่วนลด 200 บาท)\n`;
+            message += `💰 ยอดชำระสุทธิ: ${document.getElementById('sum-price').textContent} บาท`;
+
+            const lineId = "@allforce"; 
+            const lineOaUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(message)}`;
+            
+            window.location.href = lineOaUrl;
+        }
+    </script>
 </body>
 </html>

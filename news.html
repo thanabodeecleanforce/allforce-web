@@ -15,10 +15,10 @@
 
     <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition font-bold">
-                <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก
-            </a>
-            <img src="logo-cleanforce.png" alt="Cleanforce" class="h-10 object-contain">
+            <button onclick="window.history.back()" class="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition font-bold">
+                <i class="fa-solid fa-arrow-left"></i> ย้อนกลับ
+            </button>
+            <img src="logo-cleanforce.png" alt="Cleanforce" class="h-10 object-contain" onerror="this.src='https://placehold.co/200x80?text=CLEANFORCE'">
         </div>
     </header>
 
@@ -41,13 +41,13 @@
                     <p class="text-xs text-blue-600 mb-2 font-bold uppercase tracking-widest">Promotion</p>
                     <h3 class="text-xl font-bold mb-2 text-gray-800">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
                     <p class="text-sm text-gray-500 leading-relaxed mb-4">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้เท่านั้น</p>
-                    <a href="index.html#booking-cf" class="mt-auto text-blue-600 font-bold hover:underline text-sm">จองบริการทันที <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="cleanforce.html#booking-cf" class="mt-auto text-blue-600 font-bold hover:underline text-sm">จองบริการทันที <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
             </div>
 
             <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group flex flex-col hover:shadow-lg transition-all">
                 <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promotion:promo-renovate.png" alt="News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <img src="promotion/promo-renovate.png" alt="News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 </div>
                 <div class="p-6 flex-1 flex flex-col">
                     <p class="text-xs text-blue-600 mb-2 font-bold uppercase tracking-widest">News</p>
@@ -58,7 +58,7 @@
 
             <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group flex flex-col hover:shadow-lg transition-all">
                 <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promotion:promo-activity.png" alt="Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <img src="promotion/promo-activity.png" alt="Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 </div>
                 <div class="p-6 flex-1 flex flex-col">
                     <p class="text-xs text-blue-600 mb-2 font-bold uppercase tracking-widest">Activity</p>
@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            </div>
+        </div>
     </main>
     
 </body>

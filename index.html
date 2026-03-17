@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AllForce Group | Excellence in Every Force</title>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -18,13 +15,13 @@
             theme: {
                 extend: {
                     colors: {
-                        groupPrimary: '#000080',    /* สี Navy หลัก */
-                        groupSecondary: '#0A0F24',  /* สีน้ำเงินเข้มโหมดมืด */
-                        cleanforce: '#00B4D8',      /* สีฟ้าสว่าง (Cyan) */
-                        buildforce: '#F59E0B',      /* สีเหลืองทอง (Amber) */
-                        meterailforce: '#10B981',   /* สีเขียวมรกต (Emerald) */
-                        seaforce: '#0EA5E9',        /* สีฟ้าน้ำทะเล (Ocean Blue) */
-                        groupAccent: '#FF6600'      /* สีส้มจากโลโก้ The way of force */
+                        groupPrimary: '#000080',    
+                        groupSecondary: '#0A0F24',  
+                        cleanforce: '#00B4D8',      
+                        buildforce: '#F59E0B',      
+                        meterailforce: '#10B981',   
+                        seaforce: '#0EA5E9',        
+                        groupAccent: '#FF6600'      
                     },
                     fontFamily: {
                         heading: ['Poppins', 'Noto Sans Thai', 'sans-serif'],
@@ -38,7 +35,7 @@
         body { font-family: 'Noto Sans Thai', sans-serif; scroll-behavior: smooth; }
         .font-heading { font-family: 'Poppins', 'Noto Sans Thai', sans-serif; }
         
-        /* Hub Styles (Dark Theme) */
+        /* Hub Styles */
         .group-gradient {
             background: radial-gradient(circle at 50% 50%, #0A0F24 0%, #040614 100%);
         }
@@ -71,14 +68,11 @@
 </head>
 <body class="overflow-x-hidden bg-groupPrimary min-h-screen group-gradient">
 
-    <!-- เปลี่ยน Header เป็นสีขาว/กระจก เพื่อให้กลืนกับพื้นหลังโลโก้ -->
     <header class="fixed w-full z-50 top-0 border-b border-gray-200/50 bg-white/95 backdrop-blur-md shadow-sm">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center text-groupPrimary">
             <div class="flex items-center gap-4">
-                <!-- โลโก้ใหม่ ลบกรอบขาวออก ใช้ mix-blend-multiply ให้เนียนไปกับพื้นหลัง -->
-                <img src="logo-allforce-rmbg.png" alt="AllForce Logo" class="h-10 md:h-12 w-auto object-contain mix-blend-multiply">
+                <img src="logo-allforce-rmbg.png" alt="AllForce Logo" class="h-10 md:h-12 w-auto object-contain mix-blend-multiply" onerror="this.src='https://placehold.co/200x80?text=ALLFORCE'">
                 <div class="h-8 w-[2px] bg-groupPrimary/20 rounded-full hidden sm:block"></div>
-                <!-- ลบคำว่า Allforce ออก เหลือแค่ Group และใช้สีส้มจากโลโก้ -->
                 <span class="text-xl font-extrabold tracking-widest font-heading uppercase text-groupAccent mt-1">GROUP</span>
             </div>
             <div class="flex items-center gap-4">
@@ -87,9 +81,9 @@
                     <button onclick="changeLanguage('en')" id="lang-en" class="lang-btn-en px-3 py-1.5 rounded-full transition text-gray-500 hover:text-groupPrimary">EN</button>
                 </div>
             </div>
-            <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition font-bold" id="user-menu-btn">
+            <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-groupAccent transition font-bold" id="user-menu-btn">
                 <i class="fa-regular fa-user-circle text-xl"></i> 
-                <span id="user-name-display">เข้าสู่ระบบ</span>
+                <span id="user-name-display" class="hidden sm:inline">เข้าสู่ระบบ</span>
             </a>
         </div>
     </header>
@@ -97,9 +91,8 @@
     <main class="pt-40 pb-20 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-24 text-white">
-                <!-- เปลี่ยนสี Gradient ให้จบด้วยสีส้ม (groupAccent) -->
                 <h1 class="text-5xl md:text-7xl font-extrabold font-heading mb-8 leading-tight tracking-tight" data-i18n="group-title">
-                    One Goal. <br> <span class='text-transparent bg-clip-text bg-gradient-to-r from-cleanforce to-white'>Multiple Forces.</span>"
+                    One Goal. <br> <span class='text-transparent bg-clip-text bg-gradient-to-r from-cleanforce to-groupAccent'>Multiple Forces.</span>
                 </h1>
                 <p class="text-gray-400 max-w-2xl mx-auto text-lg font-light leading-relaxed font-body" data-i18n="group-sub">
                     อาณาจักรโซลูชันที่ครอบคลุมทุกความต้องการของธุรกิจและที่พักอาศัย ขับเคลื่อนด้วยมาตรฐานสูงสุดในทุกยูนิตธุรกิจ
@@ -107,7 +100,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Cleanforce Card -->
                 <div class="card-glass rounded-[2.5rem] flex flex-col h-full relative text-left">
                     <div class="h-48 w-full relative overflow-hidden bg-slate-800/30 flex items-center justify-center">
                         <div class="absolute inset-0 card-image-gradient opacity-60"></div>
@@ -122,7 +114,6 @@
                         </div>
                         <p class="text-gray-400 text-xs leading-relaxed mb-8 font-body" data-i18n="card-clean-desc">บริการทำความสะอาดระดับพรีเมียม ขจัดทุกปัญหาคราบสกปรกและไรฝุ่น</p>
                         <div class="mt-auto">
-                            <!-- เปลี่ยนเป็นลิงก์ a href ไปยังหน้า cleanforce.html -->
                             <a href="cleanforce.html" class="bg-cleanforce text-white w-full py-4 rounded-2xl font-bold text-xs tracking-widest uppercase flex items-center justify-center gap-2 hover:brightness-110 transition shadow-lg font-heading">
                                 <span data-i18n="btn-enter">เข้าสู่เว็บไซต์</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
                             </a>
@@ -133,7 +124,6 @@
                     </div>
                 </div>
 
-                <!-- Buildforce Card -->
                 <div class="card-glass rounded-[2.5rem] flex flex-col h-full relative text-left">
                     <div class="h-48 w-full relative overflow-hidden bg-slate-800/30 flex items-center justify-center">
                         <div class="absolute inset-0 card-image-gradient opacity-60"></div>
@@ -156,7 +146,6 @@
                     </div>
                 </div>
 
-                <!-- Meterailforce Card -->
                 <div class="card-glass rounded-[2.5rem] flex flex-col h-full relative text-left">
                     <div class="h-48 w-full relative overflow-hidden bg-slate-800/30 flex items-center justify-center">
                         <div class="absolute inset-0 card-image-gradient opacity-60"></div>
@@ -179,7 +168,6 @@
                     </div>
                 </div>
 
-                <!-- Seaforce Card -->
                 <div class="card-glass rounded-[2.5rem] flex flex-col h-full relative text-left">
                     <div class="h-48 w-full relative overflow-hidden bg-slate-800/30 flex items-center justify-center">
                         <div class="absolute inset-0 card-image-gradient opacity-60"></div>
@@ -206,20 +194,20 @@
     </main>
 
     <footer class="py-12 px-6 border-t border-gray-100 bg-white text-center">
-    <img src="logo-allforce-rmbg.png" alt="Logo" class="h-10 mx-auto mb-4 object-contain">
-    
-    <div class="mb-4">
-        <a href="privacy-policy.html" class="text-[10px] text-gray-400 hover:text-primary underline mx-2">Privacy Policy</a>
-        <a href="#" class="text-[10px] text-gray-400 hover:text-primary underline mx-2">Terms of Service</a>
-    </div>
-    
-    <p class="text-gray-400 text-[10px]">© 2024 Cleanforce Professional Cleaning. All rights reserved.</p>
-</footer>
+        <img src="logo-allforce-rmbg.png" alt="Logo" class="h-10 mx-auto mb-4 object-contain" onerror="this.src='https://placehold.co/200x80?text=ALLFORCE'">
+        
+        <div class="mb-4">
+            <a href="privacy-policy.html" class="text-[10px] text-gray-400 hover:text-groupPrimary underline mx-2">Privacy Policy</a>
+            <a href="#" class="text-[10px] text-gray-400 hover:text-groupPrimary underline mx-2">Terms of Service</a>
+        </div>
+        
+        <p class="text-gray-400 text-[10px]">© 2024 AllForce Group. All rights reserved.</p>
+    </footer>
 
     <script>
         const translations = {
             th: {
-                "group-title": "One Goal. <br> <span class='text-transparent bg-clip-text bg-gradient-to-r from-cleanforce to-white'>Multiple Forces.</span>",
+                "group-title": "One Goal. <br> <span class='text-transparent bg-clip-text bg-gradient-to-r from-cleanforce to-groupAccent'>Multiple Forces.</span>",
                 "group-sub": "อาณาจักรโซลูชันที่ครอบคลุมทุกความต้องการของธุรกิจและที่พักอาศัย ขับเคลื่อนด้วยมาตรฐานสูงสุดในทุกยูนิตธุรกิจ",
                 "btn-enter": "เข้าสู่เว็บไซต์",
                 "card-clean-desc": "บริการทำความสะอาดระดับพรีเมียม ขจัดทุกปัญหาคราบสกปรกและไรฝุ่น",
@@ -228,7 +216,7 @@
                 "card-sea-desc": "เทคโนโลยีและบริการด้านพาณิชย์นาวี"
             },
             en: {
-                "group-title": "One Goal. <br> <span class='text-transparent bg-clip-text bg-gradient-to-r from-cleanforce to-white'>Multiple Forces.</span>",
+                "group-title": "One Goal. <br> <span class='text-transparent bg-clip-text bg-gradient-to-r from-cleanforce to-groupAccent'>Multiple Forces.</span>",
                 "group-sub": "A comprehensive solutions empire covering all business and residential needs, driven by the highest standards across all business units.",
                 "btn-enter": "Visit Website",
                 "card-clean-desc": "Premium cleaning services, eliminating all stains and dust mites.",
@@ -255,95 +243,56 @@
             });
         }
     </script>
-    <script>
-    // ดึงข้อมูลลูกค้าจากที่เซฟไว้ในเครื่องตอนล็อกอิน
-    const userData = localStorage.getItem('cf_user');
-    
-    // ถ้าพบข้อมูล (แปลว่าล็อกอินแล้ว)
-    if (userData) {
-        const user = JSON.parse(userData);
-        const userBtn = document.getElementById('user-menu-btn');
-        
-        if (userBtn) {
-            // 1. เปลี่ยนหน้าตาปุ่มเป็น "รูปโปรไฟล์ + ชื่อลูกค้า"
-            userBtn.innerHTML = `
-                <img src="${user.photo}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-                <span class="text-sm font-bold text-gray-800">${user.name}</span>
-            `;
-            
-            // 2. เปลี่ยนให้กดแล้วเป็นคำสั่ง "ออกจากระบบ" แทนการไปหน้า login.html
-            userBtn.href = "javascript:void(0);"; // ยกเลิกลิงก์เดิม
-            
-            // ใช้โครงสร้างคลิกอันนี้อันเดียวครับ
-            userBtn.onclick = function() {
-                if(confirm('คุณ ' + user.name + ' ต้องการออกจากระบบใช่หรือไม่?')) {
-                    // ลบข้อมูลในเครื่อง
-                    localStorage.removeItem('cf_user'); 
-                    
-                    // ถ้ามีการตั้งค่า Firebase แล้ว ให้เพิ่มโค้ดนี้เพื่อ Sign out จาก Google ด้วย
-                    /* firebase.auth().signOut().then(() => {
-                        window.location.reload();
-                    }).catch((error) => {
-                        console.error(error);
-                    });
-                    */
-                    
-                    window.location.reload(); // รีเฟรชหน้าเว็บ เพื่อให้ปุ่มกลับไปเป็น "เข้าสู่ระบบ"
-                }
-            };
-        }
-    }
-    </script>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 
     <script>
-    // 1. คอนฟิก Firebase 
-    const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-};
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-
-    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน
-    function updateUserMenu(user) {
-        const userBtn = document.getElementById('user-menu-btn');
-        if (!userBtn) return;
-
-        // เปลี่ยนหน้าตาปุ่มเป็นรูปและชื่อ
-        userBtn.innerHTML = `
-            <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-            <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
-        `;
+        // 1. คอนฟิก Firebase 
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
         
-        // 🎯 จุดที่เปลี่ยน: ให้ลิงก์ไปหน้า profile.html แทน
-        userBtn.href = "profile.html"; 
-        
-        // ลบ onclick เดิมทิ้งไปเลย (ไม่ต้องเด้งถาม Logout แล้ว)
-        userBtn.onclick = null; 
-    }
-
-    // 3. ฟังก์ชันดักจับสถานะจาก Firebase
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // เซฟลง localStorage เผื่อไว้ใช้จุกจิก
-            const userData = { uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL };
-            localStorage.setItem('cf_user', JSON.stringify(userData));
-            
-            // เรียกใช้ฟังก์ชันอัปเดตปุ่ม
-            updateUserMenu(user);
-        } else {
-            localStorage.removeItem('cf_user');
-            // ถ้าไม่ได้ล็อกอิน ปุ่มก็จะเป็น <a href="login.html">...</a> ตามปกติใน HTML
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-    });
-</script>
+        const auth = firebase.auth();
+
+        // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน
+        function updateUserMenu(user) {
+            const userBtn = document.getElementById('user-menu-btn');
+            if (!userBtn) return;
+
+            // เปลี่ยนหน้าตาปุ่มเป็นรูปและชื่อ
+            userBtn.innerHTML = `
+                <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                <span class="text-sm font-bold text-gray-800 hidden sm:inline">${user.displayName}</span>
+            `;
+            
+            // ลิงก์ไปหน้า profile
+            userBtn.href = "profile.html"; 
+            userBtn.onclick = null; 
+        }
+
+        // 3. ฟังก์ชันดักจับสถานะจาก Firebase
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // เซฟลง localStorage เผื่อไว้ใช้จุกจิก
+                const userData = { uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL };
+                localStorage.setItem('cf_user', JSON.stringify(userData));
+                
+                // เรียกใช้ฟังก์ชันอัปเดตปุ่ม
+                updateUserMenu(user);
+            } else {
+                localStorage.removeItem('cf_user');
+                // ถ้าไม่ได้ล็อกอิน ปุ่มก็จะเป็น <a href="login.html">...</a> ตามปกติใน HTML
+            }
+        });
+    </script>
 </body>
 </html>
