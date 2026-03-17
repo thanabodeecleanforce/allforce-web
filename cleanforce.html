@@ -248,36 +248,39 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-cleanforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">NEW MEMBER</div>
-                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-cleanforce flex-shrink-0">
-                        <i class="fa-solid fa-ticket text-3xl"></i>
-                    </div>
-                    <div class="flex-1 text-center sm:text-left">
-                        <h3 class="text-xl font-bold font-heading text-gray-800">ส่วนลดลูกค้าใหม่ 100 บาท</h3>
-                        <p class="text-xs text-gray-500 mt-1 mb-2">เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท</p>
-                        <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">NEWCLEAN100</span></div>
-                        
-                        <button onclick="collectCoupon(this, { code: 'NEWCLEAN100', title: 'ส่วนลดลูกค้าใหม่ 100 บาท', discount: 100, condition: 'เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท' })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
-                            เก็บคูปอง
-                        </button>
-                    </div>
-                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between h-full">
+    <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-ticket text-xl"></i>
+        </div>
+        <div>
+            <h3 class="font-bold text-gray-800 text-lg">ส่วนลดลูกค้าใหม่ 100 บาท</h3>
+            <p class="text-xs text-gray-500 mt-1 mb-2">เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท</p>
+            <span class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">โค้ด: NEWCLEAN100</span>
+        </div>
+    </div>
+    <button onclick="collectCoupon(this, {code: 'NEWCLEAN100', title: 'ส่วนลดลูกค้าใหม่ 100 บาท', discount: 100, condition: 'เมื่อจองบริการขั้นต่ำ 500 บาท'})" 
+            class="w-full mt-5 bg-[#102C57] text-white py-2.5 rounded-xl text-sm font-bold hover:bg-[#0b1f3d] transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-download"></i> กดเก็บคูปอง
+    </button>
+</div>
 
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-buildforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">HOT DEAL</div>
-                    <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-buildforce flex-shrink-0">
-                        <i class="fa-solid fa-snowflake text-3xl"></i>
-                    </div>
-                    <div class="flex-1 text-center sm:text-left">
-                        <h3 class="text-xl font-bold font-heading text-gray-800">ล้างแอร์ 3 เครื่อง ลด 150.-</h3>
-                        <p class="text-xs text-gray-500 mt-1 mb-2">สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป</p>
-                        <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">AIRCOOL150</span></div>
-                        
-                        <button onclick="collectCoupon(this, { code: 'AIRCOOL150', title: 'ส่วนลดล้างแอร์ 150 บาท', discount: 150, condition: 'สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป' })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
-                            เก็บคูปอง
-                        </button>
-                    </div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between h-full">
+    <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-snowflake text-xl"></i>
+        </div>
+        <div>
+            <h3 class="font-bold text-gray-800 text-lg">ล้างแอร์ 3 เครื่อง ลด 150.-</h3>
+            <p class="text-xs text-gray-500 mt-1 mb-2">สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป</p>
+            <span class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">โค้ด: AIRCOOL150</span>
+        </div>
+    </div>
+    <button onclick="collectCoupon(this, {code: 'AIRCOOL150', title: 'ล้างแอร์ 3 เครื่อง ลด 150.-', discount: 150, condition: 'สำหรับล้างแอร์ 3 เครื่องขึ้นไป'})" 
+            class="w-full mt-5 bg-[#102C57] text-white py-2.5 rounded-xl text-sm font-bold hover:bg-[#0b1f3d] transition flex items-center justify-center gap-2">
+        <i class="fa-solid fa-download"></i> กดเก็บคูปอง
+    </button>
+</div>
                 </div>
             </div>
         </div>

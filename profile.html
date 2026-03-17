@@ -96,7 +96,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Firebase Config (มีจุดเดียวพอ)
+        // 1. Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
             authDomain: "allforce-hub.firebaseapp.com",
@@ -113,24 +113,21 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. เช็คการล็อกอินผ่าน Firebase Auth (แบบ Real-time)
+        // 2. เช็คการล็อกอิน
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // อัปเดตข้อมูลขึ้นหน้าจอ
-                document.getElementById('profile-name').textContent = user.displayName;
+                document.getElementById('profile-name').textContent = user.displayName || 'ลูกค้า Cleanforce';
                 document.getElementById('profile-email').textContent = user.email;
                 document.getElementById('profile-img').src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
                 
-                // ดึงคูปองจาก Firestore โดยใช้ uid ของ user ปัจจุบัน
                 fetchMyCoupons(user.uid);
             } else {
-                // ถ้าไม่ได้ล็อกอิน เด้งไปหน้า login
                 alert('กรุณาเข้าสู่ระบบเพื่อดูคูปองของคุณ');
                 window.location.href = 'login.html';
             }
         });
 
-        // 3. ฟังก์ชันดึงข้อมูลจาก Firestore
+        // 3. ฟังก์ชันดึงข้อมูลจาก Firestore (แก้ไขใหม่ให้สมบูรณ์)
         async function fetchMyCoupons(uid) {
             const container = document.getElementById('coupons-container');
             const loading = document.getElementById('loading-state');
@@ -138,9 +135,8 @@
             const countDisplay = document.getElementById('coupon-count');
 
             try {
-                // หมายเหตุ: ถ้าเจอ Error "requires an index" ใน Console ให้เอา .orderBy() ออกก่อน หรือไปสร้าง Index ใน Firebase Console
-                const snapshot = await db.collection('users').doc(uid).collection('coupons')
-                                         .orderBy('collectedAt', 'desc').get();
+                // ดึงข้อมูลทั้งหมดโดยไม่ใช้ orderBy เพื่อหลีกเลี่ยง Index Error
+                const snapshot = await db.collection('users').doc(uid).collection('coupons').get();
                 
                 loading.classList.add('hidden'); 
 
@@ -151,15 +147,23 @@
 
                 countDisplay.textContent = snapshot.size;
 
-                snapshot.forEach(doc => {
-                    const coupon = doc.data();
+                // นำข้อมูลมาจัดเรียงวันที่ในเครื่องแทน (อันใหม่ล่าสุดขึ้นก่อน)
+                let couponsData = [];
+                snapshot.forEach(doc => couponsData.push({ id: doc.id, ...doc.data() }));
+                couponsData.sort((a, b) => (b.collectedAt?.toMillis() || 0) - (a.collectedAt?.toMillis() || 0));
+
+                let htmlContent = '';
+
+                // สร้างการ์ดคูปอง
+                couponsData.forEach(coupon => {
                     let dateText = "ไม่มีวันหมดอายุ";
                     if(coupon.collectedAt) {
                          const date = coupon.collectedAt.toDate();
                          dateText = `เก็บเมื่อ: ${date.toLocaleDateString('th-TH')}`;
                     }
 
-                    const couponHTML = `
+                    // เปลี่ยน text-buildforce เป็น text-cleanforce ให้แสดงสีฟ้าถูกต้อง
+                    htmlContent += `
                         <div class="coupon-card p-5 flex items-center justify-between hover:-translate-y-1 transition duration-300">
                             <div class="flex-1 pr-4">
                                 <span class="bg-cleanforce/10 text-cleanforce text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 inline-block">
@@ -175,40 +179,20 @@
                             </div>
                             
                             <div class="flex flex-col items-center justify-center border-l border-gray-100 pl-4 min-w-[90px]">
-                                <span class="text-3xl font-bold text-buildforce font-heading">${coupon.discount || '0'}</span>
+                                <span class="text-3xl font-bold text-cleanforce font-heading">${coupon.discount || '0'}</span>
                                 <span class="text-xs text-gray-400 font-bold">THB</span>
                             </div>
                         </div>
                     `;
-                    container.insertAdjacentHTML('beforeend', couponHTML);
                 });
+
+                container.insertAdjacentHTML('beforeend', htmlContent);
 
             } catch (error) {
                 console.error("Error fetching coupons: ", error);
-                // ดักจับ Error กรณีที่ยังไม่ได้สร้าง Index
-                if (error.message.includes("requires an index")) {
-                    console.warn("ข้ามการจัดเรียงวันที่ เนื่องจากยังไม่ได้สร้าง Firestore Index");
-                    // โหลดใหม่แบบไม่เรียงลำดับ
-                    fetchMyCouponsWithoutOrder(uid);
-                } else {
-                    loading.innerHTML = `<p class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> เกิดข้อผิดพลาดในการดึงข้อมูล โปรดรีเฟรชหน้าเว็บ</p>`;
-                }
+                loading.classList.remove('hidden');
+                loading.innerHTML = `<p class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> เกิดข้อผิดพลาดในการดึงข้อมูล โปรดรีเฟรชหน้าเว็บ</p>`;
             }
-        }
-        
-        // ฟังก์ชันสำรองกรณียังไม่ได้สร้าง Index
-        async function fetchMyCouponsWithoutOrder(uid) {
-             const container = document.getElementById('coupons-container');
-             const empty = document.getElementById('empty-state');
-             const countDisplay = document.getElementById('coupon-count');
-             
-             const snapshot = await db.collection('users').doc(uid).collection('coupons').get();
-             if (snapshot.empty) {
-                 empty.classList.remove('hidden'); 
-                 return;
-             }
-             countDisplay.textContent = snapshot.size;
-             // ... (ลอจิกสร้างการ์ดคูปองเหมือนเดิม แต่ข้ามส่วนนี้ไปเพื่อความกระชับ โค้ดด้านบนจะเรียกใช้ให้เองถ้ายกเลิก orderBy)
         }
 
         // 4. สคริปต์ปุ่มออกจากระบบ
