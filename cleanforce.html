@@ -1407,53 +1407,68 @@
         // ==========================================
         // 3. ระบบกดเก็บคูปอง (Coupon System)
         // ==========================================
-        async function collectCoupon(btnElement, couponData) {
-            const userData = localStorage.getItem('cf_user');
-            if (!userData) {
-                alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ");
-                window.location.href = 'login.html';
-                return;
-            }
+        // ฟังก์ชันเก็บคูปอง (อัปเดตใหม่ ป้องกันปุ่มค้าง)
+async function collectCoupon(btnElement, couponData) {
+    // 1. เช็ค Auth ตรงจาก Firebase ชัวร์กว่า LocalStorage
+    const user = firebase.auth().currentUser;
+    
+    if (!user) {
+        alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ");
+        window.location.href = 'login.html';
+        return;
+    }
 
-            const user = JSON.parse(userData);
-            const uid = user.uid;
+    const uid = user.uid;
+    const originalText = btnElement.innerHTML;
+    
+    // 2. เปลี่ยนสถานะปุ่มเป็นกำลังโหลด
+    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเก็บ...';
+    btnElement.disabled = true;
 
-            const originalText = btnElement.innerHTML;
-            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเก็บ...';
-            btnElement.disabled = true;
+    try {
+        const db = firebase.firestore();
+        const couponsRef = db.collection('users').doc(uid).collection('coupons');
 
-            try {
-                const couponsRef = db.collection('users').doc(uid).collection('coupons');
-                const checkExist = await couponsRef.where('code', '==', couponData.code).get();
-                
-                if (!checkExist.empty) {
-                    alert("คุณได้เก็บคูปองนี้ไปแล้ว! สามารถดูได้ที่หน้าโปรไฟล์ครับ");
-                    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
-                    btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
-                    return;
-                }
-
-                await couponsRef.add({
-                    code: couponData.code,
-                    title: couponData.title,
-                    discount: couponData.discount,
-                    condition: couponData.condition,
-                    status: 'active', 
-                    isUsed: false, // เพิ่ม flag สำหรับเช็คการใช้งาน
-                    collectedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
-                btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
-                openCouponModal(couponData);
-
-            } catch (error) {
-                console.error("Error saving coupon: ", error);
-                alert("เกิดข้อผิดพลาดขัดข้อง กรุณาลองใหม่อีกครั้ง");
-                btnElement.innerHTML = originalText;
-                btnElement.disabled = false;
-            }
+        // 3. เช็คว่าเคยเก็บคูปองรหัสนี้ไปแล้วหรือยัง
+        const checkExist = await couponsRef.where('code', '==', couponData.code).get();
+        if (!checkExist.empty) {
+            alert("คุณได้เก็บคูปองนี้ไปแล้ว! สามารถดูได้ที่หน้าโปรไฟล์ครับ");
+            // เปลี่ยนสีปุ่มเป็นสีเทา
+            btnElement.className = "w-full mt-5 bg-gray-400 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
+            btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+            return;
         }
+
+        // 4. บันทึกข้อมูลคูปองลง Firestore
+        await couponsRef.add({
+            code: couponData.code,
+            title: couponData.title,
+            discount: couponData.discount,
+            condition: couponData.condition,
+            status: 'active', 
+            isUsed: false,
+            collectedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // 5. เปลี่ยนปุ่มเป็นสีเทาและเปลี่ยนข้อความว่าเก็บแล้ว
+        btnElement.className = "w-full mt-5 bg-gray-400 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
+        btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+
+        // 6. โชว์ Popup ยินดีด้วย (ถ้ามีฟังก์ชันนี้)
+        if (typeof openCouponModal === 'function') {
+            openCouponModal(couponData);
+        } else {
+            alert("เก็บคูปองสำเร็จ! ตรวจสอบได้ที่หน้าโปรไฟล์ครับ");
+        }
+
+    } catch (error) {
+        // หากเกิด Error จะต้องเด้งแจ้งเตือน และคืนค่าปุ่มกลับมาเป็นเหมือนเดิม (ไม่ค้าง)
+        console.error("Error saving coupon: ", error);
+        alert("ไม่สามารถเก็บคูปองได้: " + error.message);
+        btnElement.innerHTML = originalText;
+        btnElement.disabled = false;
+    }
+}
 
         function openCouponModal(couponData) {
             const modal = document.getElementById('coupon-modal');
