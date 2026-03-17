@@ -130,6 +130,14 @@
         </div>
         
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
+            <div class="flex flex-wrap gap-2 pb-4 border-b border-gray-100">
+                <button onclick="changeLanguage('mix')" id="lang-mix-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">MIX</button>
+                <button onclick="changeLanguage('th')" id="lang-th-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">TH</button>
+                <button onclick="changeLanguage('en')" id="lang-en-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">EN</button>
+                <button onclick="changeLanguage('zh')" id="lang-zh-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">ZH</button>
+                <button onclick="changeLanguage('ru')" id="lang-ru-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">RU</button>
+            </div>
+
             <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
                 <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
                 <span id="mobile-user-name-display" data-i18n="nav-login-mobile">เข้าสู่ระบบ / สมัครสมาชิก</span>
@@ -287,8 +295,8 @@
                                     <p class="font-mono font-bold text-2xl tracking-wider text-primary">PHUKET10</p>
                                 </div>
                                 
-                                <button onclick="collectCoupon(this, {code: 'PHUKET15', title: 'ลด 15% สาขาภูเก็ต', discount: 15, condition: 'ลด 15% จากยอดรวม (ลูกค้าใหม่)', type: 'percent'})" class="w-full bg-[#102C57] text-white py-3.5 rounded-xl text-sm font-bold hover:bg-[#0b1f3d] transition flex items-center justify-center gap-2 btn-shadow">
-                                    <i class="fa-solid fa-download"></i> <span data-i18n="promo-card-btn">คัดลอก & เก็บโค้ด</span>
+                                <button onclick="collectCoupon(this, {code: 'PHUKET10', title: 'ลด 10% สาขาภูเก็ต', discount: 10, condition: 'ลด 10% จากยอดรวม (ลูกค้าใหม่)', type: 'percent'})" class="w-full bg-[#102C57] text-white py-3.5 rounded-xl text-sm font-bold hover:bg-[#0b1f3d] transition flex items-center justify-center gap-2 btn-shadow">
+                                   <i class="fa-solid fa-download"></i> <span data-i18n="promo-card-btn">คัดลอก & เก็บโค้ด</span>
                                 </button>
                             </div>
                         </div>
@@ -699,8 +707,8 @@
                                 
                                 <div class="mt-3 flex flex-col items-start gap-2">
                                     <button type="button" onclick="getLocation()" class="text-xs bg-blue-50 text-primary border border-primary px-4 py-2 rounded-lg font-bold hover:bg-primary hover:text-white transition flex items-center gap-2">
-                                        <i class="fa-solid fa-location-crosshairs"></i> แตะเพื่อปักพิกัดปัจจุบัน
-                                    </button>
+                                          <i class="fa-solid fa-location-crosshairs"></i> <span data-i18n="bk-gps-btn">แตะเพื่อปักพิกัดปัจจุบัน</span>
+                                        </button>
                                     <p id="location-status" class="text-[10px] text-gray-400 hidden"></p>
                                     <input type="hidden" id="bk-gps-link" value="">
                                 </div>
@@ -896,7 +904,7 @@
                 "promo-card-title": "ลด 15% ลูกค้าใหม่", "promo-card-desc": "เอาใจคนภูเก็ต! กดเก็บคูปองเพื่อคัดลอกโค้ดไปใช้ในหน้าสรุปยอดได้เลย", "promo-card-code": "รหัสโค้ด (Promo Code)", "promo-card-btn": "คัดลอก & เก็บโค้ด",
                 "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
                 "pkg-gen-1": "2 ชม. (≤ 55 ตร.ม.)", "pkg-gen-2": "3 ชม. (≤ 85 ตร.ม.)", "pkg-gen-3": "4 ชม. (≤ 105 ตร.ม.)",
-                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม."
+                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม.","bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน"
             },
             th: {
                 "nav-home": "หน้าแรก", "nav-about": "เกี่ยวกับเรา", "nav-services": "บริการ", "nav-portfolio": "ผลงาน", "nav-btn": "จองบริการ", "nav-contact": "ติดต่อเรา", "nav-feed": "ข่าวสาร", "nav-promo": "โปรโมชั่น",
@@ -935,7 +943,7 @@
                 "promo-card-title": "ลด 15% ลูกค้าใหม่", "promo-card-desc": "เอาใจคนภูเก็ต! กดเก็บคูปองเพื่อคัดลอกโค้ดไปใช้ในหน้าสรุปยอดได้เลย", "promo-card-code": "รหัสโค้ด (Promo Code)", "promo-card-btn": "คัดลอก & เก็บโค้ด",
                 "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
                 "pkg-gen-1": "2 ชม. (≤ 55 ตร.ม.)", "pkg-gen-2": "3 ชม. (≤ 85 ตร.ม.)", "pkg-gen-3": "4 ชม. (≤ 105 ตร.ม.)",
-                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม."
+                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม.","bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน"
             },
             en: {
                 "nav-home": "Home", "nav-about": "About", "nav-services": "Services", "nav-portfolio": "Portfolio", "nav-btn": "Book Now", "nav-contact": "Contact", "nav-feed": "News", "nav-promo": "Promotions",
@@ -974,7 +982,7 @@
                 "promo-card-title": "15% Off New Customers", "promo-card-desc": "Phuket Special! Collect and copy the code to use at checkout.", "promo-card-code": "Promo Code", "promo-card-btn": "Copy & Collect Code",
                 "promo-input-label": "Have a Promo Code?", "promo-input-btn": "Apply",
                 "pkg-gen-1": "2 hrs (≤ 55 sq.m.)", "pkg-gen-2": "3 hrs (≤ 85 sq.m.)", "pkg-gen-3": "4 hrs (≤ 105 sq.m.)",
-                "pkg-deep-1": "80 sq.m.", "pkg-deep-1-sub": "2 Maids / 4 hrs", "pkg-deep-2": "100 sq.m.", "pkg-deep-2-sub": "3 Maids / 3 hrs", "pkg-deep-3": "150 sq.m.", "pkg-deep-3-sub": "3 Maids / 4 hrs"
+                "pkg-deep-1": "80 sq.m.", "pkg-deep-1-sub": "2 Maids / 4 hrs", "pkg-deep-2": "100 sq.m.", "pkg-deep-2-sub": "3 Maids / 3 hrs", "pkg-deep-3": "150 sq.m.", "pkg-deep-3-sub": "3 Maids / 4 hrs","bk-gps-btn": "Tap to pin current location"
             },
             zh: {
                 "nav-home": "首页", "nav-about": "关于我们", "nav-services": "服务", "nav-portfolio": "作品展示", "nav-btn": "立即预约", "nav-contact": "联系我们", "nav-feed": "新闻动态", "nav-promo": "促销活动",
@@ -1013,7 +1021,7 @@
                 "promo-card-title": "新客户 15% 折扣", "promo-card-desc": "普吉岛特惠！领取并复制代码在结账时使用。", "promo-card-code": "优惠码 (Promo Code)", "promo-card-btn": "复制并领取代码",
                 "promo-input-label": "有优惠码吗？ (Promo Code)", "promo-input-btn": "应用",
                 "pkg-gen-1": "2 小时 (≤ 55 平方米)", "pkg-gen-2": "3 小时 (≤ 85 平方米)", "pkg-gen-3": "4 小时 (≤ 105 平方米)",
-                "pkg-deep-1": "80 平方米", "pkg-deep-1-sub": "2 名清洁工 / 4 小时", "pkg-deep-2": "100 平方米", "pkg-deep-2-sub": "3 名清洁工 / 3 小时", "pkg-deep-3": "150 平方米", "pkg-deep-3-sub": "3 名清洁工 / 4 小时"
+                "pkg-deep-1": "80 平方米", "pkg-deep-1-sub": "2 名清洁工 / 4 小时", "pkg-deep-2": "100 平方米", "pkg-deep-2-sub": "3 名清洁工 / 3 小时", "pkg-deep-3": "150 平方米", "pkg-deep-3-sub": "3 名清洁工 / 4 小时","bk-gps-btn": "点击获取当前位置"
             },
             ru: {
                 "nav-home": "Главная", "nav-about": "О нас", "nav-services": "Услуги", "nav-portfolio": "Портфолио", "nav-btn": "Забронировать", "nav-contact": "Контакты", "nav-feed": "Новости", "nav-promo": "Акции",
@@ -1052,16 +1060,16 @@
                 "promo-card-title": "Скидка 15% (новым)", "promo-card-desc": "Специально для Пхукета! Скопируйте код для оплаты.", "promo-card-code": "Промокод", "promo-card-btn": "Скопировать код",
                 "promo-input-label": "Есть промокод?", "promo-input-btn": "Применить",
                 "pkg-gen-1": "2 часа (≤ 55 кв.м.)", "pkg-gen-2": "3 часа (≤ 85 кв.м.)", "pkg-gen-3": "4 часа (≤ 105 кв.м.)",
-                "pkg-deep-1": "80 кв.м.", "pkg-deep-1-sub": "2 горничные / 4 часа", "pkg-deep-2": "100 кв.м.", "pkg-deep-2-sub": "3 горничные / 3 часа", "pkg-deep-3": "150 кв.м.", "pkg-deep-3-sub": "3 горничные / 4 часа"
+                "pkg-deep-1": "80 кв.м.", "pkg-deep-1-sub": "2 горничные / 4 часа", "pkg-deep-2": "100 кв.м.", "pkg-deep-2-sub": "3 горничные / 3 часа", "pkg-deep-3": "150 кв.м.", "pkg-deep-3-sub": "3 горничные / 4 часа","bk-gps-btn": "Нажмите, чтобы закрепить местоположение"
             }
         };
 
         var sysAlerts = {
-            mix: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว" },
-            th: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว" },
-            en: { errInput: "Please complete all required fields.", errKey: "Please specify key drop-off location.", success: "Booking successful! Redirecting to LINE...", errLocation: "Unable to retrieve location.", promoYes: "✅ Success! Discount applied.", promoNo: "❌ Invalid or expired promo code." },
-            zh: { errInput: "请填写所有必填信息", errKey: "请说明钥匙的放置位置", success: "预约成功！正在跳转至 LINE...", errLocation: "无法获取位置信息", promoYes: "✅ 成功！已应用折扣。", promoNo: "❌ 优惠码无效或已过期。" },
-            ru: { errInput: "Пожалуйста, заполните все обязательные поля.", errKey: "Пожалуйста, укажите место для ключей.", success: "Бронирование успешно! Переход в LINE...", errLocation: "Не удалось получить местоположение.", promoYes: "✅ Успешно! Скидка применена.", promoNo: "❌ Недействительный или просроченный промокод." }
+            mix: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ..." },
+            th: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ..." },
+            en: { errInput: "Please complete all required fields.", errKey: "Please specify key drop-off location.", success: "Booking successful! Redirecting to LINE...", errLocation: "Unable to retrieve location.", promoYes: "✅ Success! Discount applied.", promoNo: "❌ Invalid or expired promo code.", gpsSuccess: "Location pinned successfully!", gpsLoading: "Finding your location..." },
+            zh: { errInput: "请填写所有必填信息", errKey: "请说明钥匙的放置位置", success: "预约成功！正在跳转至 LINE...", errLocation: "无法获取位置信息", promoYes: "✅ 成功！已应用折扣。", promoNo: "❌ 优惠码无效或已过期。", gpsSuccess: "成功获取位置！", gpsLoading: "正在获取您的位置..." },
+            ru: { errInput: "Пожалуйста, заполните все обязательные поля.", errKey: "Пожалуйста, укажите место для ключей.", success: "Бронирование успешно! Переход в LINE...", errLocation: "Не удалось получить местоположение.", promoYes: "✅ Успешно! Скидка применена.", promoNo: "❌ Недействительный или просроченный промокод.", gpsSuccess: "Местоположение успешно определено!", gpsLoading: "Поиск вашего местоположения..." }
         };
 
         // ชื่อแพ็กเกจเมื่อดึงไปโชว์ในสรุปยอด
@@ -1105,25 +1113,25 @@
                 if(nameInput) nameInput.placeholder = "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท";
                 if(taxInput) taxInput.placeholder = "สำหรับออกใบกำกับภาษี (สามารถเว้นว่างได้)";
                 if(addressInput) addressInput.placeholder = "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด";
-                if(promoInput) promoInput.placeholder = "พิมพ์โค้ด เช่น PHUKET15";
+                if(promoInput) promoInput.placeholder = "พิมพ์โค้ด เช่น PHUKET10";
             } else if (lang === 'en') {
                 if(keyDetail) keyDetail.placeholder = "Mailbox, Reception, Security Guard, etc.";
                 if(nameInput) nameInput.placeholder = "Contact Name or Company Name";
                 if(taxInput) taxInput.placeholder = "For Tax Invoice (Optional)";
                 if(addressInput) addressInput.placeholder = "Specify the exact location to be cleaned";
-                if(promoInput) promoInput.placeholder = "Enter code e.g. PHUKET15";
+                if(promoInput) promoInput.placeholder = "Enter code e.g. PHUKET10";
             } else if (lang === 'zh') {
                 if(keyDetail) keyDetail.placeholder = "信箱、前台、保安等，请注明";
                 if(nameInput) nameInput.placeholder = "联系人姓名或公司名称";
                 if(taxInput) taxInput.placeholder = "用于开具税务发票（选填）";
                 if(addressInput) addressInput.placeholder = "请详细说明需要清洁的地点";
-                if(promoInput) promoInput.placeholder = "输入代码 例如 PHUKET15";
+                if(promoInput) promoInput.placeholder = "输入代码 例如 PHUKET10";
             } else if (lang === 'ru') {
                 if(keyDetail) keyDetail.placeholder = "Почтовый ящик, ресепшн, охрана и т.д.";
                 if(nameInput) nameInput.placeholder = "Имя контакта или название компании";
                 if(taxInput) taxInput.placeholder = "Для налоговой накладной (необязательно)";
                 if(addressInput) addressInput.placeholder = "Укажите точный адрес для уборки";
-                if(promoInput) promoInput.placeholder = "Введите код, напр. PHUKET15";
+                if(promoInput) promoInput.placeholder = "Введите код, напр. PHUKET10";
             }
 
             // ถ้ามี Error ค้างอยู่ให้แปลด้วย
@@ -1201,8 +1209,8 @@
             msgEl.classList.remove('hidden');
             var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
 
-            if (code === 'PHUKET15') {
-                activePromoCode = 'PHUKET15';
+            if (code === 'PHUKET10') {
+                activePromoCode = 'PHUKET10';
                 msgEl.textContent = alertTxt.promoYes;
                 msgEl.className = 'text-[10px] mt-2 text-green-600 font-bold';
             } else if (code === '') {
@@ -1303,7 +1311,7 @@
 
                 // คำนวณส่วนลด 3 ประเภท
                 var discountPromo = 0;
-                if (activePromoCode === 'PHUKET15') {
+                if (activePromoCode === 'PHUKET10') {
                     discountPromo = Math.round(grossPrice * 0.15); 
                 }
 
@@ -1475,7 +1483,51 @@
                 btnElement.disabled = false;
             }
         }
+        
+        // ==========================================
+        // ฟังก์ชันดึงพิกัด GPS (แก้ไขคำแปลที่ถูกต้อง)
+        // ==========================================
+        window.getLocation = function() {
+            var statusText = document.getElementById('location-status');
+            var gpsInput = document.getElementById('bk-gps-link');
+            
+            if(!statusText || !gpsInput) return;
+            
+            var alertTxt = (typeof sysAlerts !== 'undefined' && sysAlerts[window.currentLang]) ? sysAlerts[window.currentLang] : {gpsLoading: "กำลังค้นหาตำแหน่งของคุณ...", gpsSuccess: "รับพิกัดสำเร็จ!", errLocation: "ไม่สามารถดึงพิกัดได้"};
 
+            statusText.classList.remove('hidden');
+            statusText.className = "text-[10px] text-blue-500 mt-1 font-bold"; 
+            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + alertTxt.gpsLoading;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        // เปลี่ยนลิงก์เป็น Google Maps
+                        gpsInput.value = 'http://googleusercontent.com/maps.google.com/maps?q=' + lat + ',' + lng;
+                        
+                        statusText.innerHTML = "✅ " + alertTxt.gpsSuccess;
+                        statusText.className = "text-[10px] text-green-600 mt-2 font-bold";
+                    },
+                    function(error) {
+                        console.warn("GPS Error: ", error);
+                        var reason = alertTxt.errLocation;
+                        
+                        if (error.code === 1) reason += " (Permission Denied)";
+                        else if (error.code === 2) reason += " (Position Unavailable)";
+                        else if (error.code === 3) reason += " (Timeout)";
+
+                        statusText.innerHTML = "❌ " + reason;
+                        statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            } else {
+                statusText.innerHTML = "❌ Browser not supported";
+                statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
+            }
+        }
         // ยืนยันการจอง
         window.submitBooking = async function() {
             var date = document.getElementById('bk-date-input').value;
