@@ -69,53 +69,6 @@
 
             </div>
     </main>
-    <script>
-    // 1. คอนฟิก Firebase 
-    const firebaseConfig = {
-  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-  authDomain: "allforce-hub.firebaseapp.com",
-  projectId: "allforce-hub",
-  storageBucket: "allforce-hub.firebasestorage.app",
-  messagingSenderId: "206898849342",
-  appId: "1:206898849342:web:35bc0462818da86fb1136f"
-};
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-
-    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน
-    function updateUserMenu(user) {
-        const userBtn = document.getElementById('user-menu-btn');
-        if (!userBtn) return;
-
-        // เปลี่ยนหน้าตาปุ่มเป็นรูปและชื่อ
-        userBtn.innerHTML = `
-            <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-            <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
-        `;
-        
-        // 🎯 จุดที่เปลี่ยน: ให้ลิงก์ไปหน้า profile.html แทน
-        userBtn.href = "profile.html"; 
-        
-        // ลบ onclick เดิมทิ้งไปเลย (ไม่ต้องเด้งถาม Logout แล้ว)
-        userBtn.onclick = null; 
-    }
-
-    // 3. ฟังก์ชันดักจับสถานะจาก Firebase
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // เซฟลง localStorage เผื่อไว้ใช้จุกจิก
-            const userData = { uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL };
-            localStorage.setItem('cf_user', JSON.stringify(userData));
-            
-            // เรียกใช้ฟังก์ชันอัปเดตปุ่ม
-            updateUserMenu(user);
-        } else {
-            localStorage.removeItem('cf_user');
-            // ถ้าไม่ได้ล็อกอิน ปุ่มก็จะเป็น <a href="login.html">...</a> ตามปกติใน HTML
-        }
-    });
-</script>
+    
 </body>
 </html>

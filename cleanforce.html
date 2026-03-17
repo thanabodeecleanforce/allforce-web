@@ -249,31 +249,60 @@
     </div>
 </section>
 
-<section id="promotion-cf" class="py-24 px-6 bg-background">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl md:text-5xl font-bold font-heading text-center mb-16 text-text" data-i18n="nav-promo">โปรโมชั่น</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-gradient-to-br from-primary to-blue-600 rounded-[3rem] p-10 text-white relative overflow-hidden group">
-                    <div class="relative z-10">
-                        <span class="bg-white/20 backdrop-blur px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block" data-i18n="promo-badge1">New Customer</span>
-                        <h4 class="text-3xl font-bold mb-4" data-i18n="promo-h1">ส่วนลด 10% สำหรับการใช้บริการครั้งแรก</h4>
-                        <p class="text-blue-100 mb-8 text-sm" data-i18n="promo-p1">เพียงกรอกโค้ด CLEAN10 เมื่อจองคิวผ่านระบบหรือแจ้งแอดมิน</p>
-                        <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="inline-block bg-white text-primary px-8 py-3 rounded-2xl font-bold hover:scale-105 transition" data-i18n="promo-btn">รับสิทธิ์เลย</a>
-                    </div>
-                    <i class="fa-solid fa-tags absolute -bottom-10 -right-10 text-9xl opacity-10 group-hover:scale-110 transition-transform"></i>
+<section id="promotions-cf" class="py-20 px-6 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold font-heading text-groupPrimary mb-4">โปรโมชั่นพิเศษสำหรับคุณ</h2>
+            <p class="text-gray-500">กดเก็บคูปองส่วนลดเพื่อนำไปใช้ในขั้นตอนการจองบริการ</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-cleanforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">NEW MEMBER</div>
+                <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-cleanforce flex-shrink-0">
+                    <i class="fa-solid fa-ticket text-3xl"></i>
                 </div>
-                <div class="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm relative overflow-hidden group">
-                    <div class="relative z-10 text-text">
-                        <span class="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block" data-i18n="promo-badge2">Bundle Pack</span>
-                        <h4 class="text-3xl font-bold mb-4" data-i18n="promo-h2">ซักที่นอน + โซฟา ลดทันที 300 บาท</h4>
-                        <p class="text-gray-400 mb-8 text-sm" data-i18n="promo-p2">จับคู่บริการยอดฮิตเพื่อความสะอาดสูงสุดในราคาประหยัดกว่า</p>
-                        <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="inline-block bg-primary text-white px-8 py-3 rounded-2xl font-bold hover:scale-105 transition" data-i18n="promo-btn">รับสิทธิ์เลย</a>
-                    </div>
-                    <i class="fa-solid fa-gift absolute -bottom-10 -right-10 text-9xl opacity-5 group-hover:scale-110 transition-transform text-primary"></i>
+                <div class="flex-1 text-center sm:text-left">
+                    <h3 class="text-xl font-bold font-heading text-gray-800">ส่วนลดลูกค้าใหม่ 100 บาท</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-2">เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท</p>
+                    <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">NEWCLEAN100</span></div>
+                    
+                    <button onclick="collectCoupon(this, { 
+                        code: 'NEWCLEAN100', 
+                        title: 'ส่วนลดลูกค้าใหม่ 100 บาท', 
+                        discount: 100, 
+                        condition: 'เมื่อจองบริการทำความสะอาดขั้นต่ำ 500 บาท' 
+                    })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
+                        เก็บคูปอง
+                    </button>
                 </div>
             </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-buildforce text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">HOT DEAL</div>
+                <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center text-buildforce flex-shrink-0">
+                    <i class="fa-solid fa-snowflake text-3xl"></i>
+                </div>
+                <div class="flex-1 text-center sm:text-left">
+                    <h3 class="text-xl font-bold font-heading text-gray-800">ล้างแอร์ 3 เครื่อง ลด 150.-</h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-2">สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป</p>
+                    <div class="text-[10px] text-gray-400 mb-4">โค้ด: <span class="font-mono font-bold text-groupPrimary">AIRCOOL150</span></div>
+                    
+                    <button onclick="collectCoupon(this, { 
+                        code: 'AIRCOOL150', 
+                        title: 'ส่วนลดล้างแอร์ 150 บาท', 
+                        discount: 150, 
+                        condition: 'สำหรับบริการล้างแอร์ติดผนังพร้อมกัน 3 เครื่องขึ้นไป' 
+                    })" class="bg-cleanforce text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition shadow-md w-full sm:w-auto">
+                        เก็บคูปอง
+                    </button>
+                </div>
+            </div>
+
         </div>
-    </section>
+    </div>
+</section>
 
 <section id="about-cf" class="py-24 px-6 bg-white text-text">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
@@ -869,7 +898,38 @@
             <span class="absolute right-16 bg-gray-800 text-white text-[10px] px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none" data-i18n="float-line">สอบถามผ่าน LINE</span>
         </a>
     </div>
-
+    <div id="coupon-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCouponModal()"></div>
+    
+    <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 relative z-10 transform scale-95 opacity-0 transition-all duration-300 shadow-2xl text-center" id="coupon-modal-content">
+        <button onclick="closeCouponModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-500">
+            <i class="fa-solid fa-check text-4xl"></i>
+        </div>
+        
+        <h3 class="text-2xl font-bold font-heading text-groupPrimary mb-2">เก็บคูปองสำเร็จ!</h3>
+        <p class="text-gray-500 text-sm mb-4">คูปองถูกบันทึกเข้าบัญชีของคุณเรียบร้อยแล้ว</p>
+        
+        <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100 text-left">
+            <div class="text-xs text-gray-400 mb-1">คูปอง:</div>
+            <div id="modal-coupon-title" class="font-bold text-gray-800 text-sm mb-2">ชื่อคูปอง</div>
+            <div class="text-xs text-gray-400 mb-1">เงื่อนไข:</div>
+            <div id="modal-coupon-condition" class="text-xs text-gray-500">รายละเอียดเงื่อนไข...</div>
+        </div>
+        
+        <div class="flex flex-col gap-3">
+            <a href="profile.html" class="bg-cleanforce text-white w-full py-3 rounded-full font-bold shadow-md hover:bg-opacity-90 transition">
+                ดูคูปองของฉัน
+            </a>
+            <button onclick="closeCouponModal()" class="text-gray-500 text-sm font-bold hover:text-gray-800">
+                ไว้คราวหน้า
+            </button>
+        </div>
+      </div>
+    </div>
     <script>
         // 1. ระบบพจนานุกรม 3 รูปแบบ (MIX, TH, EN)
         // 1. ระบบพจนานุกรม 3 รูปแบบ (MIX, TH, EN)
@@ -1352,6 +1412,99 @@
             updateUserMenu(user);
         }
     });
+    // ฟังก์ชันสำหรับกดเก็บคูปอง
+async function collectCoupon(btnElement, couponData) {
+    // 1. เช็คว่าล็อกอินหรือยัง จาก localStorage (ที่ SSO เราเซ็ตไว้)
+    const userData = localStorage.getItem('cf_user');
+    
+    if (!userData) {
+        alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ");
+        // เด้งไปหน้า login และส่งพารามิเตอร์บอกให้กลับมาหน้าเดิมได้ถ้าต้องการ
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const user = JSON.parse(userData);
+    const uid = user.uid;
+
+    // 2. เปลี่ยนสถานะปุ่มเป็นกำลังโหลด ป้องกันคนกดรัวๆ
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเก็บ...';
+    btnElement.disabled = true;
+
+    try {
+        const db = firebase.firestore();
+        const couponsRef = db.collection('users').doc(uid).collection('coupons');
+
+        // 3. เช็คว่าเคยเก็บคูปองรหัสนี้ไปแล้วหรือยัง
+        const checkExist = await couponsRef.where('code', '==', couponData.code).get();
+        if (!checkExist.empty) {
+            alert("คุณได้เก็บคูปองนี้ไปแล้ว! สามารถดูได้ที่หน้าโปรไฟล์ครับ");
+            btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+            btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
+            return;
+        }
+
+        // 4. บันทึกข้อมูลคูปองลง Firestore
+        await couponsRef.add({
+            code: couponData.code,
+            title: couponData.title,
+            discount: couponData.discount,
+            condition: couponData.condition,
+            status: 'active', 
+            collectedAt: firebase.firestore.FieldValue.serverTimestamp() // บันทึกเวลาที่กดเก็บ
+        });
+
+        // 5. เปลี่ยนปุ่มเป็นสีเทาและเปลี่ยนข้อความว่าเก็บแล้ว
+        btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+        btnElement.classList.replace('bg-cleanforce', 'bg-gray-400');
+
+        // 6. โชว์ Popup ยินดีด้วย
+        openCouponModal(couponData);
+
+    } catch (error) {
+        console.error("Error saving coupon: ", error);
+        alert("เกิดข้อผิดพลาดขัดข้อง กรุณาลองใหม่อีกครั้ง");
+        btnElement.innerHTML = originalText;
+        btnElement.disabled = false;
+    }
+}
+
+// ฟังก์ชันเปิด Popup Modal
+function openCouponModal(couponData) {
+    const modal = document.getElementById('coupon-modal');
+    const modalContent = document.getElementById('coupon-modal-content');
+    
+    // ใส่ข้อมูลคูปองลงใน Popup
+    document.getElementById('modal-coupon-title').textContent = couponData.title;
+    document.getElementById('modal-coupon-condition').textContent = couponData.condition;
+    
+    // แสดง Modal แบบมีแอนิเมชัน
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // หน่วงเวลาเล็กน้อยเพื่อให้ Transition ทำงาน
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+// ฟังก์ชันปิด Popup Modal
+function closeCouponModal() {
+    const modal = document.getElementById('coupon-modal');
+    const modalContent = document.getElementById('coupon-modal-content');
+    
+    // เล่นแอนิเมชันหดกลับ
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    // ซ่อน Modal หลังจากแอนิเมชันจบ (300ms ตามที่เซ็ตในคลาส duration-300)
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+}
 </script>
 </body>
 </html>
