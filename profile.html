@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile & Coupons | Cleanforce</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        groupPrimary: '#000080',    
+                        cleanforce: '#00B4D8',      
+                    },
+                    fontFamily: {
+                        heading: ['Poppins', 'Noto Sans Thai', 'sans-serif'],
+                        body: ['Noto Sans Thai', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans Thai', sans-serif; background-color: #f8fafc; }
+        .font-heading { font-family: 'Poppins', 'Noto Sans Thai', sans-serif; }
+        
+        /* สไตล์ขอบหยักของคูปอง */
+        .coupon-card {
+            background: #fff;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-left: 6px dashed #00B4D8;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-groupPrimary hover:text-cleanforce transition font-bold">
+                <i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก
+            </a>
+            <div class="font-heading font-bold text-xl text-groupPrimary">My Profile</div>
+            <button id="logout-btn" class="text-red-500 hover:text-red-700 font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">ออกจากระบบ</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-10">
+        
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-6 mb-10">
+            <img id="profile-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile" class="w-20 h-20 rounded-full border-4 border-cleanforce/20 object-cover">
+            <div>
+                <h1 id="profile-name" class="text-2xl font-bold font-heading text-groupPrimary mb-1">กำลังโหลด...</h1>
+                <p id="profile-email" class="text-gray-500 text-sm">กำลังโหลด...</p>
+            </div>
+        </div>
+
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h2 class="text-xl font-bold font-heading text-groupPrimary flex items-center gap-2">
+                    <i class="fa-solid fa-ticket text-cleanforce"></i> คูปองของฉัน
+                </h2>
+                <p class="text-gray-500 text-sm mt-1">คูปองส่วนลดที่คุณเก็บไว้ สามารถนำไปใช้ตอนจองบริการได้เลย</p>
+            </div>
+            <div class="text-sm font-bold text-gray-400">
+                รวม: <span id="coupon-count" class="text-cleanforce text-lg">0</span> รายการ
+            </div>
+        </div>
+
+        <div id="coupons-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="loading-state" class="col-span-full text-center py-12 text-gray-400">
+                <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-cleanforce"></i>
+                <p>กำลังดึงข้อมูลคูปองของคุณ...</p>
+            </div>
+            
+            <div id="empty-state" class="col-span-full text-center py-16 bg-white rounded-2xl border border-gray-100 hidden">
+                <i class="fa-regular fa-face-frown-open text-5xl text-gray-300 mb-4"></i>
+                <h3 class="text-lg font-bold text-gray-600 mb-2">คุณยังไม่มีคูปอง</h3>
+                <p class="text-gray-400 text-sm mb-6">ลองกลับไปหน้าหลักเพื่อดูโปรโมชั่นและเก็บคูปองส่วนลดดูสิ!</p>
+                <a href="index.html" class="bg-cleanforce text-white px-6 py-2 rounded-full font-bold hover:bg-opacity-90 transition shadow-md">ไปเก็บคูปอง</a>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+       const firebaseConfig = {
+  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+  authDomain: "allforce-hub.firebaseapp.com",
+  projectId: "allforce-hub",
+  storageBucket: "allforce-hub.firebasestorage.app",
+  messagingSenderId: "206898849342",
+  appId: "1:206898849342:web:35bc0462818da86fb1136f"
+};
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // 2. เช็คการล็อกอิน
+        const userData = localStorage.getItem('cf_user');
+        
+        if (!userData) {
+            // ถ้าไม่ได้ล็อกอิน ให้เด้งไปหน้า login.html
+            alert('กรุณาเข้าสู่ระบบเพื่อดูคูปองของคุณ');
+            window.location.href = 'login.html';
+        } else {
+            const user = JSON.parse(userData);
+            
+            // แสดงข้อมูลโปรไฟล์
+            document.getElementById('profile-name').textContent = user.name;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-img').src = user.photo;
+            document.getElementById('profile-img').onerror = function() {
+                this.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            };
+
+            // เรียกฟังก์ชันดึงคูปอง
+            fetchMyCoupons(user.uid);
+        }
+
+        // 3. ฟังก์ชันดึงข้อมูลจาก Firestore
+        async function fetchMyCoupons(uid) {
+            const container = document.getElementById('coupons-container');
+            const loading = document.getElementById('loading-state');
+            const empty = document.getElementById('empty-state');
+            const countDisplay = document.getElementById('coupon-count');
+
+            try {
+                // ดึงข้อมูลจากคอลเลกชัน users -> {uid} -> coupons 
+                // เรียงลำดับจากวันที่เก็บล่าสุด (ต้องมี index ใน firestore หรือเอา orderBy ออกก่อนถ้ายังไม่ได้ทำ index)
+                const snapshot = await db.collection('users').doc(uid).collection('coupons')
+                                         .orderBy('collectedAt', 'desc').get();
+                
+                loading.classList.add('hidden'); // ซ่อนตัวโหลด
+
+                if (snapshot.empty) {
+                    empty.classList.remove('hidden'); // แสดงหน้าว่างถ้าไม่มีคูปอง
+                    return;
+                }
+
+                // นับจำนวนคูปอง
+                countDisplay.textContent = snapshot.size;
+
+                // วนลูปสร้างการ์ดคูปอง
+                snapshot.forEach(doc => {
+                    const coupon = doc.data();
+                    
+                    // แปลง Timestamp ของ Firebase เป็นวันที่อ่านออก (ถ้ามี)
+                    let dateText = "ไม่มีวันหมดอายุ";
+                    if(coupon.collectedAt) {
+                         const date = coupon.collectedAt.toDate();
+                         dateText = `เก็บเมื่อ: ${date.toLocaleDateString('th-TH')}`;
+                    }
+
+                    // สร้าง HTML สำหรับคูปอง 1 ใบ
+                    const couponHTML = `
+                        <div class="coupon-card p-5 flex items-center justify-between hover:-translate-y-1 transition duration-300">
+                            <div class="flex-1 pr-4">
+                                <span class="bg-cleanforce/10 text-cleanforce text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 inline-block">
+                                    ${coupon.status === 'active' ? 'พร้อมใช้งาน' : 'ใช้แล้ว/หมดอายุ'}
+                                </span>
+                                <h3 class="text-lg font-bold text-gray-800 font-heading leading-tight mb-1">${coupon.title || 'คูปองส่วนลด'}</h3>
+                                <p class="text-xs text-gray-500 mb-3">${dateText}</p>
+                                
+                                <div class="bg-gray-100 inline-block px-3 py-1.5 rounded border border-gray-200 border-dashed">
+                                    <span class="text-xs text-gray-500 mr-1">CODE:</span>
+                                    <span class="font-bold text-groupPrimary font-mono tracking-widest">${coupon.code}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col items-center justify-center border-l border-gray-100 pl-4 min-w-[90px]">
+                                <span class="text-3xl font-bold text-buildforce font-heading">${coupon.discount || '0'}</span>
+                                <span class="text-xs text-gray-400 font-bold">THB</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // เติมการ์ดลงใน Container
+                    container.insertAdjacentHTML('beforeend', couponHTML);
+                });
+
+            } catch (error) {
+                console.error("Error fetching coupons: ", error);
+                loading.innerHTML = `<p class="text-red-500"><i class="fa-solid fa-triangle-exclamation"></i> เกิดข้อผิดพลาดในการดึงข้อมูล โปรดรีเฟรชหน้าเว็บ</p>`;
+            }
+        }
+
+        // 4. สคริปต์ปุ่มออกจากระบบ
+        document.getElementById('logout-btn').onclick = function() {
+            if(confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
+                localStorage.removeItem('cf_user');
+                window.location.href = 'index.html'; // เด้งกลับหน้าหลัก
+            }
+        };
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+
+<script>
+    // 1. คอนฟิก Firebase (ใช้ Config เดียวกันทุกเว็บในเครือ)
+    const firebaseConfig = {
+        // ใส่ Config ของ Allforce-Hub ตรงนี้
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+
+    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน (ให้กลายเป็นชื่อผู้ใช้)
+    function updateUserMenu(user) {
+        const userBtn = document.getElementById('user-menu-btn');
+        if (!userBtn) return;
+
+        userBtn.innerHTML = `
+            <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+            <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
+        `;
+        
+        userBtn.href = "javascript:void(0);";
+        userBtn.onclick = function() {
+            if(confirm('คุณ ' + user.displayName + ' ต้องการออกจากระบบใช่หรือไม่?')) {
+                // Logout จาก Firebase ซึ่งจะทำให้ Logout ออกจากทุกเว็บในเครือพร้อมกัน!
+                auth.signOut().then(() => {
+                    localStorage.removeItem('cf_user'); // ลบของเก่าทิ้งเผื่อตกค้าง
+                    window.location.reload(); 
+                }).catch((error) => {
+                    console.error("Logout Error:", error);
+                });
+            }
+        };
+    }
+
+    // 3. พระเอกของ SSO: ฟังก์ชันดักจับสถานะจาก Firebase แบบ Real-time
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            // กรณีที่ 1: ลูกค้าล็อกอินอยู่ (อาจจะล็อกอินมาจากเว็บอื่นในเครือ)
+            console.log("SSO Active: พบผู้ใช้งาน", user.email);
+            
+            // อัปเดต localStorage ของโดเมนปัจจุบันไว้ใช้ชั่วคราวได้
+            const userData = {
+                uid: user.uid,
+                name: user.displayName,
+                email: user.email,
+                photo: user.photoURL
+            };
+            localStorage.setItem('cf_user', JSON.stringify(userData));
+
+            // อัปเดต UI หน้าเว็บ
+            updateUserMenu(user);
+        } else {
+            // กรณีที่ 2: ลูกค้ายังไม่ล็อกอิน หรือกด Logout จากเว็บอื่นไปแล้ว
+            console.log("SSO: ไม่มีผู้ใช้งานในระบบ");
+            localStorage.removeItem('cf_user');
+            
+            // ปล่อย UI ปุ่มไว้เป็น "เข้าสู่ระบบ" ตามปกติ
+        }
+    });
+</script>
+</body>
+</html>
