@@ -82,27 +82,27 @@
 <body class="bg-background text-text overflow-x-hidden">
 
     <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center relative z-10">
-            <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] -z-10"></div>
+    <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
+        <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] -z-10"></div>
 
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="bg-groupPrimary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition" title="Back to AllForce Hub">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <a href="#home-cf">
-                    <img src="logo-cleanforce.png" alt="Cleanforce Logo" class="h-10 md:h-12 w-auto object-contain">
-                </a>
-            </div>
-            
-            <nav class="hidden lg:flex items-center space-x-6 font-medium text-[13px] text-gray-700">
-                <a href="#home-cf" class="hover:text-primary transition" data-i18n="nav-home">หน้าแรก</a>
-                <a href="#about-cf" class="hover:text-primary transition" data-i18n="nav-about">เกี่ยวกับเรา</a>
-                <a href="#services-cf" class="hover:text-primary transition" data-i18n="nav-services">บริการ</a>
-                <a href="#booking-cf" class="hover:text-primary transition font-bold text-primary" data-i18n="nav-btn">จองบริการ</a>
-                <a href="#portfolio-cf" class="hover:text-primary transition" data-i18n="nav-portfolio">ผลงาน</a>
-                <a href="#feed-cf" class="hover:text-primary transition" data-i18n="nav-feed">ข่าวสาร</a>
-                <a href="#contact-cf" class="hover:text-primary transition" data-i18n="nav-contact">ติดต่อเรา</a>
-            </nav>
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="bg-groupPrimary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition" title="Back to AllForce Hub">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <a href="#home-cf">
+                <img src="logo-cleanforce.png" alt="Cleanforce Logo" class="h-10 md:h-12 w-auto object-contain">
+            </a>
+        </div>
+        
+        <nav class="hidden lg:flex items-center space-x-6 font-medium text-[13px] text-gray-700">
+            <a href="#home-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-home">หน้าแรก</a>
+            <a href="#about-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-about">เกี่ยวกับเรา</a>
+            <a href="#services-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-services">บริการ</a>
+            <a href="#booking-cf" class="bg-blue-500 text-white px-5 py-2 rounded-full font-bold transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.8)] [text-shadow:0_0_8px_rgba(255,255,255,0.5)]" data-i18n="nav-btn">จองบริการ</a>
+            <a href="#portfolio-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-portfolio">ผลงาน</a>
+            <a href="#feed-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-feed">ข่าวสาร</a>
+            <a href="#contact-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-contact">ติดต่อเรา</a>
+        </nav>
 
             <div class="flex items-center gap-4">
                 <div class="hidden lg:flex items-center gap-4 text-gray-400 mr-2 border-r border-gray-200 pr-6">
@@ -156,7 +156,7 @@
                     <span data-i18n="nav-btn">จองบริการ (คำนวณราคา)</span> <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto border-t border-gray-100 pt-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto border-t-2 border-gray-300 pt-12">
                 <div class="flex items-center justify-center gap-4 px-6 py-2 text-text">
                     <div class="w-12 h-12 bg-white/60 rounded-xl flex items-center justify-center text-primary shadow-sm border border-white"><i class="fa-solid fa-user-shield text-xl"></i></div>
                     <div class="text-left"><p class="text-sm font-bold" data-i18n="hero-feat1">ทีมงานมืออาชีพ</p><p class="text-[10px] text-gray-400" data-i18n="hero-feat1-sub">ผ่านการฝึกอบรมมาตรฐาน</p></div>
@@ -174,53 +174,69 @@
     </section>
 
     <section id="feed-cf" class="py-24 px-6 bg-white border-t border-gray-100 overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex justify-between items-end mb-12">
-                <div>
-                    <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-feed">ข่าวสาร & อัปเดต</h2>
-                    <p class="text-gray-500 font-body mt-4" data-i18n="feed-sub">ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce</p>
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-feed">ข่าวสาร & อัปเดต</h2>
+                <p class="text-gray-500 font-body mt-4" data-i18n="feed-sub">ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce</p>
+            </div>
+        </div>
+
+        <div id="feed-container" class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory hide-scroll">
+            
+            <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                    <img src="promotion/promo-phuket-15.png" alt="Feed Promo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-md">
+                        <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Hot
+                    </div>
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-center">
+                    <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Promotion</p>
+                    <h3 class="text-xl font-bold font-heading mb-2 text-text">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้</p>
                 </div>
             </div>
 
-            <div class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory hide-scroll">
-                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
-                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                        <img src="promotion/promo-phuket-15.png" alt="Feed Promo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-md">
-                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Hot
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-center">
-                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Promotion</p>
-                        <h3 class="text-xl font-bold font-heading mb-2 text-text">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
-                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้</p>
-                    </div>
+            <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                    <img src="promotion/promotion:promo-renovate.png" alt="Feed News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 </div>
-
-                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
-                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                        <img src="promotion/บริการใหม่-ทำความสะอาดหลังรีโนเวท.png" alt="Feed News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-center">
-                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">News</p>
-                        <h3 class="text-xl font-bold font-heading mb-2 text-text">บริการใหม่</h3>
-                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที</p>
-                    </div>
+                <div class="p-6 flex-1 flex flex-col justify-center">
+                    <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">News</p>
+                    <h3 class="text-xl font-bold font-heading mb-2 text-text">บริการใหม่</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที</p>
                 </div>
+            </div>
 
-                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
-                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                        <img src="promotion/ภาพบรรยากาศการทำงาน.png" alt="Feed Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-center">
-                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Activity</p>
-                        <h3 class="text-xl font-bold font-heading mb-2 text-text">ภาพบรรยากาศ Cleaning office</h3>
-                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่</p>
-                    </div>
+            <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                    <img src="promotion/promotion:promo-activity.png" alt="Feed Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-center">
+                    <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest">Activity</p>
+                    <h3 class="text-xl font-bold font-heading mb-2 text-text">ภาพบรรยากาศ Cleaning office</h3>
+                    <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2">ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่</p>
                 </div>
             </div>
         </div>
-    </section>
+
+        <div class="flex items-center justify-between mt-4">
+            <div class="flex gap-4">
+                <button onclick="document.getElementById('feed-container').scrollBy({left: -400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="document.getElementById('feed-container').scrollBy({left: 400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <a href="news.html" class="text-groupPrimary font-bold hover:underline flex items-center gap-2">
+               ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+</section>
 
 <section id="promotion-cf" class="py-24 px-6 bg-background">
         <div class="max-w-7xl mx-auto">
