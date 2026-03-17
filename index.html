@@ -255,6 +255,33 @@
             });
         }
     </script>
+    <script>
+    // ดึงข้อมูลลูกค้าจากที่เซฟไว้ในเครื่องตอนล็อกอิน
+    const userData = localStorage.getItem('cf_user');
     
+    // ถ้าพบข้อมูล (แปลว่าล็อกอินแล้ว)
+    if (userData) {
+        const user = JSON.parse(userData);
+        const userBtn = document.getElementById('user-menu-btn');
+        
+        if (userBtn) {
+            // 1. เปลี่ยนหน้าตาปุ่มเป็น "รูปโปรไฟล์ + ชื่อลูกค้า"
+            userBtn.innerHTML = `
+                <img src="${user.photo}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                <span class="text-sm font-bold text-gray-800">${user.name}</span>
+            `;
+            
+            // 2. เปลี่ยนให้กดแล้วเป็นคำสั่ง "ออกจากระบบ" แทนการไปหน้า login.html
+            userBtn.href = "javascript:void(0);"; // ยกเลิกลิงก์เดิม
+            userBtn.onclick = function() {
+                // ถามเพื่อความแน่ใจก่อนออกจากระบบ
+                if(confirm('คุณ ' + user.name + ' ต้องการออกจากระบบใช่หรือไม่?')) {
+                    localStorage.removeItem('cf_user'); // ลบข้อมูลในเครื่อง
+                    window.location.reload(); // รีเฟรชหน้าเว็บ 1 รอบ ปุ่มจะกลับไปเป็นเข้าสู่ระบบเหมือนเดิม
+                }
+            };
+        }
+    }
+    </script>
 </body>
 </html>
