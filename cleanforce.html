@@ -104,40 +104,51 @@
             <a href="#contact-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-contact">ติดต่อเรา</a>
         </nav>
 
-            <div class="flex items-center gap-4">
-                <div class="hidden lg:flex items-center gap-4 text-gray-400 mr-2 border-r border-gray-200 pr-6">
-                    <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-lg" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-lg" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-lg" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-lg" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                </div>
+        <div class="flex items-center gap-4">
+            <div class="hidden lg:flex items-center gap-4 text-gray-400 mr-2 border-r border-gray-200 pr-6">
+                <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-lg" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-lg" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-lg" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-lg" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            </div>
 
-                <div class="flex items-center gap-1 bg-white/60 p-1 rounded-full text-[10px] font-bold border border-gray-200">
-                    <button onclick="changeLanguage('mix')" id="lang-mix-cf" class="lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary">TH/EN</button>
-                    <button onclick="changeLanguage('th')" id="lang-th-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">TH</button>
-                    <button onclick="changeLanguage('en')" id="lang-en-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">EN</button>
-                </div>
-                
-                <button id="mobile-menu-toggle" class="lg:hidden text-2xl text-primary"><i class="fa-solid fa-bars-staggered"></i></button>
+            <div class="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full text-[10px] font-bold border border-gray-200">
+                <button onclick="changeLanguage('mix')" id="lang-mix-cf" class="lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary">TH/EN</button>
+                <button onclick="changeLanguage('th')" id="lang-th-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">TH</button>
+                <button onclick="changeLanguage('en')" id="lang-en-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500">EN</button>
             </div>
-        </div>
-        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
-            <a href="#home-cf" class="block font-bold" data-i18n="nav-home">หน้าแรก</a>
-            <a href="#about-cf" class="block font-bold" data-i18n="nav-about">เกี่ยวกับเรา</a>
-            <a href="#services-cf" class="block font-bold" data-i18n="nav-services">บริการ</a>
-            <a href="#booking-cf" class="block font-bold text-primary" data-i18n="nav-btn">จองบริการ</a>
-            <a href="#portfolio-cf" class="block font-bold" data-i18n="nav-portfolio">ผลงาน</a>
-            <a href="#feed-cf" class="block font-bold" data-i18n="nav-feed">ข่าวสาร</a>
-            <a href="#contact-cf" class="block font-bold" data-i18n="nav-contact">ติดต่อเรา</a>
             
-            <div class="flex items-center gap-6 pt-4 mt-2 border-t border-gray-100 text-gray-400">
-                <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-xl"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-xl"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-xl"><i class="fa-brands fa-tiktok"></i></a>
-                <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-xl"><i class="fa-brands fa-youtube"></i></a>
-            </div>
+            <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition font-bold bg-white/60 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm" id="user-menu-btn">
+                <i class="fa-regular fa-user-circle text-xl"></i> 
+                <span id="user-name-display" class="text-xs sm:text-sm hidden sm:inline">เข้าสู่ระบบ</span>
+            </a>
+            
+            <button id="mobile-menu-toggle" class="lg:hidden text-2xl text-primary"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
-    </header>
+    </div>
+    
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
+        <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
+            <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
+            <span id="mobile-user-name-display">เข้าสู่ระบบ / สมัครสมาชิก</span>
+        </a>
+
+        <a href="#home-cf" class="block font-bold" data-i18n="nav-home">หน้าแรก</a>
+        <a href="#about-cf" class="block font-bold" data-i18n="nav-about">เกี่ยวกับเรา</a>
+        <a href="#services-cf" class="block font-bold" data-i18n="nav-services">บริการ</a>
+        <a href="#booking-cf" class="block font-bold text-primary" data-i18n="nav-btn">จองบริการ</a>
+        <a href="#portfolio-cf" class="block font-bold" data-i18n="nav-portfolio">ผลงาน</a>
+        <a href="#feed-cf" class="block font-bold" data-i18n="nav-feed">ข่าวสาร</a>
+        <a href="#contact-cf" class="block font-bold" data-i18n="nav-contact">ติดต่อเรา</a>
+        
+        <div class="flex items-center gap-6 pt-4 mt-2 border-t border-gray-100 text-gray-400">
+            <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-xl"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-xl"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-xl"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-xl"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+    </div>
+</header>
 
     <section id="home-cf" class="hero-bg-cf pt-40 pb-20 md:pt-56 md:pb-32 relative px-6">
         <div class="max-w-7xl mx-auto text-center relative z-10">
@@ -1291,66 +1302,54 @@
         });
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 
 <script>
-    // 1. คอนฟิก Firebase (ใช้ Config เดียวกันทุกเว็บในเครือ)
+    // 1. ใส่ Config ของคุณ
     const firebaseConfig = {
-        // ใส่ Config ของ Allforce-Hub ตรงนี้
-    };
+  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+  authDomain: "allforce-hub.firebaseapp.com",
+  projectId: "allforce-hub",
+  storageBucket: "allforce-hub.firebasestorage.app",
+  messagingSenderId: "206898849342",
+  appId: "1:206898849342:web:35bc0462818da86fb1136f"
+};
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const auth = firebase.auth();
 
-    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน (ให้กลายเป็นชื่อผู้ใช้)
+    // 2. ฟังก์ชันอัปเดตปุ่ม
     function updateUserMenu(user) {
+        // อัปเดตปุ่ม Desktop
         const userBtn = document.getElementById('user-menu-btn');
-        if (!userBtn) return;
+        if (userBtn) {
+            userBtn.innerHTML = `
+                <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                <span class="text-sm font-bold text-gray-800 hidden sm:inline">${user.displayName}</span>
+            `;
+            userBtn.href = "profile.html"; 
+        }
 
-        userBtn.innerHTML = `
-            <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
-            <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
-        `;
-        
-        userBtn.href = "javascript:void(0);";
-        userBtn.onclick = function() {
-            if(confirm('คุณ ' + user.displayName + ' ต้องการออกจากระบบใช่หรือไม่?')) {
-                // Logout จาก Firebase ซึ่งจะทำให้ Logout ออกจากทุกเว็บในเครือพร้อมกัน!
-                auth.signOut().then(() => {
-                    localStorage.removeItem('cf_user'); // ลบของเก่าทิ้งเผื่อตกค้าง
-                    window.location.reload(); 
-                }).catch((error) => {
-                    console.error("Logout Error:", error);
-                });
-            }
-        };
+        // อัปเดตปุ่ม Mobile Menu (ที่เพิ่งเพิ่มเข้าไปใหม่)
+        const mobileUserBtn = document.getElementById('mobile-user-menu-btn');
+        if (mobileUserBtn) {
+            mobileUserBtn.innerHTML = `
+                <img src="${user.photoURL}" alt="Profile" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
+                    <span class="text-[10px] text-gray-400">ดูโปรไฟล์และคูปองของฉัน</span>
+                </div>
+            `;
+            mobileUserBtn.href = "profile.html";
+        }
     }
 
-    // 3. พระเอกของ SSO: ฟังก์ชันดักจับสถานะจาก Firebase แบบ Real-time
+    // 3. เช็คสถานะ
     auth.onAuthStateChanged((user) => {
         if (user) {
-            // กรณีที่ 1: ลูกค้าล็อกอินอยู่ (อาจจะล็อกอินมาจากเว็บอื่นในเครือ)
-            console.log("SSO Active: พบผู้ใช้งาน", user.email);
-            
-            // อัปเดต localStorage ของโดเมนปัจจุบันไว้ใช้ชั่วคราวได้
-            const userData = {
-                uid: user.uid,
-                name: user.displayName,
-                email: user.email,
-                photo: user.photoURL
-            };
-            localStorage.setItem('cf_user', JSON.stringify(userData));
-
-            // อัปเดต UI หน้าเว็บ
             updateUserMenu(user);
-        } else {
-            // กรณีที่ 2: ลูกค้ายังไม่ล็อกอิน หรือกด Logout จากเว็บอื่นไปแล้ว
-            console.log("SSO: ไม่มีผู้ใช้งานในระบบ");
-            localStorage.removeItem('cf_user');
-            
-            // ปล่อย UI ปุ่มไว้เป็น "เข้าสู่ระบบ" ตามปกติ
         }
     });
 </script>

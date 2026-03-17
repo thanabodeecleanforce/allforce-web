@@ -79,63 +79,50 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 
     <script>
-    // 1. คอนฟิก Firebase (ใช้ Config เดียวกันทุกเว็บในเครือ)
+    // 1. คอนฟิก Firebase 
     const firebaseConfig = {
-        // ใส่ Config ของ Allforce-Hub ตรงนี้
-    };
-
+  apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+  authDomain: "allforce-hub.firebaseapp.com",
+  projectId: "allforce-hub",
+  storageBucket: "allforce-hub.firebasestorage.app",
+  messagingSenderId: "206898849342",
+  appId: "1:206898849342:web:35bc0462818da86fb1136f"
+};
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const auth = firebase.auth();
 
-    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน (ให้กลายเป็นชื่อผู้ใช้)
+    // 2. ฟังก์ชันอัปเดตปุ่มล็อกอิน
     function updateUserMenu(user) {
         const userBtn = document.getElementById('user-menu-btn');
         if (!userBtn) return;
 
+        // เปลี่ยนหน้าตาปุ่มเป็นรูปและชื่อ
         userBtn.innerHTML = `
             <img src="${user.photoURL}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
             <span class="text-sm font-bold text-gray-800">${user.displayName}</span>
         `;
         
-        userBtn.href = "javascript:void(0);";
-        userBtn.onclick = function() {
-            if(confirm('คุณ ' + user.displayName + ' ต้องการออกจากระบบใช่หรือไม่?')) {
-                // Logout จาก Firebase ซึ่งจะทำให้ Logout ออกจากทุกเว็บในเครือพร้อมกัน!
-                auth.signOut().then(() => {
-                    localStorage.removeItem('cf_user'); // ลบของเก่าทิ้งเผื่อตกค้าง
-                    window.location.reload(); 
-                }).catch((error) => {
-                    console.error("Logout Error:", error);
-                });
-            }
-        };
+        // 🎯 จุดที่เปลี่ยน: ให้ลิงก์ไปหน้า profile.html แทน
+        userBtn.href = "profile.html"; 
+        
+        // ลบ onclick เดิมทิ้งไปเลย (ไม่ต้องเด้งถาม Logout แล้ว)
+        userBtn.onclick = null; 
     }
 
-    // 3. พระเอกของ SSO: ฟังก์ชันดักจับสถานะจาก Firebase แบบ Real-time
+    // 3. ฟังก์ชันดักจับสถานะจาก Firebase
     auth.onAuthStateChanged((user) => {
         if (user) {
-            // กรณีที่ 1: ลูกค้าล็อกอินอยู่ (อาจจะล็อกอินมาจากเว็บอื่นในเครือ)
-            console.log("SSO Active: พบผู้ใช้งาน", user.email);
-            
-            // อัปเดต localStorage ของโดเมนปัจจุบันไว้ใช้ชั่วคราวได้
-            const userData = {
-                uid: user.uid,
-                name: user.displayName,
-                email: user.email,
-                photo: user.photoURL
-            };
+            // เซฟลง localStorage เผื่อไว้ใช้จุกจิก
+            const userData = { uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL };
             localStorage.setItem('cf_user', JSON.stringify(userData));
-
-            // อัปเดต UI หน้าเว็บ
+            
+            // เรียกใช้ฟังก์ชันอัปเดตปุ่ม
             updateUserMenu(user);
         } else {
-            // กรณีที่ 2: ลูกค้ายังไม่ล็อกอิน หรือกด Logout จากเว็บอื่นไปแล้ว
-            console.log("SSO: ไม่มีผู้ใช้งานในระบบ");
             localStorage.removeItem('cf_user');
-            
-            // ปล่อย UI ปุ่มไว้เป็น "เข้าสู่ระบบ" ตามปกติ
+            // ถ้าไม่ได้ล็อกอิน ปุ่มก็จะเป็น <a href="login.html">...</a> ตามปกติใน HTML
         }
     });
 </script>
