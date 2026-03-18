@@ -1529,6 +1529,7 @@
             }
         }
         // ยืนยันการจอง
+        // ยืนยันการจอง
         window.submitBooking = async function() {
             var date = document.getElementById('bk-date-input').value;
             var time = document.getElementById('bk-time-input').value;
@@ -1544,14 +1545,15 @@
 
             var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
 
+            // เช็คว่ากรอกข้อมูลครบไหม
             if(!date || !name || !phone || !address) {
                 alert(alertTxt.errInput); return;
             }
 
-            var keyInfo = "อยู่บ้าน (At home)";
+            var keyInfo = "อยู่บ้าน (รอรับทีมงาน)";
             if (isKeyDrop) {
                 if(!keyDetail) { alert(alertTxt.errKey); return; }
-                keyInfo = "รับกุญแจที่ (Key drop): " + keyDetail;
+                keyInfo = "รับกุญแจที่ " + keyDetail;
             }
 
             var netPriceText = document.getElementById('sum-price').textContent;
@@ -1566,8 +1568,30 @@
             submitBtn.disabled = true;
 
             try {
+                // 1. ดึงข้อมูลแพ็กเกจและบริการเสริมให้เรียบร้อย (แก้เป็น textContent เพื่อความเสถียร)
+                var baseServiceText = (currentServiceMode === 'house' && document.getElementById('sum-base-label')) ? document.getElementById('sum-base-label').textContent : "ไม่มี";
+                var addonsListElements = document.querySelectorAll('#sum-addons-list div');
+                var addonsText = "";
+                
+                if(addonsListElements.length > 0) {
+                    addonsListElements.forEach(function(el) {
+                        addonsText += "- " + el.textContent.trim().replace(/\s+/g, ' ') + "\n";
+                    });
+                } else {
+                    addonsText = "- ไม่มีบริการเสริม\n";
+                }
+
+                // 2. เช็คสถานะส่วนลดต่างๆ
+                var hasSofa = currentServiceMode === 'house' ? addonsData.h_sofa.active : addonsData.f_sofa.active;
+                var hasMattress = currentServiceMode === 'house' ? addonsData.h_mattress.active : addonsData.f_mattress.active;
+                var bundleText = (hasSofa && hasMattress) ? "✅ รับส่วนลด 300 บาท" : "❌ ไม่ได้ใช้สิทธิ์";
+                var reviewText = isReview ? "✅ ยินดีรีวิว (รับส่วนลดแล้ว)" : "❌ ไม่รับส่วนลด";
+
+                // 3. Save to Firestore (เพิ่ม baseService และ addons เข้าไป เพื่อให้ Admin เห็นด้วย)
                 var orderData = {
                     serviceMode: modeName,
+                    baseService: baseServiceText,
+                    addons: addonsText,
                     customerName: name,
                     phone: phone,
                     bookingDate: date,
@@ -1576,55 +1600,45 @@
                     gpsLink: gpsLink,
                     taxId: taxid,
                     keyDrop: keyInfo,
-                    promoCode: activePromoCode || "None",
+                    promoCode: activePromoCode || "ไม่ได้ใช้",
                     totalPrice: netPriceNumber,
                     isReviewDiscount: isReview,
                     status: "pending",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
+                // บันทึกลงฐานข้อมูล
                 var docRef = await window.cf_db.collection("bookings").add(orderData);
                 var orderId = docRef.id.slice(0, 6).toUpperCase(); 
 
-                // 1. เช็คสถานะส่วนลดต่างๆ
-                var hasSofa = currentServiceMode === 'house' ? addonsData.h_sofa.active : addonsData.f_sofa.active;
-                var hasMattress = currentServiceMode === 'house' ? addonsData.h_mattress.active : addonsData.f_mattress.active;
-                var bundleText = (hasSofa && hasMattress) ? "✅ รับส่วนลด 300 บาท" : "❌ ไม่ได้ใช้สิทธิ์";
-                var reviewText = isReview ? "✅ ยินดีรีวิว (รับส่วนลดแล้ว)" : "❌ ไม่รับส่วนลด";
-
-                // 2. ดึงข้อมูลบริการหลักและบริการเสริม
-                var baseServiceText = document.getElementById('sum-base-label') ? document.getElementById('sum-base-label').textContent : "ไม่มี";
-                var addonsListElements = document.querySelectorAll('#sum-addons-list div');
-                var addonsText = "";
-                if(addonsListElements.length > 0) {
-                    addonsListElements.forEach(function(el) {
-                        addonsText += "- " + el.innerText.replace(/\n/g, ' ') + "\n";
-                    });
-                } else {
-                    addonsText = "- ไม่มีบริการเสริม\n";
-                }
-
-                // 3. จัดรูปแบบข้อความส่งเข้า LINE ตามที่ต้องการ
+                // 4. จัดรูปแบบข้อความส่งเข้า LINE ตาม Template อย่างละเอียด
                 var summary = "===== CLEANFORCE BOOKING =====\n" +
-                                "นี่คือข้อมูลบริการเบื้องต้นสำหรับให้แอดมินยืนยันรับบริการ\n\n" +
-                                "ประเภท: " + modeName + "\n" +
-                                "บริการหลัก: " + baseServiceText + "\n" +
-                                "บริการเสริม:\n" + addonsText +
-                                "นัดหมาย: " + date + " เวลา " + time + " น.\n" +
-                                "------------------------------\n" +
-                                "ชื่อลูกค้า: " + name + "\n" +
-                                "เบอร์โทร: " + phone + "\n" +
-                                "เลขนิติบุคคล: " + (taxid || "-") + "\n" +
-                                "ที่อยู่: " + address + "\n" +
-                                "📍 พิกัด GPS: " + (gpsLink || "ไม่ระบุ") + "\n" +
-                                "กุญแจ: " + keyInfo + "\n" +
-                                "------------------------------\n" +
-                                "ราคาชำระสุทธิ: " + netPriceText + " บาท (จาก " + grossPriceText + " บาท)\n" +
-                                "ส่วนลดแพ็กคู่: " + bundleText + "\n" +
-                                "การรีวิว: " + reviewText + "\n" +
-                                "โค้ดส่วนลด: " + (activePromoCode || "ไม่ได้ใช้") + "\n" +
-                                "==============================";
+                              "นี่คือข้อมูลบริการเบื้องต้นสำหรับให้แอดมินยืนยันรับบริการ\n\n" +
+                              "รหัสการจอง: " + orderId + "\n" +
+                              "ประเภท: " + modeName + "\n";
+                
+                // ถ้าเป็นทำความสะอาดบ้าน ค่อยโชว์แพ็กเกจ
+                if (currentServiceMode === 'house') {
+                    summary += "แพ็กเกจ: " + baseServiceText + " (" + document.getElementById('sum-hours').textContent + ")\n";
+                }
+                
+                summary += "บริการเสริม:\n" + addonsText +
+                           "นัดหมาย: " + date + " เวลา " + time + " น.\n" +
+                           "------------------------------\n" +
+                           "ชื่อลูกค้า: " + name + "\n" +
+                           "เบอร์โทร: " + phone + "\n" +
+                           "เลขนิติบุคคล: " + (taxid ? taxid : "-") + "\n" +
+                           "ที่อยู่: " + address + "\n" +
+                           "📍 พิกัด GPS: " + (gpsLink ? gpsLink : "ไม่ระบุ") + "\n" +
+                           "กุญแจ: " + keyInfo + "\n" +
+                           "------------------------------\n" +
+                           "ราคาชำระสุทธิ: " + netPriceText + " บาท (จาก " + grossPriceText + " บาท)\n" +
+                           "ส่วนลดแพ็กคู่: " + bundleText + "\n" +
+                           "การรีวิว: " + reviewText + "\n" +
+                           "โค้ดส่วนลด: " + (activePromoCode ? activePromoCode : "ไม่ได้ใช้") + "\n" +
+                           "==============================";
 
+                // 5. แปลงข้อความและส่งไปที่ LINE
                 var encodedMessage = encodeURIComponent(summary);
                 var lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage; 
                 
@@ -1632,7 +1646,8 @@
                 window.location.href = lineUrl;
 
             } catch (error) {
-                alert("Error! Please try again.");
+                console.error("Booking Error: ", error);
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง");
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             }
