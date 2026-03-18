@@ -1505,7 +1505,7 @@
                         var lat = position.coords.latitude;
                         var lng = position.coords.longitude;
                         // เปลี่ยนลิงก์เป็น Google Maps
-                        gpsInput.value = 'http://googleusercontent.com/maps.google.com/maps?q=' + lat + ',' + lng;
+                        gpsInput.value = 'http://maps.google.com/?q=' + lat + ',' + lng;
                         
                         statusText.innerHTML = "✅ " + alertTxt.gpsSuccess;
                         statusText.className = "text-[10px] text-green-600 mt-2 font-bold";
@@ -1528,7 +1528,6 @@
                 statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
             }
         }
-        // ยืนยันการจอง
         // ยืนยันการจอง
         window.submitBooking = async function() {
             var date = document.getElementById('bk-date-input').value;
