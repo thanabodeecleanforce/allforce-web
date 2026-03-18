@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Cleanforce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#1EA7E1', groupPrimary: '#000080' }
+                }
+            }
+        }
+    </script>
+    <style>body { font-family: 'Noto Sans Thai', sans-serif; background-color: #f8fafc; }</style>
+</head>
+<body class="flex h-screen overflow-hidden text-gray-800">
+
+    <aside class="w-64 bg-groupPrimary text-white flex flex-col shadow-xl z-20">
+        <div class="h-20 flex items-center justify-center border-b border-white/10">
+            <h1 class="text-xl font-bold tracking-widest uppercase">CF Admin</h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl font-bold text-sm transition">
+                <i class="fa-solid fa-calendar-check w-5 text-center"></i> รายการจอง (Bookings)
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl font-bold text-sm transition opacity-50 cursor-not-allowed" title="รอการพัฒนาในสเตปต่อไป">
+                <i class="fa-solid fa-tags w-5 text-center"></i> จัดการราคา (Pricing)
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl font-bold text-sm transition opacity-50 cursor-not-allowed" title="รอการพัฒนาในสเตปต่อไป">
+                <i class="fa-solid fa-newspaper w-5 text-center"></i> ข่าวสาร (News & Promo)
+            </a>
+        </nav>
+        <div class="p-4 border-t border-white/10">
+            <button id="logout-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-bold transition">
+                <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <header class="h-20 bg-white shadow-sm flex items-center justify-between px-8 border-b border-gray-100 z-10">
+            <h2 class="text-2xl font-bold text-gray-800">รายการจองล่าสุด</h2>
+            <div class="flex items-center gap-4">
+                <span id="admin-name" class="text-sm font-bold text-gray-600">กำลังโหลด...</span>
+            </div>
+        </header>
+
+        <div class="flex-1 p-8 overflow-y-auto">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-[10px] tracking-wider">
+                            <tr>
+                                <th class="px-6 py-4 font-bold">วันที่จองเข้ามา</th>
+                                <th class="px-6 py-4 font-bold">ลูกค้า</th>
+                                <th class="px-6 py-4 font-bold">บริการ</th>
+                                <th class="px-6 py-4 font-bold">ยอดสุทธิ</th>
+                                <th class="px-6 py-4 font-bold text-center">สถานะ</th>
+                                <th class="px-6 py-4 font-bold text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table-body" class="divide-y divide-gray-100">
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-primary"></i>
+                                    <p>กำลังดึงข้อมูล...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 1. Firebase Config (ตัวเดิมของคุณ)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // 2. เช็คการล็อกอิน (ในอนาคตควรเช็คว่าเป็น Email ของ Admin ด้วย)
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('admin-name').textContent = "ผู้ดูแล: " + (user.displayName || user.email);
+                fetchBookings(); // สั่งดึงข้อมูลคิวงาน
+            } else {
+                alert("กรุณาเข้าสู่ระบบก่อนเข้าใช้งานหน้า Admin");
+                window.location.href = "login.html";
+            }
+        });
+
+        // 3. ฟังก์ชันดึงข้อมูลการจองจาก Firestore
+        async function fetchBookings() {
+            const tableBody = document.getElementById('bookings-table-body');
+            try {
+                // ดึงข้อมูลจากคอลเลกชัน 'bookings' เรียงจากใหม่ไปเก่า
+                const snapshot = await db.collection("bookings").orderBy("createdAt", "desc").limit(50).get();
+                
+                if (snapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">ยังไม่มีรายการจองเข้ามา</td></tr>';
+                    return;
+                }
+
+                let htmlContent = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const bookingId = doc.id.slice(0, 6).toUpperCase();
+                    
+                    // แปลงวันที่สร้าง Timestamp เป็นวันที่อ่านง่าย
+                    let createdDateStr = "ไม่ระบุ";
+                    if(data.createdAt) {
+                        const d = data.createdAt.toDate();
+                        createdDateStr = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    // กำหนดสีสถานะ
+                    let statusBadge = '';
+                    if (data.status === 'pending') statusBadge = '<span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">รอยืนยัน</span>';
+                    else if (data.status === 'confirmed') statusBadge = '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">ยืนยันแล้ว</span>';
+                    else statusBadge = `<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${data.status || 'ไม่ทราบ'}</span>`;
+
+                    htmlContent += `
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-800">${createdDateStr}</div>
+                                <div class="text-[10px] text-gray-400 font-mono mt-0.5">ID: ${bookingId}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-groupPrimary">${data.customerName || '-'}</div>
+                                <div class="text-xs text-gray-500 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${data.phone || '-'}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-bold text-gray-700">${data.serviceMode || '-'}</div>
+                                <div class="text-xs text-primary mt-0.5"><i class="fa-regular fa-calendar"></i> นัด: ${data.bookingDate} (${data.bookingTime} น.)</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-green-600 text-base">${(data.totalPrice || 0).toLocaleString()} ฿</div>
+                            </td>
+                            <td class="px-6 py-4 text-center">${statusBadge}</td>
+                            <td class="px-6 py-4 text-center">
+                                <button onclick="viewDetail('${doc.id}')" class="text-primary hover:text-blue-700 font-bold text-xs bg-blue-50 px-3 py-1.5 rounded-lg transition">ดูรายละเอียด</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = htmlContent;
+
+            } catch (error) {
+                console.error("Error fetching bookings: ", error);
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-red-500">เกิดข้อผิดพลาดในการดึงข้อมูล โปรดตรวจสอบ Console</td></tr>';
+            }
+        }
+
+        // ฟังก์ชันดูรายละเอียด (เดี๋ยวเราค่อยมาทำ Popup รายละเอียดเต็มๆ ในอนาคต)
+        window.viewDetail = function(id) {
+            alert("ฟังก์ชันดูรายละเอียดของ ID: " + id + " \nเดี๋ยวเราจะทำ Popup แสดงข้อมูลเต็มๆ ในสเตปถัดไปครับ!");
+        }
+
+        // ปุ่มออกจากระบบ
+        document.getElementById('logout-btn').onclick = function() {
+            if(confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
+                auth.signOut().then(() => { window.location.href = 'login.html'; });
+            }
+        };
+    </script>
+</body>
+</html>

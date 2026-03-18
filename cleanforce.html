@@ -1586,16 +1586,43 @@
                 var docRef = await window.cf_db.collection("bookings").add(orderData);
                 var orderId = docRef.id.slice(0, 6).toUpperCase(); 
 
+                // 1. เช็คสถานะส่วนลดต่างๆ
+                var hasSofa = currentServiceMode === 'house' ? addonsData.h_sofa.active : addonsData.f_sofa.active;
+                var hasMattress = currentServiceMode === 'house' ? addonsData.h_mattress.active : addonsData.f_mattress.active;
+                var bundleText = (hasSofa && hasMattress) ? "✅ รับส่วนลด 300 บาท" : "❌ ไม่ได้ใช้สิทธิ์";
+                var reviewText = isReview ? "✅ ยินดีรีวิว (รับส่วนลดแล้ว)" : "❌ ไม่รับส่วนลด";
+
+                // 2. ดึงข้อมูลบริการหลักและบริการเสริม
+                var baseServiceText = document.getElementById('sum-base-label') ? document.getElementById('sum-base-label').textContent : "ไม่มี";
+                var addonsListElements = document.querySelectorAll('#sum-addons-list div');
+                var addonsText = "";
+                if(addonsListElements.length > 0) {
+                    addonsListElements.forEach(function(el) {
+                        addonsText += "- " + el.innerText.replace(/\n/g, ' ') + "\n";
+                    });
+                } else {
+                    addonsText = "- ไม่มีบริการเสริม\n";
+                }
+
+                // 3. จัดรูปแบบข้อความส่งเข้า LINE ตามที่ต้องการ
                 var summary = "===== CLEANFORCE BOOKING =====\n" +
-                                "รหัสการจอง (ID): " + orderId + "\n" +
-                                "วันที่ (Date): " + date + " เวลา " + time + "\n" +
+                                "นี่คือข้อมูลบริการเบื้องต้นสำหรับให้แอดมินยืนยันรับบริการ\n\n" +
+                                "ประเภท: " + modeName + "\n" +
+                                "บริการหลัก: " + baseServiceText + "\n" +
+                                "บริการเสริม:\n" + addonsText +
+                                "นัดหมาย: " + date + " เวลา " + time + " น.\n" +
                                 "------------------------------\n" +
-                                "ชื่อ (Name): " + name + "\n" +
-                                "เบอร์ (Phone): " + phone + "\n" +
-                                "กุญแจ (Key): " + keyInfo + "\n" +
+                                "ชื่อลูกค้า: " + name + "\n" +
+                                "เบอร์โทร: " + phone + "\n" +
+                                "เลขนิติบุคคล: " + (taxid || "-") + "\n" +
+                                "ที่อยู่: " + address + "\n" +
+                                "📍 พิกัด GPS: " + (gpsLink || "ไม่ระบุ") + "\n" +
+                                "กุญแจ: " + keyInfo + "\n" +
+                                "------------------------------\n" +
+                                "ราคาชำระสุทธิ: " + netPriceText + " บาท (จาก " + grossPriceText + " บาท)\n" +
+                                "ส่วนลดแพ็กคู่: " + bundleText + "\n" +
+                                "การรีวิว: " + reviewText + "\n" +
                                 "โค้ดส่วนลด: " + (activePromoCode || "ไม่ได้ใช้") + "\n" +
-                                "------------------------------\n" +
-                                "ราคาชำระสุทธิ: " + netPriceText + " บาท\n" +
                                 "==============================";
 
                 var encodedMessage = encodeURIComponent(summary);
