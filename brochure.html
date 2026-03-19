@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleanforce Brochure 3D</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #eef2f5;
+    font-family: sans-serif;
+    overflow: hidden;
+    perspective: 3000px; 
+  }
+
+  .instruction {
+    position: absolute;
+    top: 30px;
+    font-size: 20px;
+    color: #fff;
+    font-weight: bold;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    padding: 12px 30px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+    cursor: pointer;
+    z-index: 100;
+    transition: transform 0.3s, box-shadow 0.3s;
+    user-select: none;
+  }
+
+  .instruction:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.6);
+  }
+
+  .hint {
+    position: absolute;
+    bottom: 30px;
+    font-size: 16px;
+    color: #666;
+    background: rgba(255,255,255,0.8);
+    padding: 8px 20px;
+    border-radius: 20px;
+    pointer-events: none;
+  }
+
+  .scene-wrapper {
+    transform-style: preserve-3d;
+    cursor: grab;
+    transition: transform 0.1s linear; 
+  }
+
+  .scene-wrapper:active {
+    cursor: grabbing;
+  }
+
+  @media (max-width: 1100px) { .scene-wrapper { transform: scale(0.8) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)); } }
+  @media (max-width: 850px) { .scene-wrapper { transform: scale(0.6) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)); } }
+  @media (max-width: 600px) { .scene-wrapper { transform: scale(0.45) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)); } }
+  @media (max-width: 400px) { .scene-wrapper { transform: scale(0.35) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)); } }
+
+  .panel {
+    position: absolute;
+    width: 300px;
+    height: 636px;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .center-panel {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  }
+
+  .left-panel {
+    top: 0;
+    left: -300px;
+    transform-origin: right center;
+  }
+
+  .right-panel {
+    top: 0;
+    left: 300px;
+    transform-origin: left center;
+  }
+
+  .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,0.05); 
+    box-sizing: border-box;
+  }
+
+  .face img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none; 
+  }
+
+  .face::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0) 10%, rgba(255,255,255,0) 90%, rgba(0,0,0,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .front { transform: translateZ(0.5px); }
+  .back { transform: rotateY(180deg) translateZ(0.5px); }
+
+</style>
+</head>
+<body>
+
+  <div class="instruction" id="instruction" onclick="forceNextState()">กำลังเตรียมแผ่นพับ...</div>
+  
+  <div class="scene-wrapper" id="sceneWrapper">
+    <div class="panel center-panel" id="centerPanel">
+      <div class="face front"><img src="หน้ากลางด้านใน.png" alt="หน้ากลางด้านใน"></div>
+      <div class="face back"><img src="หน้ากลางด้านหลัง.png" alt="หน้ากลางด้านหลัง"></div>
+
+      <div class="panel left-panel" id="leftPanel">
+        <div class="face front"><img src="หลังหน้าปก.png" alt="หลังหน้าปก"></div>
+        <div class="face back"><img src="หน้าปก.png" alt="หน้าปก"></div>
+      </div>
+
+      <div class="panel right-panel" id="rightPanel">
+        <div class="face front"><img src="หน้าหลังด้านใน.png" alt="หน้าหลังด้านใน"></div>
+        <div class="face back"><img src="หน้าสุดท้ายด้านหลัง.png" alt="หน้าสุดท้ายด้านหลัง"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint">🖱️ คลิกค้างเพื่อหมุน 3D | 👆 คลิกเพื่อพับ/กางกระดาษ</div>
+
+  <script>
+    let state = 0; 
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+    let dragDistance = 0;
+    const sceneWrapper = document.getElementById('sceneWrapper');
+
+    function init() {
+      const leftPanel = document.getElementById('leftPanel');
+      const rightPanel = document.getElementById('rightPanel');
+      const instruction = document.getElementById('instruction');
+
+      // 1. ตั้งค่าให้กระดาษกางออกเต็มแผ่นทันที (ปิด transition ชั่วคราวไม่ให้เห็นตอนเด้งมากาง)
+      leftPanel.style.transition = "none";
+      rightPanel.style.transition = "none";
+      leftPanel.style.transform = "translateZ(4px) rotateY(0deg)";
+      rightPanel.style.transform = "translateZ(2px) rotateY(0deg)";
+      
+      // ตั้งมุมเอียงให้สวยงามตอนเริ่ม
+      currentX = 15; 
+      currentY = -20; 
+      applyRotation();
+
+      // 2. ปล่อยให้เบราว์เซอร์โชว์ภาพกางออกแป๊บนึง (0.5 วินาที) แล้วค่อยสั่งพับ
+      setTimeout(() => {
+        // คืนค่า transition กลับไปให้สวิงได้สมูทตามปกติ
+        leftPanel.style.transition = "";
+        rightPanel.style.transition = "";
+        
+        // สั่งพับปีกขวาเข้ามาก่อน
+        rightPanel.style.transform = "translateZ(2px) rotateY(-180deg)";
+        
+        // หน่วงเวลาให้ปีกซ้าย (หน้าปก) สวิงพับตามมาทับ
+        setTimeout(() => {
+          leftPanel.style.transform = "translateZ(4px) rotateY(180deg)";
+          instruction.innerText = "คลิกเพื่อเปิดหน้าปก";
+        }, 650); // ระยะเวลาทิ้งห่างระหว่างแผ่นขวาพับ กับแผ่นซ้ายพับ
+
+      }, 500); // 500ms = ทิ้งช่วงให้เห็นแผ่นกางก่อนครึ่งวินาที
+      
+      state = 0; // ตั้งค่าสถานะเริ่มต้นเป็น 0 (พับเก็บแล้ว) เพื่อให้คลิกครั้งต่อไปเป็นการกางหน้าปก
+    }
+
+    function nextState() {
+      const leftPanel = document.getElementById('leftPanel');
+      const rightPanel = document.getElementById('rightPanel');
+      const instruction = document.getElementById('instruction');
+
+      // ป้องกันการคลิกรัวๆ ตอนกำลังเล่น Intro
+      if (instruction.innerText === "กำลังเตรียมแผ่นพับ...") return;
+
+      if (state === 0) {
+        leftPanel.style.transform = "translateZ(4px) rotateY(0deg)";
+        instruction.innerText = "คลิกเพื่อกางเต็มแผ่น (A4)";
+        state = 1;
+      } else if (state === 1) {
+        rightPanel.style.transform = "translateZ(2px) rotateY(0deg)";
+        instruction.innerText = "คลิกเพื่อพับเก็บ";
+        state = 2;
+      } else if (state === 2) {
+        rightPanel.style.transform = "translateZ(2px) rotateY(-180deg)";
+        instruction.innerText = "คลิกเพื่อเปิดหน้าปก";
+        
+        setTimeout(() => {
+          leftPanel.style.transform = "translateZ(4px) rotateY(180deg)";
+        }, 650);
+        state = 0;
+      }
+    }
+
+    function forceNextState() {
+      nextState();
+    }
+
+    function applyRotation() {
+      currentX = Math.max(-60, Math.min(60, currentX));
+      sceneWrapper.style.setProperty('--rx', `${currentX}deg`);
+      sceneWrapper.style.setProperty('--ry', `${currentY}deg`);
+      sceneWrapper.style.transform = `scale(var(--scale-factor, 1)) rotateX(${currentX}deg) rotateY(${currentY}deg)`;
+    }
+
+    // --- Events ควบคุมการหมุน 3D ---
+    sceneWrapper.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragDistance = 0;
+      startX = e.pageX;
+      startY = e.pageY;
+      sceneWrapper.style.transition = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.pageX - startX;
+      const dy = e.pageY - startY;
+      dragDistance += Math.abs(dx) + Math.abs(dy);
+      
+      currentY += dx * 0.4;
+      currentX -= dy * 0.4;
+      
+      applyRotation();
+      
+      startX = e.pageX;
+      startY = e.pageY;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      sceneWrapper.style.transition = 'transform 0.3s ease-out';
+      
+      if (dragDistance < 10) {
+        nextState();
+      }
+    });
+
+    sceneWrapper.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      dragDistance = 0;
+      startX = e.touches[0].pageX;
+      startY = e.touches[0].pageY;
+      sceneWrapper.style.transition = 'none';
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const dx = e.touches[0].pageX - startX;
+      const dy = e.touches[0].pageY - startY;
+      dragDistance += Math.abs(dx) + Math.abs(dy);
+      
+      currentY += dx * 0.5;
+      currentX -= dy * 0.5;
+      
+      applyRotation();
+      
+      startX = e.touches[0].pageX;
+      startY = e.touches[0].pageY;
+    }, {passive: false});
+
+    document.addEventListener('touchend', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      sceneWrapper.style.transition = 'transform 0.3s ease-out';
+      
+      if (dragDistance < 10) {
+        nextState();
+      }
+    });
+
+    window.onload = init;
+  </script>
+</body>
+</html>
