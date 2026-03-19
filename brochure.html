@@ -17,7 +17,6 @@
     font-family: sans-serif;
     overflow: hidden;
     perspective: 3000px; 
-    /* ป้องกันการเด้งซูมของเบราว์เซอร์เวลาใช้สองนิ้ว */
     touch-action: none;
   }
 
@@ -53,12 +52,122 @@
     pointer-events: none;
     text-align: center;
     line-height: 1.6;
+    z-index: 90;
+  }
+
+  /* ปุ่มฟังก์ชันเสริมมุมขวาล่าง */
+  .tools-container {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+  }
+
+  .tool-btn {
+    background: #fff;
+    color: #007bff;
+    border: 2px solid #007bff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+  }
+
+  .tool-btn:hover {
+    background: #007bff;
+    color: #fff;
+  }
+
+  /* หน้าต่าง Modal ดูหน้าเต็ม 2D */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 500px;
+    height: 85vh;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 10;
+  }
+
+  .modal-tabs {
+    display: flex;
+    overflow-x: auto;
+    background: #f1f1f1;
+    padding: 15px 15px 10px;
+    gap: 8px;
+    border-bottom: 1px solid #ddd;
+    /* ซ่อน Scrollbar */
+    scrollbar-width: none; 
+  }
+  .modal-tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    white-space: nowrap;
+    padding: 8px 16px;
+    border: none;
+    background: #fff;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    border: 1px solid #ddd;
+  }
+
+  .tab-btn.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+    font-weight: bold;
+  }
+
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    background: #eef2f5;
+    padding: 20px;
+  }
+
+  .modal-body img {
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    align-self: flex-start;
   }
 
   .scene-wrapper {
-    /* ตั้งค่าเริ่มต้นสำหรับ Scale และ Zoom */
     --scale-factor: 1;
-    --zoom: 1;
     transform-style: preserve-3d;
     cursor: grab;
     transition: transform 0.1s linear; 
@@ -68,7 +177,6 @@
     cursor: grabbing;
   }
 
-  /* 🛠️ แก้ไขให้ Responsive ทำงานได้จริงเมื่อเปิดบนมือถือ */
   @media (max-width: 1200px) { .scene-wrapper { --scale-factor: 0.8; } }
   @media (max-width: 900px) { .scene-wrapper { --scale-factor: 0.6; } }
   @media (max-width: 600px) { .scene-wrapper { --scale-factor: 0.45; } }
@@ -129,6 +237,9 @@
   .front { transform: translateZ(0.5px); }
   .back { transform: rotateY(180deg) translateZ(0.5px); }
 
+  /* ซ่อน hint บนจอมือถือเล็กๆ เพื่อไม่ให้บังปุ่ม */
+  @media (max-width: 600px) { .hint { display: none; } }
+
 </style>
 </head>
 <body>
@@ -152,20 +263,47 @@
     </div>
   </div>
 
-  <div class="hint">🖱️ คลิกค้างเพื่อหมุน 3D | 👆 คลิกเพื่อกาง/พับกระดาษ <br> 🔍 ถ่างนิ้ว หรือ เลื่อนลูกกลิ้งเมาส์ เพื่อซูมย่อ-ขยาย</div>
+  <div class="hint">🖱️ ซ้ายหมุน 3D | 👆 คลิกพับกระดาษ <br> 🔍 เลื่อนลูกกลิ้งซูม | 🖱️ ขวาลากเพื่อเลื่อน (Pan)</div>
+
+  <div class="tools-container">
+    <button class="tool-btn" onclick="resetView()">🔄 รีเซ็ตมุมมอง</button>
+    <button class="tool-btn" style="background:#007bff; color:#fff;" onclick="openModal()">📖 ดูหน้าเต็ม (2D)</button>
+  </div>
+
+  <div id="modal2d" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">✖</span>
+      <div class="modal-tabs">
+        <button class="tab-btn active" onclick="changePage('หน้าปก.png', this)">หน้าปก</button>
+        <button class="tab-btn" onclick="changePage('หลังหน้าปก.png', this)">หลังหน้าปก</button>
+        <button class="tab-btn" onclick="changePage('หน้ากลางด้านใน.png', this)">หน้ากลางด้านใน</button>
+        <button class="tab-btn" onclick="changePage('หน้าหลังด้านใน.png', this)">หน้าหลังด้านใน</button>
+        <button class="tab-btn" onclick="changePage('หน้ากลางด้านหลัง.png', this)">หน้ากลางด้านหลัง</button>
+        <button class="tab-btn" onclick="changePage('หน้าสุดท้ายด้านหลัง.png', this)">หน้าสุดท้ายด้านหลัง</button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImg" src="หน้าปก.png" alt="Full Page">
+      </div>
+    </div>
+  </div>
 
   <script>
     let state = 0; 
     let isDragging = false;
+    let isPanning = false; // สำหรับโหมดเลื่อน (Pan)
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
+    let panX = 0, panY = 0; // เก็บค่าแกน X Y ที่เลื่อน
     let dragDistance = 0;
     
-    // ตัวแปรสำหรับระบบซูม
     let zoomLevel = 1;
     let initialPinchDist = null;
+    let startPanX = 0, startPanY = 0;
 
     const sceneWrapper = document.getElementById('sceneWrapper');
+
+    // ปิดเมนูคลิกขวา เพื่อให้ใช้คลิกขวาแพนกล้องได้
+    document.addEventListener('contextmenu', event => event.preventDefault());
 
     function init() {
       const leftPanel = document.getElementById('leftPanel');
@@ -223,95 +361,142 @@
       }
     }
 
-    function forceNextState() {
-      nextState();
-    }
+    function forceNextState() { nextState(); }
 
     function applyRotation() {
       currentX = Math.max(-60, Math.min(60, currentX));
-      // ใช้สูตรคำนวณ Scale หลักของหน้าจอ ผสมกับ Zoom Level ที่ผู้ใช้ซูมเอง
-      sceneWrapper.style.transform = `scale(calc(var(--scale-factor) * ${zoomLevel})) rotateX(${currentX}deg) rotateY(${currentY}deg)`;
+      // 🛠️ อัปเดต Translate ร่วมกับ Scale และ Rotate
+      sceneWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(calc(var(--scale-factor) * ${zoomLevel})) rotateX(${currentX}deg) rotateY(${currentY}deg)`;
     }
 
-    // --- Events ควบคุมการหมุนด้วยเมาส์ ---
+    function resetView() {
+      zoomLevel = 1;
+      panX = 0;
+      panY = 0;
+      currentX = 15;
+      currentY = -20;
+      sceneWrapper.style.transition = 'transform 0.4s ease-out';
+      applyRotation();
+    }
+
+    // --- ควบคุมหน้าต่าง 2D Modal ---
+    function openModal() {
+      document.getElementById('modal2d').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('modal2d').style.display = 'none';
+    }
+    function changePage(imageSrc, btnElement) {
+      document.getElementById('modalImg').src = imageSrc;
+      // จัดการสีปุ่มที่ถูกเลือก
+      let tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      btnElement.classList.add('active');
+    }
+
+
+    // --- Events ควบคุมเมาส์ (Drag = หมุน, Right Click = เลื่อน) ---
     sceneWrapper.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      dragDistance = 0;
-      startX = e.pageX;
-      startY = e.pageY;
+      if (e.button === 2) { // คลิกขวา
+        isPanning = true;
+        startPanX = e.pageX;
+        startPanY = e.pageY;
+      } else { // คลิกซ้าย
+        isDragging = true;
+        dragDistance = 0;
+        startX = e.pageX;
+        startY = e.pageY;
+      }
       sceneWrapper.style.transition = 'none';
     });
 
     document.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      const dx = e.pageX - startX;
-      const dy = e.pageY - startY;
-      dragDistance += Math.abs(dx) + Math.abs(dy);
-      
-      currentY += dx * 0.4;
-      currentX -= dy * 0.4;
-      
-      applyRotation();
-      
-      startX = e.pageX;
-      startY = e.pageY;
-    });
-
-    document.addEventListener('mouseup', () => {
-      if (!isDragging) return;
-      isDragging = false;
-      sceneWrapper.style.transition = 'transform 0.3s ease-out';
-      
-      if (dragDistance < 10) {
-        nextState();
+      if (isPanning) {
+        panX += (e.pageX - startPanX);
+        panY += (e.pageY - startPanY);
+        startPanX = e.pageX;
+        startPanY = e.pageY;
+        applyRotation();
+        return;
+      }
+      if (isDragging) {
+        const dx = e.pageX - startX;
+        const dy = e.pageY - startY;
+        dragDistance += Math.abs(dx) + Math.abs(dy);
+        currentY += dx * 0.4;
+        currentX -= dy * 0.4;
+        applyRotation();
+        startX = e.pageX;
+        startY = e.pageY;
       }
     });
 
-    // --- ระบบซูมด้วยลูกกลิ้งเมาส์ (Scroll Wheel) ---
+    document.addEventListener('mouseup', () => {
+      isPanning = false;
+      if (!isDragging) return;
+      isDragging = false;
+      sceneWrapper.style.transition = 'transform 0.3s ease-out';
+      if (dragDistance < 10) nextState();
+    });
+
+    // ซูมด้วยลูกกลิ้งเมาส์
     document.addEventListener('wheel', (e) => {
-      zoomLevel += e.deltaY * -0.001; // ปรับความเร็วการซูม
-      zoomLevel = Math.min(Math.max(0.4, zoomLevel), 2.5); // ล็อกการซูมไว้ที่ไม่เกิน 2.5 เท่า และไม่เล็กกว่า 0.4 เท่า
+      zoomLevel += e.deltaY * -0.001;
+      zoomLevel = Math.min(Math.max(0.4, zoomLevel), 4.0); // ให้ซูมได้สูงสุด 4 เท่า
+      sceneWrapper.style.transition = 'none';
       applyRotation();
     }, {passive: false});
 
 
-    // --- Events ควบคุมทัชสกรีน และ ซูมด้วยนิ้ว (Pinch to Zoom) ---
+    // --- Events ควบคุมทัชสกรีน (1 นิ้วหมุน, 2 นิ้วซูมและเลื่อน) ---
     sceneWrapper.addEventListener('touchstart', (e) => {
       if (e.touches.length === 2) {
-        // ถ้าแตะ 2 นิ้ว ให้เตรียมซูม
         isDragging = false;
+        isPanning = true;
+        
         const dx = e.touches[0].pageX - e.touches[1].pageX;
         const dy = e.touches[0].pageY - e.touches[1].pageY;
         initialPinchDist = Math.sqrt(dx*dx + dy*dy);
+
+        startPanX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+        startPanY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
       } else if (e.touches.length === 1) {
-        // ถ้าแตะนิ้วเดียว ให้หมุนเหมือนเดิม
         isDragging = true;
         dragDistance = 0;
         startX = e.touches[0].pageX;
         startY = e.touches[0].pageY;
-        sceneWrapper.style.transition = 'none';
       }
+      sceneWrapper.style.transition = 'none';
     });
 
     document.addEventListener('touchmove', (e) => {
-      // ทำงานเมื่อผู้ใช้ถ่าง 2 นิ้ว
-      if (e.touches.length === 2 && initialPinchDist !== null) {
+      if (e.touches.length === 2 && isPanning) {
         e.preventDefault();
+        
+        // 1. คำนวณซูม
         const dx = e.touches[0].pageX - e.touches[1].pageX;
         const dy = e.touches[0].pageY - e.touches[1].pageY;
         const dist = Math.sqrt(dx*dx + dy*dy);
         
-        // คำนวณสัดส่วนการถ่างนิ้ว
-        const scaleChange = dist / initialPinchDist;
-        zoomLevel *= scaleChange;
-        zoomLevel = Math.min(Math.max(0.4, zoomLevel), 2.5); // ลิมิตขอบเขตการซูม
-        
+        if (initialPinchDist !== null) {
+          const scaleChange = dist / initialPinchDist;
+          zoomLevel *= scaleChange;
+          zoomLevel = Math.min(Math.max(0.4, zoomLevel), 4.0);
+        }
+        initialPinchDist = dist;
+
+        // 2. คำนวณเลื่อน (Pan)
+        const currentCenterX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+        const currentCenterY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+        panX += (currentCenterX - startPanX);
+        panY += (currentCenterY - startPanY);
+        startPanX = currentCenterX;
+        startPanY = currentCenterY;
+
         applyRotation();
-        initialPinchDist = dist; // อัปเดตระยะนิ้วตลอดเวลาที่ลาก
         return;
       }
 
-      // ทำงานเมื่อใช้นิ้วเดียวลากหมุน
       if (!isDragging || e.touches.length !== 1) return;
       e.preventDefault();
       const dx = e.touches[0].pageX - startX;
@@ -322,23 +507,20 @@
       currentX -= dy * 0.5;
       
       applyRotation();
-      
       startX = e.touches[0].pageX;
       startY = e.touches[0].pageY;
     }, {passive: false});
 
     document.addEventListener('touchend', (e) => {
       if (e.touches.length < 2) {
-        initialPinchDist = null; // ถ้ายกนิ้วออก ให้ยกเลิกระบบซูม 2 นิ้ว
+        initialPinchDist = null;
+        isPanning = false;
       }
       if (!isDragging) return;
       isDragging = false;
       sceneWrapper.style.transition = 'transform 0.3s ease-out';
       
-      // ถ้าแตะนิ้วเดียวแล้วปล่อยเฉยๆ ให้ถือเป็นการคลิกพับ/กาง
-      if (dragDistance < 10) {
-        nextState();
-      }
+      if (dragDistance < 10) nextState();
     });
 
     window.onload = init;
