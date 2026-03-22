@@ -396,13 +396,28 @@
                 
                 <div class="w-full lg:w-2/3 space-y-8">
                     
-                        <div id="flow-house" class="space-y-8 block">
+                    <div id="flow-house" class="space-y-8 block">
                         <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
                             <div class="flex items-center gap-4 mb-6">
                                 <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-layer-group"></i></div>
-                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-step1">เลือกแพ็กเกจทำความสะอาดบ้าน</h3>
+                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-step1">เลือกรูปแบบการทำความสะอาดบ้าน</h3>
                             </div>
-                            <div id="dynamic-house-packages" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                                <div class="flex gap-2 w-full md:w-auto overflow-x-auto hide-scroll pb-1">
+                                    <button onclick="filterHouse('all')" id="flt-all" class="px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm">ทั้งหมด</button>
+                                    <button onclick="filterHouse('condo')" id="flt-condo" class="px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors">คอนโด</button>
+                                    <button onclick="filterHouse('house_single')" id="flt-house_single" class="px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors">บ้านเดี่ยว</button>
+                                    <button onclick="filterHouse('villa')" id="flt-villa" class="px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors">วิลล่า</button>
+                                </div>
+                                <select id="sort-house" onchange="sortHouse()" class="w-full md:w-auto bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs outline-none focus:border-primary font-bold text-gray-600 cursor-pointer">
+                                    <option value="default">✨ เรียงตามที่แนะนำ (ลำดับ)</option>
+                                    <option value="price_asc">💵 ราคา: ต่ำ -> สูง</option>
+                                    <option value="price_desc">💎 ราคา: สูง -> ต่ำ</option>
+                                </select>
+                            </div>
+
+                            <div id="dynamic-house-packages" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="col-span-full text-center py-6 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-primary"></i><p>กำลังโหลดแพ็กเกจ...</p></div>
                             </div>
                         </div>
@@ -410,7 +425,7 @@
                         <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
                             <div class="flex items-center gap-4 mb-6">
                                 <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-plus"></i></div>
-                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-step2">บริการเสริม (Add-ons)</h3>
+                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-step2">บริการเพิ่มเติม</h3>
                             </div>
                             <div id="dynamic-addons-house" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                         </div>
@@ -420,13 +435,15 @@
                         <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
                             <div class="flex items-center gap-4 mb-6">
                                 <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-couch"></i></div>
-                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-furn-step1">เลือกบริการทำความสะอาด</h3>
+                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-furn-step1">เลือกบริการทำความสะอาดเฟอร์นิเจอร์</h3>
                             </div>
                             <div id="dynamic-furniture-packages" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="col-span-full text-center py-6 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-primary"></i><p>กำลังโหลดบริการ...</p></div>
                             </div>
+                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 mt-8">บริการเสริมเพิ่มเติม</h4>
+                            <div id="dynamic-addons-furn" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                         </div>
-                    </div>
+                    </div> 
                     
                     <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
                         <div class="flex items-center gap-4 mb-6">
@@ -437,117 +454,95 @@
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2" data-i18n="bk-date">วันที่ต้องการรับบริการ</label>
-                                    <input type="date" id="bk-date-input" class="w-full bg-white border-gray-200 rounded-xl p-3 text-sm focus:ring-primary focus:border-primary outline-none">
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">วันที่ต้องการรับบริการ</label>
+                                    <input type="date" id="bk-date-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2" data-i18n="bk-time">เวลาเริ่มงาน</label>
-                                    <select id="bk-time-input" class="w-full bg-white border-gray-200 rounded-xl p-3 text-sm focus:ring-primary focus:border-primary outline-none">
-                                        <option value="08:00">08:00 น.</option>
-                                        <option value="09:00">09:00 น.</option>
-                                        <option value="10:00">10:00 น.</option>
-                                        <option value="11:00">11:00 น.</option>
-                                        <option value="12:00">12:00 น.</option>
-                                        <option value="13:00">13:00 น.</option>
-                                        <option value="14:00">14:00 น.</option>
-                                        <option value="15:00">15:00 น.</option>
-                                        <option value="16:00">16:00 น.</option>
-                                        <option value="17:00">17:00 น.</option>
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">เวลาเริ่มงาน</label>
+                                    <select id="bk-time-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
+                                        <option value="08:00">08:00 น.</option> <option value="09:00">09:00 น.</option> <option value="10:00">10:00 น.</option>
+                                        <option value="13:00">13:00 น.</option> <option value="14:00">14:00 น.</option> <option value="15:00">15:00 น.</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-200 pt-4 mt-4">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2" data-i18n="bk-name">ชื่อ-นามสกุล / ชื่อบริษัท</label>
-                                    <input type="text" id="bk-name-input" class="w-full bg-white border-gray-200 rounded-xl p-3 text-sm focus:ring-primary focus:border-primary outline-none" placeholder="ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท">
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">ชื่อ-นามสกุล / ชื่อบริษัท</label>
+                                    <input type="text" id="bk-name-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2" data-i18n="bk-phone">เบอร์โทรศัพท์ติดต่อ</label>
-                                    <input type="tel" id="bk-phone-input" class="w-full bg-white border-gray-200 rounded-xl p-3 text-sm focus:ring-primary focus:border-primary outline-none" placeholder="08X-XXX-XXXX">
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">เบอร์โทรศัพท์ติดต่อ</label>
+                                    <input type="tel" id="bk-phone-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
                                 </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2" data-i18n="bk-taxid">เลขประจำตัวผู้เสียภาษี / เลขนิติบุคคล (ถ้ามี)</label>
-                                <input type="text" id="bk-taxid-input" class="w-full bg-white border-gray-200 rounded-xl p-3 text-sm focus:ring-primary focus:border-primary outline-none" placeholder="สำหรับออกใบกำกับภาษี (สามารถเว้นว่างได้)">
                             </div>
 
                             <div class="border-t border-gray-200 pt-4 mt-4">
-                                <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2" data-i18n="bk-address">ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)</label>
-                                <textarea id="bk-address-input" rows="2" class="w-full bg-white border-gray-200 rounded-xl p-3 text-sm focus:ring-primary focus:border-primary outline-none" placeholder="ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด"></textarea>
+                                <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)</label>
+                                <textarea id="bk-address-input" rows="2" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none"></textarea>
                                 
                                 <div class="mt-3 flex flex-col items-start gap-2">
                                     <button type="button" onclick="getLocation()" class="text-xs bg-blue-50 text-primary border border-primary px-4 py-2 rounded-lg font-bold hover:bg-primary hover:text-white transition flex items-center gap-2">
                                           <i class="fa-solid fa-location-crosshairs"></i> <span data-i18n="bk-gps-btn">แตะเพื่อปักพิกัดปัจจุบัน</span>
-                                        </button>
+                                    </button>
                                     <p id="location-status" class="text-[10px] text-gray-400 hidden"></p>
                                     <input type="hidden" id="bk-gps-link" value="">
                                 </div>
                             </div>
-                            
-                            <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <input type="checkbox" id="bk-key-drop" class="w-5 h-5 text-primary rounded focus:ring-primary" onchange="document.getElementById('key-detail-wrapper').classList.toggle('hidden', !this.checked)">
-                                    <label for="bk-key-drop" class="text-xs font-bold text-gray-600 cursor-pointer" data-i18n="bk-key">ฉันจะไม่อยู่บ้านโปรดรับกุญแจที่:</label>
-                                </div>
-                                <div id="key-detail-wrapper" class="hidden pl-8">
-                                    <input type="text" id="bk-key-detail" placeholder="ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ" class="w-full bg-slate-50 border border-gray-200 rounded-lg p-2 text-xs focus:ring-primary focus:border-primary outline-none" data-i18n-placeholder="bk-key-ph">
-                                </div>
-                            </div>
                         </div>
                     </div>
-
                 </div> 
                 
-                <div class="w-full lg:w-1/3 sticky top-28">
-                    <div class="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
+                <div class="w-full lg:w-1/3 lg:sticky lg:top-28 z-30 self-start pb-10">
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] overflow-hidden">
                         <div class="bg-groupPrimary p-6 text-white">
                             <h3 class="text-xl font-bold font-heading mb-1" data-i18n="sum-title">สรุปคำสั่งซื้อ</h3>
                             <p class="text-xs opacity-80" data-i18n="sum-sub">Order Summary</p>
                         </div>
                         
-                        <div class="p-6 space-y-4 text-sm border-b border-gray-100">
+                        <div class="p-6 space-y-4 text-sm border-b border-gray-100 max-h-[35vh] lg:max-h-[300px] overflow-y-auto hide-scroll">
                             <div class="flex justify-between items-start" id="sum-base-row">
-                                <span class="text-gray-500 font-bold" id="sum-base-label" data-i18n="sum-base">ทำความสะอาดพื้นฐาน</span>
-                                <span class="font-bold text-right whitespace-nowrap" id="sum-hours">...</span>
+                                <span class="text-gray-500 font-bold max-w-[70%]" id="sum-base-label">ทำความสะอาดพื้นฐาน</span>
+                                <span class="font-bold text-right whitespace-nowrap" id="sum-hours">0 ฿</span>
                             </div>
-                            <div id="sum-addons-list" class="space-y-2 border-t border-dashed border-gray-200 pt-2 text-primary text-xs"></div>
+                            <div id="sum-addons-list" class="space-y-2 border-t border-dashed border-gray-200 pt-2 text-primary text-xs font-bold"></div>
                             <div id="sum-discount-area"></div>
                         </div>
+                        
                         <div class="p-5 bg-gray-50 border-b border-gray-100">
-                            <label class="block text-xs font-bold text-gray-600 mb-2" data-i18n="promo-input-label">มีโค้ดส่วนลดหรือไม่? (Promo Code)</label>
+                            <label class="block text-xs font-bold text-gray-600 mb-2">มีโค้ดส่วนลดหรือไม่? (Promo Code)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="promo-code-input" placeholder="พิมพ์โค้ด เช่น PHUKET15" class="flex-1 bg-white border border-gray-200 rounded-lg p-2 text-sm focus:ring-primary focus:border-primary outline-none uppercase font-mono">
-                                <button onclick="applyPromoCode()" class="bg-gray-800 text-white px-4 rounded-lg text-xs font-bold hover:bg-gray-900 transition whitespace-nowrap" data-i18n="promo-input-btn">ใช้โค้ด</button>
+                                <input type="text" id="promo-code-input" class="flex-1 bg-white border border-gray-200 rounded-lg p-2 text-sm focus:border-primary outline-none uppercase font-mono">
+                                <button onclick="applyPromoCode()" class="bg-gray-800 text-white px-4 rounded-lg text-xs font-bold">ใช้โค้ด</button>
                             </div>
                             <p id="promo-msg" class="text-[10px] mt-2 hidden"></p>
                         </div>
 
                         <div class="p-6 bg-slate-50">
-                            <div class="mb-6 p-3 bg-green-50 rounded-xl border border-green-200 flex items-start gap-3">
-                                <input type="checkbox" id="bk-review-discount" checked onchange="calculateBooking()" class="w-5 h-5 mt-0.5 text-green-600 rounded focus:ring-green-500 cursor-pointer">
-                                <label for="bk-review-discount" class="text-xs font-bold text-green-700 cursor-pointer leading-tight" data-i18n="bk-review">รับส่วนลด 200 บาท เมื่อยินดีรีวิวบริการของเรา</label>
+                            <div class="mb-5 p-2.5 bg-green-50 rounded-lg border border-green-100 flex items-start gap-2.5 hover:bg-green-100 transition-colors">
+                                <input type="checkbox" id="bk-review-discount" checked onchange="calculateBooking()" class="w-4 h-4 mt-0.5 text-green-600 rounded focus:ring-green-500 cursor-pointer">
+                                <label for="bk-review-discount" class="text-[11px] font-bold text-green-700 cursor-pointer leading-tight" data-i18n="bk-review">รับส่วนลด 200 บาท เมื่อยินดีรีวิวบริการของเรา</label>
                             </div>
 
                             <div class="flex justify-between items-end mb-2">
                                 <span class="text-xs font-bold text-gray-500 uppercase tracking-widest" data-i18n="sum-total">ยอดชำระสุทธิ</span>
                                 <div class="text-right flex items-baseline gap-2" id="sum-final-price-area">
-                                    <span class="text-lg font-bold text-gray-400 line-through" id="sum-original-price">0</span>
+                                    <span class="text-lg font-bold text-gray-400 line-through hidden" id="sum-original-price">0</span>
                                     <div>
                                         <span class="text-3xl font-bold font-heading text-primary" id="sum-price">0</span>
-                                        <span class="text-sm font-bold text-gray-500">THB</span>
+                                        <span class="text-sm font-bold text-gray-500 ml-1">THB</span>
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-gray-400 text-right mb-6" data-i18n="sum-note">*ราคาและเวลาอาจมีการเปลี่ยนแปลงตามหน้างานจริง</p>
+                            <p class="text-[10px] text-gray-400 text-right mb-6">*ราคาอาจเปลี่ยนแปลงตามหน้างานจริง</p>
                             
                             <button onclick="submitBooking()" class="w-full bg-[#00B900] text-white py-4 rounded-xl font-bold text-center btn-shadow transition flex items-center justify-center gap-2">
-                                <i class="fa-brands fa-line text-lg"></i> <span data-i18n="btn-book-now">จองบริการผ่าน LINE</span>
+                                <i class="fa-brands fa-line text-lg"></i> <span>จองบริการผ่าน LINE</span>
                             </button>
                         </div>
                     </div>
                 </div> 
+                
             </div> 
         </div>
     </section>
@@ -917,45 +912,126 @@
             window.calculateBooking();
         }
 
-        // ----------------------------------------
-        // 2. ระบบดึงข้อมูลจาก Firebase และคำนวณราคาแบบใหม่
-        // ----------------------------------------
-        let dynamicServices = { house: [], furniture: [], addon: [] };
-        let currentServiceMode = 'house'; 
-        let activePromoCode = null;
+        // ==========================================
+        // ระบบดึงข้อมูล จัดเรียง และ Filter
+        // ==========================================
+        let houseDataMaster = []; // เก็บข้อมูลบ้านทั้งหมดไว้กรอง
+        let currentHouseFilter = 'all';
+        let currentHouseSort = 'default';
 
-        function renderDynamicUI() {
-            // สร้าง Radio Button สำหรับแพ็กเกจบ้าน
-            let houseHTML = '';
-            if(dynamicServices.house.length === 0) {
-                houseHTML = `<p class="text-sm text-gray-400">ยังไม่มีแพ็กเกจบ้านเปิดให้บริการ</p>`;
+        async function loadDynamicServices() {
+            try {
+                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
+                dynamicServices = { furniture: [], addon: [] };
+                houseDataMaster = [];
+                
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    
+                    // ถ้าระบบเก่าเซฟเป็น 'house' เฉยๆ ให้เดาจากชื่อ (Backward Compatibility)
+                    if(data.type === 'house') {
+                        if(data.name.includes('คอนโด')) data.type = 'condo';
+                        else if(data.name.includes('วิลล่า')) data.type = 'villa';
+                        else data.type = 'house_single';
+                    }
+
+                    if (data.type === 'condo' || data.type === 'house_single' || data.type === 'villa') {
+                        houseDataMaster.push(data);
+                    }
+                    else if (data.type === 'furniture') dynamicServices.furniture.push(data);
+                    else if (data.type === 'addon') dynamicServices.addon.push(data);
+                });
+
+                renderHouseUI();
+                renderOtherUI();
+            } catch (error) {
+                console.error("Error fetching services: ", error);
+            }
+        }
+
+        // จัดการปุ่ม Filter หมวดหมู่บ้าน
+        window.filterHouse = function(type) {
+            currentHouseFilter = type;
+            const btns = ['all', 'condo', 'house_single', 'villa'];
+            btns.forEach(b => {
+                const el = document.getElementById('flt-' + b);
+                if(b === type) {
+                    el.className = "px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm";
+                } else {
+                    el.className = "px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors";
+                }
+            });
+            renderHouseUI();
+        }
+
+        // จัดการ Dropdown เรียงลำดับราคา
+        window.sortHouse = function() {
+            currentHouseSort = document.getElementById('sort-house').value;
+            renderHouseUI();
+        }
+
+        // วาด UI กล่องแพ็กเกจบ้าน (หลังกรองและเรียงแล้ว)
+        function renderHouseUI() {
+            // 1. กรอง (Filter)
+            let filteredData = houseDataMaster;
+            if (currentHouseFilter !== 'all') {
+                filteredData = houseDataMaster.filter(srv => srv.type === currentHouseFilter);
+            }
+
+            // 2. จัดเรียง (Sort)
+            filteredData.sort((a, b) => {
+                if(currentHouseSort === 'price_asc') return a.price - b.price;
+                if(currentHouseSort === 'price_desc') return b.price - a.price;
+                // Default คือเรียงตามลำดับ(Order)
+                return (a.order || 999) - (b.order || 999);
+            });
+
+            // 3. วาด HTML
+            let html = '';
+            if(filteredData.length === 0) {
+                html = `<div class="col-span-full text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-400"><i class="fa-solid fa-box-open text-2xl mb-2"></i><p>ยังไม่มีแพ็กเกจในหมวดหมู่นี้</p></div>`;
             } else {
-                dynamicServices.house.forEach((srv, index) => {
-                    let origPrice = srv.originalPrice ? `<span class="text-xs text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()} ฿</span>` : '';
+                filteredData.forEach((srv, index) => {
+                    let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()} ฿</span>` : '';
                     let detail = srv.details ? `<span class="text-[10px] text-gray-500 font-normal leading-tight mt-1 mb-2 block">${srv.details}</span>` : '';
                     let staffHours = '';
                     if(srv.staffCount || srv.durationHours) {
-                        staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight">แม่บ้าน ${srv.staffCount || '-'} คน / ${srv.durationHours || '-'} ชม.</span>`;
+                        staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน &nbsp;<i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
                     }
+                    
+                    // ป้ายบอกหมวดหมู่เล็กๆ
+                    let typeLabel = srv.type === 'condo' ? 'คอนโด' : (srv.type === 'villa' ? 'วิลล่า' : 'บ้านเดี่ยว');
 
-                    houseHTML += `
-                    <label class="cursor-pointer h-full">
+                    html += `
+                    <label class="cursor-pointer h-full relative">
                         <input type="radio" name="package_house" value="${srv.id}" data-price="${srv.price}" data-name="${srv.name}" class="peer sr-only" ${index===0 ? 'checked' : ''} onchange="calculateBooking()">
-                        <div class="p-4 bg-white border-2 border-gray-200 rounded-xl text-center peer-checked:border-primary peer-checked:bg-blue-50 transition-all font-bold text-sm flex flex-col justify-between h-full">
-                            <div><span>${srv.name}</span><br>${detail}${staffHours}</div>
-                            <span class="text-primary text-base mt-2 block">${origPrice}${srv.price.toLocaleString()} ฿</span>
+                        <div class="p-5 bg-white border-2 border-gray-200 rounded-2xl text-left peer-checked:border-primary peer-checked:bg-blue-50 transition-all font-bold text-sm h-full flex flex-col justify-between overflow-hidden relative">
+                            <div class="absolute top-0 right-0 bg-gray-100 text-gray-400 text-[9px] px-2 py-1 rounded-bl-lg peer-checked:bg-primary peer-checked:text-white transition-colors">${typeLabel}</div>
+                            <div class="pr-6">
+                                <span class="text-gray-800 text-base leading-tight block mb-1">${srv.name}</span>
+                                ${detail}
+                                ${staffHours}
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-gray-100 flex items-end justify-between">
+                                <span class="text-primary text-xl block">${origPrice}${srv.price.toLocaleString()} ฿</span>
+                            </div>
                         </div>
                     </label>
                     `;
                 });
             }
-            document.getElementById('dynamic-house-packages').innerHTML = houseHTML;
+            document.getElementById('dynamic-house-packages').innerHTML = html;
+            window.calculateBooking(); // สั่งคำนวณราคากล่องแรกที่ถูกเลือกอัตโนมัติ
+        }
 
-            // สร้างฟังก์ชันกลางสำหรับเรนเดอร์กล่องการ์ด
+        // วาด UI ฝั่งเฟอร์นิเจอร์และแอดออน
+        function renderOtherUI() {
             const createCardHTML = (items, prefix, iconClass) => {
                 let html = '';
                 if(items.length === 0) return `<p class="text-sm text-gray-400 col-span-full">ยังไม่มีบริการเปิดใช้งาน</p>`;
                 
+                items.sort((a,b) => (a.order || 999) - (b.order || 999));
+
                 items.forEach(srv => {
                     let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()}</span>` : '';
                     let needsQty = (srv.unit && srv.unit !== 'เหมา' && srv.unit !== 'ครั้ง'); 
@@ -990,239 +1066,17 @@
 
             document.getElementById('dynamic-furniture-packages').innerHTML = createCardHTML(dynamicServices.furniture, 'furn', 'fa-solid fa-couch');
             document.getElementById('dynamic-addons-house').innerHTML = createCardHTML(dynamicServices.addon, 'addon', 'fa-solid fa-plus');
-
-            calculateBooking();
+            document.getElementById('dynamic-addons-furn').innerHTML = createCardHTML(dynamicServices.addon, 'addon', 'fa-solid fa-plus');
         }
 
-        window.toggleDynamicCard = function(id, event) {
-            if(event && event.target.tagName === 'INPUT') return;
-            const card = document.getElementById('card_' + id);
-            const chk = document.getElementById('chk_' + id);
-            const optionsDiv = card.querySelector('.addon-options');
-            
-            chk.checked = !chk.checked;
-            if(chk.checked) {
-                card.classList.add('selected');
-                card.querySelector('.check-icon').classList.replace('text-gray-200', 'text-primary');
-                if(optionsDiv) optionsDiv.classList.remove('hidden');
-            } else {
-                card.classList.remove('selected');
-                card.querySelector('.check-icon').classList.replace('text-primary', 'text-gray-200');
-                if(optionsDiv) optionsDiv.classList.add('hidden');
-            }
-            calculateBooking();
-        }
-
-        window.setServiceMode = function(mode) {
-            currentServiceMode = mode;
-            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
-            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
-            
-            document.getElementById('btn-mode-house').className = mode === 'house' ? activeClass : inactiveClass;
-            document.getElementById('btn-mode-furn').className = mode === 'furniture' ? activeClass : inactiveClass;
-
-            document.getElementById('flow-house').style.display = mode === 'house' ? 'block' : 'none';
-            document.getElementById('flow-furniture').style.display = mode === 'furniture' ? 'block' : 'none';
-
-            calculateBooking();
-        }
-
-        window.applyPromoCode = function() {
-            var codeInput = document.getElementById('promo-code-input');
-            if(!codeInput) return;
-            var code = codeInput.value.trim().toUpperCase();
-            var msgEl = document.getElementById('promo-msg');
-            msgEl.classList.remove('hidden');
-            var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
-
-            if (code === 'PHUKET10' || code === 'PHUKET15') { 
-                activePromoCode = code;
-                msgEl.textContent = alertTxt.promoYes;
-                msgEl.className = 'text-[10px] mt-2 text-green-600 font-bold';
-            } else if (code === '') {
-                activePromoCode = null;
-                msgEl.classList.add('hidden');
-            } else {
-                activePromoCode = null;
-                msgEl.textContent = alertTxt.promoNo;
-                msgEl.className = 'text-[10px] mt-2 text-red-500 font-bold';
-            }
-            calculateBooking();
-        }
-
-        window.calculateBooking = function() {
-            let grossPrice = 0;
-            let addonsHTML = '';
-            let baseName = '';
-
-            const processSelectedCards = (prefix) => {
-                const parentDiv = currentServiceMode === 'house' ? document.getElementById('flow-house') : document.getElementById('flow-furniture');
-                const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
-                
-                checkboxes.forEach(chk => {
-                    let id = chk.id.replace(`chk_${prefix}_`, '');
-                    let name = chk.getAttribute('data-name');
-                    let price = parseInt(chk.getAttribute('data-price')) || 0;
-                    
-                    let qty = 1;
-                    let qtyInput = document.getElementById(`qty_${prefix}_${id}`);
-                    if(qtyInput && !qtyInput.parentElement.classList.contains('hidden')) {
-                        qty = parseInt(qtyInput.value) || 1;
-                    }
-
-                    let itemPrice = price * qty;
-                    grossPrice += itemPrice;
-
-                    let valText = `+${itemPrice.toLocaleString()} ฿`;
-                    if(qty > 1) valText = `x${qty} (+${itemPrice.toLocaleString()} ฿)`;
-
-                    addonsHTML += `<div class="flex justify-between items-start text-gray-500 mb-1.5 leading-tight border-b border-gray-50 pb-1">
-                                    <span class="pr-2"><i class="fa-solid fa-plus text-[8px] mr-1 text-primary"></i> ${name}</span>
-                                    <span class="text-right whitespace-nowrap font-bold text-gray-700">${valText}</span></div>`;
-                });
-            };
-
-            if (currentServiceMode === 'house') {
-                const pkgRadio = document.querySelector('input[name="package_house"]:checked');
-                if (pkgRadio) {
-                    grossPrice = parseInt(pkgRadio.getAttribute('data-price')) || 0;
-                    baseName = pkgRadio.getAttribute('data-name');
-                    document.getElementById('sum-base-row').style.display = 'flex';
-                    document.getElementById('sum-base-label').textContent = baseName;
-                    document.getElementById('sum-hours').textContent = grossPrice.toLocaleString() + ' ฿';
-                }
-                processSelectedCards('addon'); 
-            } else {
-                document.getElementById('sum-base-row').style.display = 'none';
-                processSelectedCards('furn');  
-            }
-
-            var discountPromo = 0;
-            if (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') {
-                discountPromo = Math.round(grossPrice * 0.15); 
-            }
-
-            var reviewCheckbox = document.getElementById('bk-review-discount');
-            var isReviewChecked = reviewCheckbox ? reviewCheckbox.checked : false;
-            var discountReview = isReviewChecked ? 200 : 0;
-            
-            var discountBundle = 0; 
-            
-            var netPrice = grossPrice - discountPromo - discountBundle - discountReview;
-            if (netPrice < 0) netPrice = 0; 
-
-            var promoText = { mix:"โค้ดส่วนลด", th:"โค้ดส่วนลด", en:"Promo Code", ch:"优惠码", ru:"Промокод" };
-            var reviewText = { mix:"ส่วนลดรีวิว", th:"ส่วนลดรีวิว", en:"Review Discount", ch:"评价折扣", ru:"Скидка за отзыв" };
-
-            var discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
-            
-            if (discountPromo > 0) {
-                discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
-                                '<span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> ' + (promoText[window.currentLang] || 'โค้ด') + ' (' + activePromoCode + ')</span>' +
-                                '<span>-' + discountPromo.toLocaleString() + ' ฿</span></div>';
-            }
-            if (isReviewChecked) {
-                discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
-                                '<span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ' + (reviewText[window.currentLang] || 'ส่วนลดรีวิว') + '</span>' +
-                                '<span>-200 ฿</span></div>';
-            }
-            discountHTML += '</div>';
-
-            document.getElementById('sum-addons-list').innerHTML = addonsHTML;
-            document.getElementById('sum-discount-area').innerHTML = (discountPromo>0 || isReviewChecked) ? discountHTML : '';
-            document.getElementById('sum-original-price').textContent = grossPrice.toLocaleString();
-            document.getElementById('sum-price').textContent = netPrice.toLocaleString();
-            
-            var originalPriceEl = document.getElementById('sum-original-price');
-            originalPriceEl.style.display = (discountPromo > 0 || discountReview > 0) ? 'inline' : 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var reviewCheckbox = document.getElementById('bk-review-discount');
-            if (reviewCheckbox) { reviewCheckbox.addEventListener('change', window.calculateBooking); }
-
-            var dateInput = document.getElementById('bk-date-input');
-            if(dateInput) {
-                let tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
-                dateInput.min = tmr.toISOString().split("T")[0]; 
-            }
-
-            var mobileToggle = document.getElementById('mobile-menu-toggle');
-            if(mobileToggle) mobileToggle.onclick = () => document.getElementById('mobile-menu').classList.toggle('hidden');
-
-            setTimeout(function() { window.changeLanguage('th'); }, 200); 
-        });
-    </script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    
-    <script>
-        var firebaseConfig = {
-            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
-            authDomain: "allforce-hub.firebaseapp.com",
-            projectId: "allforce-hub",
-            storageBucket: "allforce-hub.firebasestorage.app",
-            messagingSenderId: "206898849342",
-            appId: "1:206898849342:web:35bc0462818da86fb1136f"
-        };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        
-        window.cf_auth = firebase.auth();
-        window.cf_db = firebase.firestore(); 
-
-        window.cf_auth.onAuthStateChanged(function(user) {
-            if (user) {
-                var userBtn = document.getElementById('user-menu-btn');
-                if (userBtn) {
-                    userBtn.innerHTML = '<img src="' + user.photoURL + '" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/149/149071.png\'"><span class="text-sm font-bold text-gray-800 hidden sm:inline">' + user.displayName + '</span>';
-                    userBtn.href = "profile.html"; 
-                }
-
-                var mobileUserBtn = document.getElementById('mobile-user-menu-btn');
-                if (mobileUserBtn) {
-                    mobileUserBtn.innerHTML = '<img src="' + user.photoURL + '" alt="Profile" class="w-10 h-10 rounded-full border border-gray-200 shadow-sm" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/149/149071.png\'"><div class="flex flex-col"><span class="text-sm font-bold text-gray-800">' + user.displayName + '</span><span class="text-[10px] text-gray-400">ดูโปรไฟล์และคูปองของฉัน</span></div>';
-                    mobileUserBtn.href = "profile.html";
-                }
-                
-                var userData = JSON.parse(localStorage.getItem('cf_user') || '{}');
-                if(userData.name && document.getElementById('bk-name-input')) document.getElementById('bk-name-input').value = userData.name;
-                if(userData.phone && document.getElementById('bk-phone-input')) document.getElementById('bk-phone-input').value = userData.phone;
-            }
-        });
-
-        // ฟังก์ชันโหลดข้อมูลที่แก้ไขให้โหลดทันที
-        async function loadDynamicServices() {
-            try {
-                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
-                dynamicServices = { house: [], furniture: [], addon: [] };
-                
-                snapshot.forEach(doc => {
-                    const data = { id: doc.id, ...doc.data() };
-                    if (data.type === 'house') dynamicServices.house.push(data);
-                    else if (data.type === 'furniture') dynamicServices.furniture.push(data);
-                    else if (data.type === 'addon') dynamicServices.addon.push(data);
-                });
-
-                renderDynamicUI();
-            } catch (error) {
-                console.error("Error fetching services: ", error);
-            }
-        }
-
+        // เก็บโค้ดส่วนลด
         window.collectCoupon = async function(btnElement, couponData) {
             var user = firebase.auth().currentUser;
-            if (!user) {
-                alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ (Please login first)");
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!user) { alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ"); window.location.href = 'login.html'; return; }
 
             var uid = user.uid;
             var originalText = btnElement.innerHTML;
-            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
-            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...'; btnElement.disabled = true;
 
             try {
                 var couponsRef = window.cf_db.collection('users').doc(uid).collection('coupons');
@@ -1231,55 +1085,44 @@
                 if (!checkExist.empty) {
                     alert("คุณได้เก็บคูปองนี้ไปแล้ว! โค้ดคือ: " + couponData.code);
                     btnElement.className = "w-full bg-gray-400 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
-                    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
-                    return;
+                    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว'; return;
                 }
 
                 await couponsRef.add({
-                    code: couponData.code,
-                    title: couponData.title,
-                    discount: couponData.discount,
-                    condition: couponData.condition,
-                    type: couponData.type || 'fixed',
-                    status: 'active', 
-                    isUsed: false,
-                    collectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    code: couponData.code, title: couponData.title, discount: couponData.discount,
+                    condition: couponData.condition, type: couponData.type || 'fixed', status: 'active', 
+                    isUsed: false, collectedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 btnElement.className = "w-full bg-gray-400 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
                 btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
                 alert("เก็บคูปองสำเร็จ! โค้ดของคุณคือ: " + couponData.code);
             } catch (error) {
-                console.error("Error saving coupon: ", error);
-                alert("เกิดข้อผิดพลาด: " + error.message);
-                btnElement.innerHTML = originalText;
-                btnElement.disabled = false;
+                console.error("Error saving coupon: ", error); alert("เกิดข้อผิดพลาด: " + error.message);
+                btnElement.innerHTML = originalText; btnElement.disabled = false;
             }
         }
         
+        // ฟังก์ชันดึงตำแหน่ง GPS
         window.getLocation = function() {
             var statusText = document.getElementById('location-status');
             var gpsInput = document.getElementById('bk-gps-link');
             if(!statusText || !gpsInput) return;
-            var alertTxt = (typeof sysAlerts !== 'undefined' && sysAlerts[window.currentLang]) ? sysAlerts[window.currentLang] : {gpsLoading: "กำลังค้นหาตำแหน่งของคุณ...", gpsSuccess: "รับพิกัดสำเร็จ!", errLocation: "ไม่สามารถดึงพิกัดได้"};
 
             statusText.classList.remove('hidden');
             statusText.className = "text-[10px] text-blue-500 mt-1 font-bold"; 
-            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + alertTxt.gpsLoading;
+            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังค้นหาตำแหน่งของคุณ...';
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
-                        var lat = position.coords.latitude;
-                        var lng = position.coords.longitude;
-                        gpsInput.value = 'http://maps.google.com/?q=' + lat + ',' + lng;
-                        statusText.innerHTML = "✅ " + alertTxt.gpsSuccess;
+                        gpsInput.value = 'http://maps.google.com/?q=' + position.coords.latitude + ',' + position.coords.longitude;
+                        statusText.innerHTML = "✅ รับพิกัดสำเร็จ!";
                         statusText.className = "text-[10px] text-green-600 mt-2 font-bold";
                     },
                     function(error) {
                         console.warn("GPS Error: ", error);
-                        var reason = alertTxt.errLocation;
-                        statusText.innerHTML = "❌ " + reason;
+                        statusText.innerHTML = "❌ ไม่สามารถดึงพิกัดได้";
                         statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -1287,36 +1130,23 @@
             }
         }
 
+        // ยืนยันการจอง ส่งเข้า LINE
         window.submitBooking = async function() {
             var date = document.getElementById('bk-date-input').value;
             var time = document.getElementById('bk-time-input').value;
             var name = document.getElementById('bk-name-input').value.trim();
             var phone = document.getElementById('bk-phone-input').value.trim();
-            var taxid = document.getElementById('bk-taxid-input').value.trim();
             var address = document.getElementById('bk-address-input').value.trim();
-            var gpsLink = document.getElementById('bk-gps-link').value;
-            var isKeyDrop = document.getElementById('bk-key-drop').checked;
-            var keyDetail = document.getElementById('bk-key-detail').value.trim();
-            var isReview = document.getElementById('bk-review-discount').checked;
-            var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
 
-            if(!date || !name || !phone || !address) { alert(alertTxt.errInput); return; }
-
-            var keyInfo = "อยู่บ้าน (รอรับทีมงาน)";
-            if (isKeyDrop) {
-                if(!keyDetail) { alert(alertTxt.errKey); return; }
-                keyInfo = "รับกุญแจที่ " + keyDetail;
-            }
+            if(!date || !name || !phone || !address) { alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ"); return; }
 
             var netPriceText = document.getElementById('sum-price').textContent;
             var grossPriceText = document.getElementById('sum-original-price').textContent;
-            var netPriceNumber = Number(netPriceText.replace(/,/g, '')); 
             var modeName = currentServiceMode === 'house' ? 'บริการทำความสะอาดบ้าน' : 'บริการทำความสะอาดเฟอร์นิเจอร์';
 
             var submitBtn = document.querySelector('button[onclick="submitBooking()"]');
             var originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
-            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...'; submitBtn.disabled = true;
 
             try {
                 var baseServiceText = (currentServiceMode === 'house' && document.getElementById('sum-base-label')) ? document.getElementById('sum-base-label').textContent : "ไม่มี";
@@ -1326,54 +1156,29 @@
                     addonsListElements.forEach(function(el) { addonsText += "- " + el.textContent.trim().replace(/\s+/g, ' ') + "\n"; });
                 } else { addonsText = "- ไม่มีบริการเสริม\n"; }
 
-                var reviewText = isReview ? "✅ ยินดีรีวิว (รับส่วนลดแล้ว)" : "❌ ไม่รับส่วนลด";
-
                 var orderData = {
-                    serviceMode: modeName,
-                    baseService: baseServiceText,
-                    addons: addonsText,
-                    customerName: name,
-                    phone: phone,
-                    bookingDate: date,
-                    bookingTime: time,
-                    address: address,
-                    gpsLink: gpsLink,
-                    taxId: taxid,
-                    keyDrop: keyInfo,
+                    serviceMode: modeName, baseService: baseServiceText, addons: addonsText,
+                    customerName: name, phone: phone, bookingDate: date, bookingTime: time, address: address,
                     promoCode: activePromoCode || "ไม่ได้ใช้",
-                    totalPrice: netPriceNumber,
-                    isReviewDiscount: isReview,
-                    status: "pending",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    totalPrice: Number(netPriceText.replace(/,/g, '')),
+                    status: "pending", createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
                 var docRef = await window.cf_db.collection("bookings").add(orderData);
-                var orderId = docRef.id.slice(0, 6).toUpperCase(); 
-
-                var summary = "===== CLEANFORCE BOOKING =====\n" +
-                              "รหัสการจอง: " + orderId + "\nประเภท: " + modeName + "\n";
-                if (currentServiceMode === 'house') summary += "แพ็กเกจ: " + baseServiceText + " (" + document.getElementById('sum-hours').textContent + ")\n";
-                summary += "บริการเสริม:\n" + addonsText + "นัดหมาย: " + date + " เวลา " + time + " น.\n" +
-                           "------------------------------\nชื่อลูกค้า: " + name + "\nเบอร์โทร: " + phone + "\nที่อยู่: " + address + "\n" +
-                           "------------------------------\nราคาชำระสุทธิ: " + netPriceText + " บาท (จาก " + grossPriceText + " บาท)\n" +
-                           "การรีวิว: " + reviewText + "\nโค้ดส่วนลด: " + (activePromoCode ? activePromoCode : "ไม่ได้ใช้") + "\n==============================";
-
-                var encodedMessage = encodeURIComponent(summary);
-                var lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage; 
                 
-                alert(alertTxt.success);
-                window.location.href = lineUrl;
+                var summary = "===== CLEANFORCE BOOKING =====\nรหัส: " + docRef.id.slice(0, 6).toUpperCase() + "\nประเภท: " + modeName + "\n";
+                if (currentServiceMode === 'house') summary += "แพ็กเกจ: " + baseServiceText + "\n";
+                summary += "บริการเสริม:\n" + addonsText + "------------------------------\nชื่อ: " + name + "\nเบอร์: " + phone + "\nที่อยู่: " + address + "\nนัดหมาย: " + date + " " + time + " น.\n------------------------------\nราคาชำระสุทธิ: " + netPriceText + " บาท\n==============================";
 
+                window.location.href = "https://line.me/R/oaMessage/@cleanforce/?" + encodeURIComponent(summary); 
             } catch (error) {
-                console.error("Booking Error: ", error);
-                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง");
+                console.error("Booking Error: ", error); alert("เกิดข้อผิดพลาด");
                 submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false;
             }
         }
 
-        // สั่งดึงข้อมูลทันทีที่เว็บโหลดเสร็จ
+        // เริ่มโหลดข้อมูลเมื่อหน้าเว็บพร้อม
         loadDynamicServices();
-        
     </script>
 </body>
 </html>
