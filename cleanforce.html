@@ -912,6 +912,43 @@
             window.calculateBooking();
         }
 
+        <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // 1. Firebase Initialization (กุญแจเชื่อมต่อฐานข้อมูล)
+        var firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
+        
+        // เช็คว่าเคยเชื่อมต่อหรือยัง ถ้ายังให้เชื่อมต่อ
+        if (!firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig); 
+        }
+        
+        // ประกาศตัวแปร Global ให้ทุกฟังก์ชันรู้จัก
+        window.cf_auth = firebase.auth();
+        window.cf_db = firebase.firestore(); 
+
+        // ระบบจัดการ User Login (ที่เคยมี)
+        window.cf_auth.onAuthStateChanged(function(user) {
+            if (user) {
+                var userBtn = document.getElementById('user-menu-btn');
+                if (userBtn) {
+                    userBtn.innerHTML = '<img src="' + user.photoURL + '" class="w-8 h-8 rounded-full border border-gray-200"><span class="text-sm font-bold text-gray-800 hidden sm:inline">' + user.displayName + '</span>';
+                    userBtn.href = "profile.html"; 
+                }
+                var userData = JSON.parse(localStorage.getItem('cf_user') || '{}');
+                if(userData.name) document.getElementById('bk-name-input').value = userData.name;
+                if(userData.phone) document.getElementById('bk-phone-input').value = userData.phone;
+            }
+        });
         // ==========================================
         // ระบบจัดการข้อมูลและคำนวณราคา (อัปเดตลำดับการทำงานใหม่)
         // ==========================================
