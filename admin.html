@@ -8,9 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        tailwind.config = {
-            theme: { extend: { colors: { primary: '#1EA7E1', groupPrimary: '#000080' } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { primary: '#1EA7E1', groupPrimary: '#000080' } } } }
     </script>
     <style>body { font-family: 'Noto Sans Thai', sans-serif; background-color: #f8fafc; }</style>
 </head>
@@ -45,14 +43,14 @@
 
         <div class="flex-1 p-8 overflow-y-auto">
             <div id="view-bookings" class="hidden">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-8 text-center text-gray-400">
                     <p>ระบบจัดการรายการจองกำลังอยู่ในระหว่างการปรับปรุง</p>
                 </div>
             </div>
 
             <div id="view-services" class="block">
                 <div class="flex justify-between items-center mb-6">
-                    <p class="text-gray-500">จัดการรายละเอียด ราคา ลำดับการแสดงผล และเงื่อนไขสัตว์เลี้ยง</p>
+                    <p class="text-gray-500">จัดการรายละเอียดและราคาโปรโมชั่น</p>
                     <button onclick="openServiceModal()" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> เพิ่มบริการใหม่
                     </button>
@@ -63,10 +61,10 @@
                         <table class="w-full text-left text-sm">
                             <thead class="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-[10px] tracking-wider">
                                 <tr>
-                                    <th class="px-6 py-4 font-bold text-center">ลำดับ</th>
                                     <th class="px-6 py-4 font-bold">ชื่อบริการ / รายละเอียด</th>
                                     <th class="px-6 py-4 font-bold">หมวดหมู่</th>
-                                    <th class="px-6 py-4 font-bold">ราคาเริ่มต้น</th>
+                                    <th class="px-6 py-4 font-bold">ราคาขายจริง</th>
+                                    <th class="px-6 py-4 font-bold">ราคาเดิม (ขีดทิ้ง)</th>
                                     <th class="px-6 py-4 font-bold">สถานะ</th>
                                     <th class="px-6 py-4 font-bold text-center">จัดการ</th>
                                 </tr>
@@ -87,58 +85,60 @@
             <input type="hidden" id="srv-id">
             
             <div class="space-y-5">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="md:col-span-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อแพ็กเกจ/บริการ <span class="text-red-500">*</span></label>
-                        <input type="text" id="srv-name" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น คอนโด 1 ห้องนอน (30 ตร.ม.)">
+                        <input type="text" id="srv-name" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น Bigcleaning คอนโด">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">ลำดับแสดงผล</label>
-                        <input type="number" id="srv-order" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary font-bold text-center text-primary" placeholder="1, 2, 3...">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
+                        <select id="srv-type" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary">
+                            <option value="house">บริการทำความสะอาดบ้าน</option>
+                            <option value="furniture">บริการทำความสะอาดเฟอร์นิเจอร์</option>
+                            <option value="addon">บริการเสริม (Add-on)</option>
+                        </select>
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">หมวดหมู่ (สำคัญมาก!) <span class="text-red-500">*</span></label>
-                    <select id="srv-type" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary bg-blue-50">
-                        <option value="condo">📍 ทำความสะอาด: คอนโด</option>
-                        <option value="house_single">📍 ทำความสะอาด: บ้านเดี่ยว</option>
-                        <option value="villa">📍 ทำความสะอาด: วิลล่า</option>
-                        <option value="furniture">🛋️ บริการ: เฟอร์นิเจอร์</option>
-                        <option value="addon">✨ บริการเสริม (Add-on)</option>
-                    </select>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">รายละเอียด (สเปกงาน)</label>
-                    <textarea id="srv-details" rows="2" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น แม่บ้าน 2 คน / ทำงาน 4 ชม."></textarea>
+                    <textarea id="srv-details" rows="2" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น 3 ห้องนอน 2 ห้องน้ำ หรือ ขนาด 5-6 ที่นั่ง"></textarea>
                 </div>
 
-                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-primary mb-1">ราคาปกติ (ไม่มีสัตว์เลี้ยง) <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">จำนวนพนักงาน (คน)</label>
+                        <input type="number" id="srv-staff" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น 2 (เว้นว่างได้)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">ระยะเวลาทำงาน (ชม.)</label>
+                        <input type="number" id="srv-hours" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น 9 (เว้นว่างได้)">
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-primary mb-1">ราคาขายจริง <span class="text-red-500">*</span></label>
                         <input type="number" id="srv-price" class="w-full border border-blue-200 rounded-lg p-2.5 text-sm font-bold text-primary outline-none focus:border-primary" placeholder="เช่น 2690">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-orange-500 mb-1">บวกเพิ่มกรณีมี "สัตว์เลี้ยง" (บาท)</label>
-                        <input type="number" id="srv-pet-surcharge" class="w-full border border-orange-200 rounded-lg p-2.5 text-sm text-orange-600 outline-none focus:border-orange-400" placeholder="เช่น 300 (เว้นว่าง = ไม่บวกเพิ่ม)">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">ราคาเต็ม (เพื่อขีดทิ้ง / ตัวหนังสือสีเทา)</label>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">ราคาเต็ม (ขีดทิ้ง)</label>
                         <input type="number" id="srv-original-price" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-gray-500" placeholder="เช่น 3090 (เว้นว่างได้)">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1">หน่วยนับ</label>
-                        <input type="text" id="srv-unit" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm" placeholder="เช่น เหมา, ตร.ม.">
+                        <input type="text" id="srv-unit" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น เหมา, ตร.ม.">
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-orange-500 mb-1">หมายเหตุ</label>
+                    <input type="text" id="srv-remark" class="w-full border border-orange-200 rounded-lg p-2.5 text-sm bg-orange-50/50 outline-none focus:border-orange-400" placeholder="เช่น ไม่รวมพื้นที่ลานจอดรถ">
                 </div>
 
                 <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
                     <input type="checkbox" id="srv-active" checked class="w-5 h-5 text-primary rounded cursor-pointer">
-                    <label for="srv-active" class="text-sm font-bold text-gray-700 cursor-pointer">เปิดใช้งาน (ให้ลูกค้ากดจองได้บนเว็บ)</label>
+                    <label for="srv-active" class="text-sm font-bold text-gray-700 cursor-pointer">เปิดใช้งาน</label>
                 </div>
             </div>
 
@@ -171,7 +171,7 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // ถ้าปิดระบบล็อกอีเมลชั่วคราว ให้คอมเมนต์ if ด้านล่างนี้ทิ้งได้เลยครับ
+                // เช็คอีเมล (ปลดคอมเมนต์ออกได้ถ้าต้องการล็อก)
                 // if (!ALLOWED_ADMIN_EMAILS.includes(user.email)) {
                 //    alert("ไม่มีสิทธิ์เข้าถึงหน้าระบบหลังบ้าน!");
                 //    window.location.href = "index.html"; return;
@@ -208,104 +208,92 @@
         async function fetchServices() {
             const tableBody = document.getElementById('services-table-body');
             try {
-                // โหลดข้อมูลทั้งหมดมาจัดเรียงผ่าน JavaScript
-                const snapshot = await db.collection("services").get();
+                const snapshot = await db.collection("services").orderBy("type").get();
                 if (snapshot.empty) {
                     tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">ยังไม่มีข้อมูล กดปุ่มเพิ่มบริการใหม่ได้เลยครับ</td></tr>';
                     return;
                 }
 
-                let services = [];
-                snapshot.forEach(doc => {
-                    services.push({ id: doc.id, ...doc.data() });
-                });
-
-                // การเรียงลำดับ: เรียงหมวดหมู่ก่อน -> ตามด้วยลำดับตัวเลข
-                services.sort((a, b) => {
-                    const typeA = a.type || '';
-                    const typeB = b.type || '';
-                    if (typeA < typeB) return -1;
-                    if (typeA > typeB) return 1;
-                    
-                    // ถ้าหมวดหมู่ตรงกัน ให้เรียงตามตัวเลข order (ถ้าไม่มีให้ไปอยู่ท้ายๆ)
-                    return (a.order || 99) - (b.order || 99);
-                });
-
                 let htmlContent = '';
-                services.forEach(data => {
+                snapshot.forEach(doc => {
+                    const data = doc.data();
                     const statusBadge = data.isActive 
                         ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">เปิดใช้งาน</span>'
                         : '<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded text-[10px] font-bold">ปิดชั่วคราว</span>';
                     
-                    let typeName = 'คอนโด';
-                    if(data.type === 'house_single') typeName = 'บ้านเดี่ยว';
-                    if(data.type === 'villa') typeName = 'วิลล่า';
+                    let typeName = 'บ้าน';
                     if(data.type === 'furniture') typeName = 'เฟอร์นิเจอร์';
                     if(data.type === 'addon') typeName = 'บริการเสริม';
 
-                    let petBadge = data.petSurcharge ? `<span class="bg-orange-100 text-orange-600 px-2 py-0.5 rounded text-[9px] font-bold ml-2">+ สัตว์เลี้ยง ${data.petSurcharge} ฿</span>` : '';
-                    let orderDisplay = data.order ? data.order : '-';
-                    
-                    const dataString = encodeURIComponent(JSON.stringify(data));
+                    const originalPriceHTML = data.originalPrice 
+                        ? `<span class="text-gray-400 line-through text-xs">${data.originalPrice.toLocaleString()}</span>` 
+                        : '<span class="text-gray-300">-</span>';
+
+                    let detailHTML = `<div class="text-[10px] text-gray-500 mt-1 max-w-xs">`;
+                    if(data.details) detailHTML += `${data.details} <br>`;
+                    if(data.staffCount || data.durationHours) detailHTML += `<span class="text-blue-500 font-bold">`;
+                    if(data.staffCount) detailHTML += `<i class="fa-solid fa-users"></i> ${data.staffCount} คน `;
+                    if(data.durationHours) detailHTML += `<i class="fa-regular fa-clock"></i> ${data.durationHours} ชม.`;
+                    detailHTML += `</span></div>`;
+
+                    const dataString = encodeURIComponent(JSON.stringify({id: doc.id, ...data}));
 
                     htmlContent += `
                         <tr class="hover:bg-gray-50 border-b border-gray-50 align-top">
-                            <td class="px-6 py-4 text-center font-bold text-gray-400">${orderDisplay}</td>
                             <td class="px-6 py-4">
                                 <div class="font-bold text-gray-800">${data.name}</div>
-                                <div class="text-[10px] text-gray-500 mt-1">${data.details || '-'}</div>
+                                ${detailHTML}
+                                ${data.remark ? `<div class="text-[10px] text-orange-500 mt-1"><i class="fa-solid fa-circle-info"></i> ${data.remark}</div>` : ''}
                             </td>
-                            <td class="px-6 py-4 text-xs font-bold text-blue-600 mt-1">${typeName}</td>
-                            <td class="px-6 py-4 font-bold text-primary text-base">
-                                ${data.price.toLocaleString()} ฿
-                                ${petBadge}
-                            </td>
+                            <td class="px-6 py-4 text-xs text-gray-500 mt-1">${typeName}</td>
+                            <td class="px-6 py-4 font-bold text-primary text-base">${data.price.toLocaleString()} <span class="text-xs text-gray-400 font-normal">/${data.unit || 'เหมา'}</span></td>
+                            <td class="px-6 py-4">${originalPriceHTML}</td>
                             <td class="px-6 py-4">${statusBadge}</td>
                             <td class="px-6 py-4 text-center">
                                 <button onclick="editService('${dataString}')" class="text-blue-500 hover:text-blue-700 mr-3"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deleteService('${data.id}', '${data.name}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash-can"></i></button>
+                                <button onclick="deleteService('${doc.id}', '${data.name}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash-can"></i></button>
                             </td>
                         </tr>
                     `;
                 });
                 tableBody.innerHTML = htmlContent;
-            } catch (error) {
-                console.error(error);
-                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500">ดึงข้อมูลล้มเหลว</td></tr>';
-            }
+            } catch (error) { console.error(error); }
         }
 
         function openServiceModal() {
             document.getElementById('srv-id').value = "";
             document.getElementById('srv-name').value = "";
-            document.getElementById('srv-order').value = "1"; // ค่าเริ่มต้น
-            document.getElementById('srv-type').value = "condo";
+            document.getElementById('srv-type').value = "house";
             document.getElementById('srv-details').value = "";
+            document.getElementById('srv-staff').value = "";
+            document.getElementById('srv-hours').value = "";
             document.getElementById('srv-price').value = "";
-            document.getElementById('srv-pet-surcharge').value = "";
             document.getElementById('srv-original-price').value = "";
             document.getElementById('srv-unit').value = "";
+            document.getElementById('srv-remark').value = "";
             document.getElementById('srv-active').checked = true;
-            
             document.getElementById('modal-title').textContent = "เพิ่มบริการใหม่";
             document.getElementById('service-modal').classList.remove('hidden');
         }
 
-        function closeServiceModal() {
-            document.getElementById('service-modal').classList.add('hidden');
-        }
+        function closeServiceModal() { document.getElementById('service-modal').classList.add('hidden'); }
 
         function editService(encodedData) {
             const data = JSON.parse(decodeURIComponent(encodedData));
             document.getElementById('srv-id').value = data.id;
             document.getElementById('srv-name').value = data.name;
-            document.getElementById('srv-order').value = data.order || ""; // ดึงลำดับมาโชว์
-            document.getElementById('srv-type').value = data.type === 'house' ? 'house_single' : (data.type || "condo");
+            // จัดการแปลงหมวดหมู่กลับมาให้ถูกต้อง
+            let typeVal = data.type;
+            if(typeVal === 'condo' || typeVal === 'house_single' || typeVal === 'villa') typeVal = 'house';
+            document.getElementById('srv-type').value = typeVal || "house";
+            
             document.getElementById('srv-details').value = data.details || "";
+            document.getElementById('srv-staff').value = data.staffCount || "";
+            document.getElementById('srv-hours').value = data.durationHours || "";
             document.getElementById('srv-price').value = data.price;
-            document.getElementById('srv-pet-surcharge').value = data.petSurcharge || "";
             document.getElementById('srv-original-price').value = data.originalPrice || "";
             document.getElementById('srv-unit').value = data.unit || "";
+            document.getElementById('srv-remark').value = data.remark || "";
             document.getElementById('srv-active').checked = data.isActive;
             
             document.getElementById('modal-title').textContent = "แก้ไขข้อมูลบริการ";
@@ -314,64 +302,38 @@
 
         async function saveService() {
             const id = document.getElementById('srv-id').value;
-            const priceVal = Number(document.getElementById('srv-price').value);
-            const orderVal = document.getElementById('srv-order').value ? Number(document.getElementById('srv-order').value) : 99; // ถ้าไม่ใส่ ให้ไปอยู่ท้ายสุด
-            const petSurVal = document.getElementById('srv-pet-surcharge').value ? Number(document.getElementById('srv-pet-surcharge').value) : 0;
-            const origPriceVal = document.getElementById('srv-original-price').value ? Number(document.getElementById('srv-original-price').value) : null;
-
             const data = {
                 name: document.getElementById('srv-name').value.trim(),
-                order: orderVal, // บันทึกลำดับลงฐานข้อมูล
                 type: document.getElementById('srv-type').value,
                 details: document.getElementById('srv-details').value.trim(),
-                price: priceVal,
-                petSurcharge: petSurVal,
-                originalPrice: origPriceVal,
+                staffCount: document.getElementById('srv-staff').value ? Number(document.getElementById('srv-staff').value) : null,
+                durationHours: document.getElementById('srv-hours').value ? Number(document.getElementById('srv-hours').value) : null,
+                price: Number(document.getElementById('srv-price').value),
+                originalPrice: document.getElementById('srv-original-price').value ? Number(document.getElementById('srv-original-price').value) : null,
                 unit: document.getElementById('srv-unit').value.trim(),
+                remark: document.getElementById('srv-remark').value.trim(),
                 isActive: document.getElementById('srv-active').checked
             };
 
-            if(!data.name || isNaN(data.price) || data.price <= 0) { 
-                alert("กรุณากรอก 'ชื่อแพ็กเกจ' และ 'ราคาปกติ' ให้ถูกต้องครับ"); return; 
-            }
-
+            if(!data.name || isNaN(data.price) || data.price <= 0) { alert("กรุณากรอกชื่อและราคาให้ถูกต้องครับ"); return; }
             const btn = document.getElementById('btn-save-srv');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...'; 
-            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...'; btn.disabled = true;
 
             try {
-                if(id) {
-                    await db.collection("services").doc(id).update(data);
-                } else {
-                    await db.collection("services").add(data);
-                }
-                closeServiceModal();
-                fetchServices();
-            } catch (error) {
-                console.error("Save Error: ", error); 
-                alert("เกิดข้อผิดพลาดในการบันทึกครับ");
-            } finally {
-                btn.innerHTML = "บันทึกข้อมูล"; 
-                btn.disabled = false;
-            }
+                if(id) await db.collection("services").doc(id).update(data);
+                else await db.collection("services").add(data);
+                closeServiceModal(); fetchServices();
+            } catch (error) { console.error(error); alert("เกิดข้อผิดพลาด"); } 
+            finally { btn.innerHTML = "บันทึกข้อมูล"; btn.disabled = false; }
         }
 
         async function deleteService(id, name) {
-            if(confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ "${name}" ออกจากระบบถาวร?`)) {
-                try {
-                    await db.collection("services").doc(id).delete();
-                    fetchServices();
-                } catch (error) {
-                    console.error(error); alert("ลบข้อมูลไม่สำเร็จ");
-                }
+            if(confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ "${name}" ออกจากระบบ?`)) {
+                try { await db.collection("services").doc(id).delete(); fetchServices(); } 
+                catch (error) { console.error(error); }
             }
         }
-        
-        document.getElementById('logout-btn').onclick = function() {
-            if(confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
-                auth.signOut().then(() => { window.location.href = 'login.html'; });
-            }
-        };
+        document.getElementById('logout-btn').onclick = () => { if(confirm('ต้องการออกจากระบบ?')) auth.signOut().then(() => window.location.href = 'login.html'); };
     </script>
 </body>
 </html>
