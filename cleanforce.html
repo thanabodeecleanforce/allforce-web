@@ -918,6 +918,9 @@
         let houseDataMaster = []; // เก็บข้อมูลบ้านทั้งหมดไว้กรอง
         let currentHouseFilter = 'all';
         let currentHouseSort = 'default';
+        let dynamicServices = { house: [], furniture: [], addon: [] };
+        let activePromoCode = null;
+        let currentServiceMode = 'house';
 
         async function loadDynamicServices() {
             try {
@@ -996,7 +999,7 @@
                     let detail = srv.details ? `<span class="text-[10px] text-gray-500 font-normal leading-tight mt-1 mb-2 block">${srv.details}</span>` : '';
                     let staffHours = '';
                     if(srv.staffCount || srv.durationHours) {
-                        staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน &nbsp;<i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
+                        staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน  <i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
                     }
                     
                     // ป้ายบอกหมวดหมู่เล็กๆ
@@ -1065,10 +1068,160 @@
             };
 
             document.getElementById('dynamic-furniture-packages').innerHTML = createCardHTML(dynamicServices.furniture, 'furn', 'fa-solid fa-couch');
-            document.getElementById('dynamic-addons-house').innerHTML = createCardHTML(dynamicServices.addon, 'addon', 'fa-solid fa-plus');
-            document.getElementById('dynamic-addons-furn').innerHTML = createCardHTML(dynamicServices.addon, 'addon', 'fa-solid fa-plus');
+            document.getElementById('dynamic-addons-house').innerHTML = createCardHTML(dynamicServices.addon, 'addon_h', 'fa-solid fa-plus');
+            document.getElementById('dynamic-addons-furn').innerHTML = createCardHTML(dynamicServices.addon, 'addon_f', 'fa-solid fa-plus');
         }
 
+        // ==========================================
+        // ฟังก์ชัน UI และ การคำนวณราคา (ที่หายไป)
+        // ==========================================
+
+        // 1. จัดการเปิดปิด Add-on
+        window.toggleDynamicCard = function(id, event) {
+            if(event && event.target.tagName === 'INPUT') return;
+            const card = document.getElementById('card_' + id);
+            const chk = document.getElementById('chk_' + id);
+            const optionsDiv = card.querySelector('.addon-options');
+            
+            chk.checked = !chk.checked;
+            if(chk.checked) {
+                card.classList.add('selected');
+                card.querySelector('.check-icon').classList.replace('text-gray-200', 'text-primary');
+                if(optionsDiv) optionsDiv.classList.remove('hidden');
+            } else {
+                card.classList.remove('selected');
+                card.querySelector('.check-icon').classList.replace('text-primary', 'text-gray-200');
+                if(optionsDiv) optionsDiv.classList.add('hidden');
+            }
+            calculateBooking();
+        }
+
+        // 2. เปลี่ยนโหมด บ้าน / เฟอร์นิเจอร์
+        window.setServiceMode = function(mode) {
+            currentServiceMode = mode;
+            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
+            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
+            
+            document.getElementById('btn-mode-house').className = mode === 'house' ? activeClass : inactiveClass;
+            document.getElementById('btn-mode-furn').className = mode === 'furniture' ? activeClass : inactiveClass;
+
+            document.getElementById('flow-house').style.display = mode === 'house' ? 'block' : 'none';
+            document.getElementById('flow-furniture').style.display = mode === 'furniture' ? 'block' : 'none';
+
+            calculateBooking();
+        }
+
+        // 3. โค้ดส่วนลด
+        window.applyPromoCode = function() {
+            var codeInput = document.getElementById('promo-code-input');
+            if(!codeInput) return;
+            var code = codeInput.value.trim().toUpperCase();
+            var msgEl = document.getElementById('promo-msg');
+            msgEl.classList.remove('hidden');
+            var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
+
+            if (code === 'PHUKET10' || code === 'PHUKET15') {
+                activePromoCode = code;
+                msgEl.textContent = alertTxt.promoYes;
+                msgEl.className = 'text-[10px] mt-2 text-green-600 font-bold';
+            } else if (code === '') {
+                activePromoCode = null;
+                msgEl.classList.add('hidden');
+            } else {
+                activePromoCode = null;
+                msgEl.textContent = alertTxt.promoNo;
+                msgEl.className = 'text-[10px] mt-2 text-red-500 font-bold';
+            }
+            calculateBooking();
+        }
+
+        // 4. คำนวณราคาสรุปยอด
+        window.calculateBooking = function() {
+            let grossPrice = 0;
+            let addonsHTML = '';
+            let baseName = '';
+
+            const processSelectedCards = (prefix) => {
+                const parentDiv = currentServiceMode === 'house' ? document.getElementById('flow-house') : document.getElementById('flow-furniture');
+                const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
+                
+                checkboxes.forEach(chk => {
+                    let id = chk.id.replace(`chk_${prefix}_`, '');
+                    let name = chk.getAttribute('data-name');
+                    let price = parseInt(chk.getAttribute('data-price')) || 0;
+                    
+                    let qty = 1;
+                    let qtyInput = document.getElementById(`qty_${prefix}_${id}`);
+                    if(qtyInput && !qtyInput.parentElement.classList.contains('hidden')) {
+                        qty = parseInt(qtyInput.value) || 1;
+                    }
+
+                    let itemPrice = price * qty;
+                    grossPrice += itemPrice;
+
+                    let valText = `+${itemPrice.toLocaleString()} ฿`;
+                    if(qty > 1) valText = `x${qty} (+${itemPrice.toLocaleString()} ฿)`;
+
+                    addonsHTML += `<div class="flex justify-between items-start text-gray-500 mb-1.5 leading-tight border-b border-gray-50 pb-1">
+                                    <span class="pr-2"><i class="fa-solid fa-plus text-[8px] mr-1 text-primary"></i> ${name}</span>
+                                    <span class="text-right whitespace-nowrap font-bold text-gray-700">${valText}</span></div>`;
+                });
+            };
+
+            if (currentServiceMode === 'house') {
+                const pkgRadio = document.querySelector('input[name="package_house"]:checked');
+                if (pkgRadio) {
+                    grossPrice = parseInt(pkgRadio.getAttribute('data-price')) || 0;
+                    baseName = pkgRadio.getAttribute('data-name');
+                    document.getElementById('sum-base-row').style.display = 'flex';
+                    document.getElementById('sum-base-label').textContent = baseName;
+                    document.getElementById('sum-hours').textContent = grossPrice.toLocaleString() + ' ฿';
+                }
+                processSelectedCards('addon_h'); 
+            } else {
+                document.getElementById('sum-base-row').style.display = 'none';
+                processSelectedCards('furn');  
+                processSelectedCards('addon_f');
+            }
+
+            var discountPromo = 0;
+            if (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') {
+                discountPromo = Math.round(grossPrice * 0.15); 
+            }
+
+            var reviewCheckbox = document.getElementById('bk-review-discount');
+            var isReviewChecked = reviewCheckbox ? reviewCheckbox.checked : false;
+            var discountReview = isReviewChecked ? 200 : 0;
+            
+            var netPrice = grossPrice - discountPromo - discountReview;
+            if (netPrice < 0) netPrice = 0; 
+
+            var promoText = { mix:"โค้ดส่วนลด", th:"โค้ดส่วนลด", en:"Promo Code", ch:"优惠码", ru:"Промокод" };
+            var reviewText = { mix:"ส่วนลดรีวิว", th:"ส่วนลดรีวิว", en:"Review Discount", ch:"评价折扣", ru:"Скидка за отзыв" };
+
+            var discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
+            
+            if (discountPromo > 0) {
+                discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
+                                '<span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> ' + (promoText[window.currentLang] || 'โค้ด') + ' (' + activePromoCode + ')</span>' +
+                                '<span>-' + discountPromo.toLocaleString() + ' ฿</span></div>';
+            }
+            if (isReviewChecked) {
+                discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
+                                '<span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ' + (reviewText[window.currentLang] || 'ส่วนลดรีวิว') + '</span>' +
+                                '<span>-200 ฿</span></div>';
+            }
+            discountHTML += '</div>';
+
+            document.getElementById('sum-addons-list').innerHTML = addonsHTML;
+            document.getElementById('sum-discount-area').innerHTML = (discountPromo>0 || isReviewChecked) ? discountHTML : '';
+            document.getElementById('sum-original-price').textContent = grossPrice.toLocaleString();
+            document.getElementById('sum-price').textContent = netPrice.toLocaleString();
+            
+            var originalPriceEl = document.getElementById('sum-original-price');
+            originalPriceEl.style.display = (discountPromo > 0 || discountReview > 0) ? 'inline' : 'none';
+        }
+        
         // เก็บโค้ดส่วนลด
         window.collectCoupon = async function(btnElement, couponData) {
             var user = firebase.auth().currentUser;
