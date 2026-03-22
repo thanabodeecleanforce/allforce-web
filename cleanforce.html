@@ -911,13 +911,13 @@
 
             window.calculateBooking();
         }
-
-        <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    
+
     <script>
-        // 1. Firebase Initialization (กุญแจเชื่อมต่อฐานข้อมูล)
+        // 2. ตั้งค่าการเชื่อมต่อ (Initialization)
         var firebaseConfig = {
             apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
             authDomain: "allforce-hub.firebaseapp.com",
@@ -926,17 +926,17 @@
             messagingSenderId: "206898849342",
             appId: "1:206898849342:web:35bc0462818da86fb1136f"
         };
-        
-        // เช็คว่าเคยเชื่อมต่อหรือยัง ถ้ายังให้เชื่อมต่อ
+
+        // เริ่มต้นเชื่อมต่อ
         if (!firebase.apps.length) { 
             firebase.initializeApp(firebaseConfig); 
         }
-        
-        // ประกาศตัวแปร Global ให้ทุกฟังก์ชันรู้จัก
-        window.cf_auth = firebase.auth();
-        window.cf_db = firebase.firestore(); 
 
-        // ระบบจัดการ User Login (ที่เคยมี)
+        // กำหนดตัวแปรฐานข้อมูลแบบ Global
+        window.cf_auth = firebase.auth();
+        window.cf_db = firebase.firestore();
+
+        // ระบบจัดการ Login
         window.cf_auth.onAuthStateChanged(function(user) {
             if (user) {
                 var userBtn = document.getElementById('user-menu-btn');
@@ -945,10 +945,32 @@
                     userBtn.href = "profile.html"; 
                 }
                 var userData = JSON.parse(localStorage.getItem('cf_user') || '{}');
-                if(userData.name) document.getElementById('bk-name-input').value = userData.name;
-                if(userData.phone) document.getElementById('bk-phone-input').value = userData.phone;
+                if(userData.name) {
+                    var nameInput = document.getElementById('bk-name-input');
+                    if(nameInput) nameInput.value = userData.name;
+                }
+                if(userData.phone) {
+                    var phoneInput = document.getElementById('bk-phone-input');
+                    if(phoneInput) phoneInput.value = userData.phone;
+                }
             }
         });
+        // --- 📦 คืนค่าข้อมูลภาษาและข้อความแจ้งเตือนที่หายไป ---
+        var translations = {
+            th: { "nav-home": "หน้าแรก", "nav-btn": "จองบริการ", "bk-title": "จองบริการทำความสะอาด", "bk-subtitle": "เลือกระหว่างบริการบ้าน หรือ เฟอร์นิเจอร์", "bk-step1": "เลือกรูปแบบการทำความสะอาดบ้าน", "bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน", "sum-title": "สรุปคำสั่งซื้อ", "btn-book-now": "จองบริการผ่าน LINE" },
+            en: { "nav-home": "Home", "nav-btn": "Book Now", "bk-title": "Book Cleaning", "bk-subtitle": "Choose House or Furniture service", "bk-step1": "Select House Cleaning Package", "bk-gps-btn": "Tap to pin current location", "sum-title": "Order Summary", "btn-book-now": "Confirm & Send via LINE" }
+        };
+
+        var sysAlerts = {
+            th: { promoYes: "✅ ใช้โค้ดสำเร็จ", promoNo: "❌ โค้ดไม่ถูกต้อง", errInput: "กรุณากรอกข้อมูลให้ครบถ้วน" },
+            en: { promoYes: "✅ Success! Applied", promoNo: "❌ Invalid code", errInput: "Please fill all fields" }
+        };
+
+        var packageNamesMap = {
+            '890':  {th: "ทั่วไป 2 ชม.", en: "General 2 hrs"},
+            '1063': {th: "ทั่วไป 3 ชม.", en: "General 3 hrs"},
+            '3144': {th: "Deep 80 ตร.ม.", en: "Deep 80 sq.m."}
+        };
         // ==========================================
         // ระบบจัดการข้อมูลและคำนวณราคา (อัปเดตลำดับการทำงานใหม่)
         // ==========================================
