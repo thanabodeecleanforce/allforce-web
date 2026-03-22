@@ -51,12 +51,25 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // เช็คว่าถ้าล็อกอินอยู่แล้ว ให้เด้งไปหน้าแรกเลย ไม่ต้องกดซ้ำ
+        // เช็คว่าถ้าล็อกอินอยู่แล้ว ให้เด้งกลับไปหน้าที่จากมา (Smart Redirect)
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // ถ้าต้องการให้กลับไปหน้าที่จากมา (เช่น กดเก็บคูปองแล้วเด้งมาหน้าล็อกอิน พอเสร็จให้เด้งกลับไปหน้าเดิม)
-                // ในที่นี้จะให้เด้งกลับไปหน้าหลัก (index.html) ชั่วคราวก่อนครับ
-                window.location.href = "index.html"; 
+                // ดึง URL ของหน้าเว็บที่ลูกค้าเพิ่งจากมา
+                let prevPage = document.referrer || "";
+                
+                // เช็คคำใน URL แล้วเด้งกลับให้ถูกหน้า
+                if (prevPage.includes("cleanforce.html")) {
+                    window.location.href = "cleanforce.html";
+                } else if (prevPage.includes("admin.html")) {
+                    window.location.href = "admin.html";
+                } else if (prevPage.includes("profile.html")) {
+                    window.location.href = "profile.html";
+                } else if (prevPage.includes("index.html")) {
+                    window.location.href = "index.html";
+                } else {
+                    // ถ้าไม่รู้ว่ามาจากไหน ให้กลับไปหน้า Hub เป็นค่าเริ่มต้น
+                    window.location.href = "index.html"; 
+                }
             }
         });
 
