@@ -1024,7 +1024,11 @@
                 });
             }
             document.getElementById('dynamic-house-packages').innerHTML = html;
-            window.calculateBooking(); // สั่งคำนวณราคากล่องแรกที่ถูกเลือกอัตโนมัติ
+            
+            // เช็คก่อนว่ามีฟังก์ชันนี้หรือยัง ป้องกัน Error
+            if (typeof window.calculateBooking === "function") {
+                window.calculateBooking();
+            }
         }
 
         // วาด UI ฝั่งเฟอร์นิเจอร์และแอดออน
