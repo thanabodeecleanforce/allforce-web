@@ -1143,6 +1143,10 @@
 
             const processSelectedCards = (prefix) => {
                 const parentDiv = currentServiceMode === 'house' ? document.getElementById('flow-house') : document.getElementById('flow-furniture');
+                
+                // ตรวจสอบว่า parentDiv มีอยู่จริงหรือไม่
+                if (!parentDiv) return;
+
                 const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
                 
                 checkboxes.forEach(chk => {
@@ -1168,60 +1172,71 @@
                 });
             };
 
-            if (currentServiceMode === 'house') {
-                const pkgRadio = document.querySelector('input[name="package_house"]:checked');
-                if (pkgRadio) {
-                    grossPrice = parseInt(pkgRadio.getAttribute('data-price')) || 0;
-                    baseName = pkgRadio.getAttribute('data-name');
-                    document.getElementById('sum-base-row').style.display = 'flex';
-                    document.getElementById('sum-base-label').textContent = baseName;
-                    document.getElementById('sum-hours').textContent = grossPrice.toLocaleString() + ' ฿';
+            try {
+                if (currentServiceMode === 'house') {
+                    const pkgRadio = document.querySelector('input[name="package_house"]:checked');
+                    if (pkgRadio) {
+                        grossPrice = parseInt(pkgRadio.getAttribute('data-price')) || 0;
+                        baseName = pkgRadio.getAttribute('data-name');
+                        const sumBaseRow = document.getElementById('sum-base-row');
+                        if (sumBaseRow) {
+                            sumBaseRow.style.display = 'flex';
+                            document.getElementById('sum-base-label').textContent = baseName;
+                            document.getElementById('sum-hours').textContent = grossPrice.toLocaleString() + ' ฿';
+                        }
+                    }
+                    processSelectedCards('addon_h'); 
+                } else {
+                    const sumBaseRow = document.getElementById('sum-base-row');
+                    if (sumBaseRow) sumBaseRow.style.display = 'none';
+                    processSelectedCards('furn');  
+                    processSelectedCards('addon_f');
                 }
-                processSelectedCards('addon_h'); 
-            } else {
-                document.getElementById('sum-base-row').style.display = 'none';
-                processSelectedCards('furn');  
-                processSelectedCards('addon_f');
+
+                var discountPromo = 0;
+                if (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') {
+                    discountPromo = Math.round(grossPrice * 0.15); 
+                }
+
+                var reviewCheckbox = document.getElementById('bk-review-discount');
+                var isReviewChecked = reviewCheckbox ? reviewCheckbox.checked : false;
+                var discountReview = isReviewChecked ? 200 : 0;
+                
+                var netPrice = grossPrice - discountPromo - discountReview;
+                if (netPrice < 0) netPrice = 0; 
+
+                var promoText = { mix:"โค้ดส่วนลด", th:"โค้ดส่วนลด", en:"Promo Code", ch:"优惠码", ru:"Промокод" };
+                var reviewText = { mix:"ส่วนลดรีวิว", th:"ส่วนลดรีวิว", en:"Review Discount", ch:"评价折扣", ru:"Скидка за отзыв" };
+
+                var discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
+                
+                if (discountPromo > 0) {
+                    discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
+                                    '<span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> ' + (promoText[window.currentLang] || 'โค้ด') + ' (' + activePromoCode + ')</span>' +
+                                    '<span>-' + discountPromo.toLocaleString() + ' ฿</span></div>';
+                }
+                if (isReviewChecked) {
+                    discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
+                                    '<span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ' + (reviewText[window.currentLang] || 'ส่วนลดรีวิว') + '</span>' +
+                                    '<span>-200 ฿</span></div>';
+                }
+                discountHTML += '</div>';
+
+                document.getElementById('sum-addons-list').innerHTML = addonsHTML;
+                document.getElementById('sum-discount-area').innerHTML = (discountPromo>0 || isReviewChecked) ? discountHTML : '';
+                document.getElementById('sum-original-price').textContent = grossPrice.toLocaleString();
+                document.getElementById('sum-price').textContent = netPrice.toLocaleString();
+                
+                var originalPriceEl = document.getElementById('sum-original-price');
+                if (originalPriceEl) {
+                    originalPriceEl.style.display = (discountPromo > 0 || discountReview > 0) ? 'inline' : 'none';
+                }
+
+            } catch (e) {
+                console.error("Error in calculateBooking:", e);
             }
-
-            var discountPromo = 0;
-            if (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') {
-                discountPromo = Math.round(grossPrice * 0.15); 
-            }
-
-            var reviewCheckbox = document.getElementById('bk-review-discount');
-            var isReviewChecked = reviewCheckbox ? reviewCheckbox.checked : false;
-            var discountReview = isReviewChecked ? 200 : 0;
-            
-            var netPrice = grossPrice - discountPromo - discountReview;
-            if (netPrice < 0) netPrice = 0; 
-
-            var promoText = { mix:"โค้ดส่วนลด", th:"โค้ดส่วนลด", en:"Promo Code", ch:"优惠码", ru:"Промокод" };
-            var reviewText = { mix:"ส่วนลดรีวิว", th:"ส่วนลดรีวิว", en:"Review Discount", ch:"评价折扣", ru:"Скидка за отзыв" };
-
-            var discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
-            
-            if (discountPromo > 0) {
-                discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
-                                '<span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> ' + (promoText[window.currentLang] || 'โค้ด') + ' (' + activePromoCode + ')</span>' +
-                                '<span>-' + discountPromo.toLocaleString() + ' ฿</span></div>';
-            }
-            if (isReviewChecked) {
-                discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
-                                '<span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ' + (reviewText[window.currentLang] || 'ส่วนลดรีวิว') + '</span>' +
-                                '<span>-200 ฿</span></div>';
-            }
-            discountHTML += '</div>';
-
-            document.getElementById('sum-addons-list').innerHTML = addonsHTML;
-            document.getElementById('sum-discount-area').innerHTML = (discountPromo>0 || isReviewChecked) ? discountHTML : '';
-            document.getElementById('sum-original-price').textContent = grossPrice.toLocaleString();
-            document.getElementById('sum-price').textContent = netPrice.toLocaleString();
-            
-            var originalPriceEl = document.getElementById('sum-original-price');
-            originalPriceEl.style.display = (discountPromo > 0 || discountReview > 0) ? 'inline' : 'none';
         }
-        
+
         // เก็บโค้ดส่วนลด
         window.collectCoupon = async function(btnElement, couponData) {
             var user = firebase.auth().currentUser;
