@@ -913,7 +913,7 @@
         }
 
         // ==========================================
-        // ระบบดึงข้อมูล จัดเรียง และ Filter (อัปเดตแก้บั๊ก 100%)
+        // ระบบจัดการข้อมูลและคำนวณราคา (อัปเดตลำดับการทำงานใหม่)
         // ==========================================
         let houseDataMaster = [];
         let currentHouseFilter = 'all';
@@ -922,15 +922,16 @@
         let activePromoCode = null;
         let currentServiceMode = 'house';
 
-        // 1. ประกาศฟังก์ชันคำนวณราคาก่อน เพื่อป้องกัน Error หาฟังก์ชันไม่เจอ
+        // 1. นำฟังก์ชันคำนวณราคาขึ้นมาไว้บนสุด เพื่อให้พร้อมใช้งานทันทีที่โหลดข้อมูลเสร็จ
         window.calculateBooking = function() {
             try {
                 let grossPrice = 0;
                 let addonsHTML = '';
                 let baseName = '';
 
-                const processSelectedCards = (prefix) => {
-                    const parentDiv = currentServiceMode === 'house' ? document.getElementById('flow-house') : document.getElementById('flow-furniture');
+                // ฟังก์ชันย่อยสำหรับคำนวณ Add-on แบบแยกตาม Parent ที่ถูกต้อง
+                const processSelectedCards = (prefix, parentId) => {
+                    const parentDiv = document.getElementById(parentId);
                     if (!parentDiv) return;
 
                     const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
@@ -967,12 +968,14 @@
                             document.getElementById('sum-hours').textContent = grossPrice.toLocaleString() + ' ฿';
                         }
                     }
-                    processSelectedCards('addon_h'); 
+                    // คำนวณแอดออนฝั่งบ้าน โดยค้นหาใน id 'flow-house' เท่านั้น
+                    processSelectedCards('addon_h', 'flow-house'); 
                 } else {
                     const sumBaseRow = document.getElementById('sum-base-row');
                     if (sumBaseRow) sumBaseRow.style.display = 'none';
-                    processSelectedCards('furn');  
-                    processSelectedCards('addon_f');
+                    // คำนวณฝั่งเฟอร์นิเจอร์ โดยค้นหาใน id 'flow-furniture' เท่านั้น
+                    processSelectedCards('furn', 'flow-furniture');  
+                    processSelectedCards('addon_f', 'flow-furniture');
                 }
 
                 let discountPromo = (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') ? Math.round(grossPrice * 0.15) : 0;
@@ -1012,84 +1015,7 @@
             }
         };
 
-        // 2. ฟังก์ชันดึงข้อมูลจาก Firebase
-        async function loadDynamicServices() {
-            try {
-                if(!window.cf_db) {
-                    console.error("Firebase DB not initialized yet.");
-                    return;
-                }
-                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
-                dynamicServices = { house: [], furniture: [], addon: [] };
-                houseDataMaster = [];
-                
-                snapshot.forEach(doc => {
-                    const data = { id: doc.id, ...doc.data() };
-                    
-                    if(data.type === 'house') {
-                        if(data.name && data.name.includes('คอนโด')) data.type = 'condo';
-                        else if(data.name && data.name.includes('วิลล่า')) data.type = 'villa';
-                        else data.type = 'house_single';
-                    }
-
-                    if (data.type === 'condo' || data.type === 'house_single' || data.type === 'villa') {
-                        houseDataMaster.push(data);
-                    } else if (data.type === 'furniture') {
-                        dynamicServices.furniture.push(data);
-                    } else if (data.type === 'addon') {
-                        dynamicServices.addon.push(data);
-                    }
-                });
-
-                renderHouseUI();
-                renderOtherUI();
-            } catch (error) {
-                console.error("Error fetching services: ", error);
-                const housePkgDiv = document.getElementById('dynamic-house-packages');
-                if(housePkgDiv) housePkgDiv.innerHTML = '<div class="col-span-full text-center text-red-500 py-6 font-bold"><i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i><br>ดึงข้อมูลล้มเหลว กรุณารีเฟรชหน้าเว็บ</div>';
-            }
-        }
-
-        // 3. ควบคุม UI (ปุ่มเปลี่ยนโหมด, ตัวกรอง)
-        window.filterHouse = function(type) {
-            currentHouseFilter = type;
-            const btns = ['all', 'condo', 'house_single', 'villa'];
-            btns.forEach(b => {
-                const el = document.getElementById('flt-' + b);
-                if(el) {
-                    el.className = (b === type) 
-                        ? "px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm" 
-                        : "px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors";
-                }
-            });
-            renderHouseUI();
-        };
-
-        window.sortHouse = function() {
-            const sortEl = document.getElementById('sort-house');
-            if(sortEl) currentHouseSort = sortEl.value;
-            renderHouseUI();
-        };
-
-        window.setServiceMode = function(mode) {
-            currentServiceMode = mode;
-            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
-            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
-            
-            var btnHouse = document.getElementById('btn-mode-house');
-            var btnFurn = document.getElementById('btn-mode-furn');
-            if(btnHouse) btnHouse.className = mode === 'house' ? activeClass : inactiveClass;
-            if(btnFurn) btnFurn.className = mode === 'furniture' ? activeClass : inactiveClass;
-
-            var flowHouse = document.getElementById('flow-house');
-            var flowFurn = document.getElementById('flow-furniture');
-            if(flowHouse) flowHouse.style.display = mode === 'house' ? 'block' : 'none';
-            if(flowFurn) flowFurn.style.display = mode === 'furniture' ? 'block' : 'none';
-
-            window.calculateBooking();
-        };
-
-        // 4. วาดโครงสร้างกล่องแพ็กเกจ
+        // 2. ฟังก์ชันวาด UI (ย้ายมาไว้ก่อน loadDynamicServices)
         function renderHouseUI() {
             try {
                 let filteredData = houseDataMaster;
@@ -1116,7 +1042,7 @@
                         let detail = srv.details ? `<span class="text-[10px] text-gray-500 font-normal leading-tight mt-1 mb-2 block">${srv.details}</span>` : '';
                         let staffHours = '';
                         if(srv.staffCount || srv.durationHours) {
-                            staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน &nbsp;<i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
+                            staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน  <i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
                         }
                         let typeLabel = srv.type === 'condo' ? 'คอนโด' : (srv.type === 'villa' ? 'วิลล่า' : 'บ้านเดี่ยว');
 
@@ -1195,6 +1121,83 @@
                 console.error("Render Other Error:", e);
             }
         }
+
+        // 3. ฟังก์ชันดึงข้อมูลจาก Firebase (เรียกทีหลังสุดเพื่อความปลอดภัย)
+        async function loadDynamicServices() {
+            try {
+                if(!window.cf_db) {
+                    console.error("Firebase DB not initialized yet.");
+                    return;
+                }
+                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
+                dynamicServices = { house: [], furniture: [], addon: [] };
+                houseDataMaster = [];
+                
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    
+                    if(data.type === 'house') {
+                        if(data.name && data.name.includes('คอนโด')) data.type = 'condo';
+                        else if(data.name && data.name.includes('วิลล่า')) data.type = 'villa';
+                        else data.type = 'house_single';
+                    }
+
+                    if (data.type === 'condo' || data.type === 'house_single' || data.type === 'villa') {
+                        houseDataMaster.push(data);
+                    } else if (data.type === 'furniture') {
+                        dynamicServices.furniture.push(data);
+                    } else if (data.type === 'addon') {
+                        dynamicServices.addon.push(data);
+                    }
+                });
+
+                renderHouseUI();
+                renderOtherUI();
+            } catch (error) {
+                console.error("Error fetching services: ", error);
+                const housePkgDiv = document.getElementById('dynamic-house-packages');
+                if(housePkgDiv) housePkgDiv.innerHTML = '<div class="col-span-full text-center text-red-500 py-6 font-bold"><i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i><br>ดึงข้อมูลล้มเหลว กรุณารีเฟรชหน้าเว็บ</div>';
+            }
+        }
+
+        // 4. ควบคุม UI (ปุ่มเปลี่ยนโหมด, ตัวกรอง)
+        window.filterHouse = function(type) {
+            currentHouseFilter = type;
+            const btns = ['all', 'condo', 'house_single', 'villa'];
+            btns.forEach(b => {
+                const el = document.getElementById('flt-' + b);
+                if(el) {
+                    el.className = (b === type) 
+                        ? "px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm" 
+                        : "px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors";
+                }
+            });
+            renderHouseUI();
+        };
+
+        window.sortHouse = function() {
+            const sortEl = document.getElementById('sort-house');
+            if(sortEl) currentHouseSort = sortEl.value;
+            renderHouseUI();
+        };
+
+        window.setServiceMode = function(mode) {
+            currentServiceMode = mode;
+            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
+            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
+            
+            var btnHouse = document.getElementById('btn-mode-house');
+            var btnFurn = document.getElementById('btn-mode-furn');
+            if(btnHouse) btnHouse.className = mode === 'house' ? activeClass : inactiveClass;
+            if(btnFurn) btnFurn.className = mode === 'furniture' ? activeClass : inactiveClass;
+
+            var flowHouse = document.getElementById('flow-house');
+            var flowFurn = document.getElementById('flow-furniture');
+            if(flowHouse) flowHouse.style.display = mode === 'house' ? 'block' : 'none';
+            if(flowFurn) flowFurn.style.display = mode === 'furniture' ? 'block' : 'none';
+
+            window.calculateBooking();
+        };
 
         window.toggleDynamicCard = function(id, event) {
             if(event && event.target.tagName === 'INPUT') return;
