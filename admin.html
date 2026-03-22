@@ -16,15 +16,15 @@
 </head>
 <body class="flex h-screen overflow-hidden text-gray-800">
 
-    <aside class="w-64 bg-groupPrimary text-white flex flex-col shadow-xl z-20">
+    <aside class="w-64 bg-groupPrimary text-white flex flex-col shadow-xl z-20 shrink-0">
         <div class="h-20 flex items-center justify-center border-b border-white/10">
             <h1 class="text-xl font-bold tracking-widest uppercase">CF Admin</h1>
         </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="switchTab('bookings')" id="tab-bookings" class="w-full flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl font-bold text-sm transition text-left">
+            <button onclick="switchTab('bookings')" id="tab-bookings" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-gray-300 rounded-xl font-bold text-sm transition text-left">
                 <i class="fa-solid fa-calendar-check w-5 text-center"></i> รายการจอง (Bookings)
             </button>
-            <button onclick="switchTab('services')" id="tab-services" class="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl font-bold text-sm transition text-left">
+            <button onclick="switchTab('services')" id="tab-services" class="w-full flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl font-bold text-sm transition text-left">
                 <i class="fa-solid fa-tags w-5 text-center"></i> จัดการราคา (Pricing)
             </button>
             <button class="w-full flex items-center gap-3 px-4 py-3 text-gray-300 rounded-xl font-bold text-sm opacity-50 cursor-not-allowed text-left">
@@ -39,8 +39,8 @@
     </aside>
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header class="h-20 bg-white shadow-sm flex items-center justify-between px-8 border-b border-gray-100 z-10">
-            <h2 id="page-title" class="text-2xl font-bold text-gray-800">รายการจองล่าสุด</h2>
+        <header class="h-20 bg-white shadow-sm flex items-center justify-between px-8 border-b border-gray-100 z-10 shrink-0">
+            <h2 id="page-title" class="text-2xl font-bold text-gray-800">จัดการบริการและราคา</h2>
             <div class="flex items-center gap-4">
                 <span id="admin-name" class="text-sm font-bold text-gray-600">กำลังโหลด...</span>
             </div>
@@ -48,7 +48,7 @@
 
         <div class="flex-1 p-8 overflow-y-auto">
             
-            <div id="view-bookings" class="block">
+            <div id="view-bookings" class="hidden">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm whitespace-nowrap">
@@ -61,16 +61,16 @@
                                 </tr>
                             </thead>
                             <tbody id="bookings-table-body" class="divide-y divide-gray-100">
-                                <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400">กำลังดึงข้อมูล...</td></tr>
+                                <tr><td colspan="4" class="px-6 py-12 text-center text-gray-400">กดแท็บจัดการราคาเพื่อเริ่มทำงานครับ</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <div id="view-services" class="hidden">
+            <div id="view-services" class="block">
                 <div class="flex justify-between items-center mb-6">
-                    <p class="text-gray-500">จัดการเพิ่ม ลบ หรือแก้ไขราคาบริการต่างๆ ที่จะแสดงบนหน้าเว็บลูกค้า</p>
+                    <p class="text-gray-500">จัดการรายละเอียดและราคาโปรโมชั่น</p>
                     <button onclick="openServiceModal()" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> เพิ่มบริการใหม่
                     </button>
@@ -81,15 +81,16 @@
                         <table class="w-full text-left text-sm">
                             <thead class="bg-gray-50 text-gray-500 border-b border-gray-100 uppercase text-[10px] tracking-wider">
                                 <tr>
-                                    <th class="px-6 py-4 font-bold">ชื่อบริการ</th>
+                                    <th class="px-6 py-4 font-bold">ชื่อบริการ / รายละเอียด</th>
                                     <th class="px-6 py-4 font-bold">หมวดหมู่</th>
-                                    <th class="px-6 py-4 font-bold">ราคา (บาท)</th>
+                                    <th class="px-6 py-4 font-bold">ราคาขายจริง</th>
+                                    <th class="px-6 py-4 font-bold">ราคาเดิม (ขีดทิ้ง)</th>
                                     <th class="px-6 py-4 font-bold">สถานะ</th>
                                     <th class="px-6 py-4 font-bold text-center">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody id="services-table-body" class="divide-y divide-gray-100">
-                                <tr><td colspan="5" class="px-6 py-12 text-center text-gray-400">กำลังดึงข้อมูล...</td></tr>
+                                <tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">กำลังดึงข้อมูล...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -99,42 +100,72 @@
         </div>
     </main>
 
-    <div id="service-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-            <h3 id="modal-title" class="text-xl font-bold mb-6">เพิ่มบริการใหม่</h3>
+    <div id="service-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm overflow-y-auto py-10">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl my-auto">
+            <h3 id="modal-title" class="text-xl font-bold mb-6 text-groupPrimary border-b pb-3">เพิ่มบริการใหม่</h3>
             <input type="hidden" id="srv-id">
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อบริการ</label>
-                    <input type="text" id="srv-name" class="w-full border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-primary" placeholder="เช่น ซักโซฟา (Deep Clean)">
+            <div class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อแพ็กเกจ/บริการ <span class="text-red-500">*</span></label>
+                        <input type="text" id="srv-name" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary bg-gray-50 focus:bg-white" placeholder="เช่น Bigcleaning คอนโด">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">หมวดหมู่ <span class="text-red-500">*</span></label>
+                        <select id="srv-type" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary bg-gray-50 focus:bg-white">
+                            <option value="house">บริการทำความสะอาดบ้าน</option>
+                            <option value="furniture">บริการทำความสะอาดเฟอร์นิเจอร์</option>
+                            <option value="addon">บริการเสริม (Add-on)</option>
+                        </select>
+                    </div>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">หมวดหมู่</label>
-                    <select id="srv-type" class="w-full border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-primary">
-                        <option value="house">บริการทำความสะอาดบ้าน</option>
-                        <option value="furniture">บริการทำความสะอาดเฟอร์นิเจอร์</option>
-                    </select>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">รายละเอียด (สเปกงาน)</label>
+                    <textarea id="srv-details" rows="2" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary bg-gray-50 focus:bg-white" placeholder="เช่น 3 ห้องนอน 2 ห้องน้ำ มีสัตว์เลี้ยง ขนาด 100 ตร.ม. หรือ ขนาด 5-6 ที่นั่ง"></textarea>
                 </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">ราคา</label>
-                        <input type="number" id="srv-price" class="w-full border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-primary" placeholder="0">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">จำนวนพนักงาน (คน)</label>
+                        <input type="number" id="srv-staff" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary bg-gray-50 focus:bg-white" placeholder="เช่น 2 (เว้นว่างได้)">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">หน่วย (เช่น ตร.ม., ผืน)</label>
-                        <input type="text" id="srv-unit" class="w-full border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-primary" placeholder="ตร.ม.">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">ระยะเวลาทำงาน (ชม.)</label>
+                        <input type="number" id="srv-hours" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary bg-gray-50 focus:bg-white" placeholder="เช่น 9 (เว้นว่างได้)">
                     </div>
                 </div>
-                <div class="flex items-center gap-2 mt-4">
-                    <input type="checkbox" id="srv-active" checked class="w-4 h-4 text-primary">
-                    <label for="srv-active" class="text-sm font-bold text-gray-700">เปิดใช้งาน (แสดงบนเว็บ)</label>
+
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-primary mb-1">ราคาโปรโมชั่น/ขายจริง <span class="text-red-500">*</span></label>
+                        <input type="number" id="srv-price" class="w-full border border-blue-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary font-bold text-primary" placeholder="เช่น 2690">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">ราคาเต็ม (จะถูกขีดทิ้ง)</label>
+                        <input type="number" id="srv-original-price" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary text-gray-500" placeholder="เช่น 3090 (เว้นว่างได้)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">หน่วยนับ</label>
+                        <input type="text" id="srv-unit" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-primary" placeholder="เช่น เหมา, ตร.ม., ที่นั่ง">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-orange-500 mb-1">หมายเหตุ (เงื่อนไขเพิ่มเติม)</label>
+                    <input type="text" id="srv-remark" class="w-full border border-orange-200 rounded-lg p-2.5 text-sm outline-none focus:border-orange-400 bg-orange-50/50" placeholder="เช่น ไม่รวมพื้นที่ลานจอดรถและสนามหญ้า">
+                </div>
+
+                <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+                    <input type="checkbox" id="srv-active" checked class="w-5 h-5 text-primary rounded cursor-pointer">
+                    <label for="srv-active" class="text-sm font-bold text-gray-700 cursor-pointer">เปิดใช้งาน (ให้ลูกค้ากดจองได้บนเว็บ)</label>
                 </div>
             </div>
 
             <div class="flex justify-end gap-3 mt-8">
-                <button onclick="closeServiceModal()" class="px-4 py-2 text-gray-500 font-bold hover:bg-gray-100 rounded-lg transition">ยกเลิก</button>
-                <button onclick="saveService()" id="btn-save-srv" class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-blue-600 transition">บันทึกข้อมูล</button>
+                <button onclick="closeServiceModal()" class="px-6 py-2.5 text-gray-500 font-bold hover:bg-gray-100 rounded-xl transition">ยกเลิก</button>
+                <button onclick="saveService()" id="btn-save-srv" class="px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-blue-600 transition shadow-md">บันทึกข้อมูล</button>
             </div>
         </div>
     </div>
@@ -144,7 +175,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Firebase Config (ใส่ของคุณ)
         const firebaseConfig = {
             apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
             authDomain: "allforce-hub.firebaseapp.com",
@@ -153,11 +183,19 @@
             messagingSenderId: "206898849342",
             appId: "1:206898849342:web:35bc0462818da86fb1136f"
         };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. ควบคุมการเปลี่ยน Tab
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('admin-name').textContent = "ผู้ดูแล: " + (user.displayName || user.email);
+                fetchServices(); // เปิดมาให้โหลดข้อมูลราคาเลย
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
         function switchTab(tabName) {
             document.getElementById('view-bookings').classList.add('hidden');
             document.getElementById('view-services').classList.add('hidden');
@@ -177,17 +215,17 @@
                 document.getElementById('tab-services').classList.replace('hover:bg-white/5', 'bg-white/10');
                 document.getElementById('tab-services').classList.replace('text-gray-300', 'text-white');
                 document.getElementById('page-title').textContent = "จัดการบริการและราคา";
-                fetchServices(); // ดึงข้อมูลบริการ
+                fetchServices();
             }
         }
 
-        // 3. ฟังก์ชันดึงบริการ (Read)
         async function fetchServices() {
             const tableBody = document.getElementById('services-table-body');
             try {
-                const snapshot = await db.collection("services").get();
+                // จัดเรียงตามหมวดหมู่ก่อน
+                const snapshot = await db.collection("services").orderBy("type").get();
                 if (snapshot.empty) {
-                    tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">ยังไม่มีข้อมูลบริการ</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">ยังไม่มีข้อมูลบริการ กดปุ่ม "+ เพิ่มบริการใหม่" ได้เลยครับ</td></tr>';
                     return;
                 }
 
@@ -198,16 +236,35 @@
                         ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">เปิดใช้งาน</span>'
                         : '<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded text-[10px] font-bold">ปิดชั่วคราว</span>';
                     
-                    const typeName = data.type === 'house' ? 'บ้าน' : 'เฟอร์นิเจอร์';
+                    let typeName = 'บ้าน';
+                    if(data.type === 'furniture') typeName = 'เฟอร์นิเจอร์';
+                    if(data.type === 'addon') typeName = 'บริการเสริม';
 
-                    // บีบอัด Data ส่งไปตอนกดแก้ไข
+                    // สร้างสัญลักษณ์ขีดทิ้งถ้าราคาเดิมมีค่ามากกว่า 0
+                    const originalPriceHTML = data.originalPrice 
+                        ? `<span class="text-gray-400 line-through text-xs">${data.originalPrice.toLocaleString()}</span>` 
+                        : '<span class="text-gray-300">-</span>';
+
+                    // รวมรายละเอียด พนักงาน เวลา ไว้โชว์คร่าวๆ
+                    let detailHTML = `<div class="text-[10px] text-gray-500 mt-1 whitespace-normal break-words max-w-xs">`;
+                    if(data.details) detailHTML += `${data.details} <br>`;
+                    if(data.staffCount || data.durationHours) detailHTML += `<span class="text-blue-500 font-bold">`;
+                    if(data.staffCount) detailHTML += `<i class="fa-solid fa-users"></i> ${data.staffCount} คน `;
+                    if(data.durationHours) detailHTML += `<i class="fa-regular fa-clock"></i> ${data.durationHours} ชม.`;
+                    detailHTML += `</span></div>`;
+
                     const dataString = encodeURIComponent(JSON.stringify({id: doc.id, ...data}));
 
                     htmlContent += `
-                        <tr class="hover:bg-gray-50 border-b border-gray-50">
-                            <td class="px-6 py-4 font-bold text-gray-800">${data.name}</td>
-                            <td class="px-6 py-4 text-xs text-gray-500">${typeName}</td>
-                            <td class="px-6 py-4 font-bold text-primary">${data.price} <span class="text-xs text-gray-400 font-normal">/${data.unit}</span></td>
+                        <tr class="hover:bg-gray-50 border-b border-gray-50 align-top">
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-800">${data.name}</div>
+                                ${detailHTML}
+                                ${data.remark ? `<div class="text-[10px] text-orange-500 mt-1"><i class="fa-solid fa-circle-info"></i> ${data.remark}</div>` : ''}
+                            </td>
+                            <td class="px-6 py-4 text-xs text-gray-500 mt-1">${typeName}</td>
+                            <td class="px-6 py-4 font-bold text-primary text-base">${data.price.toLocaleString()} <span class="text-xs text-gray-400 font-normal">/${data.unit || 'เหมา'}</span></td>
+                            <td class="px-6 py-4">${originalPriceHTML}</td>
                             <td class="px-6 py-4">${statusBadge}</td>
                             <td class="px-6 py-4 text-center">
                                 <button onclick="editService('${dataString}')" class="text-blue-500 hover:text-blue-700 mr-3"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -219,17 +276,23 @@
                 tableBody.innerHTML = htmlContent;
             } catch (error) {
                 console.error(error);
-                tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-red-500">ดึงข้อมูลล้มเหลว</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-red-500">ดึงข้อมูลล้มเหลว</td></tr>';
             }
         }
 
-        // 4. Modal เพิ่ม/แก้ไข (Create & Update)
         function openServiceModal() {
             document.getElementById('srv-id').value = "";
             document.getElementById('srv-name').value = "";
+            document.getElementById('srv-type').value = "house";
+            document.getElementById('srv-details').value = "";
+            document.getElementById('srv-staff').value = "";
+            document.getElementById('srv-hours').value = "";
             document.getElementById('srv-price').value = "";
+            document.getElementById('srv-original-price').value = "";
             document.getElementById('srv-unit').value = "";
+            document.getElementById('srv-remark').value = "";
             document.getElementById('srv-active').checked = true;
+            
             document.getElementById('modal-title').textContent = "เพิ่มบริการใหม่";
             document.getElementById('service-modal').classList.remove('hidden');
         }
@@ -242,47 +305,68 @@
             const data = JSON.parse(decodeURIComponent(encodedData));
             document.getElementById('srv-id').value = data.id;
             document.getElementById('srv-name').value = data.name;
-            document.getElementById('srv-type').value = data.type;
+            document.getElementById('srv-type').value = data.type || "house";
+            document.getElementById('srv-details').value = data.details || "";
+            document.getElementById('srv-staff').value = data.staffCount || "";
+            document.getElementById('srv-hours').value = data.durationHours || "";
             document.getElementById('srv-price').value = data.price;
-            document.getElementById('srv-unit').value = data.unit;
+            document.getElementById('srv-original-price').value = data.originalPrice || "";
+            document.getElementById('srv-unit').value = data.unit || "";
+            document.getElementById('srv-remark').value = data.remark || "";
             document.getElementById('srv-active').checked = data.isActive;
+            
             document.getElementById('modal-title').textContent = "แก้ไขข้อมูลบริการ";
             document.getElementById('service-modal').classList.remove('hidden');
         }
 
         async function saveService() {
             const id = document.getElementById('srv-id').value;
+            const priceVal = Number(document.getElementById('srv-price').value);
+            const origPriceVal = document.getElementById('srv-original-price').value ? Number(document.getElementById('srv-original-price').value) : null;
+            const staffVal = document.getElementById('srv-staff').value ? Number(document.getElementById('srv-staff').value) : null;
+            const hoursVal = document.getElementById('srv-hours').value ? Number(document.getElementById('srv-hours').value) : null;
+
             const data = {
-                name: document.getElementById('srv-name').value,
+                name: document.getElementById('srv-name').value.trim(),
                 type: document.getElementById('srv-type').value,
-                price: Number(document.getElementById('srv-price').value),
-                unit: document.getElementById('srv-unit').value,
+                details: document.getElementById('srv-details').value.trim(),
+                staffCount: staffVal,
+                durationHours: hoursVal,
+                price: priceVal,
+                originalPrice: origPriceVal,
+                unit: document.getElementById('srv-unit').value.trim(),
+                remark: document.getElementById('srv-remark').value.trim(),
                 isActive: document.getElementById('srv-active').checked
             };
 
-            if(!data.name || !data.price) { alert("กรุณากรอกชื่อและราคาให้ครบถ้วน"); return; }
+            if(!data.name || isNaN(data.price) || data.price <= 0) { 
+                alert("กรุณากรอก 'ชื่อแพ็กเกจ' และ 'ราคาขายจริง' ให้ถูกต้องครับ"); 
+                return; 
+            }
 
             const btn = document.getElementById('btn-save-srv');
-            btn.innerHTML = "กำลังบันทึก..."; btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...'; 
+            btn.disabled = true;
 
             try {
                 if(id) {
-                    await db.collection("services").doc(id).update(data); // แก้ไข
+                    await db.collection("services").doc(id).update(data);
                 } else {
-                    await db.collection("services").add(data); // เพิ่มใหม่
+                    await db.collection("services").add(data);
                 }
                 closeServiceModal();
-                fetchServices(); // รีเฟรชตาราง
+                fetchServices();
             } catch (error) {
-                console.error(error); alert("เกิดข้อผิดพลาด");
+                console.error("Save Error: ", error); 
+                alert("เกิดข้อผิดพลาดในการบันทึกครับ");
             } finally {
-                btn.innerHTML = "บันทึกข้อมูล"; btn.disabled = false;
+                btn.innerHTML = "บันทึกข้อมูล"; 
+                btn.disabled = false;
             }
         }
 
-        // 5. ฟังก์ชันลบ (Delete)
         async function deleteService(id, name) {
-            if(confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบริการ "${name}" ออกจากระบบ?`)) {
+            if(confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบ "${name}" ออกจากระบบถาวร?`)) {
                 try {
                     await db.collection("services").doc(id).delete();
                     fetchServices();
