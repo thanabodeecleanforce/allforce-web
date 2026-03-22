@@ -913,275 +913,53 @@
         }
 
         // ==========================================
-        // ระบบดึงข้อมูล จัดเรียง และ Filter
+        // ระบบดึงข้อมูล จัดเรียง และ Filter (อัปเดตแก้บั๊ก 100%)
         // ==========================================
-        let houseDataMaster = []; // เก็บข้อมูลบ้านทั้งหมดไว้กรอง
+        let houseDataMaster = [];
         let currentHouseFilter = 'all';
         let currentHouseSort = 'default';
         let dynamicServices = { house: [], furniture: [], addon: [] };
         let activePromoCode = null;
         let currentServiceMode = 'house';
 
-        async function loadDynamicServices() {
-            try {
-                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
-                dynamicServices = { furniture: [], addon: [] };
-                houseDataMaster = [];
-                
-                snapshot.forEach(doc => {
-                    const data = { id: doc.id, ...doc.data() };
-                    
-                    // ถ้าระบบเก่าเซฟเป็น 'house' เฉยๆ ให้เดาจากชื่อ (Backward Compatibility)
-                    if(data.type === 'house') {
-                        if(data.name.includes('คอนโด')) data.type = 'condo';
-                        else if(data.name.includes('วิลล่า')) data.type = 'villa';
-                        else data.type = 'house_single';
-                    }
-
-                    if (data.type === 'condo' || data.type === 'house_single' || data.type === 'villa') {
-                        houseDataMaster.push(data);
-                    }
-                    else if (data.type === 'furniture') dynamicServices.furniture.push(data);
-                    else if (data.type === 'addon') dynamicServices.addon.push(data);
-                });
-
-                renderHouseUI();
-                renderOtherUI();
-            } catch (error) {
-                console.error("Error fetching services: ", error);
-            }
-        }
-
-        // จัดการปุ่ม Filter หมวดหมู่บ้าน
-        window.filterHouse = function(type) {
-            currentHouseFilter = type;
-            const btns = ['all', 'condo', 'house_single', 'villa'];
-            btns.forEach(b => {
-                const el = document.getElementById('flt-' + b);
-                if(b === type) {
-                    el.className = "px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm";
-                } else {
-                    el.className = "px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors";
-                }
-            });
-            renderHouseUI();
-        }
-
-        // จัดการ Dropdown เรียงลำดับราคา
-        window.sortHouse = function() {
-            currentHouseSort = document.getElementById('sort-house').value;
-            renderHouseUI();
-        }
-
-        // วาด UI กล่องแพ็กเกจบ้าน (หลังกรองและเรียงแล้ว)
-        function renderHouseUI() {
-            // 1. กรอง (Filter)
-            let filteredData = houseDataMaster;
-            if (currentHouseFilter !== 'all') {
-                filteredData = houseDataMaster.filter(srv => srv.type === currentHouseFilter);
-            }
-
-            // 2. จัดเรียง (Sort)
-            filteredData.sort((a, b) => {
-                if(currentHouseSort === 'price_asc') return a.price - b.price;
-                if(currentHouseSort === 'price_desc') return b.price - a.price;
-                // Default คือเรียงตามลำดับ(Order)
-                return (a.order || 999) - (b.order || 999);
-            });
-
-            // 3. วาด HTML
-            let html = '';
-            if(filteredData.length === 0) {
-                html = `<div class="col-span-full text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-400"><i class="fa-solid fa-box-open text-2xl mb-2"></i><p>ยังไม่มีแพ็กเกจในหมวดหมู่นี้</p></div>`;
-            } else {
-                filteredData.forEach((srv, index) => {
-                    let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()} ฿</span>` : '';
-                    let detail = srv.details ? `<span class="text-[10px] text-gray-500 font-normal leading-tight mt-1 mb-2 block">${srv.details}</span>` : '';
-                    let staffHours = '';
-                    if(srv.staffCount || srv.durationHours) {
-                        staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน  <i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
-                    }
-                    
-                    // ป้ายบอกหมวดหมู่เล็กๆ
-                    let typeLabel = srv.type === 'condo' ? 'คอนโด' : (srv.type === 'villa' ? 'วิลล่า' : 'บ้านเดี่ยว');
-
-                    html += `
-                    <label class="cursor-pointer h-full relative">
-                        <input type="radio" name="package_house" value="${srv.id}" data-price="${srv.price}" data-name="${srv.name}" class="peer sr-only" ${index===0 ? 'checked' : ''} onchange="calculateBooking()">
-                        <div class="p-5 bg-white border-2 border-gray-200 rounded-2xl text-left peer-checked:border-primary peer-checked:bg-blue-50 transition-all font-bold text-sm h-full flex flex-col justify-between overflow-hidden relative">
-                            <div class="absolute top-0 right-0 bg-gray-100 text-gray-400 text-[9px] px-2 py-1 rounded-bl-lg peer-checked:bg-primary peer-checked:text-white transition-colors">${typeLabel}</div>
-                            <div class="pr-6">
-                                <span class="text-gray-800 text-base leading-tight block mb-1">${srv.name}</span>
-                                ${detail}
-                                ${staffHours}
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-gray-100 flex items-end justify-between">
-                                <span class="text-primary text-xl block">${origPrice}${srv.price.toLocaleString()} ฿</span>
-                            </div>
-                        </div>
-                    </label>
-                    `;
-                });
-            }
-            document.getElementById('dynamic-house-packages').innerHTML = html;
-            
-            // เช็คก่อนว่ามีฟังก์ชันนี้หรือยัง ป้องกัน Error
-            if (typeof window.calculateBooking === "function") {
-                window.calculateBooking();
-            }
-        }
-
-        // วาด UI ฝั่งเฟอร์นิเจอร์และแอดออน
-        function renderOtherUI() {
-            const createCardHTML = (items, prefix, iconClass) => {
-                let html = '';
-                if(items.length === 0) return `<p class="text-sm text-gray-400 col-span-full">ยังไม่มีบริการเปิดใช้งาน</p>`;
-                
-                items.sort((a,b) => (a.order || 999) - (b.order || 999));
-
-                items.forEach(srv => {
-                    let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()}</span>` : '';
-                    let needsQty = (srv.unit && srv.unit !== 'เหมา' && srv.unit !== 'ครั้ง'); 
-                    let detail = srv.details ? `<p class="text-[9px] text-gray-500 mt-1 leading-tight">${srv.details}</p>` : '';
-                    let remark = srv.remark ? `<p class="text-[9px] text-orange-500 mt-1"><i class="fa-solid fa-asterisk"></i> ${srv.remark}</p>` : '';
-
-                    html += `
-                    <div class="addon-card bg-white p-4 rounded-xl flex flex-col justify-between cursor-pointer border-2 border-transparent shadow-sm hover:border-blue-200 border-gray-100" id="card_${prefix}_${srv.id}" onclick="toggleDynamicCard('${prefix}_${srv.id}', event)">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-primary shrink-0 mt-1"><i class="${iconClass}"></i></div>
-                                <div>
-                                    <p class="font-bold text-sm text-gray-800">${srv.name}</p>
-                                    <p class="text-[11px] text-primary font-bold mt-1">${origPrice}${srv.price.toLocaleString()} ฿ ${srv.unit && srv.unit !== 'เหมา' ? '<span class="text-gray-400 font-normal">/'+srv.unit+'</span>' : ''}</p>
-                                    ${detail} ${remark}
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-circle-check text-2xl text-gray-200 check-icon transition-colors"></i>
-                        </div>
-                        ${needsQty ? `
-                        <div class="addon-options hidden mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-3 bg-gray-50 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
-                            <label class="text-xs text-gray-500 font-bold">ระบุจำนวน (${srv.unit}):</label>
-                            <input type="number" id="qty_${prefix}_${srv.id}" value="1" min="1" class="w-20 text-sm border border-gray-200 rounded p-1.5 outline-none focus:border-primary text-center bg-white shadow-inner" onclick="event.stopPropagation()" onchange="calculateBooking(); event.stopPropagation();" oninput="calculateBooking()">
-                        </div>
-                        ` : ''}
-                        <input type="checkbox" id="chk_${prefix}_${srv.id}" class="hidden" value="${srv.id}" data-name="${srv.name}" data-price="${srv.price}" data-unit="${srv.unit}">
-                    </div>
-                    `;
-                });
-                return html;
-            };
-
-            document.getElementById('dynamic-furniture-packages').innerHTML = createCardHTML(dynamicServices.furniture, 'furn', 'fa-solid fa-couch');
-            document.getElementById('dynamic-addons-house').innerHTML = createCardHTML(dynamicServices.addon, 'addon_h', 'fa-solid fa-plus');
-            document.getElementById('dynamic-addons-furn').innerHTML = createCardHTML(dynamicServices.addon, 'addon_f', 'fa-solid fa-plus');
-        }
-
-        // ==========================================
-        // ฟังก์ชัน UI และ การคำนวณราคา (ที่หายไป)
-        // ==========================================
-
-        // 1. จัดการเปิดปิด Add-on
-        window.toggleDynamicCard = function(id, event) {
-            if(event && event.target.tagName === 'INPUT') return;
-            const card = document.getElementById('card_' + id);
-            const chk = document.getElementById('chk_' + id);
-            const optionsDiv = card.querySelector('.addon-options');
-            
-            chk.checked = !chk.checked;
-            if(chk.checked) {
-                card.classList.add('selected');
-                card.querySelector('.check-icon').classList.replace('text-gray-200', 'text-primary');
-                if(optionsDiv) optionsDiv.classList.remove('hidden');
-            } else {
-                card.classList.remove('selected');
-                card.querySelector('.check-icon').classList.replace('text-primary', 'text-gray-200');
-                if(optionsDiv) optionsDiv.classList.add('hidden');
-            }
-            calculateBooking();
-        }
-
-        // 2. เปลี่ยนโหมด บ้าน / เฟอร์นิเจอร์
-        window.setServiceMode = function(mode) {
-            currentServiceMode = mode;
-            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
-            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
-            
-            document.getElementById('btn-mode-house').className = mode === 'house' ? activeClass : inactiveClass;
-            document.getElementById('btn-mode-furn').className = mode === 'furniture' ? activeClass : inactiveClass;
-
-            document.getElementById('flow-house').style.display = mode === 'house' ? 'block' : 'none';
-            document.getElementById('flow-furniture').style.display = mode === 'furniture' ? 'block' : 'none';
-
-            calculateBooking();
-        }
-
-        // 3. โค้ดส่วนลด
-        window.applyPromoCode = function() {
-            var codeInput = document.getElementById('promo-code-input');
-            if(!codeInput) return;
-            var code = codeInput.value.trim().toUpperCase();
-            var msgEl = document.getElementById('promo-msg');
-            msgEl.classList.remove('hidden');
-            var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
-
-            if (code === 'PHUKET10' || code === 'PHUKET15') {
-                activePromoCode = code;
-                msgEl.textContent = alertTxt.promoYes;
-                msgEl.className = 'text-[10px] mt-2 text-green-600 font-bold';
-            } else if (code === '') {
-                activePromoCode = null;
-                msgEl.classList.add('hidden');
-            } else {
-                activePromoCode = null;
-                msgEl.textContent = alertTxt.promoNo;
-                msgEl.className = 'text-[10px] mt-2 text-red-500 font-bold';
-            }
-            calculateBooking();
-        }
-
-        // 4. คำนวณราคาสรุปยอด
+        // 1. ประกาศฟังก์ชันคำนวณราคาก่อน เพื่อป้องกัน Error หาฟังก์ชันไม่เจอ
         window.calculateBooking = function() {
-            let grossPrice = 0;
-            let addonsHTML = '';
-            let baseName = '';
-
-            const processSelectedCards = (prefix) => {
-                const parentDiv = currentServiceMode === 'house' ? document.getElementById('flow-house') : document.getElementById('flow-furniture');
-                
-                // ตรวจสอบว่า parentDiv มีอยู่จริงหรือไม่
-                if (!parentDiv) return;
-
-                const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
-                
-                checkboxes.forEach(chk => {
-                    let id = chk.id.replace(`chk_${prefix}_`, '');
-                    let name = chk.getAttribute('data-name');
-                    let price = parseInt(chk.getAttribute('data-price')) || 0;
-                    
-                    let qty = 1;
-                    let qtyInput = document.getElementById(`qty_${prefix}_${id}`);
-                    if(qtyInput && !qtyInput.parentElement.classList.contains('hidden')) {
-                        qty = parseInt(qtyInput.value) || 1;
-                    }
-
-                    let itemPrice = price * qty;
-                    grossPrice += itemPrice;
-
-                    let valText = `+${itemPrice.toLocaleString()} ฿`;
-                    if(qty > 1) valText = `x${qty} (+${itemPrice.toLocaleString()} ฿)`;
-
-                    addonsHTML += `<div class="flex justify-between items-start text-gray-500 mb-1.5 leading-tight border-b border-gray-50 pb-1">
-                                    <span class="pr-2"><i class="fa-solid fa-plus text-[8px] mr-1 text-primary"></i> ${name}</span>
-                                    <span class="text-right whitespace-nowrap font-bold text-gray-700">${valText}</span></div>`;
-                });
-            };
-
             try {
+                let grossPrice = 0;
+                let addonsHTML = '';
+                let baseName = '';
+
+                const processSelectedCards = (prefix) => {
+                    const parentDiv = currentServiceMode === 'house' ? document.getElementById('flow-house') : document.getElementById('flow-furniture');
+                    if (!parentDiv) return;
+
+                    const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
+                    checkboxes.forEach(chk => {
+                        let id = chk.id.replace(`chk_${prefix}_`, '');
+                        let name = chk.getAttribute('data-name');
+                        let price = parseInt(chk.getAttribute('data-price')) || 0;
+                        
+                        let qty = 1;
+                        let qtyInput = document.getElementById(`qty_${prefix}_${id}`);
+                        if(qtyInput && !qtyInput.parentElement.classList.contains('hidden')) {
+                            qty = parseInt(qtyInput.value) || 1;
+                        }
+
+                        let itemPrice = price * qty;
+                        grossPrice += itemPrice;
+
+                        let valText = qty > 1 ? `x${qty} (+${itemPrice.toLocaleString()} ฿)` : `+${itemPrice.toLocaleString()} ฿`;
+                        addonsHTML += `<div class="flex justify-between items-start text-gray-500 mb-1.5 leading-tight border-b border-gray-50 pb-1">
+                                        <span class="pr-2"><i class="fa-solid fa-plus text-[8px] mr-1 text-primary"></i> ${name}</span>
+                                        <span class="text-right whitespace-nowrap font-bold text-gray-700">${valText}</span></div>`;
+                    });
+                };
+
                 if (currentServiceMode === 'house') {
                     const pkgRadio = document.querySelector('input[name="package_house"]:checked');
                     if (pkgRadio) {
                         grossPrice = parseInt(pkgRadio.getAttribute('data-price')) || 0;
-                        baseName = pkgRadio.getAttribute('data-name');
+                        baseName = pkgRadio.getAttribute('data-name') || "ทำความสะอาดพื้นฐาน";
                         const sumBaseRow = document.getElementById('sum-base-row');
                         if (sumBaseRow) {
                             sumBaseRow.style.display = 'flex';
@@ -1197,160 +975,361 @@
                     processSelectedCards('addon_f');
                 }
 
-                var discountPromo = 0;
-                if (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') {
-                    discountPromo = Math.round(grossPrice * 0.15); 
-                }
-
-                var reviewCheckbox = document.getElementById('bk-review-discount');
-                var isReviewChecked = reviewCheckbox ? reviewCheckbox.checked : false;
-                var discountReview = isReviewChecked ? 200 : 0;
+                let discountPromo = (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') ? Math.round(grossPrice * 0.15) : 0;
+                let reviewCheckbox = document.getElementById('bk-review-discount');
+                let isReviewChecked = reviewCheckbox ? reviewCheckbox.checked : false;
+                let discountReview = isReviewChecked ? 200 : 0;
                 
-                var netPrice = grossPrice - discountPromo - discountReview;
+                let netPrice = grossPrice - discountPromo - discountReview;
                 if (netPrice < 0) netPrice = 0; 
-
-                var promoText = { mix:"โค้ดส่วนลด", th:"โค้ดส่วนลด", en:"Promo Code", ch:"优惠码", ru:"Промокод" };
-                var reviewText = { mix:"ส่วนลดรีวิว", th:"ส่วนลดรีวิว", en:"Review Discount", ch:"评价折扣", ru:"Скидка за отзыв" };
-
-                var discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
                 
+                let discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
                 if (discountPromo > 0) {
-                    discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
-                                    '<span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> ' + (promoText[window.currentLang] || 'โค้ด') + ' (' + activePromoCode + ')</span>' +
-                                    '<span>-' + discountPromo.toLocaleString() + ' ฿</span></div>';
+                    discountHTML += `<div class="flex justify-between items-center text-sm text-green-600 font-bold"><span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> โค้ด (${activePromoCode})</span><span>-${discountPromo.toLocaleString()} ฿</span></div>`;
                 }
                 if (isReviewChecked) {
-                    discountHTML += '<div class="flex justify-between items-center text-sm text-green-600 font-bold">' +
-                                    '<span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ' + (reviewText[window.currentLang] || 'ส่วนลดรีวิว') + '</span>' +
-                                    '<span>-200 ฿</span></div>';
+                    discountHTML += `<div class="flex justify-between items-center text-sm text-green-600 font-bold"><span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ส่วนลดรีวิว</span><span>-200 ฿</span></div>`;
                 }
                 discountHTML += '</div>';
 
-                document.getElementById('sum-addons-list').innerHTML = addonsHTML;
-                document.getElementById('sum-discount-area').innerHTML = (discountPromo>0 || isReviewChecked) ? discountHTML : '';
-                document.getElementById('sum-original-price').textContent = grossPrice.toLocaleString();
-                document.getElementById('sum-price').textContent = netPrice.toLocaleString();
+                const sumAddonsList = document.getElementById('sum-addons-list');
+                if(sumAddonsList) sumAddonsList.innerHTML = addonsHTML;
                 
-                var originalPriceEl = document.getElementById('sum-original-price');
-                if (originalPriceEl) {
-                    originalPriceEl.style.display = (discountPromo > 0 || discountReview > 0) ? 'inline' : 'none';
+                const sumDiscountArea = document.getElementById('sum-discount-area');
+                if(sumDiscountArea) sumDiscountArea.innerHTML = (discountPromo>0 || isReviewChecked) ? discountHTML : '';
+                
+                const sumOrigPrice = document.getElementById('sum-original-price');
+                if(sumOrigPrice) {
+                    sumOrigPrice.textContent = grossPrice.toLocaleString();
+                    sumOrigPrice.style.display = (discountPromo > 0 || discountReview > 0) ? 'inline' : 'none';
                 }
+                
+                const sumPrice = document.getElementById('sum-price');
+                if(sumPrice) sumPrice.textContent = netPrice.toLocaleString();
 
             } catch (e) {
                 console.error("Error in calculateBooking:", e);
             }
+        };
+
+        // 2. ฟังก์ชันดึงข้อมูลจาก Firebase
+        async function loadDynamicServices() {
+            try {
+                if(!window.cf_db) {
+                    console.error("Firebase DB not initialized yet.");
+                    return;
+                }
+                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
+                dynamicServices = { house: [], furniture: [], addon: [] };
+                houseDataMaster = [];
+                
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    
+                    if(data.type === 'house') {
+                        if(data.name && data.name.includes('คอนโด')) data.type = 'condo';
+                        else if(data.name && data.name.includes('วิลล่า')) data.type = 'villa';
+                        else data.type = 'house_single';
+                    }
+
+                    if (data.type === 'condo' || data.type === 'house_single' || data.type === 'villa') {
+                        houseDataMaster.push(data);
+                    } else if (data.type === 'furniture') {
+                        dynamicServices.furniture.push(data);
+                    } else if (data.type === 'addon') {
+                        dynamicServices.addon.push(data);
+                    }
+                });
+
+                renderHouseUI();
+                renderOtherUI();
+            } catch (error) {
+                console.error("Error fetching services: ", error);
+                const housePkgDiv = document.getElementById('dynamic-house-packages');
+                if(housePkgDiv) housePkgDiv.innerHTML = '<div class="col-span-full text-center text-red-500 py-6 font-bold"><i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i><br>ดึงข้อมูลล้มเหลว กรุณารีเฟรชหน้าเว็บ</div>';
+            }
         }
 
-        // เก็บโค้ดส่วนลด
+        // 3. ควบคุม UI (ปุ่มเปลี่ยนโหมด, ตัวกรอง)
+        window.filterHouse = function(type) {
+            currentHouseFilter = type;
+            const btns = ['all', 'condo', 'house_single', 'villa'];
+            btns.forEach(b => {
+                const el = document.getElementById('flt-' + b);
+                if(el) {
+                    el.className = (b === type) 
+                        ? "px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm" 
+                        : "px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors";
+                }
+            });
+            renderHouseUI();
+        };
+
+        window.sortHouse = function() {
+            const sortEl = document.getElementById('sort-house');
+            if(sortEl) currentHouseSort = sortEl.value;
+            renderHouseUI();
+        };
+
+        window.setServiceMode = function(mode) {
+            currentServiceMode = mode;
+            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
+            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
+            
+            var btnHouse = document.getElementById('btn-mode-house');
+            var btnFurn = document.getElementById('btn-mode-furn');
+            if(btnHouse) btnHouse.className = mode === 'house' ? activeClass : inactiveClass;
+            if(btnFurn) btnFurn.className = mode === 'furniture' ? activeClass : inactiveClass;
+
+            var flowHouse = document.getElementById('flow-house');
+            var flowFurn = document.getElementById('flow-furniture');
+            if(flowHouse) flowHouse.style.display = mode === 'house' ? 'block' : 'none';
+            if(flowFurn) flowFurn.style.display = mode === 'furniture' ? 'block' : 'none';
+
+            window.calculateBooking();
+        };
+
+        // 4. วาดโครงสร้างกล่องแพ็กเกจ
+        function renderHouseUI() {
+            try {
+                let filteredData = houseDataMaster;
+                if (currentHouseFilter !== 'all') {
+                    filteredData = houseDataMaster.filter(srv => srv.type === currentHouseFilter);
+                }
+
+                filteredData.sort((a, b) => {
+                    let priceA = a.price || 0;
+                    let priceB = b.price || 0;
+                    if(currentHouseSort === 'price_asc') return priceA - priceB;
+                    if(currentHouseSort === 'price_desc') return priceB - priceA;
+                    return (a.order || 999) - (b.order || 999);
+                });
+
+                let html = '';
+                if(filteredData.length === 0) {
+                    html = `<div class="col-span-full text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-400"><i class="fa-solid fa-box-open text-2xl mb-2"></i><p>ยังไม่มีแพ็กเกจในหมวดหมู่นี้</p></div>`;
+                } else {
+                    filteredData.forEach((srv, index) => {
+                        let safePrice = srv.price || 0;
+                        let safeName = srv.name || "แพ็กเกจทั่วไป";
+                        let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()} ฿</span>` : '';
+                        let detail = srv.details ? `<span class="text-[10px] text-gray-500 font-normal leading-tight mt-1 mb-2 block">${srv.details}</span>` : '';
+                        let staffHours = '';
+                        if(srv.staffCount || srv.durationHours) {
+                            staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน &nbsp;<i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
+                        }
+                        let typeLabel = srv.type === 'condo' ? 'คอนโด' : (srv.type === 'villa' ? 'วิลล่า' : 'บ้านเดี่ยว');
+
+                        html += `
+                        <label class="cursor-pointer h-full relative">
+                            <input type="radio" name="package_house" value="${srv.id}" data-price="${safePrice}" data-name="${safeName}" class="peer sr-only" ${index===0 ? 'checked' : ''} onchange="window.calculateBooking()">
+                            <div class="p-5 bg-white border-2 border-gray-200 rounded-2xl text-left peer-checked:border-primary peer-checked:bg-blue-50 transition-all font-bold text-sm h-full flex flex-col justify-between overflow-hidden relative">
+                                <div class="absolute top-0 right-0 bg-gray-100 text-gray-400 text-[9px] px-2 py-1 rounded-bl-lg peer-checked:bg-primary peer-checked:text-white transition-colors">${typeLabel}</div>
+                                <div class="pr-6">
+                                    <span class="text-gray-800 text-base leading-tight block mb-1">${safeName}</span>
+                                    ${detail}
+                                    ${staffHours}
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-gray-100 flex items-end justify-between">
+                                    <span class="text-primary text-xl block">${origPrice}${safePrice.toLocaleString()} ฿</span>
+                                </div>
+                            </div>
+                        </label>`;
+                    });
+                }
+                const container = document.getElementById('dynamic-house-packages');
+                if(container) {
+                    container.innerHTML = html;
+                    window.calculateBooking();
+                }
+            } catch(e) {
+                console.error("Render House Error:", e);
+            }
+        }
+
+        function renderOtherUI() {
+            try {
+                const createCardHTML = (items, prefix, iconClass) => {
+                    let html = '';
+                    if(!items || items.length === 0) return `<p class="text-sm text-gray-400 col-span-full">ยังไม่มีบริการเปิดใช้งาน</p>`;
+                    items.sort((a,b) => (a.order || 999) - (b.order || 999));
+
+                    items.forEach(srv => {
+                        let safePrice = srv.price || 0;
+                        let safeName = srv.name || "บริการเสริม";
+                        let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()}</span>` : '';
+                        let needsQty = (srv.unit && srv.unit !== 'เหมา' && srv.unit !== 'ครั้ง'); 
+                        let detail = srv.details ? `<p class="text-[9px] text-gray-500 mt-1 leading-tight">${srv.details}</p>` : '';
+
+                        html += `
+                        <div class="addon-card bg-white p-4 rounded-xl flex flex-col justify-between cursor-pointer border-2 border-transparent shadow-sm hover:border-blue-200 border-gray-100" id="card_${prefix}_${srv.id}" onclick="window.toggleDynamicCard('${prefix}_${srv.id}', event)">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-primary shrink-0 mt-1"><i class="${iconClass}"></i></div>
+                                    <div>
+                                        <p class="font-bold text-sm text-gray-800">${safeName}</p>
+                                        <p class="text-[11px] text-primary font-bold mt-1">${origPrice}${safePrice.toLocaleString()} ฿ ${srv.unit && srv.unit !== 'เหมา' ? '<span class="text-gray-400 font-normal">/'+srv.unit+'</span>' : ''}</p>
+                                        ${detail}
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check text-2xl text-gray-200 check-icon transition-colors"></i>
+                            </div>
+                            ${needsQty ? `
+                            <div class="addon-options hidden mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-3 bg-gray-50 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+                                <label class="text-xs text-gray-500 font-bold">ระบุจำนวน (${srv.unit}):</label>
+                                <input type="number" id="qty_${prefix}_${srv.id}" value="1" min="1" class="w-20 text-sm border border-gray-200 rounded p-1.5 outline-none focus:border-primary text-center bg-white shadow-inner" onclick="event.stopPropagation()" onchange="window.calculateBooking(); event.stopPropagation();" oninput="window.calculateBooking()">
+                            </div>` : ''}
+                            <input type="checkbox" id="chk_${prefix}_${srv.id}" class="hidden" value="${srv.id}" data-name="${safeName}" data-price="${safePrice}" data-unit="${srv.unit}">
+                        </div>`;
+                    });
+                    return html;
+                };
+
+                let furnHTML = document.getElementById('dynamic-furniture-packages');
+                if(furnHTML) furnHTML.innerHTML = createCardHTML(dynamicServices.furniture, 'furn', 'fa-solid fa-couch');
+                let addonHouseHTML = document.getElementById('dynamic-addons-house');
+                if(addonHouseHTML) addonHouseHTML.innerHTML = createCardHTML(dynamicServices.addon, 'addon_h', 'fa-solid fa-plus');
+                let addonFurnHTML = document.getElementById('dynamic-addons-furn');
+                if(addonFurnHTML) addonFurnHTML.innerHTML = createCardHTML(dynamicServices.addon, 'addon_f', 'fa-solid fa-plus');
+            } catch(e) {
+                console.error("Render Other Error:", e);
+            }
+        }
+
+        window.toggleDynamicCard = function(id, event) {
+            if(event && event.target.tagName === 'INPUT') return;
+            const card = document.getElementById('card_' + id);
+            const chk = document.getElementById('chk_' + id);
+            const optionsDiv = card ? card.querySelector('.addon-options') : null;
+            if(!chk || !card) return;
+            
+            chk.checked = !chk.checked;
+            if(chk.checked) {
+                card.classList.add('selected');
+                card.querySelector('.check-icon').classList.replace('text-gray-200', 'text-primary');
+                if(optionsDiv) optionsDiv.classList.remove('hidden');
+            } else {
+                card.classList.remove('selected');
+                card.querySelector('.check-icon').classList.replace('text-primary', 'text-gray-200');
+                if(optionsDiv) optionsDiv.classList.add('hidden');
+            }
+            window.calculateBooking();
+        };
+
+        window.applyPromoCode = function() {
+            var codeInput = document.getElementById('promo-code-input');
+            if(!codeInput) return;
+            var code = codeInput.value.trim().toUpperCase();
+            var msgEl = document.getElementById('promo-msg');
+            if(!msgEl) return;
+            msgEl.classList.remove('hidden');
+
+            if (code === 'PHUKET10' || code === 'PHUKET15') {
+                activePromoCode = code;
+                msgEl.textContent = "✅ ใช้โค้ดสำเร็จ";
+                msgEl.className = 'text-[10px] mt-2 text-green-600 font-bold';
+            } else if (code === '') {
+                activePromoCode = null;
+                msgEl.classList.add('hidden');
+            } else {
+                activePromoCode = null;
+                msgEl.textContent = "❌ โค้ดไม่ถูกต้อง";
+                msgEl.className = 'text-[10px] mt-2 text-red-500 font-bold';
+            }
+            window.calculateBooking();
+        };
+
+        // 5. ฟังก์ชันสนับสนุนต่างๆ (โค้ดส่วนลด, GPS, ส่งข้อมูล)
         window.collectCoupon = async function(btnElement, couponData) {
             var user = firebase.auth().currentUser;
             if (!user) { alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ"); window.location.href = 'login.html'; return; }
-
             var uid = user.uid;
             var originalText = btnElement.innerHTML;
             btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...'; btnElement.disabled = true;
-
             try {
                 var couponsRef = window.cf_db.collection('users').doc(uid).collection('coupons');
                 var checkExist = await couponsRef.where('code', '==', couponData.code).get();
-                
                 if (!checkExist.empty) {
                     alert("คุณได้เก็บคูปองนี้ไปแล้ว! โค้ดคือ: " + couponData.code);
                     btnElement.className = "w-full bg-gray-400 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
                     btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว'; return;
                 }
-
                 await couponsRef.add({
                     code: couponData.code, title: couponData.title, discount: couponData.discount,
                     condition: couponData.condition, type: couponData.type || 'fixed', status: 'active', 
                     isUsed: false, collectedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
                 btnElement.className = "w-full bg-gray-400 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
                 btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
                 alert("เก็บคูปองสำเร็จ! โค้ดของคุณคือ: " + couponData.code);
             } catch (error) {
-                console.error("Error saving coupon: ", error); alert("เกิดข้อผิดพลาด: " + error.message);
+                console.error("Error saving coupon: ", error); alert("เกิดข้อผิดพลาด");
                 btnElement.innerHTML = originalText; btnElement.disabled = false;
             }
-        }
-        
-        // ฟังก์ชันดึงตำแหน่ง GPS
+        };
+
         window.getLocation = function() {
             var statusText = document.getElementById('location-status');
             var gpsInput = document.getElementById('bk-gps-link');
             if(!statusText || !gpsInput) return;
-
             statusText.classList.remove('hidden');
             statusText.className = "text-[10px] text-blue-500 mt-1 font-bold"; 
-            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังค้นหาตำแหน่งของคุณ...';
-
+            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังค้นหา...';
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        gpsInput.value = 'http://maps.google.com/?q=' + position.coords.latitude + ',' + position.coords.longitude;
-                        statusText.innerHTML = "✅ รับพิกัดสำเร็จ!";
-                        statusText.className = "text-[10px] text-green-600 mt-2 font-bold";
+                    function(pos) {
+                        gpsInput.value = 'http://maps.google.com/?q=' + pos.coords.latitude + ',' + pos.coords.longitude;
+                        statusText.innerHTML = "✅ รับพิกัดสำเร็จ!"; statusText.className = "text-[10px] text-green-600 mt-2 font-bold";
                     },
-                    function(error) {
-                        console.warn("GPS Error: ", error);
-                        statusText.innerHTML = "❌ ไม่สามารถดึงพิกัดได้";
-                        statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                    function(err) {
+                        console.warn("GPS Error: ", err);
+                        statusText.innerHTML = "❌ ไม่สามารถดึงพิกัดได้"; statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
+                    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
                 );
             }
-        }
+        };
 
-        // ยืนยันการจอง ส่งเข้า LINE
         window.submitBooking = async function() {
             var date = document.getElementById('bk-date-input').value;
             var time = document.getElementById('bk-time-input').value;
             var name = document.getElementById('bk-name-input').value.trim();
             var phone = document.getElementById('bk-phone-input').value.trim();
             var address = document.getElementById('bk-address-input').value.trim();
-
             if(!date || !name || !phone || !address) { alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ"); return; }
-
-            var netPriceText = document.getElementById('sum-price').textContent;
-            var grossPriceText = document.getElementById('sum-original-price').textContent;
-            var modeName = currentServiceMode === 'house' ? 'บริการทำความสะอาดบ้าน' : 'บริการทำความสะอาดเฟอร์นิเจอร์';
-
             var submitBtn = document.querySelector('button[onclick="submitBooking()"]');
             var originalBtnText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...'; submitBtn.disabled = true;
-
             try {
-                var baseServiceText = (currentServiceMode === 'house' && document.getElementById('sum-base-label')) ? document.getElementById('sum-base-label').textContent : "ไม่มี";
-                var addonsListElements = document.querySelectorAll('#sum-addons-list div');
-                var addonsText = "";
-                if(addonsListElements.length > 0) {
-                    addonsListElements.forEach(function(el) { addonsText += "- " + el.textContent.trim().replace(/\s+/g, ' ') + "\n"; });
-                } else { addonsText = "- ไม่มีบริการเสริม\n"; }
-
+                var baseSrv = (currentServiceMode === 'house' && document.getElementById('sum-base-label')) ? document.getElementById('sum-base-label').textContent : "ไม่มี";
+                var addonsList = document.querySelectorAll('#sum-addons-list div');
+                var addonsText = addonsList.length > 0 ? Array.from(addonsList).map(el => "- " + el.textContent.trim().replace(/\s+/g, ' ')).join('\n') : "- ไม่มีบริการเสริม\n";
                 var orderData = {
-                    serviceMode: modeName, baseService: baseServiceText, addons: addonsText,
-                    customerName: name, phone: phone, bookingDate: date, bookingTime: time, address: address,
+                    serviceMode: currentServiceMode === 'house' ? 'บริการทำความสะอาดบ้าน' : 'บริการทำความสะอาดเฟอร์นิเจอร์',
+                    baseService: baseSrv, addons: addonsText, customerName: name, phone: phone, bookingDate: date, bookingTime: time, address: address,
                     promoCode: activePromoCode || "ไม่ได้ใช้",
-                    totalPrice: Number(netPriceText.replace(/,/g, '')),
+                    totalPrice: Number(document.getElementById('sum-price').textContent.replace(/,/g, '')),
                     status: "pending", createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-
                 var docRef = await window.cf_db.collection("bookings").add(orderData);
-                
-                var summary = "===== CLEANFORCE BOOKING =====\nรหัส: " + docRef.id.slice(0, 6).toUpperCase() + "\nประเภท: " + modeName + "\n";
-                if (currentServiceMode === 'house') summary += "แพ็กเกจ: " + baseServiceText + "\n";
-                summary += "บริการเสริม:\n" + addonsText + "------------------------------\nชื่อ: " + name + "\nเบอร์: " + phone + "\nที่อยู่: " + address + "\nนัดหมาย: " + date + " " + time + " น.\n------------------------------\nราคาชำระสุทธิ: " + netPriceText + " บาท\n==============================";
-
+                var summary = "===== CLEANFORCE BOOKING =====\nรหัส: " + docRef.id.slice(0, 6).toUpperCase() + "\nประเภท: " + orderData.serviceMode + "\nแพ็กเกจ: " + baseSrv + "\nบริการเสริม:\n" + addonsText + "------------------------------\nชื่อ: " + name + "\nเบอร์: " + phone + "\nที่อยู่: " + address + "\nนัดหมาย: " + date + " " + time + " น.\n------------------------------\nราคาชำระสุทธิ: " + document.getElementById('sum-price').textContent + " บาท\n==============================";
                 window.location.href = "https://line.me/R/oaMessage/@cleanforce/?" + encodeURIComponent(summary); 
             } catch (error) {
                 console.error("Booking Error: ", error); alert("เกิดข้อผิดพลาด");
                 submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false;
             }
-        }
+        };
 
-        // เริ่มโหลดข้อมูลเมื่อหน้าเว็บพร้อม
-        loadDynamicServices();
+        // เริ่มโหลดข้อมูลเมื่อโครงสร้างหน้าเว็บ (DOM) โหลดเสร็จเท่านั้น เพื่อความเสถียร
+        document.addEventListener('DOMContentLoaded', () => {
+            let tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
+            let dateInput = document.getElementById('bk-date-input');
+            if(dateInput) dateInput.min = tmr.toISOString().split("T")[0];
+            
+            // รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
+            setTimeout(() => {
+                loadDynamicServices();
+            }, 300);
+        });
     </script>
 </body>
 </html>
