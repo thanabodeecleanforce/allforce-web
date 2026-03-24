@@ -6,22 +6,22 @@
     <title>เข้าสู่ระบบ | Cleanforce</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Noto Sans Thai', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
+<body class="bg-[#F3F7FB] flex items-center justify-center min-h-screen p-6">
 
-    <div class="bg-white p-10 rounded-[2rem] shadow-xl max-w-md w-full text-center relative overflow-hidden">
-        <button onclick="window.history.back()" class="absolute top-6 left-6 text-gray-400 hover:text-blue-600 transition">
+    <div class="bg-white p-10 rounded-[2rem] shadow-xl max-w-md w-full text-center relative overflow-hidden border border-gray-100">
+        <button onclick="window.history.back()" class="absolute top-6 left-6 text-gray-400 hover:text-[#1EA7E1] transition">
             <i class="fa-solid fa-arrow-left text-xl"></i>
         </button>
 
-        <img src="logo-cleanforce.png" alt="Cleanforce" class="h-16 mx-auto mb-6 object-contain" onerror="this.src='https://placehold.co/200x80?text=CLEANFORCE'">
+        <img src="logo-cleanforce.png" alt="Cleanforce" class="h-16 mx-auto mb-6 object-contain" onerror="this.src='https://placehold.co/200x80?text=CF'">
         
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">ยินดีต้อนรับสู่ Cleanforce</h2>
-        <p class="text-gray-500 text-sm mb-8">เข้าสู่ระบบเพื่อจัดการคูปองและดูประวัติการจองของคุณ</p>
+        <h2 class="text-2xl font-bold text-[#000080] mb-2" style="font-family: 'Poppins', 'Noto Sans Thai', sans-serif;">ยินดีต้อนรับสู่ Cleanforce</h2>
+        <p class="text-gray-500 text-sm mb-8">เข้าสู่ระบบเพื่อจัดการจอง ประเมินราคา และรับส่วนลดพิเศษ</p>
 
-        <button id="login-btn" onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 px-6 py-3 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition shadow-sm hover:shadow-md">
+        <button id="login-btn" onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 px-6 py-3.5 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition shadow-sm hover:shadow-md">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" alt="Google">
             <span>เข้าสู่ระบบด้วย Google</span>
         </button>
@@ -43,7 +43,6 @@
             appId: "1:206898849342:web:35bc0462818da86fb1136f"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -51,56 +50,43 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // เช็คว่าถ้าล็อกอินอยู่แล้ว ให้เด้งกลับไปหน้าที่จากมา (Smart Redirect)
+        // 2. เช็คสถานะ (ถ้าล็อกอินอยู่แล้ว ให้เด้งกลับ)
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // ดึง URL ของหน้าเว็บที่ลูกค้าเพิ่งจากมา
                 let prevPage = document.referrer || "";
-                
-                // เช็คคำใน URL แล้วเด้งกลับให้ถูกหน้า
+                // เช็คให้ครอบคลุมชื่อไฟล์ใหม่
                 if (prevPage.includes("cleanforce.html")) {
-                    window.location.href = "cleanforce.html";
-                } else if (prevPage.includes("admin.html")) {
-                    window.location.href = "admin.html";
-                } else if (prevPage.includes("profile.html")) {
-                    window.location.href = "profile.html";
-                } else if (prevPage.includes("index.html")) {
-                    window.location.href = "index.html";
-                } else {
-                    // ถ้าไม่รู้ว่ามาจากไหน ให้กลับไปหน้า Hub เป็นค่าเริ่มต้น
-                    window.location.href = "index.html"; 
-                }
+    window.location.href = "cleanforce.html";
+} else if (prevPage.includes("admin.html")) {
+    // ...
+} else {
+    window.location.href = "cleanforce.html"; // หน้าเริ่มต้น
+
             }
         });
 
-        // 2. ฟังก์ชันเมื่อกดปุ่มล็อกอิน
+        // 3. ฟังก์ชันล็อกอิน
         function loginWithGoogle() {
             const loginBtn = document.getElementById('login-btn');
             const btnSpan = loginBtn.querySelector('span');
             
-            // เปลี่ยนสถานะปุ่มตอนกำลังโหลด
             loginBtn.disabled = true;
             btnSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังเข้าสู่ระบบ...';
 
             auth.signInWithPopup(provider)
             .then((result) => {
                 const user = result.user;
-                
-                // อัปเดต localStorage (เผื่อไว้ใช้ด่วน)
                 localStorage.setItem('cf_user', JSON.stringify({
                     name: user.displayName,
                     email: user.email,
                     photo: user.photoURL,
                     uid: user.uid
                 }));
-
-                // เมื่อ onAuthStateChanged ตรวจพบว่า user มาแล้ว มันจะทำการ redirect เอง (ในบล็อกด้านบน)
+                // ไม่ต้องเขียน redirect ตรงนี้ เพราะ onAuthStateChanged ด้านบนจะทำงานอัตโนมัติ
             })
             .catch((error) => {
-                console.error("Error: ", error);
-                alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ กรุณาลองใหม่อีกครั้ง");
-                
-                // คืนค่าปุ่มกลับมาเหมือนเดิมถ้า Error
+                console.error("Auth Error: ", error);
+                alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ: " + error.message);
                 loginBtn.disabled = false;
                 btnSpan.innerHTML = 'เข้าสู่ระบบด้วย Google';
             });
