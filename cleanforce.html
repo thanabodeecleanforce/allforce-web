@@ -485,6 +485,15 @@
                             <p id="location-status" class="text-[10px] font-bold text-green-600 mt-2 hidden"></p>
                         </div>
                     </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-3 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="bk-key-drop" class="w-5 h-5 text-primary rounded focus:ring-primary" onchange="document.getElementById('key-detail-wrapper').classList.toggle('hidden', !this.checked)">
+                            <label for="bk-key-drop" class="text-sm font-bold text-gray-600 cursor-pointer" data-i18n="bk-key">ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:</label>
+                        </div>
+                        <div id="key-detail-wrapper" class="hidden pl-8">
+                            <input type="text" id="bk-key-detail" placeholder="ตู้จดหมาย, รปภ., ซ่อนใต้กระถางต้นไม้ ฯลฯ" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs focus:ring-primary focus:border-primary outline-none">
+                        </div>
+                    </div>
                     <button onclick="changeStep(1)" class="w-full bg-primary text-white p-4 rounded-xl font-bold shadow-sm mt-6">สรุปคำสั่งซื้อขั้นสุดท้าย</button>
                 </div>
 
@@ -1445,94 +1454,128 @@
         
         // 8. บันทึกลงฐานข้อมูล และส่งไลน์
         window.submitBooking = async function() {
-            // 1. ดึงข้อมูลจากฟอร์มลูกค้า (แก้ไข ID ให้ตรงกับ HTML สเต็ป 3 และ 4)
-            var date = document.getElementById('bk-date').value; // เปลี่ยนจาก bk-date-input
-            var time = document.getElementById('bk-time').value; // เปลี่ยนจาก bk-time-input
-            var name = document.getElementById('bk-fname').value.trim() + " " + document.getElementById('bk-lname').value.trim(); // รวมชื่อและนามสกุล
-            var phone = document.getElementById('bk-phone').value.trim(); // เปลี่ยนจาก bk-phone-input
-            
-            // ข้อมูลที่อยู่ (รวมจากหลายช่องในสเต็ป 4)
-            var houseNo = document.getElementById('bk-houseNo').value.trim();
-            var soi = document.getElementById('bk-soi').value.trim();
-            var road = document.getElementById('bk-road').value.trim();
-            var tambon = document.getElementById('bk-tambon').value;
-            var amphoe = document.getElementById('bk-amphoe').value;
-            var address = `บ้านเลขที่/หมู่บ้าน: ${houseNo} ซอย: ${soi} ถนน: ${road} ต.${tambon} อ.${amphoe} จ.ภูเก็ต`;
-            
-            var gpsLink = document.getElementById('bk-gps').value; // เปลี่ยนจาก bk-gps-link
-            
-            // เนื่องจากในแบบฟอร์มปัจจุบันไม่มีช่อง "เลขนิติบุคคล" และ "ที่ซ่อนกุญแจ" ขอข้ามไปก่อนนะครับ
-            var taxid = "-";
-            var keyInfo = "อยู่บ้าน (รอรับทีมงาน)"; 
-            
-            var isReview = document.getElementById('bk-review-discount') ? document.getElementById('bk-review-discount').checked : false;
+            // ฟังก์ชันช่วยดึงค่าแบบปลอดภัย (ป้องกัน Error โค้ดพังถ้าหาช่องไม่เจอ)
+            const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() : '';
+            const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
+            const getText = (id) => document.getElementById(id) ? document.getElementById(id).textContent.trim() : '';
 
-            var alertTxt = sysAlerts[window.currentLang] || sysAlerts['th'];
+            // 1. ดึงข้อมูลจากฟอร์ม (อัปเดต ID ให้ตรงกับหน้าเว็บล่าสุด)
+            var date = getVal('bk-date');
+            var time = getVal('bk-time');
+            
+            var fname = getVal('bk-fname');
+            var lname = getVal('bk-lname');
+            var name = (fname + " " + lname).trim();
+            
+            var phone = getVal('bk-phone');
+            
+            // รวมข้อมูลที่อยู่
+            var houseNo = getVal('bk-houseNo');
+            var soi = getVal('bk-soi');
+            var road = getVal('bk-road');
+            var tambon = getVal('bk-tambon');
+            var amphoe = getVal('bk-amphoe');
+            
+            var address = "";
+            if (houseNo) address += "บ้านเลขที่/หมู่บ้าน: " + houseNo + " ";
+            if (soi) address += "ซอย: " + soi + " ";
+            if (road) address += "ถนน: " + road + " ";
+            if (tambon) address += "ต." + tambon + " ";
+            if (amphoe) address += "อ." + amphoe;
+            address = address.trim();
 
-            // เช็คข้อมูลบังคับ
-            if(!date || !document.getElementById('bk-fname').value.trim() || !phone || !houseNo || !amphoe || !tambon) { 
-                alert(alertTxt.errInput); return; 
+            var gpsLink = getVal('bk-gps');
+            var taxid = "-"; // นำออกไปแล้วในฟอร์ม
+            
+            var isKeyDrop = getCheck('bk-key-drop');
+            var keyDetail = getVal('bk-key-detail');
+            var isReview = getCheck('bk-review-discount');
+
+            var alertTxt = (typeof sysAlerts !== 'undefined' && sysAlerts[window.currentLang]) ? sysAlerts[window.currentLang] : sysAlerts['th'];
+
+            // 2. ตรวจสอบความครบถ้วนของข้อมูล
+            if(!date || !fname || !phone || !houseNo || !tambon || !amphoe) { 
+                alert(alertTxt.errInput || "กรุณากรอก วันที่นัดหมาย, ชื่อ, เบอร์โทร และ ที่อยู่ ให้ครบถ้วนครับ"); 
+                return; 
             }
 
-            // จัดการราคา
-            var netPriceText = document.getElementById('sum-price').textContent;
-            var grossPriceText = document.getElementById('sum-original-price').textContent;
-            var netPriceNumber = Number(netPriceText.replace(/,/g, '')); 
-            
-            var modeName = currentServiceMode === 'house' ? 'บริการทำความสะอาดบ้าน' : 'บริการทำความสะอาดเฟอร์นิเจอร์';
+            var keyInfo = "อยู่บ้าน (รอรับทีมงาน)";
+            if (isKeyDrop) {
+                if(!keyDetail) { 
+                    alert(alertTxt.errKey || "โปรดระบุสถานที่รับกุญแจครับ"); 
+                    return; 
+                }
+                keyInfo = "รับกุญแจที่: " + keyDetail;
+            }
 
-            // เปลี่ยนสถานะปุ่ม
+            // ล็อคปุ่มป้องกันกดเบิ้ล
             var submitBtn = document.querySelector('button[onclick="submitBooking()"]');
-            var originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังดำเนินการ...';
-            submitBtn.disabled = true;
+            var originalBtnText = submitBtn ? submitBtn.innerHTML : 'จองบริการผ่าน LINE';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังประมวลผล...';
+                submitBtn.disabled = true;
+            }
 
             try {
-                // 2. ดึงข้อมูลแพ็กเกจ และบริการเสริม (ดึงจากกล่องสรุปสเต็ป 5)
-                var baseServiceText = (currentServiceMode === 'house' && document.getElementById('sum-type-name')) ? document.getElementById('sum-type-name').textContent : "ไม่มี";
-                var basePriceText = ""; // ซ่อนราคาฐาน เพราะรวมในกล่องสรุปแล้ว
+                // 3. รวบรวมข้อมูลราคาและบริการ
+                var netPriceText = getText('sum-price') || "0";
+                var grossPriceText = getText('sum-original-price') || "0";
+                var netPriceNumber = Number(netPriceText.replace(/,/g, '')); 
                 
-                var addonsListElements = document.querySelectorAll('#sum-addons-container .flex'); // แก้ไขการดึงข้อมูลบริการเสริม
+                var modeName = currentServiceMode === 'house' ? 'บริการทำความสะอาดบ้าน' : 'บริการทำความสะอาดเฟอร์นิเจอร์';
+
+                // ดึงชื่อแพ็กเกจหลัก (สำหรับบ้าน)
+                var baseServiceText = "ไม่มี (จองรายชิ้น)";
+                if (currentServiceMode === 'house') {
+                    baseServiceText = getText('sum-type-name'); 
+                    if (!baseServiceText || baseServiceText === '-') baseServiceText = "จัดแพ็กเกจด้วยตนเอง";
+                }
+                
+                // ดึงรายการเสริมจากกล่องสรุป
+                var addonsListElements = document.querySelectorAll('#sum-addons-container .flex');
                 var addonsText = "";
                 if(addonsListElements.length > 0) {
                     addonsListElements.forEach(function(el) { 
-                        let text = el.innerText.trim().replace(/\s+/g, ' ');
-                        if (text) addonsText += "- " + text + "\n"; 
+                        let cleanText = el.innerText.trim().replace(/\n/g, ' ');
+                        if(cleanText) addonsText += "- " + cleanText + "\n"; 
                     });
                 } else { 
                     addonsText = "- ไม่มี\n"; 
                 }
 
-                // ข้อมูลส่วนลด
-                var reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ไม่รับส่วนลด";
                 var promoText = activePromoCode ? activePromoCode : "ไม่ได้ใช้";
+                var reviewText = isReview ? "ยินดีรีวิว (รับส่วนลด 15% แล้ว)" : "ไม่รับส่วนลด";
 
-                // 3. บันทึกลง Firestore (ให้ Admin ดูหลังบ้าน)
-                var orderData = {
-                    serviceMode: modeName,
-                    baseService: baseServiceText,
-                    addons: addonsText,
-                    customerName: name,
-                    phone: phone,
-                    bookingDate: date,
-                    bookingTime: time,
-                    address: address,
-                    gpsLink: gpsLink,
-                    taxId: taxid,
-                    keyDrop: keyInfo,
-                    promoCode: promoText,
-                    totalPrice: netPriceNumber,
-                    isReviewDiscount: isReview,
-                    status: "pending",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+                // 4. บันทึกลง Firebase
+                var orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
+                if (window.cf_db) {
+                    try {
+                        var orderData = {
+                            refId: orderId,
+                            serviceMode: modeName,
+                            baseService: baseServiceText,
+                            addons: addonsText,
+                            customerName: name,
+                            phone: phone,
+                            bookingDate: date,
+                            bookingTime: time,
+                            address: address,
+                            gpsLink: gpsLink,
+                            taxId: taxid,
+                            keyDrop: keyInfo,
+                            promoCode: promoText,
+                            totalPrice: netPriceNumber,
+                            isReviewDiscount: isReview,
+                            status: "pending",
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        var docRef = await window.cf_db.collection("bookings").add(orderData);
+                        orderId = docRef.id.slice(0, 6).toUpperCase(); 
+                    } catch(e) { console.warn("Firestore Error:", e); }
+                }
 
-                var docRef = await window.cf_db.collection("bookings").add(orderData);
-                var orderId = docRef.id.slice(0, 6).toUpperCase(); 
-
-                // 4. สร้างข้อความส่งเข้า LINE ตามแพทเทิร์นเป๊ะๆ
+                // 5. สร้างข้อความสรุปยอดสำหรับ LINE
                 var summary = "===== CLEANFORCE BOOKING =====\n" +
-                              "นี่คือข้อมูลบริการเบื้องต้นสำหรับให้แอดมินยืนยันรับบริการ\n\n" +
                               "รหัสการจอง: " + orderId + "\n" +
                               "ประเภท: " + modeName + "\n";
                 
@@ -1547,23 +1590,23 @@
                            "เบอร์โทร: " + phone + "\n" +
                            "ที่อยู่: " + address + "\n" +
                            "พิกัด GPS: " + (gpsLink ? gpsLink : "-") + "\n" +
+                           "กุญแจ: " + keyInfo + "\n" +
                            "------------------------------\n" +
-                           "ราคาชำระสุทธิ: " + netPriceText + " บาท\n" +
+                           "ราคาชำระสุทธิ: " + netPriceText + " บาท (ราคาเต็ม " + grossPriceText + " บาท)\n" +
                            "การรีวิว: " + reviewText + "\n" +
                            "โค้ดส่วนลด: " + promoText + "\n" +
                            "==============================";
 
-                // 5. ส่งผ่าน LINE OA (ใช้ URL Scheme ดั้งเดิมที่ดึงข้อความได้ 100%)
+                // 6. ส่งไปที่ LINE
                 var encodedMessage = encodeURIComponent(summary);
                 var lineUrl = "https://line.me/R/ti/p/@cleanforce?text=" + encodedMessage; 
                 
                 window.location.href = lineUrl;
 
             } catch (error) {
-                console.error("Booking Error: ", error); 
-                alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง");
-                submitBtn.innerHTML = originalBtnText; 
-                submitBtn.disabled = false;
+                console.error("Booking Logic Error: ", error); 
+                alert("เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้งครับ");
+                if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
             }
         }
 
