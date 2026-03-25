@@ -63,7 +63,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 100;
+    z-index: 1000; /* ดันให้อยู่เลเยอร์บนสุดกันโมเดล 3D ทับ */
   }
 
   .tool-btn {
@@ -82,6 +82,18 @@
   .tool-btn:hover {
     background: #007bff;
     color: #fff;
+  }
+
+  /* 📱 ปรับระยะเฉพาะบนจอมือถือ (ป้องกันแถบเบราว์เซอร์บัง) */
+  @media (max-width: 600px) {
+    .tools-container {
+      bottom: 90px; /* ดันขึ้นหนีขอบจอด้านล่างให้พ้นแถบ Safari/Chrome */
+      right: 20px;  /* ขยับชิดขอบจออีกนิดให้ไม่เกะกะ */
+    }
+    .tool-btn {
+      padding: 8px 15px; /* ปรับปุ่มให้กะทัดรัดขึ้นนิดนึง */
+      font-size: 13px;
+    }
   }
 
   /* หน้าต่าง Modal ดูหน้าเต็ม 2D */

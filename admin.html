@@ -60,6 +60,8 @@
             <button onclick="filterData('addon')" id="tab-addon" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">บริการเสริม</button>
             <button onclick="filterData('social')" id="tab-social" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ตั้งค่าโปรไฟล์ IG</button>
             <button onclick="filterData('booking')" id="tab-booking" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">รายการจองจากลูกค้า</button>
+            <button onclick="filterData('clients')" id="tab-clients" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ลูกค้าของเรา</button>
+            <button onclick="filterData('portfolio')" id="tab-portfolio" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ผลงานของเรา</button>
         </div>
 
         <div id="table-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -149,6 +151,34 @@
 
             <div class="mt-6 text-right border-t border-gray-100 pt-6">
                 <button onclick="saveSocialSettings()" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-save"></i> บันทึกโปรไฟล์โซเชียล</button>
+            </div>
+        </div>
+        <div id="clients-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-[#000080]">จัดการโลโก้และชื่อลูกค้า</h3>
+                <button type="button" onclick="addClientRow()" class="bg-blue-50 text-primary border border-blue-200 px-4 py-2 rounded-lg font-bold text-xs hover:bg-primary hover:text-white transition"><i class="fa-solid fa-plus"></i> เพิ่มลูกค้า</button>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">ใส่ลิงก์รูปโลโก้ลูกค้า และชื่อบริษัท (ภาพจะเลื่อนอัตโนมัติบนหน้าเว็บ)</p>
+            
+            <div id="clients-edit-area" class="space-y-2">
+                </div>
+
+            <div class="mt-6 text-right border-t border-gray-100 pt-6">
+                <button onclick="saveClientsSettings(event)" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-save"></i> บันทึกข้อมูลลูกค้า</button>
+            </div>
+        </div>
+        <div id="portfolio-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-[#000080]">จัดการรูปภาพผลงาน</h3>
+                <button type="button" onclick="addPortfolioRow()" class="bg-blue-50 text-primary border border-blue-200 px-4 py-2 rounded-lg font-bold text-xs hover:bg-primary hover:text-white transition"><i class="fa-solid fa-plus"></i> เพิ่มรูปผลงาน</button>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">ใส่ลิงก์รูปภาพ หรือชื่อไฟล์ (ภาพจะแสดงเลื่อนอัตโนมัติในส่วน "ผลงานของเรา" บนหน้าเว็บ)</p>
+            
+            <div id="portfolio-edit-area" class="space-y-2">
+                </div>
+
+            <div class="mt-6 text-right border-t border-gray-100 pt-6">
+                <button onclick="savePortfolioSettings(event)" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-save"></i> บันทึกรูปผลงาน</button>
             </div>
         </div>
     </main>
@@ -419,21 +449,34 @@
                     snapshot.forEach(doc => {
                         let b = doc.data();
                         
-                        let addonsHtml = b.addonsList ? b.addonsList.map(a => `<div class="text-[10px] text-gray-500">- ${a.name} ${a.size} (x${a.qty})</div>`).join('') : '-';
-                        let statusColor = b.status === 'รอยืนยัน' ? 'bg-yellow-100 text-yellow-700' : (b.status === 'สำเร็จ' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700');
+                        // รองรับข้อมูลทั้งระบบเก่าและใหม่
+                        let bDate = b.bookingDate || b.date || '-';
+                        let bTime = b.bookingTime || b.time || '-';
+                        let bCategory = b.serviceMode || b.category || '-';
+                        let bPrice = b.totalPrice || b.netPrice || 0;
+                        let bStatus = b.status || 'รอยืนยัน';
+
+                        let addonsHtml = '';
+                        if (b.addons && typeof b.addons === 'string') {
+                            addonsHtml = `<div class="text-[10px] text-gray-500">${b.addons.replace(/\n/g, '<br>')}</div>`;
+                        } else if (b.addonsList) {
+                            addonsHtml = b.addonsList.map(a => `<div class="text-[10px] text-gray-500">- ${a.name} ${a.size} (x${a.qty})</div>`).join('');
+                        }
+                        
+                        let statusColor = bStatus === 'รอยืนยัน' ? 'bg-yellow-100 text-yellow-700' : (bStatus === 'สำเร็จ' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700');
 
                         html += `
                         <tr class="hover:bg-gray-50 transition border-b border-gray-50">
-                            <td class="p-4 whitespace-nowrap font-bold text-gray-800">${b.date}<br><span class="text-xs text-primary">${b.time} น.</span></td>
+                            <td class="p-4 whitespace-nowrap font-bold text-gray-800">${bDate}<br><span class="text-xs text-primary">${bTime} น.</span></td>
                             <td class="p-4"><p class="font-bold text-sm text-gray-800">${b.customerName}</p><p class="text-xs text-gray-500"><i class="fa-solid fa-phone text-[10px]"></i> ${b.phone}</p></td>
-                            <td class="p-4"><p class="text-xs font-bold text-[#000080] mb-1">หมวดหมู่: ${b.category}</p>${addonsHtml}</td>
-                            <td class="p-4 text-right font-bold text-primary">${(b.netPrice || 0).toLocaleString()} ฿</td>
+                            <td class="p-4"><p class="text-xs font-bold text-[#000080] mb-1">${bCategory}</p>${addonsHtml}</td>
+                            <td class="p-4 text-right font-bold text-primary">${bPrice.toLocaleString()} ฿</td>
                             <td class="p-4 text-center">
                                 <select onchange="updateBookingStatus('${doc.id}', this.value)" class="text-xs font-bold px-2 py-1 rounded-lg outline-none cursor-pointer ${statusColor}">
-                                    <option value="รอยืนยัน" ${b.status === 'รอยืนยัน' ? 'selected' : ''}>รอยืนยัน</option>
-                                    <option value="ยืนยันแล้ว" ${b.status === 'ยืนยันแล้ว' ? 'selected' : ''}>ยืนยันแล้ว</option>
-                                    <option value="สำเร็จ" ${b.status === 'สำเร็จ' ? 'selected' : ''}>สำเร็จ</option>
-                                    <option value="ยกเลิก" ${b.status === 'ยกเลิก' ? 'selected' : ''}>ยกเลิก</option>
+                                    <option value="รอยืนยัน" ${bStatus === 'รอยืนยัน' ? 'selected' : ''}>รอยืนยัน</option>
+                                    <option value="ยืนยันแล้ว" ${bStatus === 'ยืนยันแล้ว' ? 'selected' : ''}>ยืนยันแล้ว</option>
+                                    <option value="สำเร็จ" ${bStatus === 'สำเร็จ' ? 'selected' : ''}>สำเร็จ</option>
+                                    <option value="ยกเลิก" ${bStatus === 'ยกเลิก' ? 'selected' : ''}>ยกเลิก</option>
                                 </select>
                             </td>
                         </tr>`;
@@ -735,21 +778,21 @@
             // สร้างช่องกรอก Highlights
             let hlHtml = '';
             for(let i=1; i<=4; i++) {
-                hlHtml += `<div class="border border-gray-200 p-2 bg-white rounded"><input type="text" id="soc-hl-img-${i}" placeholder="ลิงก์รูปปก ${i}" class="w-full text-xs p-1 border-b outline-none mb-1"><input type="text" id="soc-hl-title-${i}" placeholder="ชื่อไฮไลท์" class="w-full text-xs p-1 border-b outline-none mb-1"><input type="text" id="soc-hl-link-${i}" placeholder="ลิงก์ปลายทาง" class="w-full text-xs p-1 outline-none"></div>`;
+                hlHtml += `<div class="border border-gray-200 p-2 bg-white rounded"><input type="text" id="soc-hl-img-${i}" placeholder="ลิงก์/ชื่อไฟล์รูปปก ${i}" class="w-full text-xs p-1 border-b outline-none mb-1"><input type="text" id="soc-hl-title-${i}" placeholder="ชื่อไฮไลท์" class="w-full text-xs p-1 border-b outline-none mb-1"><input type="text" id="soc-hl-link-${i}" placeholder="ลิงก์ปลายทาง" class="w-full text-xs p-1 outline-none"></div>`;
             }
             document.getElementById('soc-highlights-area').innerHTML = hlHtml;
 
             // สร้างช่องกรอก Grid
             let gridHtml = '';
             for(let i=1; i<=6; i++) {
-                gridHtml += `<input type="text" id="soc-grid-${i}" placeholder="ลิงก์รูปล่าสุด ${i}" class="w-full text-xs p-2 border rounded bg-white outline-none">`;
+                gridHtml += `<input type="text" id="soc-grid-${i}" placeholder="ลิงก์/ชื่อไฟล์รูปล่าสุด ${i}" class="w-full text-xs p-2 border rounded bg-white outline-none">`;
             }
             document.getElementById('soc-grid-area').innerHTML = gridHtml;
 
             // สร้างช่องกรอก Reels
             let reelsHtml = '';
             for(let i=1; i<=3; i++) {
-                reelsHtml += `<div class="flex gap-2"><input type="text" id="soc-reels-img-${i}" placeholder="รููปปก Reels ${i}" class="w-1/2 text-xs p-2 border rounded bg-white outline-none"><input type="text" id="soc-reels-link-${i}" placeholder="ลิงก์ไปวิดีโอ" class="w-1/2 text-xs p-2 border rounded bg-white outline-none"></div>`;
+                reelsHtml += `<div class="flex gap-2"><input type="text" id="soc-reels-img-${i}" placeholder="ลิงก์/ชื่อไฟล์ปก Reels ${i}" class="w-1/2 text-xs p-2 border rounded bg-white outline-none"><input type="text" id="soc-reels-link-${i}" placeholder="ลิงก์ไปวิดีโอ" class="w-1/2 text-xs p-2 border rounded bg-white outline-none"></div>`;
             }
             document.getElementById('soc-reels-area').innerHTML = reelsHtml;
         }
@@ -845,7 +888,178 @@
             btn.innerHTML = '<i class="fa-solid fa-save"></i> บันทึกโปรไฟล์โซเชียล';
         }
 
-        
+        // ==========================================
+        // ระบบจัดการ "ลูกค้าของเรา" (Our Clients)
+        // ==========================================
+        let currentClients = [];
+
+        // อัปเดตฟังก์ชัน filterData ให้รองรับแท็บ clients
+        const originalFilterData = filterData;
+        window.filterData = function(type) {
+            currentFilter = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary';
+            });
+            let activeTab = document.getElementById('tab-' + type);
+            if(activeTab) activeTab.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold bg-white text-primary border-t border-l border-r border-gray-200';
+
+            // ซ่อนทุกกล่องก่อน
+            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container'].forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+
+            // เลือกโชว์ตามแท็บที่กด
+            if (type === 'social') {
+                document.getElementById('social-container').classList.remove('hidden');
+                if (typeof setupSocialForm === 'function') setupSocialForm();
+                if (typeof loadSocialSettings === 'function') loadSocialSettings();
+            } else if (type === 'booking') {
+                document.getElementById('booking-container').classList.remove('hidden');
+                loadBookings();
+            } else if (type === 'clients') {
+                document.getElementById('clients-container').classList.remove('hidden');
+                loadClientsAdmin();
+            } else if (type === 'portfolio') {
+                document.getElementById('portfolio-container').classList.remove('hidden');
+                loadPortfolioAdmin(); // โหลดข้อมูลผลงาน
+            } else {
+                document.getElementById('table-container').classList.remove('hidden');
+                renderTable(); 
+            }
+        };
+        // ==========================================
+        // ระบบจัดการ "ผลงานของเรา" (Portfolio)
+        // ==========================================
+        let currentPortfolio = [];
+
+        async function loadPortfolioAdmin() {
+            try {
+                const doc = await db.collection('settings').doc('portfolio_profile').get();
+                if(doc.exists && doc.data().images) {
+                    currentPortfolio = doc.data().images;
+                } else {
+                    currentPortfolio = [];
+                }
+                renderPortfolioAdmin();
+            } catch(e) { console.error("Error loading portfolio:", e); }
+        }
+
+        function renderPortfolioAdmin() {
+            const container = document.getElementById('portfolio-edit-area');
+            if(currentPortfolio.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded">ยังไม่มีรูปผลงาน กดปุ่มเพิ่มรูปด้านบนครับ</p>';
+                return;
+            }
+            let html = '';
+            currentPortfolio.forEach((img, idx) => {
+                html += `
+                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
+                    <div class="w-12 h-12 bg-white border rounded flex items-center justify-center shrink-0 overflow-hidden">
+                        <img src="${img || 'https://placehold.co/100?text=IMG'}" onerror="this.src='https://placehold.co/100?text=IMG'" class="w-full h-full object-cover">
+                    </div>
+                    <input type="text" placeholder="ลิงก์/ชื่อไฟล์รูป (เช่น portfolio/img1.jpg)" value="${img || ''}" onchange="updatePortfolio(${idx}, this.value)" class="w-full p-2 border rounded text-xs outline-none focus:border-primary">
+                    <button type="button" onclick="removePortfolio(${idx})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function addPortfolioRow() {
+            currentPortfolio.push('');
+            renderPortfolioAdmin();
+        }
+        function updatePortfolio(index, value) {
+            currentPortfolio[index] = value;
+            renderPortfolioAdmin(); // รีเฟรชโชว์รูป
+        }
+        function removePortfolio(index) {
+            currentPortfolio.splice(index, 1);
+            renderPortfolioAdmin();
+        }
+
+        async function savePortfolioSettings(event) {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+            btn.disabled = true;
+            try {
+                let cleanData = currentPortfolio.filter(img => img.trim() !== ''); // เอาเฉพาะที่มีข้อมูล
+                await db.collection('settings').doc('portfolio_profile').set({ images: cleanData }, { merge: true });
+                Swal.fire({ icon: 'success', title: 'บันทึกรูปผลงานแล้ว', showConfirmButton: false, timer: 1500 });
+                currentPortfolio = cleanData;
+                renderPortfolioAdmin();
+            } catch(e) {
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error');
+            }
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        async function loadClientsAdmin() {
+            try {
+                const doc = await db.collection('settings').doc('clients_profile').get();
+                if(doc.exists && doc.data().clients) {
+                    currentClients = doc.data().clients;
+                } else {
+                    currentClients = [];
+                }
+                renderClientsAdmin();
+            } catch(e) { console.error("Error loading clients:", e); }
+        }
+
+        function renderClientsAdmin() {
+            const container = document.getElementById('clients-edit-area');
+            if(currentClients.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded">ยังไม่มีข้อมูลลูกค้า กดปุ่มเพิ่มลูกค้าด้านบนครับ</p>';
+                return;
+            }
+            let html = '';
+            currentClients.forEach((c, idx) => {
+                html += `
+                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
+                    <div class="w-10 h-10 bg-white border rounded flex items-center justify-center shrink-0 overflow-hidden">
+                        <img src="${c.img || 'https://placehold.co/100?text=IMG'}" onerror="this.src='https://placehold.co/100?text=IMG'" class="w-full h-full object-contain">
+                    </div>
+                    <input type="text" placeholder="ลิงก์/ชื่อไฟล์โลโก้" value="${c.img || ''}" onchange="updateClient(${idx}, 'img', this.value)" class="w-1/2 p-2 border rounded text-xs outline-none focus:border-primary">
+                    <input type="text" placeholder="ชื่อบริษัท/ลูกค้า" value="${c.name || ''}" onchange="updateClient(${idx}, 'name', this.value)" class="w-1/2 p-2 border rounded text-xs outline-none focus:border-primary">
+                    <button type="button" onclick="removeClient(${idx})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function addClientRow() {
+            currentClients.push({ name: '', img: '' });
+            renderClientsAdmin();
+        }
+        function updateClient(index, field, value) {
+            currentClients[index][field] = value;
+            if(field === 'img') renderClientsAdmin(); // รีเฟรชเพื่อโชว์รูปตัวอย่าง
+        }
+        function removeClient(index) {
+            currentClients.splice(index, 1);
+            renderClientsAdmin();
+        }
+
+        async function saveClientsSettings(event) {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+            btn.disabled = true;
+            try {
+                // กรองเอาเฉพาะอันที่กรอกข้อมูลแล้ว
+                let cleanData = currentClients.filter(c => c.img.trim() !== '' || c.name.trim() !== '');
+                await db.collection('settings').doc('clients_profile').set({ clients: cleanData }, { merge: true });
+                Swal.fire({ icon: 'success', title: 'บันทึกข้อมูลลูกค้าแล้ว', showConfirmButton: false, timer: 1500 });
+                currentClients = cleanData;
+                renderClientsAdmin();
+            } catch(e) {
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error');
+            }
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     </script>
     
 </body>

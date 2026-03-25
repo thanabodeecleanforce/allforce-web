@@ -65,41 +65,67 @@
                 document.getElementById('prof-name').textContent = user.displayName;
                 document.getElementById('prof-email').textContent = user.email;
 
-                // ดึงประวัติการจองของตัวเอง
+                // ดึงประวัติการจองของตัวเอง (ตัด orderBy ออกเพื่อแก้ปัญหา Index Error และดึงข้อมูลใหม่)
                 db.collection("bookings")
                   .where("userId", "==", user.uid)
-                  .orderBy("createdAt", "desc")
                   .onSnapshot(snapshot => {
                       let html = '';
                       if(snapshot.empty) {
                           html = '<div class="text-center text-gray-400 py-8 border-2 border-dashed border-gray-200 rounded-xl"><i class="fa-solid fa-box-open text-3xl mb-2"></i><br>คุณยังไม่มีประวัติการจอง</div>';
                       } else {
-                          snapshot.forEach(doc => {
-                              let b = doc.data();
-                              let statusColor = b.status === 'รอยืนยัน' ? 'bg-yellow-100 text-yellow-700' : (b.status === 'สำเร็จ' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700');
-                              let addonsHtml = b.addonsList ? b.addonsList.map(a => `<p class="text-xs text-gray-500">- ${a.name} ${a.size} <span class="text-gray-400">(x${a.qty})</span></p>`).join('') : '';
+                          let bookings = [];
+                          snapshot.forEach(doc => bookings.push({id: doc.id, ...doc.data()}));
+                          
+                          // เรียงลำดับจากใหม่ไปเก่าด้วย JavaScript แทน เพื่อไม่ให้ Database Error
+                          bookings.sort((a, b) => {
+                              let timeA = a.createdAt ? a.createdAt.toMillis() : 0;
+                              let timeB = b.createdAt ? b.createdAt.toMillis() : 0;
+                              return timeB - timeA;
+                          });
+
+                          bookings.forEach(b => {
+                              // รองรับตัวแปรทั้งระบบเก่าและใหม่
+                              let bDate = b.bookingDate || b.date || '-';
+                              let bTime = b.bookingTime || b.time || '-';
+                              let bCategory = b.serviceMode || b.category || '-';
+                              let bPrice = b.totalPrice || b.netPrice || 0;
+                              let bStatus = b.status || 'รอยืนยัน';
+
+                              let statusColor = bStatus === 'รอยืนยัน' ? 'bg-yellow-100 text-yellow-700' : (bStatus === 'สำเร็จ' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700');
+                              
+                              // จัดการบริการเสริมให้อ่านง่าย
+                              let addonsHtml = '';
+                              if (b.addons && typeof b.addons === 'string') {
+                                  addonsHtml = `<div class="text-xs text-gray-500 mt-2">${b.addons.replace(/\n/g, '<br>')}</div>`;
+                              } else if (b.addonsList) {
+                                  addonsHtml = b.addonsList.map(a => `<p class="text-xs text-gray-500">- ${a.name} ${a.size} <span class="text-gray-400">(x${a.qty})</span></p>`).join('');
+                              }
 
                               html += `
-                              <div class="border border-gray-100 rounded-xl p-4 hover:shadow-md transition">
+                              <div class="border border-gray-100 rounded-xl p-4 hover:shadow-md transition bg-white">
                                   <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-3">
                                       <div>
-                                          <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">วันที่รับบริการ</p>
-                                          <p class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-calendar-day text-primary mr-1"></i> ${b.date} | ${b.time} น.</p>
+                                          <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">รหัสอ้างอิง: ${b.refId || b.id.slice(0,6).toUpperCase()}</p>
+                                          <p class="font-bold text-gray-800 text-sm mt-1"><i class="fa-solid fa-calendar-day text-primary mr-1"></i> ${bDate} | ${bTime} น.</p>
                                       </div>
-                                      <span class="text-[10px] font-bold px-2 py-1 rounded-full ${statusColor}">${b.status}</span>
+                                      <span class="text-[10px] font-bold px-2 py-1 rounded-full ${statusColor}">${bStatus}</span>
                                   </div>
                                   <div class="mb-3">
-                                      <p class="text-xs font-bold text-[#000080] mb-1">หมวดหมู่: ${b.category}</p>
+                                      <p class="text-xs font-bold text-[#000080] mb-1">บริการ: ${bCategory}</p>
+                                      <p class="text-xs font-bold text-gray-600 mb-1">${b.baseService || ''}</p>
                                       ${addonsHtml}
                                   </div>
                                   <div class="flex justify-between items-end pt-2 border-t border-gray-50">
-                                      <p class="text-[10px] text-gray-400">จองเมื่อ: ${b.createdAt ? b.createdAt.toDate().toLocaleDateString('th-TH') : '-'}</p>
-                                      <p class="font-bold text-primary text-lg">${(b.netPrice||0).toLocaleString()} ฿</p>
+                                      <p class="text-[10px] text-gray-400">จองเมื่อ: ${b.createdAt ? b.createdAt.toDate().toLocaleDateString('th-TH') : 'เพิ่งทำรายการ'}</p>
+                                      <p class="font-bold text-primary text-lg">${bPrice.toLocaleString()} ฿</p>
                                   </div>
                               </div>`;
                           });
                       }
                       document.getElementById('my-bookings').innerHTML = html;
+                  }, error => {
+                      console.error("Error fetching bookings:", error);
+                      document.getElementById('my-bookings').innerHTML = '<div class="text-center text-red-500 py-8"><i class="fa-solid fa-circle-exclamation text-3xl mb-2"></i><br>เกิดข้อผิดพลาดในการดึงข้อมูล</div>';
                   });
             } else {
                 window.location.href = "login.html"; // ถ้าไม่ได้ล็อกอิน เตะกลับไปหน้าล็อกอิน

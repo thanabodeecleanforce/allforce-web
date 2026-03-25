@@ -281,6 +281,24 @@
         </div>
     </section>
 
+    <section id="clients-cf" class="py-16 px-6 bg-white border-t border-gray-100 overflow-hidden hidden">
+        <div class="max-w-7xl mx-auto text-center mb-8">
+            <div class="inline-flex items-center gap-2 bg-blue-50 px-4 py-1.5 rounded-full mb-3">
+                <span class="w-1.5 h-1.5 bg-primary rounded-full animate-ping"></span>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Trusted by Partners</span>
+            </div>
+            <h2 class="text-2xl md:text-4xl font-bold font-heading text-[#000080]">ลูกค้าที่ไว้วางใจเรา</h2>
+        </div>
+
+        <div class="marquee-container mt-8 relative">
+            <div class="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10"></div>
+            <div class="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10"></div>
+            
+            <div class="marquee-content flex gap-12 md:gap-20 items-center" id="client-logos-container">
+                </div>
+        </div>
+    </section>
+
     <section id="social-cf" class="py-24 px-6 bg-background rounded-t-[3rem] md:rounded-t-[5rem] text-text border-t border-gray-100">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
@@ -414,24 +432,34 @@
                 </div>
 
                 <div id="step-3" class="step-section hidden space-y-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]">3. รายละเอียดพื้นที่เพิ่มเติม</h2>
+                    <div class="mb-2">
+                        <h2 class="text-xl md:text-2xl font-bold text-[#000080]">3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ</h2>
+                        <p class="text-xs text-gray-500 mt-1">เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ</p>
+                    </div>
+                    
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-6 shadow-sm">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">ขนาดพื้นที่รวมโดยประมาณ (ตารางเมตร)</label>
-                            <div class="flex items-center gap-4">
-                                <input type="number" id="bk-size" class="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-primary outline-none text-sm" placeholder="เช่น 50" oninput="document.getElementById('bk-size-unknown').checked = false">
-                                <label class="flex items-center gap-2 cursor-pointer font-bold text-gray-600 text-sm whitespace-nowrap">
-                                    <input type="checkbox" id="bk-size-unknown" class="w-5 h-5 text-primary rounded" onchange="if(this.checked) document.getElementById('bk-size').value = ''"> ไม่ทราบขนาด
-                                </label>
-                            </div>
-                        </div>
-                        <div class="pt-4 border-t border-gray-100">
-                            <p class="font-bold text-gray-800 mb-1 text-sm">มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?</p>
-                            <p class="text-[10px] text-gray-500 mb-3">เพื่อความระมัดระวังในการใช้น้ำยา</p>
+                            <p class="font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-baby text-primary mr-2"></i>มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?</p>
+                            <p class="text-[10px] text-gray-500 mb-3">เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด</p>
                             <div class="flex gap-2 max-w-sm">
                                 <button onclick="setBtnToggle('kids', 'yes')" id="btn-kids-yes" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-gray-50 text-gray-500 border-gray-100">มี</button>
-                                <button onclick="setBtnToggle('kids', 'no')" id="btn-kids-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-[#1EA7E1] text-white border-[#1EA7E1]">ไม่มี</button>
+                                <button onclick="setBtnToggle('kids', 'no')" id="btn-kids-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-primary text-white border-primary">ไม่มี</button>
                             </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <p class="font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-paw text-primary mr-2"></i>มีสัตว์เลี้ยงในบ้านหรือไม่?</p>
+                            <p class="text-[10px] text-gray-500 mb-3">เพื่อเตรียมอุปกรณ์เก็บขนสัตว์ และระมัดระวังการเปิด-ปิดประตู</p>
+                            <div class="flex gap-2 max-w-sm">
+                                <button onclick="setBtnToggle('pets', 'yes')" id="btn-pets-yes" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-gray-50 text-gray-500 border-gray-100">มี</button>
+                                <button onclick="setBtnToggle('pets', 'no')" id="btn-pets-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-primary text-white border-primary">ไม่มี</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <label class="block font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-star text-primary mr-2"></i>จุดที่ต้องการให้เน้นเป็นพิเศษ (ถ้ามี)</label>
+                            <p class="text-[10px] text-gray-500 mb-3">เช่น "เน้นขัดคราบกระจกห้องน้ำ" หรือ "มีฝุ่นเยอะใต้เตียง"</p>
+                            <textarea id="bk-special-note" rows="2" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:border-primary placeholder-gray-300" placeholder="พิมพ์ข้อความที่นี่... (ไม่บังคับ)"></textarea>
                         </div>
                     </div>
                     <button onclick="changeStep(1)" class="w-full bg-primary text-white p-4 rounded-xl font-bold shadow-sm mt-6">ถัดไป</button>
@@ -517,8 +545,12 @@
                         </div>
                         
                         <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-600 space-y-2 mt-3 mb-3 border border-gray-100">
-                            <div class="flex justify-between items-center"><span><i class="fa-solid fa-ruler-combined text-primary w-4"></i> ขนาดพื้นที่:</span> <span id="sum-area-size" class="font-bold text-gray-800">-</span></div>
                             <div class="flex justify-between items-center"><span><i class="fa-solid fa-baby text-primary w-4"></i> เด็กเล็ก (<1ขวบ):</span> <span id="sum-kids" class="font-bold text-gray-800">-</span></div>
+                            <div class="flex justify-between items-center"><span><i class="fa-solid fa-paw text-primary w-4"></i> สัตว์เลี้ยง:</span> <span id="sum-pets" class="font-bold text-gray-800">-</span></div>
+                            <div class="flex flex-col gap-1 mt-2 pt-2 border-t border-gray-200">
+                                <span class="text-[10px]"><i class="fa-solid fa-comment-dots text-primary w-4"></i> เน้นพิเศษ:</span>
+                                <span id="sum-note" class="font-bold text-gray-800 text-[10px] pl-5">-</span>
+                            </div>
                         </div>
 
                         <div id="sum-addons-container"></div>
@@ -541,60 +573,52 @@
             </div>
         </div>
 
-        <div id="floating-cart" class="flex flex-col fixed bottom-24 right-6 z-50 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.2)] rounded-2xl border border-gray-200 w-64 md:w-80 animate-in slide-in-from-bottom-10 overflow-hidden max-h-[75vh] transition-all">
+        <div id="floating-cart" class="fixed bottom-0 left-0 w-full z-[100] bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.15)] rounded-t-3xl border-t border-gray-200 animate-in slide-in-from-bottom-10 transition-all hidden">
              
-             <div onclick="toggleCartDetails()" class="p-4 bg-white cursor-pointer hover:bg-gray-50 transition-colors z-10 relative">
+             <div class="w-full flex justify-center pt-3 pb-1 cursor-pointer" onclick="toggleCartDetails()">
+                 <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+             </div>
+
+             <div onclick="toggleCartDetails()" class="px-6 pb-4 pt-1 bg-white cursor-pointer transition-colors z-10 relative">
                  <div class="flex items-center justify-between text-[#000080] font-bold mb-2 pb-2 border-b border-gray-100 text-xs md:text-sm">
                      <div class="flex items-center gap-2"><i class="fa-solid fa-cart-shopping"></i> <span id="float-item-count">0 รายการ</span></div>
                      <i id="float-cart-chevron" class="fa-solid fa-chevron-up text-gray-400 transition-transform"></i>
                  </div>
                  <div class="flex items-end justify-between">
-                     <span class="text-[10px] font-bold text-gray-400 uppercase">ยอดชำระ</span>
+                     <span class="text-xs font-bold text-gray-500 uppercase">ยอดชำระสุทธิ</span>
                      <div class="text-right">
                          <div id="float-orig-price-container" class="text-[10px] text-gray-400 mb-0.5 font-bold hidden">
                              ราคาเดิม <span class="line-through decoration-red-500 decoration-2 text-red-500 ml-1" id="float-orig-price">0</span>
                          </div>
-                         <span class="text-xl md:text-2xl font-extrabold text-primary" id="float-net-price">0</span><span class="text-[10px] font-bold text-gray-500 ml-1">THB</span>
+                         <span class="text-2xl font-extrabold text-primary" id="float-net-price">0</span><span class="text-[10px] font-bold text-gray-500 ml-1">THB</span>
                      </div>
                  </div>
              </div>
 
-             <div id="floating-cart-details" class="hidden overflow-y-auto bg-gray-50 p-4 border-t border-gray-200 text-xs space-y-2 pb-6">
-                 <div id="float-details-list" class="space-y-3">
-                     </div>
-                 <div id="float-details-discount" class="mt-3 border-t border-gray-200 pt-3 space-y-1">
-                     </div>
+             <div id="floating-cart-details" class="hidden overflow-y-auto bg-gray-50 p-6 border-t border-gray-200 text-xs space-y-2 pb-8 max-h-[50vh]">
+                 <div id="float-details-list" class="space-y-3"></div>
+                 <div id="float-details-discount" class="mt-3 border-t border-gray-200 pt-3 space-y-1"></div>
+                 
+                 <button onclick="changeStep(1)" class="w-full bg-primary text-white p-3 rounded-xl font-bold mt-4 shadow-sm">ดำเนินการต่อ <i class="fa-solid fa-arrow-right ml-1"></i></button>
              </div>
         </div>
     </section>
 
-    <section id="portfolio-cf" class="py-24 bg-white text-text border-t border-gray-100 overflow-hidden">
+    <section id="portfolio-cf" class="py-24 bg-white text-text border-t border-gray-100 overflow-hidden hidden">
         <div class="max-w-7xl mx-auto px-6 mb-16 text-center">
             <h2 class="text-3xl md:text-5xl font-bold font-heading mb-4" data-i18n="nav-portfolio">ผลงานของเรา</h2>
             <p class="text-gray-500 font-body" data-i18n="portfolio-sub">ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดพรีเมียมจากเรา</p>
         </div>
 
-        <div class="marquee-container mb-12">
-            <div class="marquee-content gap-4">
-                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
-                    <video src="portfolio/IMG_0541.jpeg" autoplay loop muted playsinline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></video>
+        <div class="marquee-container mb-12 relative">
+            <div class="absolute inset-y-0 left-0 w-8 md:w-16 bg-gradient-to-r from-white to-transparent z-10"></div>
+            <div class="absolute inset-y-0 right-0 w-8 md:w-16 bg-gradient-to-l from-white to-transparent z-10"></div>
+            
+            <div class="marquee-content gap-4" id="portfolio-gallery-container">
                 </div>
-                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
-                    <img src="portfolio/IMG_0547.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                </div>
-                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
-                    <img src="portfolio/IMG_0571.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                </div>
-                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
-                    <img src="portfolio/IMG_0568.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                </div>
-                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
-                    <img src="portfolio/IMG_0579.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                </div>
-            </div>
         </div>
 
-        <div class="text-center mb-24">
+        <div class="text-center mb-24 relative z-20">
             <a href="#" class="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary hover:text-white transition-colors" data-i18n="btn-more-portfolio">ดูรูปภาพผลงานทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </section>
@@ -1106,9 +1130,9 @@
                             <p class="text-[10px] text-gray-500 mt-1 line-clamp-2">${addon.details || addon.desc || 'ระบุจำนวนที่ต้องการ'}</p>
                         </div>
                         <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-3">
-                            <div class="flex gap-2">
+                            <div class="flex flex-col sm:flex-row gap-2">
                                 ${selectHtml}
-                                <button type="button" onclick="addTypeAddon('${addon.id}', ${hasSizes})" class="${hasSizes?'px-4':'w-full'} py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
+                                <button type="button" onclick="addTypeAddon('${addon.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
                             </div>
                             ${isSelected ? `
                             <div class="flex flex-col gap-2 mt-1">
@@ -1164,9 +1188,9 @@
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-3">
-                        <div class="flex gap-2">
+                         <div class="flex flex-col sm:flex-row gap-2">
                             ${selectHtml}
-                            <button type="button" onclick="addAddon('${addon.id}', ${hasSizes})" class="${hasSizes?'px-4':'w-full'} py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
+                            <button type="button" onclick="addAddon('${addon.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
                         </div>
                         ${isSelected ? `
                         <div class="flex flex-col gap-2 mt-1">
@@ -1260,12 +1284,9 @@
             if(currentStep === 2) renderTypes();
             if(currentStep === 5) {
                 renderAddons();
-                let sizeUnknownCb = document.getElementById('bk-size-unknown');
-                let sizeInput = document.getElementById('bk-size');
-                let sizeText = (sizeUnknownCb && sizeUnknownCb.checked) ? 'ไม่ทราบขนาด' : (sizeInput && sizeInput.value ? sizeInput.value + ' ตร.ม.' : 'ไม่ได้ระบุ');
-                
-                document.getElementById('sum-area-size').textContent = sizeText;
                 document.getElementById('sum-kids').textContent = cart.details.kids === 'yes' ? 'มี' : 'ไม่มี';
+                document.getElementById('sum-pets').textContent = cart.details.pets === 'yes' ? 'มี' : 'ไม่มี';
+                document.getElementById('sum-note').textContent = document.getElementById('bk-special-note').value.trim() || 'ไม่มี';
             }
             
             document.getElementById('booking-cf').scrollIntoView({ behavior: 'smooth' });
@@ -1489,6 +1510,8 @@
 
                 let date = getVal('bk-date');
                 let time = getVal('bk-time');
+                let note = getVal('bk-special-note') || '-';
+                let extraCare = `เด็กเล็ก: ${cart.details.kids === 'yes' ? 'มี' : 'ไม่มี'} | สัตว์เลี้ยง: ${cart.details.pets === 'yes' ? 'มี' : 'ไม่มี'}`;
                 let fname = getVal('bk-fname');
                 let lname = getVal('bk-lname');
                 let name = (fname + " " + lname).trim();
@@ -1572,14 +1595,18 @@
                 if(netPriceNumber < 0) netPriceNumber = 0;
 
                 let promoText = activePromoCode ? `${activePromoCode} (-${extraPromo.toLocaleString()} ฿)` : "ไม่ได้ใช้";
-                let reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ไม่รับส่วนลด";
+                let reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ส่วนลดยินดีรีวิว 15%";
                 let orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
 
                 // 🛠️ บันทึกลง Firebase 
                 if (typeof window.cf_db !== 'undefined') {
                     try {
+                        let currentUser = window.cf_auth ? window.cf_auth.currentUser : null;
+                        let uid = currentUser ? currentUser.uid : "guest";
+
                         let docRef = await window.cf_db.collection("bookings").add({
                             refId: orderId,
+                            userId: uid, // <--- เพิ่มบรรทัดนี้เพื่อให้ผูกกับโปรไฟล์ลูกค้า
                             serviceMode: modeName,
                             baseService: baseServiceText,
                             addons: addonsText,
@@ -1593,7 +1620,7 @@
                             promoCode: activePromoCode || "-",
                             totalPrice: netPriceNumber,
                             isReviewDiscount: isReview,
-                            status: "pending",
+                            status: "รอยืนยัน", // <--- เปลี่ยนจาก pending ให้ตรงกับระบบ Admin
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         orderId = docRef.id.slice(0, 6).toUpperCase(); 
@@ -1611,6 +1638,8 @@
                               "ชื่อลูกค้า: " + name + "\n" +
                               "เบอร์โทร: " + phone + "\n" +
                               "ที่อยู่: " + address + "\n" +
+                              "การดูแล: " + extraCare + "\n" +
+                              "เน้นพิเศษ: " + note + "\n" +
                               "พิกัด GPS: " + (gpsLink ? gpsLink : "-") + "\n" +
                               "กุญแจ: " + keyInfo + "\n" +
                               "------------------------------\n" +
@@ -1666,8 +1695,8 @@
                             highlightHTML += `
                             <div class="flex flex-col items-center gap-1 cursor-pointer group shrink-0" onclick="window.open('${hl.link || '#'}', '_blank')">
                                 <div class="w-14 h-14 rounded-full p-0.5 border border-gray-300 group-hover:border-gray-400 transition-colors">
-                                    <div class="w-full h-full rounded-full overflow-hidden bg-gray-100">
-                                        <img src="${hl.img || 'https://placehold.co/100'}" class="w-full h-full ${imgFitClass}">
+                                    <div class="w-full h-full rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                                        <img src="${hl.img || 'https://placehold.co/100'}" class="w-full h-full ${imgFitClass}" onerror="this.src='https://placehold.co/100?text=HL'">
                                     </div>
                                 </div>
                                 <span class="text-[10px] text-gray-800 truncate w-16 text-center">${hl.title || 'ไฮไลท์'}</span>
@@ -1679,14 +1708,13 @@
                     // อัปเดต Grid Posts
                     let gridHTML = '';
                     if(data.grid && data.grid.length > 0) {
-                        // 🌟 ดึงชื่อ IG มาทำเป็นลิงก์ (ถ้าแอดมินเผลอใส่ @ มาด้วยก็ลบออกให้)
                         let igUsername = data.handle ? data.handle.replace('@', '') : 'cleanforceofficial';
                         let igProfileUrl = `https://www.instagram.com/${igUsername}/`;
 
                         data.grid.forEach(imgUrl => {
                             gridHTML += `
                             <a href="${igProfileUrl}" target="_blank" class="aspect-square bg-white overflow-hidden group cursor-pointer relative block">
-                                <img src="${imgUrl || 'https://placehold.co/300'}" class="w-full h-full ${imgFitClass} group-hover:scale-105 transition-transform duration-500" />
+                                <img src="${imgUrl || 'https://placehold.co/300'}" class="w-full h-full ${imgFitClass} group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/300?text=IMG'"/>
                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                                     <i class="fa-brands fa-instagram text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
                                 </div>
@@ -1695,14 +1723,13 @@
                     }
                     document.getElementById('ig-grid-posts').innerHTML = gridHTML;
                     
-
                     // อัปเดต Reels
                     let reelsHTML = '';
                     if(data.reels && data.reels.length > 0) {
                         data.reels.forEach(rl => {
                             reelsHTML += `
                             <a href="${rl.link || '#'}" target="_blank" class="aspect-[9/16] bg-gray-900 overflow-hidden group cursor-pointer relative block">
-                                <img src="${rl.img || 'https://placehold.co/300x533'}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" />
+                                <img src="${rl.img || 'https://placehold.co/300x533'}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/300x533?text=REELS'"/>
                                 <div class="absolute top-2 right-2"><i class="fa-solid fa-play text-white text-sm drop-shadow-md"></i></div>
                             </a>`;
                         });
@@ -1738,17 +1765,88 @@
             }
         }
         
+        // เริ่มโหลดข้อมูลเมื่อโครงสร้างหน้าเว็บ (DOM) โหลดเสร็จเท่านั้น
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. ตั้งค่าวันที่ขั้นต่ำ (ให้จองล่วงหน้า 1 วัน)
             let tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
             let dateInput = document.getElementById('bk-date');
             if(dateInput) dateInput.min = tmr.toISOString().split("T")[0];
             
+            // 🌟 2. แก้ปัญหาปุ่มเมนูมือถือ (Hamburger Menu)
+            let mobileToggle = document.getElementById('mobile-menu-toggle');
+            let mobileMenu = document.getElementById('mobile-menu');
+            if(mobileToggle && mobileMenu) {
+                // สั่งเปิด-ปิด เมื่อกดปุ่ม 3 ขีด
+                mobileToggle.onclick = () => {
+                    mobileMenu.classList.toggle('hidden');
+                };
+            }
+            
+            // ทำให้เมนูมือถือหดเก็บอัตโนมัติ เมื่อลูกค้ากดเลือกลิงก์ต่างๆ
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+            
+            // 3. รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
             setTimeout(() => {
                 loadDynamicServices();
                 loadSocialProfile();
+                loadClientsWeb(); 
+                loadPortfolioWeb();
             }, 300);
         });
 
+        // ดึงข้อมูลลูกค้ามาโชว์หน้าเว็บ
+        async function loadClientsWeb() {
+            try {
+                const doc = await window.cf_db.collection('settings').doc('clients_profile').get();
+                if(doc.exists && doc.data().clients) {
+                    const clients = doc.data().clients;
+                    if (clients.length > 0) {
+                        let html = '';
+                        // Copy array 4 ชุด เพื่อให้การเลื่อน (Marquee) ทำงานได้เนียนไม่มีรอยต่อ
+                        const displayClients = [...clients, ...clients, ...clients, ...clients];
+                        
+                        displayClients.forEach(client => {
+                            html += `
+                            <div class="flex flex-col items-center justify-center shrink-0 w-24 md:w-32 group">
+                                <img src="${client.img || 'https://placehold.co/150x150?text=LOGO'}" alt="${client.name}" class="h-12 md:h-16 object-contain mb-3 drop-shadow-sm hover:scale-110 transition-transform duration-300" onerror="this.src='https://placehold.co/150x150?text=LOGO'">
+                                ${client.name ? `<span class="text-[10px] font-bold text-gray-500 group-hover:text-primary transition-colors text-center truncate w-full">${client.name}</span>` : ''}
+                            </div>`;
+                        });
+                        
+                        document.getElementById('client-logos-container').innerHTML = html;
+                        document.getElementById('clients-cf').classList.remove('hidden'); // เปิดให้แสดงผล
+                    }
+                }
+            } catch(e) { console.error("Error loading clients:", e); }
+        }
+        // ดึงข้อมูลรูปผลงานมาโชว์หน้าเว็บ
+        async function loadPortfolioWeb() {
+            try {
+                const doc = await window.cf_db.collection('settings').doc('portfolio_profile').get();
+                if(doc.exists && doc.data().images) {
+                    const images = doc.data().images;
+                    if (images.length > 0) {
+                        let html = '';
+                        // Copy array 3 ชุด เพื่อให้ Marquee เลื่อนได้ยาวๆ ไม่สะดุด
+                        const displayImages = [...images, ...images, ...images];
+                        
+                        displayImages.forEach(img => {
+                            html += `
+                            <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group shadow-sm border border-gray-100">
+                                <img src="${img}" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x400?text=PORTFOLIO'">
+                            </div>`;
+                        });
+                        
+                        document.getElementById('portfolio-gallery-container').innerHTML = html;
+                        document.getElementById('portfolio-cf').classList.remove('hidden'); // เปิดให้แสดงผล
+                    }
+                }
+            } catch(e) { console.error("Error loading portfolio:", e); }
+        }
     </script>
 </body>
 </html>
