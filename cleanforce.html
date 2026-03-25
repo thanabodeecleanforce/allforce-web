@@ -1352,6 +1352,9 @@
             }
         }
 
+        // =====================================
+        // 1. ฟังก์ชันคำนวณราคา (แก้ไขบั๊กตัวแปร & อัปเดต DOM ที่ถูกต้อง)
+        // =====================================
         window.calculatePricing = function() {
             let itemCount = 0; 
             let floatDetailsHTML = ''; 
@@ -1410,10 +1413,11 @@
 
             let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
             let percentDiscount = totalItems > 0 ? (4 + totalItems) : 0;
-            window.discountAmount = Math.round(addonsTotal * (percentDiscount / 100));
-
-        window.extraPromo = activePromoCode ? Math.round((addonsTotal - window.discountAmount) * 0.15) : 0;
-        let finalPrice = addonsTotal - window.discountAmount - window.extraPromo;
+            
+            // 🛠️ แก้ไขบัคตัวแปร (ลบ window. ออก และใช้ let เพื่อไม่ให้ Scope ทับซ้อน)
+            let discountAmount = Math.round(addonsTotal * (percentDiscount / 100));
+            let extraPromo = activePromoCode ? Math.round((addonsTotal - discountAmount) * 0.15) : 0;
+            let finalPrice = addonsTotal - discountAmount - extraPromo;
             let totalOrig = addonsOrigTotal;
 
             let discHTML = '';
@@ -1432,116 +1436,128 @@
                 }
                 discHTML += '</div>';
             }
-            
-            discHTML += `
-            <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between items-end">
-                <span class="text-gray-800 font-bold text-sm">ยอดชำระสุทธิ</span>
-                <div class="text-right">
-                    ${totalOrig > finalPrice ? `<span class="text-[10px] text-gray-400 line-through block mb-0.5">ราคาปกติ ${totalOrig.toLocaleString()} ฿</span>` : ''}
-                    <span class="text-2xl font-extrabold text-primary">${finalPrice.toLocaleString()}</span><span class="text-xs font-bold text-gray-500 ml-1">THB</span>
-                </div>
-            </div>`;
 
+            // 🛠️ อัปเดต DOM ให้ถูกจุด (ไม่สร้าง HTML ทับของเดิม)
             document.getElementById('sum-discount-container').innerHTML = discHTML;
             document.getElementById('float-details-discount').innerHTML = floatDiscHTML;
 
-            document.getElementById('float-net-price').textContent = finalPrice.toLocaleString();
-            let origEl = document.getElementById('float-orig-price-container');
-            if(totalOrig > finalPrice) {
-                origEl.classList.remove('hidden');
-                document.getElementById('float-orig-price').textContent = totalOrig.toLocaleString();
-            } else {
-                origEl.classList.add('hidden');
+            // 🛠️ อัปเดตตัวเลขยอดรวมในหน้า Step 5
+            let sumPriceEl = document.getElementById('sum-price');
+            let sumOrigEl = document.getElementById('sum-original-price');
+            if (sumPriceEl) sumPriceEl.textContent = finalPrice.toLocaleString();
+            if (sumOrigEl) {
+                if(totalOrig > finalPrice) {
+                    sumOrigEl.textContent = totalOrig.toLocaleString();
+                    sumOrigEl.classList.remove('hidden');
+                } else {
+                    sumOrigEl.classList.add('hidden');
+                }
+            }
+
+            // อัปเดตตะกร้าลอย
+            let floatNetEl = document.getElementById('float-net-price');
+            let floatOrigEl = document.getElementById('float-orig-price');
+            let floatOrigContainer = document.getElementById('float-orig-price-container');
+            if (floatNetEl) floatNetEl.textContent = finalPrice.toLocaleString();
+            if (floatOrigContainer && floatOrigEl) {
+                if(totalOrig > finalPrice) {
+                    floatOrigContainer.classList.remove('hidden');
+                    floatOrigEl.textContent = totalOrig.toLocaleString();
+                } else {
+                    floatOrigContainer.classList.add('hidden');
+                }
             }
         }
 
-        
-        // 8. บันทึกลงฐานข้อมูล และส่งไลน์
+        // =====================================
+        // 2. ฟังก์ชันยืนยันการจอง (แก้ Validation & LINE URL)
+        // =====================================
         window.submitBooking = async function() {
-            // ฟังก์ชันช่วยดึงค่าแบบปลอดภัย
-            const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() : '';
-            const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
-            const getText = (id) => document.getElementById(id) ? document.getElementById(id).textContent.trim() : '';
-
-            // 1. ดึงข้อมูลจากฟอร์ม (รองรับ ID ของระบบ 5 ขั้นตอน)
-            var date = getVal('bk-date');
-            var time = getVal('bk-time');
-            var fname = getVal('bk-fname');
-            var lname = getVal('bk-lname');
-            var name = (fname + " " + lname).trim();
-            var phone = getVal('bk-phone');
-
-            // ดึงที่อยู่แบบแยกชิ้น
-            var houseNo = getVal('bk-houseNo');
-            var soi = getVal('bk-soi');
-            var road = getVal('bk-road');
-            var tambon = getVal('bk-tambon');
-            var amphoe = getVal('bk-amphoe');
+            const submitBtn = document.querySelector('button[onclick="submitBooking()"]');
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : 'ยืนยันการจองผ่าน LINE';
             
-            var address = "";
-            if (houseNo && tambon) {
-                address = `บ้านเลขที่/หมู่บ้าน: ${houseNo} ` + (soi ? `ซอย: ${soi} ` : '') + (road ? `ถนน: ${road} ` : '') + `ต.${tambon} อ.${amphoe} จ.ภูเก็ต`;
-            } else {
-                address = getVal('bk-address-input') || "-"; // เผื่อกรณีใช้ฟอร์มแบบเก่า
-            }
-
-            var gpsLink = getVal('bk-gps');
-            var isKeyDrop = getCheck('bk-key-drop');
-            var keyDetail = getVal('bk-key-detail');
-            var isReview = getCheck('bk-review-discount');
-
-            // ตรวจสอบบังคับกรอก
-            if(!date || !fname || !phone || (!houseNo && !getVal('bk-address-input'))) { 
-                alert("กรุณากรอก วันที่, ชื่อ, เบอร์โทร และ ที่อยู่ ให้ครบถ้วนก่อนยืนยันครับ"); 
-                return; 
-            }
-
-            var keyInfo = "อยู่บ้าน (รอรับทีมงาน)";
-            if (isKeyDrop) {
-                if(!keyDetail) { alert("โปรดระบุสถานที่ซ่อนกุญแจครับ"); return; }
-                keyInfo = "รับกุญแจที่: " + keyDetail;
-            }
-
-            // ล็อคปุ่มกันกดเบิ้ล
-            var submitBtn = document.querySelector('button[onclick="submitBooking()"]');
-            var originalBtnText = submitBtn ? submitBtn.innerHTML : 'ยืนยันการจองผ่าน LINE';
+            // ล็อคปุ่มกันกดซ้ำ
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังประมวลผล...';
                 submitBtn.disabled = true;
             }
 
             try {
-                // 2. ดึงข้อมูลราคา
-                var netPriceText = getText('sum-price') || "0";
-                var grossPriceText = getText('sum-original-price') || "0";
-                var netPriceNumber = Number(netPriceText.replace(/,/g, '')); 
-                
-                // เช็คโหมดจากตัวแปร cart (ระบบ 5 ขั้นตอนใช้ cart.category)
-                var catType = (typeof cart !== 'undefined' && cart.category) ? cart.category : 'ไม่ระบุ';
-                var modeName = (catType === 'furniture') ? 'บริการทำความสะอาดเฟอร์นิเจอร์' : 'บริการทำความสะอาดบ้าน';
+                // ฟังก์ชันช่วยดึงค่าแบบปลอดภัย (ลดปัญหา DOM Mismatch)
+                const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() : '';
+                const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
+                const getText = (id) => document.getElementById(id) ? document.getElementById(id).textContent.trim() : '';
 
-                var baseServiceText = getText('sum-type-name') || "จัดแพ็กเกจด้วยตนเอง";
+                let date = getVal('bk-date');
+                let time = getVal('bk-time');
+                let fname = getVal('bk-fname');
+                let lname = getVal('bk-lname');
+                let name = (fname + " " + lname).trim();
+                let phone = getVal('bk-phone');
+
+                let houseNo = getVal('bk-houseNo');
+                let soi = getVal('bk-soi');
+                let road = getVal('bk-road');
+                let tambon = getVal('bk-tambon');
+                let amphoe = getVal('bk-amphoe');
                 
-                // ดึงรายการเสริมจากระบบ 5 ขั้นตอน
-                var addonsListElements = document.querySelectorAll('#sum-addons-container .flex');
-                var addonsText = "";
+                let address = "";
+                if (houseNo && tambon) {
+                    address = `บ้านเลขที่: ${houseNo} ` + (soi ? `ซอย: ${soi} ` : '') + (road ? `ถนน: ${road} ` : '') + `ต.${tambon} อ.${amphoe} จ.ภูเก็ต`;
+                } else {
+                    address = getVal('bk-address-input') || "-"; // Fallback ป้องกันพัง
+                }
+
+                let gpsLink = getVal('bk-gps');
+                let isKeyDrop = getCheck('bk-key-drop');
+                let keyDetail = getVal('bk-key-detail');
+                let isReview = getCheck('bk-review-discount');
+
+                // 🛠️ ตรวจสอบข้อมูลบังคับให้รัดกุม
+                if(!date || !fname || !phone || !houseNo) { 
+                    alert("กรุณากรอก วันที่, ชื่อ, เบอร์โทร และ ที่อยู่ ให้ครบถ้วนก่อนยืนยันครับ"); 
+                    if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
+                    return; 
+                }
+
+                let keyInfo = "อยู่บ้าน (รอรับทีมงาน)";
+                if (isKeyDrop) {
+                    if(!keyDetail) { 
+                        alert("โปรดระบุสถานที่ซ่อนกุญแจครับ"); 
+                        if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
+                        return; 
+                    }
+                    keyInfo = "รับกุญแจที่: " + keyDetail;
+                }
+
+                // ดึงข้อมูลราคา (จะดึงได้ถูกต้องแล้วเพราะแก้ calculatePricing ด้านบน)
+                let netPriceText = getText('sum-price') || "0";
+                let grossPriceText = getText('sum-original-price') || "0";
+                let netPriceNumber = Number(netPriceText.replace(/,/g, '')); 
+                
+                let modeName = (cart.category === 'furniture') ? 'บริการทำความสะอาดเฟอร์นิเจอร์' : 'บริการทำความสะอาดบ้าน';
+                let baseServiceText = getText('sum-type-name') || "จัดแพ็กเกจด้วยตนเอง";
+                
+                // ดึงรายการเสริม (แก้ Query ให้ดึงได้อย่างแม่นยำ)
+                let addonsListElements = document.querySelectorAll('#sum-addons-container .flex.justify-between.items-center');
+                let addonsText = "";
                 if(addonsListElements.length > 0) {
-                    addonsListElements.forEach(function(el) { 
-                        let cleanText = el.textContent.trim().replace(/\s+/g, ' '); // ใช้ textContent ชัวร์กว่าบนมือถือ
+                    addonsListElements.forEach(el => { 
+                        let cleanText = el.textContent.trim().replace(/\s+/g, ' '); 
                         if(cleanText && !cleanText.includes('x0')) addonsText += "- " + cleanText + "\n"; 
                     });
                 } else { 
                     addonsText = "- ไม่มี\n"; 
                 }
 
-                var promoText = (typeof activePromoCode !== 'undefined' && activePromoCode) ? activePromoCode : "ไม่ได้ใช้";
-                var reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ไม่รับส่วนลด";
+                let promoText = activePromoCode ? activePromoCode : "ไม่ได้ใช้";
+                let reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ไม่รับส่วนลด";
+                let orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
 
-                // 3. บันทึกลง Firebase 
-                var orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
+                // 🛠️ บันทึกลง Firebase (ใส่ใน Try Catch กันพัง)
                 if (typeof window.cf_db !== 'undefined') {
                     try {
-                        var docRef = await window.cf_db.collection("bookings").add({
+                        let docRef = await window.cf_db.collection("bookings").add({
                             refId: orderId,
                             serviceMode: modeName,
                             baseService: baseServiceText,
@@ -1560,15 +1576,15 @@
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         orderId = docRef.id.slice(0, 6).toUpperCase(); 
-                    } catch(e) { console.warn("Firebase Skip:", e); }
+                    } catch(e) { console.warn("Firestore Skip:", e); }
                 }
 
-                // 4. สร้างข้อความสรุปยอด
-                var summary = "===== CLEANFORCE BOOKING =====\n" +
+                // สร้างข้อความสรุปยอดเข้า LINE
+                let summary = "===== CLEANFORCE BOOKING =====\n" +
                               "รหัสการจอง: " + orderId + "\n" +
                               "ประเภท: " + modeName + "\n" +
                               "บริการหลัก: " + baseServiceText + "\n" +
-                              "บริการที่เลือก:\n" + addonsText + 
+                              "รายการที่เลือก:\n" + addonsText + 
                               "นัดหมาย: " + date + " เวลา " + time + " น.\n" +
                               "------------------------------\n" +
                               "ชื่อลูกค้า: " + name + "\n" +
@@ -1582,15 +1598,14 @@
                               "โค้ดส่วนลด: " + promoText + "\n" +
                               "==============================";
 
-                // 5. ส่งเข้า LINE (ใช้ URL ดั้งเดิม ti/p/ ของคุณ มั่นใจ 100%)
-                var encodedMessage = encodeURIComponent(summary);
-                var lineUrl = "https://line.me/R/ti/p/@cleanforce?text=" + encodedMessage; 
+                // ใช้ URL LINE ti/p เพื่อความเสถียรที่สุด
+                let encodedMessage = encodeURIComponent(summary);
+                let lineUrl = "https://line.me/R/ti/p/@cleanforce?text=" + encodedMessage; 
                 
                 window.location.href = lineUrl;
 
             } catch (error) {
                 console.error("Booking Error: ", error); 
-                // เพิ่ม error.message ให้โชว์ออกมา จะได้รู้ว่าตัวแปรไหนพัง
                 alert("เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้งครับ (" + error.message + ")");
                 if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
             }
