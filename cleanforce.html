@@ -77,6 +77,55 @@
         /* ซ่อน Scrollbar สำหรับแถบฟีด (แต่ยังเลื่อนได้) */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 🌟 เอฟเฟกต์ปุ่มเรืองแสง และแสงวิ่งผ่าน */
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .btn-glow-portfolio {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff, #f0f9ff); /* สีพื้นปุ่ม */
+            color: #1EA7E1;
+            border: 2px solid #1EA7E1;
+            box-shadow: 0 0 15px rgba(30, 167, 225, 0.4), inset 0 0 10px rgba(30, 167, 225, 0.1);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, color 0.3s ease, background 0.3s ease;
+        }
+
+        /* เอฟเฟกต์แสงวิ่ง (ตัวเส้นแสงสีขาว) */
+        .btn-glow-portfolio::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            z-index: 1;
+            transition: none;
+        }
+
+        /* ตอนเมาส์ชี้: ปุ่มเด้งสู้ เปลี่ยนสีทึบ และสั่งแสงวิ่ง */
+        .btn-glow-portfolio:hover {
+            transform: scale(1.05) translateY(-3px); /* เด้งสู้ */
+            background: #1EA7E1; /* เปลี่ยนเป็นสีฟ้าทึบ */
+            color: #ffffff; /* เปลี่ยนตัวหนังสือเป็นสีขาว */
+            box-shadow: 0 10px 25px rgba(30, 167, 225, 0.6); /* เรืองแสงแรงขึ้น */
+            border-color: #1EA7E1;
+        }
+
+        .btn-glow-portfolio:hover::before {
+            animation: shine 0.7s ease-in-out; /* สั่งแสงวิ่ง */
+        }
+
+        /* ให้ข้อความอยู่เหนือแสงวิ่ง */
+        .btn-glow-portfolio i, .btn-glow-portfolio span {
+            position: relative;
+            z-index: 2;
+        }
     </style>
 </head>
 <body class="bg-background text-text overflow-x-hidden">
@@ -167,11 +216,15 @@
             <p class="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed font-body" data-i18n="hero-sub">
                 บริการทำความสะอาดบ้าน คอนโด เฟอร์นิเจอร์ และพื้นที่องค์กร ขจัดคราบ กลิ่น และความสกปรกอย่างหมดจด ด้วยทีมงานมืออาชีพ
             </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-                <a href="#booking-cf" class="bg-primary text-white px-8 py-4 rounded-2xl font-bold text-lg btn-shadow flex items-center justify-center gap-2">
+            <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 mb-16">
+                <a href="#booking-cf" class="bg-primary text-white px-8 py-4 rounded-2xl font-bold text-lg btn-shadow flex items-center justify-center gap-2 hover:bg-blue-600 transition">
                     <span data-i18n="nav-btn">จองบริการ (คำนวณราคา)</span> <i class="fa-solid fa-arrow-right"></i>
                 </a>
                 
+                <a href="#portfolio-cf" class="btn-glow-portfolio px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-images"></i> <span>ดูผลงานของเรา</span>
+                </a>
+
                 <a href="brochure.html" target="_blank" class="bg-white text-primary border-2 border-primary px-8 py-4 rounded-2xl font-bold text-lg btn-shadow flex items-center justify-center gap-2 hover:bg-blue-50 transition">
                     <i class="fa-solid fa-book-open-reader"></i> <span>ดูแผ่นพับ 3D</span>
                 </a>
@@ -1838,6 +1891,8 @@
                 const doc = await window.cf_db.collection('settings').doc('clients_profile').get();
                 if(doc.exists && doc.data().clients) {
                     const clients = doc.data().clients;
+                    const speed = doc.data().speed || 30; // 🌟 ดึงค่าความเร็วลูกค้า
+
                     if (clients.length > 0) {
                         let html = '';
                         // Copy array 4 ชุด เพื่อให้การเลื่อน (Marquee) ทำงานได้เนียนไม่มีรอยต่อ
@@ -1851,12 +1906,17 @@
                             </div>`;
                         });
                         
-                        document.getElementById('client-logos-container').innerHTML = html;
+                        let container = document.getElementById('client-logos-container');
+                        container.innerHTML = html;
+                        // 🌟 บังคับเขียน CSS อนิเมชันทับ เพื่อให้วิ่งตามความเร็วที่เราตั้ง (ตัวเลขยิ่งน้อย ยิ่งเร็ว)
+                        container.style.animation = `scroll-left ${speed}s linear infinite`; 
+                        
                         document.getElementById('clients-cf').classList.remove('hidden'); // เปิดให้แสดงผล
                     }
                 }
             } catch(e) { console.error("Error loading clients:", e); }
         }
+
         // 🌟 ดึงข้อมูลรูปผลงานมาโชว์หน้าเว็บ
         window.cf_portfolioHouse = []; // เก็บรูปไว้ใช้ใน Modal
         window.cf_portfolioFurn = [];
@@ -1868,6 +1928,10 @@
                     const data = doc.data();
                     window.cf_portfolioHouse = data.imagesHouse || [];
                     window.cf_portfolioFurn = data.imagesFurniture || data.images || []; 
+
+                    // 🌟 ดึงค่าความเร็วผลงาน
+                    const speedHouse = data.speedHouse || 30;
+                    const speedFurn = data.speedFurniture || 35;
 
                     let hasAnyImage = false;
 
@@ -1883,7 +1947,12 @@
                                 <img src="${img}" alt="House Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x400?text=HOUSE'">
                             </div>`;
                         });
-                        document.getElementById('portfolio-house-gallery').innerHTML = htmlHouse;
+                        
+                        let houseGallery = document.getElementById('portfolio-house-gallery');
+                        houseGallery.innerHTML = htmlHouse;
+                        // 🌟 บังคับความเร็วแถวบ้าน
+                        houseGallery.style.animation = `scroll-left ${speedHouse}s linear infinite`;
+                        
                         document.getElementById('portfolio-house-wrapper').classList.remove('hidden');
                     }
 
@@ -1899,7 +1968,12 @@
                                 <img src="${img}" alt="Furniture Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x400?text=FURNITURE'">
                             </div>`;
                         });
-                        document.getElementById('portfolio-furniture-gallery').innerHTML = htmlFurn;
+                        
+                        let furnGallery = document.getElementById('portfolio-furniture-gallery');
+                        furnGallery.innerHTML = htmlFurn;
+                        // 🌟 บังคับความเร็วแถวเฟอร์นิเจอร์
+                        furnGallery.style.animation = `scroll-left ${speedFurn}s linear infinite`;
+                        
                         document.getElementById('portfolio-furniture-wrapper').classList.remove('hidden');
                     }
 
