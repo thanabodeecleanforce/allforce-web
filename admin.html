@@ -168,17 +168,26 @@
             </div>
         </div>
         <div id="portfolio-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-[#000080]">จัดการรูปภาพผลงาน</h3>
-                <button type="button" onclick="addPortfolioRow()" class="bg-blue-50 text-primary border border-blue-200 px-4 py-2 rounded-lg font-bold text-xs hover:bg-primary hover:text-white transition"><i class="fa-solid fa-plus"></i> เพิ่มรูปผลงาน</button>
-            </div>
-            <p class="text-xs text-gray-500 mb-4">ใส่ลิงก์รูปภาพ หรือชื่อไฟล์ (ภาพจะแสดงเลื่อนอัตโนมัติในส่วน "ผลงานของเรา" บนหน้าเว็บ)</p>
+            <h3 class="text-xl font-bold text-[#000080] mb-6 border-b pb-2">จัดการรูปภาพผลงาน (Portfolio)</h3>
             
-            <div id="portfolio-edit-area" class="space-y-2">
+            <div class="mb-8 border-2 border-blue-50 bg-white p-4 rounded-xl">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h4 class="font-bold text-gray-800"><i class="fa-solid fa-house text-primary mr-2"></i>หมวด: ทำความสะอาดบ้าน / คอนโด</h4>
+                    <button type="button" onclick="addPortfolioRow('house')" class="bg-blue-50 text-primary border border-blue-200 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-primary hover:text-white transition"><i class="fa-solid fa-plus"></i> เพิ่มรูปบ้าน</button>
                 </div>
+                <div id="portfolio-house-area" class="space-y-2"></div>
+            </div>
+
+            <div class="mb-4 border-2 border-gray-100 bg-white p-4 rounded-xl">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h4 class="font-bold text-gray-800"><i class="fa-solid fa-couch text-primary mr-2"></i>หมวด: ซักเฟอร์นิเจอร์ (โซฟา, ที่นอน ฯลฯ)</h4>
+                    <button type="button" onclick="addPortfolioRow('furniture')" class="bg-gray-100 text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-gray-200 hover:text-gray-800 transition"><i class="fa-solid fa-plus"></i> เพิ่มรูปเฟอร์นิเจอร์</button>
+                </div>
+                <div id="portfolio-furniture-area" class="space-y-2"></div>
+            </div>
 
             <div class="mt-6 text-right border-t border-gray-100 pt-6">
-                <button onclick="savePortfolioSettings(event)" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-save"></i> บันทึกรูปผลงาน</button>
+                <button onclick="savePortfolioSettings(event)" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-save"></i> บันทึกรูปผลงานทั้งหมด</button>
             </div>
         </div>
     </main>
@@ -929,52 +938,75 @@
             }
         };
         // ==========================================
-        // ระบบจัดการ "ผลงานของเรา" (Portfolio)
+        // ระบบจัดการ "ผลงานของเรา" (Portfolio แยก 2 หมวด)
         // ==========================================
-        let currentPortfolio = [];
+        let currentPortfolioHouse = [];
+        let currentPortfolioFurniture = [];
 
         async function loadPortfolioAdmin() {
             try {
                 const doc = await db.collection('settings').doc('portfolio_profile').get();
-                if(doc.exists && doc.data().images) {
-                    currentPortfolio = doc.data().images;
+                if(doc.exists) {
+                    currentPortfolioHouse = doc.data().imagesHouse || [];
+                    // ดึงข้อมูลเก่าของคุณมาใส่หมวดเฟอร์นิเจอร์โดยอัตโนมัติ (Backward Compatibility)
+                    currentPortfolioFurniture = doc.data().imagesFurniture || doc.data().images || [];
                 } else {
-                    currentPortfolio = [];
+                    currentPortfolioHouse = [];
+                    currentPortfolioFurniture = [];
                 }
                 renderPortfolioAdmin();
             } catch(e) { console.error("Error loading portfolio:", e); }
         }
 
         function renderPortfolioAdmin() {
-            const container = document.getElementById('portfolio-edit-area');
-            if(currentPortfolio.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded">ยังไม่มีรูปผลงาน กดปุ่มเพิ่มรูปด้านบนครับ</p>';
-                return;
+            // โชว์ผลงานบ้าน
+            const houseContainer = document.getElementById('portfolio-house-area');
+            if(currentPortfolioHouse.length === 0) {
+                houseContainer.innerHTML = '<p class="text-[10px] text-gray-400 italic text-center py-2">ยังไม่มีรูปผลงานบ้าน</p>';
+            } else {
+                let htmlHouse = '';
+                currentPortfolioHouse.forEach((img, idx) => {
+                    htmlHouse += `
+                    <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="w-10 h-10 bg-white border rounded flex items-center justify-center shrink-0 overflow-hidden"><img src="${img || 'https://placehold.co/100?text=IMG'}" onerror="this.src='https://placehold.co/100?text=IMG'" class="w-full h-full object-cover"></div>
+                        <input type="text" placeholder="ลิงก์/ชื่อไฟล์รูป (เช่น p-house1.jpg)" value="${img || ''}" onchange="updatePortfolio('house', ${idx}, this.value)" class="w-full p-2 border rounded text-xs outline-none focus:border-primary">
+                        <button type="button" onclick="removePortfolio('house', ${idx})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+                });
+                houseContainer.innerHTML = htmlHouse;
             }
-            let html = '';
-            currentPortfolio.forEach((img, idx) => {
-                html += `
-                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
-                    <div class="w-12 h-12 bg-white border rounded flex items-center justify-center shrink-0 overflow-hidden">
-                        <img src="${img || 'https://placehold.co/100?text=IMG'}" onerror="this.src='https://placehold.co/100?text=IMG'" class="w-full h-full object-cover">
-                    </div>
-                    <input type="text" placeholder="ลิงก์/ชื่อไฟล์รูป (เช่น portfolio/img1.jpg)" value="${img || ''}" onchange="updatePortfolio(${idx}, this.value)" class="w-full p-2 border rounded text-xs outline-none focus:border-primary">
-                    <button type="button" onclick="removePortfolio(${idx})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fa-solid fa-trash"></i></button>
-                </div>`;
-            });
-            container.innerHTML = html;
+
+            // โชว์ผลงานเฟอร์นิเจอร์
+            const furnContainer = document.getElementById('portfolio-furniture-area');
+            if(currentPortfolioFurniture.length === 0) {
+                furnContainer.innerHTML = '<p class="text-[10px] text-gray-400 italic text-center py-2">ยังไม่มีรูปผลงานเฟอร์นิเจอร์</p>';
+            } else {
+                let htmlFurn = '';
+                currentPortfolioFurniture.forEach((img, idx) => {
+                    htmlFurn += `
+                    <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
+                        <div class="w-10 h-10 bg-white border rounded flex items-center justify-center shrink-0 overflow-hidden"><img src="${img || 'https://placehold.co/100?text=IMG'}" onerror="this.src='https://placehold.co/100?text=IMG'" class="w-full h-full object-cover"></div>
+                        <input type="text" placeholder="ลิงก์/ชื่อไฟล์รูป (เช่น p-furn1.jpg)" value="${img || ''}" onchange="updatePortfolio('furniture', ${idx}, this.value)" class="w-full p-2 border rounded text-xs outline-none focus:border-primary">
+                        <button type="button" onclick="removePortfolio('furniture', ${idx})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+                });
+                furnContainer.innerHTML = htmlFurn;
+            }
         }
 
-        function addPortfolioRow() {
-            currentPortfolio.push('');
+        function addPortfolioRow(type) {
+            if(type === 'house') currentPortfolioHouse.push('');
+            else currentPortfolioFurniture.push('');
             renderPortfolioAdmin();
         }
-        function updatePortfolio(index, value) {
-            currentPortfolio[index] = value;
-            renderPortfolioAdmin(); // รีเฟรชโชว์รูป
+        function updatePortfolio(type, index, value) {
+            if(type === 'house') currentPortfolioHouse[index] = value;
+            else currentPortfolioFurniture[index] = value;
+            renderPortfolioAdmin();
         }
-        function removePortfolio(index) {
-            currentPortfolio.splice(index, 1);
+        function removePortfolio(type, index) {
+            if(type === 'house') currentPortfolioHouse.splice(index, 1);
+            else currentPortfolioFurniture.splice(index, 1);
             renderPortfolioAdmin();
         }
 
@@ -984,79 +1016,19 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
             btn.disabled = true;
             try {
-                let cleanData = currentPortfolio.filter(img => img.trim() !== ''); // เอาเฉพาะที่มีข้อมูล
-                await db.collection('settings').doc('portfolio_profile').set({ images: cleanData }, { merge: true });
+                let cleanHouse = currentPortfolioHouse.filter(img => img.trim() !== '');
+                let cleanFurn = currentPortfolioFurniture.filter(img => img.trim() !== ''); 
+                
+                await db.collection('settings').doc('portfolio_profile').set({ 
+                    imagesHouse: cleanHouse,
+                    imagesFurniture: cleanFurn
+                }, { merge: true });
+                
                 Swal.fire({ icon: 'success', title: 'บันทึกรูปผลงานแล้ว', showConfirmButton: false, timer: 1500 });
-                currentPortfolio = cleanData;
+                currentPortfolioHouse = cleanHouse;
+                currentPortfolioFurniture = cleanFurn;
                 renderPortfolioAdmin();
-            } catch(e) {
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error');
-            }
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-
-        async function loadClientsAdmin() {
-            try {
-                const doc = await db.collection('settings').doc('clients_profile').get();
-                if(doc.exists && doc.data().clients) {
-                    currentClients = doc.data().clients;
-                } else {
-                    currentClients = [];
-                }
-                renderClientsAdmin();
-            } catch(e) { console.error("Error loading clients:", e); }
-        }
-
-        function renderClientsAdmin() {
-            const container = document.getElementById('clients-edit-area');
-            if(currentClients.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded">ยังไม่มีข้อมูลลูกค้า กดปุ่มเพิ่มลูกค้าด้านบนครับ</p>';
-                return;
-            }
-            let html = '';
-            currentClients.forEach((c, idx) => {
-                html += `
-                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
-                    <div class="w-10 h-10 bg-white border rounded flex items-center justify-center shrink-0 overflow-hidden">
-                        <img src="${c.img || 'https://placehold.co/100?text=IMG'}" onerror="this.src='https://placehold.co/100?text=IMG'" class="w-full h-full object-contain">
-                    </div>
-                    <input type="text" placeholder="ลิงก์/ชื่อไฟล์โลโก้" value="${c.img || ''}" onchange="updateClient(${idx}, 'img', this.value)" class="w-1/2 p-2 border rounded text-xs outline-none focus:border-primary">
-                    <input type="text" placeholder="ชื่อบริษัท/ลูกค้า" value="${c.name || ''}" onchange="updateClient(${idx}, 'name', this.value)" class="w-1/2 p-2 border rounded text-xs outline-none focus:border-primary">
-                    <button type="button" onclick="removeClient(${idx})" class="text-red-500 hover:bg-red-100 p-2 rounded transition"><i class="fa-solid fa-trash"></i></button>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function addClientRow() {
-            currentClients.push({ name: '', img: '' });
-            renderClientsAdmin();
-        }
-        function updateClient(index, field, value) {
-            currentClients[index][field] = value;
-            if(field === 'img') renderClientsAdmin(); // รีเฟรชเพื่อโชว์รูปตัวอย่าง
-        }
-        function removeClient(index) {
-            currentClients.splice(index, 1);
-            renderClientsAdmin();
-        }
-
-        async function saveClientsSettings(event) {
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
-            btn.disabled = true;
-            try {
-                // กรองเอาเฉพาะอันที่กรอกข้อมูลแล้ว
-                let cleanData = currentClients.filter(c => c.img.trim() !== '' || c.name.trim() !== '');
-                await db.collection('settings').doc('clients_profile').set({ clients: cleanData }, { merge: true });
-                Swal.fire({ icon: 'success', title: 'บันทึกข้อมูลลูกค้าแล้ว', showConfirmButton: false, timer: 1500 });
-                currentClients = cleanData;
-                renderClientsAdmin();
-            } catch(e) {
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error');
-            }
+            } catch(e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error'); }
             btn.innerHTML = originalText;
             btn.disabled = false;
         }

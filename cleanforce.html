@@ -605,21 +605,36 @@
     </section>
 
     <section id="portfolio-cf" class="py-24 bg-white text-text border-t border-gray-100 overflow-hidden hidden">
-        <div class="max-w-7xl mx-auto px-6 mb-16 text-center">
+        <div class="max-w-7xl mx-auto px-6 mb-12 text-center">
             <h2 class="text-3xl md:text-5xl font-bold font-heading mb-4" data-i18n="nav-portfolio">ผลงานของเรา</h2>
             <p class="text-gray-500 font-body" data-i18n="portfolio-sub">ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดพรีเมียมจากเรา</p>
         </div>
 
-        <div class="marquee-container mb-12 relative">
-            <div class="absolute inset-y-0 left-0 w-8 md:w-16 bg-gradient-to-r from-white to-transparent z-10"></div>
-            <div class="absolute inset-y-0 right-0 w-8 md:w-16 bg-gradient-to-l from-white to-transparent z-10"></div>
-            
-            <div class="marquee-content gap-4" id="portfolio-gallery-container">
-                </div>
+        <div id="portfolio-house-wrapper" class="hidden mb-12">
+            <div class="max-w-7xl mx-auto px-6 mb-4">
+                <h3 class="text-lg md:text-xl font-bold text-[#000080] border-l-4 border-primary pl-3">ผลงานทำความสะอาดบ้าน / คอนโด</h3>
+            </div>
+            <div class="marquee-container relative">
+                <div class="absolute inset-y-0 left-0 w-8 md:w-16 bg-gradient-to-r from-white to-transparent z-10"></div>
+                <div class="absolute inset-y-0 right-0 w-8 md:w-16 bg-gradient-to-l from-white to-transparent z-10"></div>
+                <div class="marquee-content gap-4" id="portfolio-house-gallery">
+                    </div>
+            </div>
         </div>
 
-        <div class="text-center mb-24 relative z-20">
-            <a href="#" class="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary hover:text-white transition-colors" data-i18n="btn-more-portfolio">ดูรูปภาพผลงานทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
+        <div id="portfolio-furniture-wrapper" class="hidden mb-8">
+            <div class="max-w-7xl mx-auto px-6 mb-4">
+                <h3 class="text-lg md:text-xl font-bold text-[#000080] border-l-4 border-gray-400 pl-3">ผลงานซักเฟอร์นิเจอร์</h3>
+            </div>
+            <div class="marquee-container relative">
+                <div class="absolute inset-y-0 left-0 w-8 md:w-16 bg-gradient-to-r from-white to-transparent z-10"></div>
+                <div class="absolute inset-y-0 right-0 w-8 md:w-16 bg-gradient-to-l from-white to-transparent z-10"></div>
+                <div class="marquee-content gap-4" id="portfolio-furniture-gallery" style="animation-duration: 35s;"> </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-12 relative z-20 mt-12">
+            <button onclick="openPortfolioGallery(event)" class="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary hover:text-white transition-colors" data-i18n="btn-more-portfolio">ดูรูปภาพผลงานทั้งหมด <i class="fa-solid fa-arrow-right"></i></button>
         </div>
     </section>
 
@@ -661,6 +676,25 @@
         </div>
     </section>
 
+    <div id="portfolio-modal" class="fixed inset-0 bg-black/95 z-[999] hidden flex-col animate-in fade-in zoom-in-95 duration-300 backdrop-blur-sm">
+        <div class="flex justify-between items-center p-4 md:p-6 text-white border-b border-gray-800 bg-black/50">
+            <h3 class="text-xl md:text-2xl font-bold font-heading">ผลงานทั้งหมดของเรา</h3>
+            <button onclick="closePortfolioGallery()" class="text-gray-400 hover:text-white text-3xl transition transform hover:rotate-90"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 hide-scroll">
+            <div class="max-w-6xl mx-auto pb-12">
+                <div class="mb-10">
+                    <h4 class="text-lg font-bold text-white mb-4 border-l-4 border-primary pl-3">หมวด: ทำความสะอาดบ้าน / คอนโด</h4>
+                    <div id="modal-gallery-house" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-4 border-l-4 border-gray-500 pl-3">หมวด: ซักเฟอร์นิเจอร์</h4>
+                    <div id="modal-gallery-furn" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <footer class="py-12 px-6 border-t border-gray-100 bg-white text-text text-center">
         <img src="logo-cleanforce.png" alt="Cleanforce Footer Logo" class="h-10 mx-auto mb-6 object-contain">
         <div class="mb-6 flex justify-center gap-6">
@@ -1823,29 +1857,85 @@
                 }
             } catch(e) { console.error("Error loading clients:", e); }
         }
-        // ดึงข้อมูลรูปผลงานมาโชว์หน้าเว็บ
+        // 🌟 ดึงข้อมูลรูปผลงานมาโชว์หน้าเว็บ
+        window.cf_portfolioHouse = []; // เก็บรูปไว้ใช้ใน Modal
+        window.cf_portfolioFurn = [];
+
         async function loadPortfolioWeb() {
             try {
                 const doc = await window.cf_db.collection('settings').doc('portfolio_profile').get();
-                if(doc.exists && doc.data().images) {
-                    const images = doc.data().images;
-                    if (images.length > 0) {
-                        let html = '';
-                        // Copy array 3 ชุด เพื่อให้ Marquee เลื่อนได้ยาวๆ ไม่สะดุด
-                        const displayImages = [...images, ...images, ...images];
+                if(doc.exists) {
+                    const data = doc.data();
+                    window.cf_portfolioHouse = data.imagesHouse || [];
+                    window.cf_portfolioFurn = data.imagesFurniture || data.images || []; 
+
+                    let hasAnyImage = false;
+
+                    // โชว์ผลงานบ้านแบบเลื่อน (Marquee)
+                    if (window.cf_portfolioHouse.length > 0) {
+                        hasAnyImage = true;
+                        let htmlHouse = '';
+                        const displayHouse = [...window.cf_portfolioHouse, ...window.cf_portfolioHouse, ...window.cf_portfolioHouse]; 
                         
-                        displayImages.forEach(img => {
-                            html += `
+                        displayHouse.forEach(img => {
+                            htmlHouse += `
                             <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group shadow-sm border border-gray-100">
-                                <img src="${img}" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x400?text=PORTFOLIO'">
+                                <img src="${img}" alt="House Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x400?text=HOUSE'">
                             </div>`;
                         });
-                        
-                        document.getElementById('portfolio-gallery-container').innerHTML = html;
-                        document.getElementById('portfolio-cf').classList.remove('hidden'); // เปิดให้แสดงผล
+                        document.getElementById('portfolio-house-gallery').innerHTML = htmlHouse;
+                        document.getElementById('portfolio-house-wrapper').classList.remove('hidden');
                     }
+
+                    // โชว์ผลงานเฟอร์นิเจอร์แบบเลื่อน (Marquee)
+                    if (window.cf_portfolioFurn.length > 0) {
+                        hasAnyImage = true;
+                        let htmlFurn = '';
+                        const displayFurn = [...window.cf_portfolioFurn, ...window.cf_portfolioFurn, ...window.cf_portfolioFurn]; 
+                        
+                        displayFurn.forEach(img => {
+                            htmlFurn += `
+                            <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group shadow-sm border border-gray-100">
+                                <img src="${img}" alt="Furniture Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://placehold.co/400x400?text=FURNITURE'">
+                            </div>`;
+                        });
+                        document.getElementById('portfolio-furniture-gallery').innerHTML = htmlFurn;
+                        document.getElementById('portfolio-furniture-wrapper').classList.remove('hidden');
+                    }
+
+                    if (hasAnyImage) document.getElementById('portfolio-cf').classList.remove('hidden');
                 }
             } catch(e) { console.error("Error loading portfolio:", e); }
+        }
+
+        // 🌟 ฟังก์ชันเปิด/ปิด Modal Gallery ผลงานทั้งหมด
+        window.openPortfolioGallery = function(e) {
+            if(e) e.preventDefault();
+            
+            const houseContainer = document.getElementById('modal-gallery-house');
+            const furnContainer = document.getElementById('modal-gallery-furn');
+            
+            let houseHtml = '';
+            window.cf_portfolioHouse.forEach(img => {
+                houseHtml += `<div class="aspect-square rounded-xl overflow-hidden bg-gray-800 border border-gray-700 relative group"><img src="${img}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500 cursor-pointer" onclick="window.open('${img}', '_blank')"><div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 pointer-events-none transition-colors"></div></div>`;
+            });
+            houseContainer.innerHTML = houseHtml || '<p class="text-gray-500 text-sm col-span-full">ยังไม่มีรูปภาพในหมวดหมู่นี้</p>';
+
+            let furnHtml = '';
+            window.cf_portfolioFurn.forEach(img => {
+                furnHtml += `<div class="aspect-square rounded-xl overflow-hidden bg-gray-800 border border-gray-700 relative group"><img src="${img}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500 cursor-pointer" onclick="window.open('${img}', '_blank')"><div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 pointer-events-none transition-colors"></div></div>`;
+            });
+            furnContainer.innerHTML = furnHtml || '<p class="text-gray-500 text-sm col-span-full">ยังไม่มีรูปภาพในหมวดหมู่นี้</p>';
+
+            document.getElementById('portfolio-modal').classList.remove('hidden');
+            document.getElementById('portfolio-modal').classList.add('flex');
+            document.body.style.overflow = 'hidden'; // ล็อคไม่ให้เว็บพื้นหลังเลื่อน
+        }
+
+        window.closePortfolioGallery = function() {
+            document.getElementById('portfolio-modal').classList.add('hidden');
+            document.getElementById('portfolio-modal').classList.remove('flex');
+            document.body.style.overflow = ''; // ปลดล็อคเลื่อนหน้าเว็บ
         }
     </script>
 </body>
