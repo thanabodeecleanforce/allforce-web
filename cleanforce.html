@@ -1483,10 +1483,9 @@
             }
 
             try {
-                // ฟังก์ชันช่วยดึงค่าแบบปลอดภัย (ลดปัญหา DOM Mismatch)
+                // ฟังก์ชันช่วยดึงค่าแบบปลอดภัย
                 const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() : '';
                 const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
-                const getText = (id) => document.getElementById(id) ? document.getElementById(id).textContent.trim() : '';
 
                 let date = getVal('bk-date');
                 let time = getVal('bk-time');
@@ -1505,7 +1504,7 @@
                 if (houseNo && tambon) {
                     address = `บ้านเลขที่: ${houseNo} ` + (soi ? `ซอย: ${soi} ` : '') + (road ? `ถนน: ${road} ` : '') + `ต.${tambon} อ.${amphoe} จ.ภูเก็ต`;
                 } else {
-                    address = getVal('bk-address-input') || "-"; // Fallback ป้องกันพัง
+                    address = getVal('bk-address-input') || "-"; 
                 }
 
                 let gpsLink = getVal('bk-gps');
@@ -1513,7 +1512,7 @@
                 let keyDetail = getVal('bk-key-detail');
                 let isReview = getCheck('bk-review-discount');
 
-                // 🛠️ ตรวจสอบข้อมูลบังคับให้รัดกุม
+                // 🛠️ ตรวจสอบข้อมูลบังคับ
                 if(!date || !fname || !phone || !houseNo) { 
                     alert("กรุณากรอก วันที่, ชื่อ, เบอร์โทร และ ที่อยู่ ให้ครบถ้วนก่อนยืนยันครับ"); 
                     if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
@@ -1530,31 +1529,53 @@
                     keyInfo = "รับกุญแจที่: " + keyDetail;
                 }
 
-                // ดึงข้อมูลราคา (จะดึงได้ถูกต้องแล้วเพราะแก้ calculatePricing ด้านบน)
-                let netPriceText = getText('sum-price') || "0";
-                let grossPriceText = getText('sum-original-price') || "0";
-                let netPriceNumber = Number(netPriceText.replace(/,/g, '')); 
-                
                 let modeName = (cart.category === 'furniture') ? 'บริการทำความสะอาดเฟอร์นิเจอร์' : 'บริการทำความสะอาดบ้าน';
-                let baseServiceText = getText('sum-type-name') || "จัดแพ็กเกจด้วยตนเอง";
+                let baseServiceText = document.getElementById('sum-type-name') ? document.getElementById('sum-type-name').textContent : "จัดแพ็กเกจด้วยตนเอง";
                 
-                // ดึงรายการเสริม (แก้ Query ให้ดึงได้อย่างแม่นยำ)
-                let addonsListElements = document.querySelectorAll('#sum-addons-container .flex.justify-between.items-center');
+                // 🌟 ส่วนสำคัญ: คำนวณราคาและสรุปรายการบริการใหม่ตรงนี้เลย! 🌟
                 let addonsText = "";
-                if(addonsListElements.length > 0) {
-                    addonsListElements.forEach(el => { 
-                        let cleanText = el.textContent.trim().replace(/\s+/g, ' '); 
-                        if(cleanText && !cleanText.includes('x0')) addonsText += "- " + cleanText + "\n"; 
+                let grossPrice = 0;
+
+                if (cart.addons.length > 0) {
+                    cart.addons.forEach(item => {
+                        // ค้นหาข้อมูลบริการจากฐานข้อมูลที่โหลดมาแล้ว (allServices)
+                        let srvData = allServices.find(s => s.id === item.id);
+                        if(srvData) {
+                            let itemPrice = srvData.price || 0;
+                            // ถ้าระบุไซส์ ให้ไปดึงราคาของไซส์นั้น
+                            if(srvData.sizes && item.size) {
+                                let szData = srvData.sizes.find(sz => sz.name === item.size);
+                                if(szData) itemPrice = szData.price || 0;
+                            }
+                            
+                            let lineTotal = itemPrice * item.qty;
+                            grossPrice += lineTotal; // บวกเข้ายอดรวม
+                            
+                            let sizeTxt = item.size ? `(${item.size})` : "";
+                            addonsText += `- ${srvData.name} ${sizeTxt} x${item.qty} (+${lineTotal.toLocaleString()} ฿)\n`;
+                        }
                     });
                 } else { 
                     addonsText = "- ไม่มี\n"; 
                 }
 
-                let promoText = activePromoCode ? activePromoCode : "ไม่ได้ใช้";
+                // 🌟 คำนวณส่วนลด 🌟
+                let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
+                let percentDiscount = totalItems > 0 ? (4 + totalItems) : 0;
+                let discountAmount = Math.round(grossPrice * (percentDiscount / 100));
+                
+                let extraPromo = activePromoCode ? Math.round((grossPrice - discountAmount) * 0.15) : 0;
+                let reviewDiscount = isReview ? 200 : 0;
+
+                // ยอดสุทธิขั้นสุดท้าย
+                let netPriceNumber = grossPrice - discountAmount - extraPromo - reviewDiscount;
+                if(netPriceNumber < 0) netPriceNumber = 0;
+
+                let promoText = activePromoCode ? `${activePromoCode} (-${extraPromo.toLocaleString()} ฿)` : "ไม่ได้ใช้";
                 let reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ไม่รับส่วนลด";
                 let orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
 
-                // 🛠️ บันทึกลง Firebase (ใส่ใน Try Catch กันพัง)
+                // 🛠️ บันทึกลง Firebase 
                 if (typeof window.cf_db !== 'undefined') {
                     try {
                         let docRef = await window.cf_db.collection("bookings").add({
@@ -1569,7 +1590,7 @@
                             address: address,
                             gpsLink: gpsLink,
                             keyDrop: keyInfo,
-                            promoCode: promoText,
+                            promoCode: activePromoCode || "-",
                             totalPrice: netPriceNumber,
                             isReviewDiscount: isReview,
                             status: "pending",
@@ -1593,12 +1614,12 @@
                               "พิกัด GPS: " + (gpsLink ? gpsLink : "-") + "\n" +
                               "กุญแจ: " + keyInfo + "\n" +
                               "------------------------------\n" +
-                              "ราคาชำระสุทธิ: " + netPriceText + " บาท (ราคาเต็ม " + grossPriceText + " บาท)\n" +
+                              "ราคาชำระสุทธิ: " + netPriceNumber.toLocaleString() + " บาท (ราคาเต็ม " + grossPrice.toLocaleString() + " บาท)\n" +
+                              "ส่วนลดตามจำนวนชิ้น: " + (discountAmount > 0 ? `ลด ${percentDiscount}% (-${discountAmount.toLocaleString()} ฿)` : 'ไม่มี') + "\n" +
                               "การรีวิว: " + reviewText + "\n" +
                               "โค้ดส่วนลด: " + promoText + "\n" +
                               "==============================";
 
-                // 🌟 แก้ไขตรงนี้: ใช้ URL LINE oaMessage เพื่อให้ข้อความไปรอในช่องพิมพ์แชท
                 let encodedMessage = encodeURIComponent(summary);
                 let lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage; 
                 
