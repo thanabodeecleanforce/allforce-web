@@ -1397,10 +1397,10 @@
 
             let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
             let percentDiscount = totalItems > 0 ? (4 + totalItems) : 0;
-            let discountAmount = Math.round(addonsTotal * (percentDiscount / 100));
-            
-            let extraPromo = activePromoCode ? Math.round((addonsTotal - discountAmount) * 0.15) : 0;
-            let finalPrice = addonsTotal - discountAmount - extraPromo;
+            window.discountAmount = Math.round(addonsTotal * (percentDiscount / 100));
+
+        window.extraPromo = activePromoCode ? Math.round((addonsTotal - window.discountAmount) * 0.15) : 0;
+        let finalPrice = addonsTotal - window.discountAmount - window.extraPromo;
             let totalOrig = addonsOrigTotal;
 
             let discHTML = '';
@@ -1443,6 +1443,7 @@
         }
 
         // 8. บันทึกลงฐานข้อมูล และส่งไลน์
+        // 8. บันทึกลงฐานข้อมูล และส่งไลน์
         window.submitBooking = async function() {
             let btn = document.querySelector('button[onclick="submitBooking()"]');
             let originalText = btn.innerHTML;
@@ -1454,7 +1455,13 @@
             
             let addonsText = cart.addons.map(item => {
                 let a = allServices.find(s => s.id === item.id);
-                return `- ${a.name} ${item.size ? `(${item.size})` : ''} จำนวน ${item.qty} ชิ้น`;
+                if(!a) return '';
+                let price = a.price || 0;
+                if(a.sizes && item.size) {
+                    let sz = a.sizes.find(s => s.name === item.size);
+                    if(sz) price = sz.price;
+                }
+                return `- ${a.name} ${item.size ? `(${item.size})` : ''} x${item.qty} (+${(price * item.qty).toLocaleString()}฿)`;
             }).join('\n');
             if(!addonsText) addonsText = "- ไม่มี";
 
@@ -1462,12 +1469,20 @@
             let sizeInput = document.getElementById('bk-size');
             let sizeText = (sizeUnknownCb && sizeUnknownCb.checked) ? 'ไม่ทราบขนาด' : (sizeInput && sizeInput.value ? sizeInput.value + ' ตร.ม.' : 'ไม่ได้ระบุ');
             
+            // ดึงราคาและยอดรวมต่างๆ จากหน้าจอ (ที่คำนวณไว้แล้ว)
             let netPrice = Number(document.getElementById('float-net-price').textContent.replace(/,/g, ''));
+            let origPriceEl = document.getElementById('float-orig-price');
+            let origPriceText = origPriceEl && !origPriceEl.parentElement.classList.contains('hidden') 
+                                ? `(จาก ${origPriceEl.textContent} บาท)` : '';
+            
             let currentUser = window.cf_auth.currentUser;
+            // สร้างรหัสอ้างอิงสั้นๆ 6 ตัวอักษร (Booking ID)
+            let bookingRef = Math.random().toString(36).substring(2, 8).toUpperCase();
 
             // 🌟 สร้างก้อนข้อมูลเตรียมส่งเข้าฐานข้อมูล
             let bookingData = {
-                userId: currentUser ? currentUser.uid : 'guest', // เก็บ ID ลูกค้า
+                refId: bookingRef,
+                userId: currentUser ? currentUser.uid : 'guest',
                 customerName: c.fname + ' ' + document.getElementById('bk-lname').value,
                 phone: c.phone,
                 address: `${c.houseNo} ซ.${document.getElementById('bk-soi').value} ถ.${document.getElementById('bk-road').value} ต.${c.tambon} อ.${c.amphoe} จ.ภูเก็ต`,
@@ -1483,7 +1498,7 @@
                 }),
                 netPrice: netPrice,
                 promoCode: activePromoCode || '-',
-                status: 'รอยืนยัน', // สถานะเริ่มต้นของออเดอร์
+                status: 'รอยืนยัน',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -1491,28 +1506,39 @@
                 // บันทึกเข้า Firebase
                 await window.cf_db.collection('bookings').add(bookingData);
 
-                // สร้างข้อความส่ง LINE
+                // ดึงข้อมูลส่วนลดเพื่อไปแสดงในไลน์
+                let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
+                let percentDiscount = totalItems > 0 ? (4 + totalItems) : 0;
+                let discountText = discountAmount > 0 ? `รับส่วนลด ${percentDiscount}%` : 'ไม่มี';
+                
+                // สร้างข้อความส่ง LINE ตามรูปแบบใหม่
                 let text = `
-===== CLEANFORCE =====
-หมวดหมู่: ${cart.category}
+===== CLEANFORCE BOOKING =====
+นี่คือข้อมูลบริการเบื้องต้นสำหรับให้แอดมินยืนยันรับบริการ
+
+รหัสการจอง: ${bookingRef}
+ประเภทบริการ: ${cart.category}
 ขนาดพื้นที่: ${sizeText}
 เด็กเล็ก (<1ขวบ): ${d.kids === 'yes' ? 'มี' : 'ไม่มี'}
 
-[ รายการบริการที่เลือก ]
+บริการที่เลือก:
 ${addonsText}
 
-[ ข้อมูลลูกค้า ]
-นัดหมาย: ${c.date} เวลา ${c.time}
-ชื่อ: ${bookingData.customerName}
-เบอร์: ${c.phone}
+นัดหมาย: ${c.date} เวลา ${c.time} น.
+------------------------------
+ชื่อลูกค้า: ${bookingData.customerName}
+เบอร์โทร: ${c.phone}
 ที่อยู่: ${bookingData.address}
-พิกัด: ${bookingData.gps || 'ไม่ได้ระบุ'}
+พิกัด GPS: ${bookingData.gps || 'ไม่ได้ระบุ'}
+------------------------------
+ราคาชำระสุทธิ: ${netPrice.toLocaleString()} บาท ${origPriceText}
+ส่วนลดตามจำนวนชิ้น: ${discountText}
+โค้ดส่วนลด: ${activePromoCode || '-'}
+==============================`.trim();
 
-[ สรุปยอด ]
-ยอดชำระสุทธิ: ${netPrice.toLocaleString()} บาท
-======================`.trim();
-
+                // เด้งไปหน้า LINE พร้อมข้อความ
                 window.location.href = "https://line.me/R/ti/p/@cleanforce?text=" + encodeURIComponent(text);
+                
             } catch (error) {
                 console.error("Error: ", error);
                 alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง");
