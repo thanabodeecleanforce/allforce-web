@@ -1550,9 +1550,9 @@
                            "โค้ดส่วนลด: " + promoText + "\n" +
                            "==============================";
 
-                // 5. ส่งผ่าน LINE OA
+                // 5. ส่งผ่าน LINE OA (แก้ไขเป็น URL Scheme แบบเดิม)
                 var encodedMessage = encodeURIComponent(summary);
-                var lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage; 
+                var lineUrl = "https://line.me/R/ti/p/@cleanforce?text=" + encodedMessage; 
                 
                 window.location.href = lineUrl;
 
