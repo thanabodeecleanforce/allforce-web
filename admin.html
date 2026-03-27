@@ -764,39 +764,7 @@
                 console.error(error);
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
             }
-            };
-
-            const payload = {
-                name: name,
-                type: type,
-                isActive: document.getElementById('form-active').value === 'true',
-                price: Number(document.getElementById('form-price').value || 0),
-                originalPrice: Number(document.getElementById('form-orig-price').value || 0),
-                details: document.getElementById('form-desc').value.trim(),
-                order: Number(document.getElementById('form-order').value || 99),
-                
-                // Fields เฉพาะ
-                staffCount: document.getElementById('form-staff').value || null,
-                durationHours: document.getElementById('form-hours').value || null,
-                unit: document.getElementById('form-unit').value || null,
-                sizes: cleanSizes
-            };
-
-            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
-
-            try {
-                if (id) {
-                    await db.collection("services").doc(id).update(payload);
-                } else {
-                    await db.collection("services").add(payload);
-                }
-                closeModal();
-                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', showConfirmButton: false, timer: 1500 });
-            } catch (error) {
-                console.error(error);
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
         }
-        
 
         // โหลดข้อมูลเมื่อเปิดหน้า
         document.addEventListener('DOMContentLoaded', loadData);
@@ -1048,37 +1016,6 @@
         let currentClients = [];
 
         // อัปเดตฟังก์ชัน filterData ให้รองรับแท็บทั้งหมด
-        window.filterData = function(type) {
-            currentFilter = type;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary';
-            });
-            let activeTab = document.getElementById('tab-' + type);
-            if(activeTab) activeTab.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold bg-white text-primary border-t border-l border-r border-gray-200';
-
-            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container'].forEach(id => {
-                let el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-
-            if (type === 'social') {
-                document.getElementById('social-container').classList.remove('hidden');
-                if (typeof setupSocialForm === 'function') setupSocialForm();
-                if (typeof loadSocialSettings === 'function') loadSocialSettings();
-            } else if (type === 'booking') {
-                document.getElementById('booking-container').classList.remove('hidden');
-                loadBookings();
-            } else if (type === 'clients') {
-                document.getElementById('clients-container').classList.remove('hidden');
-                loadClientsAdmin();
-            } else if (type === 'portfolio') {
-                document.getElementById('portfolio-container').classList.remove('hidden');
-                loadPortfolioAdmin();
-            } else {
-                document.getElementById('table-container').classList.remove('hidden');
-                renderTable(); 
-            }
-        };
         window.filterData = function(type) {
             currentFilter = type;
             document.querySelectorAll('.tab-btn').forEach(btn => {

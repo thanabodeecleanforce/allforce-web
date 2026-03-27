@@ -1092,9 +1092,8 @@
                 if(phoneInput && userData.phone) {
                     phoneInput.value = userData.phone;
                 }
-            }
-        });
-        // 🌟 ระบบ Tracking ออนไลน์/ออฟไลน์
+
+                // 🌟 ระบบ Tracking ออนไลน์/ออฟไลน์ (ต้องอยู่ในนี้เท่านั้น!)
                 const userRef = window.cf_db.collection("users").doc(user.uid);
                 
                 // เซ็ตสถานะเป็นออนไลน์ทันทีที่หน้าเว็บโหลด
@@ -1110,6 +1109,8 @@
                 window.addEventListener("beforeunload", function() {
                     userRef.set({ isOnline: false }, { merge: true });
                 });
+            }
+        });
 
         // ==========================================
         // ระบบ WIZARD ควบคุมการจอง 5 ขั้นตอน
