@@ -62,6 +62,7 @@
             <button onclick="filterData('booking')" id="tab-booking" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">รายการจองจากลูกค้า</button>
             <button onclick="filterData('clients')" id="tab-clients" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ลูกค้าของเรา</button>
             <button onclick="filterData('portfolio')" id="tab-portfolio" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ผลงานของเรา</button>
+            <button onclick="filterData('users')" id="tab-users" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ผู้ใช้งานระบบ</button>
         </div>
 
         <div id="table-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -78,6 +79,27 @@
                     </thead>
                     <tbody id="services-list" class="divide-y divide-gray-100">
                         <tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><br>กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="users-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-[#000080]">ข้อมูลผู้ใช้งาน / สมาชิก</h3>
+                <p class="text-xs text-gray-500"><i class="fa-solid fa-circle text-green-500 mr-1"></i>สีเขียว = กำลังออนไลน์</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-200">
+                        <tr>
+                            <th class="p-4">โปรไฟล์</th>
+                            <th class="p-4">ชื่อ / อีเมล</th>
+                            <th class="p-4 text-center">สถานะ</th>
+                            <th class="p-4 text-right">ใช้งานล่าสุด</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list" class="divide-y divide-gray-100">
+                        <tr><td colspan="4" class="p-8 text-center text-gray-400">กำลังโหลดข้อมูล...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -237,6 +259,7 @@
                             <option value="villa">ทำความสะอาดวิลล่า</option>
                             <option value="furniture">ทำความสะอาดเฟอร์นิเจอร์</option>
                             <option value="addon">บริการเสริม (Add-ons)</option>
+                            <option value="membership" class="font-bold text-primary">👑 แพ็กเกจสมาชิก (Membership)</option>
                         </select>
                     </div>
 
@@ -294,6 +317,27 @@
                         
                         <div id="sizes-container" class="space-y-2">
                             </div>
+                    </div>
+                </div>
+
+                <div id="membership-fields" class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4 hidden">
+                    <p class="text-[10px] font-bold text-yellow-600 uppercase mb-3"><i class="fa-solid fa-crown mr-1"></i> ข้อมูลเฉพาะแพ็กเกจสมาชิก (Membership)</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">จำนวนครั้ง (รอบ) ที่ให้บริการ</label>
+                            <input type="number" id="form-mem-sessions" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500 bg-white" placeholder="เช่น 12">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">ระยะเวลาแพ็กเกจ</label>
+                            <input type="text" id="form-mem-duration" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500 bg-white" placeholder="เช่น 1 ปี, 6 เดือน">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">เงื่อนไขและข้อตกลง (Terms & Conditions)</label>
+                        <textarea id="form-mem-terms" rows="4" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500 bg-white placeholder-gray-400" placeholder="เช่น 1. ไม่สามารถโอนสิทธิ์ให้ผู้อื่นได้&#10;2. สงวนสิทธิ์การคืนเงินทุกกรณี&#10;3. ต้องจองคิวล่วงหน้าอย่างน้อย 3 วัน"></textarea>
+                        <p class="text-[10px] text-gray-500 mt-1">** ข้อตกลงนี้จะแสดงให้ลูกค้าอ่านและกดยอมรับก่อนชำระเงิน</p>
                     </div>
                 </div>
 
@@ -563,15 +607,21 @@
             const type = document.getElementById('form-type').value;
             const hFields = document.getElementById('house-fields');
             const aFields = document.getElementById('addon-fields');
+            const mFields = document.getElementById('membership-fields'); // 🌟 เพิ่มตัวแปรกล่องสมาชิก
             
-            // 🌟 ปลดล็อค: ให้ทุกหมวดหมู่สามารถกำหนด "หน่วยนับ" และ "เพิ่มตัวเลือกขนาด" ได้ทั้งหมด!
             aFields.classList.remove('hidden'); 
 
-            // โชว์ช่องใส่จำนวนแม่บ้าน/ชั่วโมง เฉพาะหมวดบ้าน (เผื่อแอดมินอยากใส่เป็นข้อมูลอ้างอิงให้ลูกค้าอ่าน)
             if (['house_single', 'condo', 'villa'].includes(type)) {
                 hFields.classList.remove('hidden');
             } else {
                 hFields.classList.add('hidden');
+            }
+
+            // 🌟 เช็คถ้าเป็นแพ็กเกจสมาชิก ให้โชว์กล่องข้อตกลงและจำนวนครั้ง
+            if (type === 'membership') {
+                mFields.classList.remove('hidden');
+            } else {
+                mFields.classList.add('hidden');
             }
         }
 
@@ -625,6 +675,11 @@
                 document.getElementById('form-staff').value = srv.staffCount || '';
                 document.getElementById('form-hours').value = srv.durationHours || '';
                 document.getElementById('form-unit').value = srv.unit || '';
+
+                // 🌟 โหลดข้อมูลแพ็กเกจสมาชิก
+                document.getElementById('form-mem-sessions').value = srv.memSessions || '';
+                document.getElementById('form-mem-duration').value = srv.memDuration || '';
+                document.getElementById('form-mem-terms').value = srv.memTerms || '';
                 
                 currentSizes = srv.sizes ? JSON.parse(JSON.stringify(srv.sizes)) : [];
             } else {
@@ -641,6 +696,12 @@
                 document.getElementById('form-staff').value = '';
                 document.getElementById('form-hours').value = '';
                 document.getElementById('form-unit').value = '';
+
+                // 🌟 ล้างค่ากล่องสมาชิกตอนกดสร้างใหม่
+                document.getElementById('form-mem-sessions').value = '';
+                document.getElementById('form-mem-duration').value = '';
+                document.getElementById('form-mem-terms').value = '';
+
                 currentSizes = [];
             }
             
@@ -652,7 +713,6 @@
             document.getElementById('service-modal').classList.add('hidden');
         }
 
-        // 9. บันทึกข้อมูล (เพิ่ม/แก้ไข)
         async function saveService() {
             const id = document.getElementById('form-id').value;
             const name = document.getElementById('form-name').value.trim();
@@ -663,12 +723,48 @@
                 return;
             }
 
-            // แปลงค่า sizes ให้ตัวเลขเป็น Number จริงๆ
             const cleanSizes = currentSizes.map(sz => ({
                 name: sz.name,
                 price: Number(sz.price || 0),
                 originalPrice: Number(sz.originalPrice || 0)
             }));
+
+            const payload = {
+                name: name,
+                type: type,
+                isActive: document.getElementById('form-active').value === 'true',
+                price: Number(document.getElementById('form-price').value || 0),
+                originalPrice: Number(document.getElementById('form-orig-price').value || 0),
+                details: document.getElementById('form-desc').value.trim(),
+                order: Number(document.getElementById('form-order').value || 99),
+                
+                staffCount: document.getElementById('form-staff').value || null,
+                durationHours: document.getElementById('form-hours').value || null,
+                unit: document.getElementById('form-unit').value || null,
+                
+                // 🌟 บันทึกข้อมูลแพ็กเกจสมาชิกลง Firebase
+                memSessions: Number(document.getElementById('form-mem-sessions').value || 0),
+                memDuration: document.getElementById('form-mem-duration').value.trim(),
+                memTerms: document.getElementById('form-mem-terms').value.trim(),
+
+                sizes: cleanSizes
+            };
+
+            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            try {
+                if (id) {
+                    await db.collection("services").doc(id).update(payload);
+                } else {
+                    await db.collection("services").add(payload);
+                }
+                closeModal();
+                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', showConfirmButton: false, timer: 1500 });
+            } catch (error) {
+                console.error(error);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+            }
+            };
 
             const payload = {
                 name: name,
@@ -699,8 +795,8 @@
             } catch (error) {
                 console.error(error);
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
-            }
         }
+        
 
         // โหลดข้อมูลเมื่อเปิดหน้า
         document.addEventListener('DOMContentLoaded', loadData);
@@ -983,6 +1079,66 @@
                 renderTable(); 
             }
         };
+        window.filterData = function(type) {
+            currentFilter = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary';
+            });
+            let activeTab = document.getElementById('tab-' + type);
+            if(activeTab) activeTab.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold bg-white text-primary border-t border-l border-r border-gray-200';
+
+            // ซ่อนทุกกล่อง
+            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container'].forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+
+            if (type === 'social') {
+                document.getElementById('social-container').classList.remove('hidden');
+                if (typeof setupSocialForm === 'function') setupSocialForm();
+                if (typeof loadSocialSettings === 'function') loadSocialSettings();
+            } else if (type === 'booking') {
+                document.getElementById('booking-container').classList.remove('hidden');
+                loadBookings();
+            } else if (type === 'clients') {
+                document.getElementById('clients-container').classList.remove('hidden');
+                loadClientsAdmin();
+            } else if (type === 'portfolio') {
+                document.getElementById('portfolio-container').classList.remove('hidden');
+                loadPortfolioAdmin();
+            } else if (type === 'users') { // 🌟 เพิ่มเงื่อนไขนี้
+                document.getElementById('users-container').classList.remove('hidden');
+                loadUsersAdmin();
+            } else {
+                document.getElementById('table-container').classList.remove('hidden');
+                renderTable(); 
+            }
+        };
+
+        // 🌟 เพิ่มฟังก์ชันโหลดข้อมูลผู้ใช้งาน (วางไว้ต่อจากฟังก์ชันด้านบนได้เลย)
+        function loadUsersAdmin() {
+            db.collection("users").orderBy("lastLogin", "desc").onSnapshot(snapshot => {
+                let html = '';
+                if(snapshot.empty) {
+                    html = '<tr><td colspan="4" class="p-8 text-center text-gray-400">ยังไม่มีผู้ใช้งานในระบบ</td></tr>';
+                } else {
+                    snapshot.forEach(doc => {
+                        let u = doc.data();
+                        let isOnline = u.isOnline ? '<span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold"><i class="fa-solid fa-circle text-[8px] mr-1"></i>ออนไลน์</span>' : '<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-[10px] font-bold">ออฟไลน์</span>';
+                        let lastDate = u.lastLogin ? new Date(u.lastLogin).toLocaleString('th-TH') : '-';
+                        
+                        html += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4"><img src="${u.photoURL || 'https://placehold.co/100'}" class="w-10 h-10 rounded-full border border-gray-200"></td>
+                            <td class="p-4"><p class="font-bold text-gray-800">${u.name || 'ไม่มีชื่อ'}</p><p class="text-[10px] text-gray-500">${u.email || '-'}</p></td>
+                            <td class="p-4 text-center">${isOnline}</td>
+                            <td class="p-4 text-right text-xs text-gray-500">${lastDate}</td>
+                        </tr>`;
+                    });
+                }
+                document.getElementById('users-list').innerHTML = html;
+            });
+        }
 
         async function loadClientsAdmin() {
             try {
