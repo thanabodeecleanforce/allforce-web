@@ -28,10 +28,15 @@
             <div class="bg-white p-1.5 rounded-lg shadow-sm">
                 <img src="logo-cleanforce.png" alt="Logo" class="h-6 w-auto object-contain" onerror="this.src='https://placehold.co/100x40?text=CF'">
             </div>
-            <h1 class="font-bold text-lg hidden sm:inline">ระบบจัดการหลังบ้าน (Admin Panel)</h1>
+            <div class="flex flex-col">
+                <h1 class="font-bold text-lg hidden sm:inline">ระบบจัดการหลังบ้าน (Admin Panel)</h1>
+                <div class="flex items-center gap-1.5 text-[10px] text-blue-200 mt-0.5">
+                    <i class="fa-regular fa-clock"></i> อัปเดตเว็บล่าสุด: <span id="last-updated-time" class="font-bold text-yellow-300">กำลังโหลด...</span>
+                </div>
+            </div>
         </div>
-        <a href="cleanforce.html" class="bg-white/20 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> กลับไปหน้าเว็บ
+        <a href="cleanforce.html" class="bg-white/20 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition shrink-0">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="hidden sm:inline">กลับหน้าเว็บ</span>
         </a>
     </header>
 
@@ -95,11 +100,13 @@
                             <th class="p-4">โปรไฟล์</th>
                             <th class="p-4">ชื่อ / อีเมล</th>
                             <th class="p-4 text-center">สถานะ</th>
-                            <th class="p-4 text-right">ใช้งานล่าสุด</th>
+                            <th class="p-4 text-center">แพ็กเกจส่วนตัว</th>
+                            <th class="p-4 text-center">ใช้งานล่าสุด</th>
+                            <th class="p-4 text-center">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="users-list" class="divide-y divide-gray-100">
-                        <tr><td colspan="4" class="p-8 text-center text-gray-400">กำลังโหลดข้อมูล...</td></tr>
+                        <tr><td colspan="6" class="p-8 text-center text-gray-400">กำลังโหลดข้อมูล...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -355,6 +362,40 @@
                 <button onclick="saveService()" class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 shadow-sm text-sm transition flex items-center gap-2">
                     <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล
                 </button>
+            </div>
+        </div>
+    </div>
+
+<div id="user-pkg-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in">
+            <div class="p-5 border-b bg-yellow-50 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-yellow-800"><i class="fa-solid fa-crown"></i> มอบแพ็กเกจให้: <span id="pkg-user-name"></span></h3>
+                <button onclick="closeUserPkgModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="pkg-user-id">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อแพ็กเกจ (ลูกค้าจะเห็นชื่อนี้)</label>
+                    <input type="text" id="pkg-name" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500" placeholder="เช่น ซักโซฟาโรงแรม 12 ครั้ง">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">โควตาทั้งหมด (ครั้ง)</label>
+                        <input type="number" id="pkg-total" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500" value="12">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">คงเหลือ (ครั้ง)</label>
+                        <input type="number" id="pkg-remain" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500" value="12">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">วันหมดอายุ (เว้นว่างได้ถ้าไม่มีกำหนด)</label>
+                    <input type="date" id="pkg-expire" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500">
+                </div>
+            </div>
+            <div class="p-4 border-t bg-gray-50 flex justify-end gap-3">
+                <button onclick="closeUserPkgModal()" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm">ยกเลิก</button>
+                <button onclick="saveUserPkg()" class="px-5 py-2.5 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 shadow-sm text-sm"><i class="fa-solid fa-floppy-disk"></i> บันทึกแพ็กเกจ</button>
             </div>
         </div>
     </div>
@@ -760,6 +801,7 @@
                 }
                 closeModal();
                 Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                markSystemUpdated();
             } catch (error) {
                 console.error(error);
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
@@ -1004,6 +1046,7 @@
             try {
                 await db.collection('settings').doc('social_profile').set(payload);
                 Swal.fire({ icon: 'success', title: 'บันทึกเรียบร้อย', showConfirmButton: false, timer: 1500 });
+                markSystemUpdated();
             } catch(e) {
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error');
             }
@@ -1052,29 +1095,75 @@
             }
         };
 
-        // 🌟 เพิ่มฟังก์ชันโหลดข้อมูลผู้ใช้งาน (วางไว้ต่อจากฟังก์ชันด้านบนได้เลย)
         function loadUsersAdmin() {
             db.collection("users").orderBy("lastLogin", "desc").onSnapshot(snapshot => {
                 let html = '';
                 if(snapshot.empty) {
-                    html = '<tr><td colspan="4" class="p-8 text-center text-gray-400">ยังไม่มีผู้ใช้งานในระบบ</td></tr>';
+                    html = '<tr><td colspan="6" class="p-8 text-center text-gray-400">ยังไม่มีผู้ใช้งานในระบบ</td></tr>';
                 } else {
                     snapshot.forEach(doc => {
                         let u = doc.data();
                         let isOnline = u.isOnline ? '<span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-[10px] font-bold"><i class="fa-solid fa-circle text-[8px] mr-1"></i>ออนไลน์</span>' : '<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-[10px] font-bold">ออฟไลน์</span>';
-                        let lastDate = u.lastLogin ? new Date(u.lastLogin).toLocaleString('th-TH') : '-';
+                        
+                        let pkgBadge = '-';
+                        if (u.customPackages && u.customPackages.length > 0) {
+                            pkgBadge = `<span class="bg-yellow-50 text-yellow-600 font-bold px-2 py-1 rounded border border-yellow-200 text-[10px]"><i class="fa-solid fa-gift"></i> มี ${u.customPackages.length} สิทธิ์</span>`;
+                        }
+
+                        // 🌟 ดึงข้อมูลเวลาที่เข้าใช้งานล่าสุดมาแสดงผล
+                        let lastDate = u.lastLogin ? new Date(u.lastLogin).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) + ' น.' : '-';
                         
                         html += `
                         <tr class="hover:bg-gray-50">
                             <td class="p-4"><img src="${u.photoURL || 'https://placehold.co/100'}" class="w-10 h-10 rounded-full border border-gray-200"></td>
                             <td class="p-4"><p class="font-bold text-gray-800">${u.name || 'ไม่มีชื่อ'}</p><p class="text-[10px] text-gray-500">${u.email || '-'}</p></td>
                             <td class="p-4 text-center">${isOnline}</td>
-                            <td class="p-4 text-right text-xs text-gray-500">${lastDate}</td>
+                            <td class="p-4 text-center">${pkgBadge}</td>
+                            <td class="p-4 text-center text-xs text-gray-500">${lastDate}</td>
+                            <td class="p-4 text-center">
+                                <button onclick="openUserPkgModal('${doc.id}', '${u.name || 'ไม่มีชื่อ'}')" class="text-[10px] bg-white text-yellow-600 border border-yellow-300 px-3 py-1.5 rounded-lg font-bold hover:bg-yellow-50 transition shadow-sm">
+                                    <i class="fa-solid fa-crown mr-1"></i> มอบแพ็กเกจ
+                                </button>
+                            </td>
                         </tr>`;
                     });
                 }
                 document.getElementById('users-list').innerHTML = html;
             });
+        }
+
+        let currentPkgUserId = '';
+        function openUserPkgModal(userId, userName) {
+            currentPkgUserId = userId;
+            document.getElementById('pkg-user-name').textContent = userName;
+            document.getElementById('pkg-name').value = '';
+            document.getElementById('pkg-total').value = '12';
+            document.getElementById('pkg-remain').value = '12';
+            document.getElementById('pkg-expire').value = '';
+            document.getElementById('user-pkg-modal').classList.remove('hidden');
+        }
+        function closeUserPkgModal() {
+            document.getElementById('user-pkg-modal').classList.add('hidden');
+        }
+        async function saveUserPkg() {
+            let name = document.getElementById('pkg-name').value;
+            let total = document.getElementById('pkg-total').value;
+            let remain = document.getElementById('pkg-remain').value;
+            let expire = document.getElementById('pkg-expire').value;
+            
+            if(!name) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อแพ็กเกจ', 'warning');
+            
+            Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+            try {
+                let newPkg = { id: Date.now().toString(), name: name, total: Number(total), remain: Number(remain), expireDate: expire };
+                await db.collection("users").doc(currentPkgUserId).update({
+                    customPackages: firebase.firestore.FieldValue.arrayUnion(newPkg)
+                });
+                closeUserPkgModal();
+                Swal.fire({ icon: 'success', title: 'เพิ่มแพ็กเกจสำเร็จ!', showConfirmButton: false, timer: 1500 });
+            } catch(e) {
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้ ' + e.message, 'error');
+            }
         }
 
         async function loadClientsAdmin() {
@@ -1143,6 +1232,7 @@
                 }, { merge: true });
                 
                 Swal.fire({ icon: 'success', title: 'บันทึกข้อมูลลูกค้าแล้ว', showConfirmButton: false, timer: 1500 });
+                markSystemUpdated();
                 currentClients = cleanData;
                 renderClientsAdmin();
             } catch(e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error'); }
@@ -1258,6 +1348,7 @@
                 }, { merge: true });
                 
                 Swal.fire({ icon: 'success', title: 'บันทึกรูปผลงานแล้ว', showConfirmButton: false, timer: 1500 });
+                markSystemUpdated();
                 currentPortfolioHouse = cleanHouse;
                 currentPortfolioFurniture = cleanFurn;
                 renderPortfolioAdmin();
@@ -1332,6 +1423,25 @@
             // ล้างค่า file ออกเผื่อผู้ใช้อยากอัพโหลดรูปเดิมซ้ำ
             event.target.value = '';
         }
+        // ==========================================
+        // 🌟 ระบบติดตามเวลาอัปเดตเว็บไซต์ล่าสุด
+        // ==========================================
+        function markSystemUpdated() {
+            db.collection('settings').doc('general').set({
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+
+        // ดึงเวลาล่าสุดมาแสดงผลแบบ Real-time
+        db.collection('settings').doc('general').onSnapshot(doc => {
+            let el = document.getElementById('last-updated-time');
+            if (el && doc.exists && doc.data().lastUpdated) {
+                let d = doc.data().lastUpdated.toDate();
+                el.textContent = d.toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) + ' น.';
+            } else if (el) {
+                el.textContent = 'ยังไม่มีประวัติการอัปเดต';
+            }
+        });
     </script>
     
 </body>

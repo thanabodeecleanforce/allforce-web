@@ -473,9 +473,11 @@
                 </div>
 
                 <div id="step-1" class="step-section space-y-6">
+                    <div id="user-custom-packages" class="mb-4 empty:hidden"></div>
+
                     <h2 class="text-xl md:text-2xl font-bold text-[#000080]">1. เลือกสถานที่ / หมวดหมู่บริการ</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="ui-categories">
-                        </div>
+                    </div>
                 </div>
 
                 <div id="step-2" class="step-section hidden space-y-6">
@@ -1109,8 +1111,63 @@
                 window.addEventListener("beforeunload", function() {
                     userRef.set({ isOnline: false }, { merge: true });
                 });
+
+                // --- 🌟 ดึงแพ็กเกจ VIP ของลูกค้า ---
+                window.cf_db.collection("users").doc(user.uid).onSnapshot(doc => {
+                    if(doc.exists) {
+                        let data = doc.data();
+                        if(data.customPackages && data.customPackages.length > 0) {
+                            renderCustomPackages(data.customPackages);
+                        }
+                    }
+                });
             }
+            
         });
+
+        // 🌟 ฟังก์ชันวาดกล่องแพ็กเกจ VIP และฟังก์ชันกดใช้สิทธิ์
+        window.renderCustomPackages = function(pkgs) {
+            let html = '<div class="bg-gradient-to-r from-yellow-100 to-yellow-50 p-5 rounded-2xl border border-yellow-200 shadow-sm"><h3 class="font-bold text-yellow-800 mb-3"><i class="fa-solid fa-crown mr-1"></i> แพ็กเกจและโควตาส่วนตัวของคุณ</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">';
+            let hasActive = false;
+            pkgs.forEach((pkg, index) => {
+                if(pkg.remain > 0) {
+                   hasActive = true;
+                   html += `
+                   <div class="bg-white border border-yellow-200 p-4 rounded-xl relative overflow-hidden group hover:shadow-md transition">
+                       <div class="absolute right-0 top-0 bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">เหลือ ${pkg.remain} สิทธิ์</div>
+                       <h4 class="font-bold text-gray-800 text-sm mb-1 w-3/4 truncate">${pkg.name}</h4>
+                       <p class="text-[10px] text-gray-500 mb-3">หมดอายุ: ${pkg.expireDate ? new Date(pkg.expireDate).toLocaleDateString('th-TH') : 'ไม่มีกำหนด'}</p>
+                       <button type="button" onclick="useCustomPackage('${pkg.id}', '${pkg.name}')" class="bg-yellow-50 text-yellow-700 border border-yellow-300 px-4 py-2 rounded-lg text-xs font-bold hover:bg-yellow-500 hover:text-white transition w-full">✨ กดใช้สิทธิ์ทันที</button>
+                   </div>`;
+                }
+            });
+            html += '</div></div>';
+            
+            let container = document.getElementById('user-custom-packages');
+            if(container) container.innerHTML = hasActive ? html : '';
+        };
+
+        window.useCustomPackage = function(pkgId, pkgName) {
+            cart.category = 'custom_package';
+            cart.type = 'custom_package';
+            // บันทึกใส่ตะกร้า พร้อมติดป้ายว่านี่คือแพ็กพิเศษ
+            cart.addons = [{ id: pkgId, size: '', qty: 1, name: pkgName, isCustomPkg: true, price: 0 }];
+            
+            // ข้าม Step 1, 2, 3 ไปที่หน้า 4 (กรอกข้อมูลนัดหมาย) เลย
+            currentStep = 4;
+            
+            document.querySelectorAll('.step-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('step-4').classList.remove('hidden');
+            
+            let header = document.getElementById('step-header');
+            header.classList.remove('hidden'); header.classList.add('flex');
+            document.getElementById('step-text').textContent =`ข้ามมาขั้นตอนที่ 4 / 5`;
+            
+            document.getElementById('floating-cart').classList.remove('hidden');
+            
+            calculatePricing();
+            document.getElementById('booking-cf').scrollIntoView({ behavior: 'smooth' });
+        };
 
         // ==========================================
         // ระบบ WIZARD ควบคุมการจอง 5 ขั้นตอน
