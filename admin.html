@@ -366,36 +366,77 @@
         </div>
     </div>
 
-<div id="user-pkg-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in">
+    <div id="user-pkg-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden animate-in fade-in zoom-in">
             <div class="p-5 border-b bg-yellow-50 flex justify-between items-center">
                 <h3 class="font-bold text-lg text-yellow-800"><i class="fa-solid fa-crown"></i> มอบแพ็กเกจให้: <span id="pkg-user-name"></span></h3>
                 <button onclick="closeUserPkgModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 space-y-4">
+            
+            <div class="p-6 overflow-y-auto space-y-6 flex-1 hide-scroll bg-gray-50/50">
                 <input type="hidden" id="pkg-user-id">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อแพ็กเกจ (ลูกค้าจะเห็นชื่อนี้)</label>
-                    <input type="text" id="pkg-name" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500" placeholder="เช่น ซักโซฟาโรงแรม 12 ครั้ง">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">โควตาทั้งหมด (ครั้ง)</label>
-                        <input type="number" id="pkg-total" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500" value="12">
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <h4 class="font-bold text-[#000080] mb-4 border-b pb-2 text-sm"><i class="fa-solid fa-clipboard-list mr-1"></i> 1. ข้อมูลบริการและรอบเข้างาน</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อแพ็กเกจ <span class="text-red-500">*</span></label>
+                            <input type="text" id="pkg-name" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-primary" placeholder="เช่น บริการดูแลออฟฟิศ 1 ปี">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">รายละเอียดเงื่อนไข (ให้ลูกค้าอ่าน)</label>
+                            <textarea id="pkg-desc" rows="2" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-primary" placeholder="เช่น ทำความสะอาดชั้น 1-3 รวมน้ำยาฆ่าเชื้อ"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">โควตาทั้งหมด (ครั้ง)</label><input type="number" id="pkg-total" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm" value="12"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">คงเหลือ (ครั้ง)</label><input type="number" id="pkg-remain" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm" value="12"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">วันหมดอายุแพ็กเกจ</label><input type="date" id="pkg-expire" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm text-gray-700"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">รอบเข้างานถัดไป</label><input type="date" id="pkg-next-date" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm text-primary font-bold"></div>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <input type="checkbox" id="pkg-show-next" class="w-4 h-4 text-primary rounded cursor-pointer" checked>
+                            <label for="pkg-show-next" class="text-xs font-bold text-blue-800 cursor-pointer">แสดงวันที่เข้างานรอบถัดไปให้ลูกค้าเห็นบนหน้าเว็บ</label>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">คงเหลือ (ครั้ง)</label>
-                        <input type="number" id="pkg-remain" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500" value="12">
-                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">วันหมดอายุ (เว้นว่างได้ถ้าไม่มีกำหนด)</label>
-                    <input type="date" id="pkg-expire" class="w-full p-2.5 border border-yellow-300 rounded-lg text-sm outline-none focus:border-yellow-500">
+
+                <div class="bg-white p-5 rounded-xl border border-green-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">ระบบการเงิน</div>
+                    <h4 class="font-bold text-green-700 mb-4 border-b border-green-100 pb-2 text-sm"><i class="fa-solid fa-file-invoice-dollar mr-1"></i> 2. ข้อมูลการชำระเงิน</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">ราคาแพ็กเกจสุทธิ (บาท) <span class="text-red-500">*</span></label>
+                            <input type="number" id="pkg-price" onkeyup="calculatePkgPayments()" class="w-full p-3 border border-green-300 rounded-lg text-base outline-none focus:border-green-500 font-bold text-green-700 bg-green-50" placeholder="เช่น 36000">
+                        </div>
+                        
+                        <div class="border-t border-gray-100 pt-4 mt-2">
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="block text-xs font-bold text-gray-800">ประวัติการชำระเงิน (แบ่งจ่าย/โอนเงิน)</label>
+                                <button type="button" onclick="addPkgPaymentRow()" class="text-[10px] bg-white border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 font-bold transition shadow-sm"><i class="fa-solid fa-plus"></i> เพิ่มยอดชำระ</button>
+                            </div>
+                            
+                            <div id="pkg-payments-container" class="space-y-2 mb-4"></div>
+                            
+                            <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow-inner text-white">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-gray-400">สถานะบิล</span>
+                                    <span id="pkg-pay-status" class="text-sm font-bold mt-1">-</span>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-gray-300 mb-1">ชำระแล้ว: <span id="pkg-paid-amount" class="font-bold text-green-400 text-sm">0</span> ฿</p>
+                                    <p class="text-[11px] text-gray-300">ค้างชำระ: <span id="pkg-due-amount" class="font-bold text-red-400 text-base">0</span> ฿</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="p-4 border-t bg-gray-50 flex justify-end gap-3">
-                <button onclick="closeUserPkgModal()" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm">ยกเลิก</button>
-                <button onclick="saveUserPkg()" class="px-5 py-2.5 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 shadow-sm text-sm"><i class="fa-solid fa-floppy-disk"></i> บันทึกแพ็กเกจ</button>
+
+            <div class="p-4 border-t bg-white flex justify-end gap-3 shrink-0">
+                <button onclick="closeUserPkgModal()" class="px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm transition">ยกเลิก</button>
+                <button onclick="saveUserPkg()" class="px-5 py-2.5 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 shadow-md text-sm transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกแพ็กเกจให้ลูกค้า</button>
             </div>
         </div>
     </div>
@@ -1133,34 +1174,132 @@
         }
 
         let currentPkgUserId = '';
+        let currentPkgPayments = []; // เก็บประวัติการจ่ายเงิน
+
         function openUserPkgModal(userId, userName) {
             currentPkgUserId = userId;
             document.getElementById('pkg-user-name').textContent = userName;
+            
+            // ล้างค่าเก่า
             document.getElementById('pkg-name').value = '';
+            document.getElementById('pkg-desc').value = '';
             document.getElementById('pkg-total').value = '12';
             document.getElementById('pkg-remain').value = '12';
             document.getElementById('pkg-expire').value = '';
+            document.getElementById('pkg-next-date').value = '';
+            document.getElementById('pkg-show-next').checked = true;
+            document.getElementById('pkg-price').value = '';
+            
+            currentPkgPayments = [];
+            renderPkgPayments(); // วาดตารางการเงิน
             document.getElementById('user-pkg-modal').classList.remove('hidden');
         }
-        function closeUserPkgModal() {
-            document.getElementById('user-pkg-modal').classList.add('hidden');
+
+        // --- 🌟 ระบบคำนวณเงินและงวดชำระ ---
+        function renderPkgPayments() {
+            let container = document.getElementById('pkg-payments-container');
+            if(currentPkgPayments.length === 0) {
+                container.innerHTML = '<p class="text-[10px] text-gray-400 italic bg-white p-3 rounded-lg border border-dashed border-gray-300 text-center">ยังไม่มีประวัติการชำระเงิน กดปุ่มเพิ่มยอดด้านบน</p>';
+            } else {
+                let html = '';
+                currentPkgPayments.forEach((p, idx) => {
+                    html += `
+                    <div class="flex flex-wrap md:flex-nowrap gap-2 bg-white p-2.5 border border-green-100 rounded-lg items-center shadow-sm relative pr-8 md:pr-2">
+                        <input type="date" value="${p.date || ''}" onchange="updatePkgPayment(${idx}, 'date', this.value)" class="w-full md:w-32 p-2 border border-gray-200 rounded text-xs outline-none focus:border-green-500">
+                        <input type="number" placeholder="ยอดเงิน (บาท)" value="${p.amount || ''}" onkeyup="updatePkgPayment(${idx}, 'amount', this.value)" onchange="updatePkgPayment(${idx}, 'amount', this.value)" class="w-full md:w-28 p-2 border border-gray-200 rounded text-xs outline-none focus:border-green-500 font-bold text-green-600">
+                        <select onchange="updatePkgPayment(${idx}, 'method', this.value)" class="w-full md:w-28 p-2 border border-gray-200 rounded text-xs outline-none focus:border-green-500">
+                            <option value="เงินสด" ${p.method==='เงินสด'?'selected':''}>เงินสด</option>
+                            <option value="โอนเข้าบัญชี" ${p.method==='โอนเข้าบัญชี'?'selected':''}>โอนเงิน</option>
+                            <option value="บัตรเครดิต" ${p.method==='บัตรเครดิต'?'selected':''}>บัตรเครดิต</option>
+                            <option value="หัก ณ ที่จ่าย" ${p.method==='หัก ณ ที่จ่าย'?'selected':''}>หัก ณ ที่จ่าย</option>
+                        </select>
+                        <input type="text" placeholder="โน้ตย่อ / สลิปอ้างอิง" value="${p.note || ''}" onchange="updatePkgPayment(${idx}, 'note', this.value)" class="w-full md:flex-1 p-2 border border-gray-200 rounded text-xs outline-none focus:border-green-500">
+                        <button type="button" onclick="removePkgPayment(${idx})" class="absolute top-2 right-2 md:relative md:top-auto md:right-auto text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash text-sm"></i></button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }
+            calculatePkgPayments();
         }
+
+        function addPkgPaymentRow() {
+            let today = new Date().toISOString().split('T')[0];
+            currentPkgPayments.push({ date: today, amount: '', method: 'โอนเข้าบัญชี', note: '' });
+            renderPkgPayments();
+        }
+        function updatePkgPayment(idx, field, val) {
+            currentPkgPayments[idx][field] = val;
+            if(field === 'amount') calculatePkgPayments();
+        }
+        function removePkgPayment(idx) {
+            currentPkgPayments.splice(idx, 1);
+            renderPkgPayments();
+        }
+        function calculatePkgPayments() {
+            let totalPrice = Number(document.getElementById('pkg-price').value || 0);
+            let paidAmount = currentPkgPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+            let dueAmount = totalPrice - paidAmount;
+            
+            document.getElementById('pkg-paid-amount').textContent = paidAmount.toLocaleString();
+            document.getElementById('pkg-due-amount').textContent = dueAmount > 0 ? dueAmount.toLocaleString() : '0';
+            
+            let statusEl = document.getElementById('pkg-pay-status');
+            if (totalPrice === 0) {
+                statusEl.innerHTML = '<span class="text-gray-400">ระบุราคาแพ็กเกจก่อน</span>';
+            } else if (paidAmount >= totalPrice) {
+                statusEl.innerHTML = '<span class="text-green-400"><i class="fa-solid fa-circle-check"></i> ชำระครบแล้ว</span>';
+            } else if (paidAmount > 0) {
+                statusEl.innerHTML = '<span class="text-yellow-400"><i class="fa-solid fa-circle-half-stroke"></i> ทยอยจ่าย (Partial)</span>';
+            } else {
+                statusEl.innerHTML = '<span class="text-red-400"><i class="fa-solid fa-circle-xmark"></i> ยังไม่ชำระเงิน</span>';
+            }
+        }
+
+        function closeUserPkgModal() { document.getElementById('user-pkg-modal').classList.add('hidden'); }
+
         async function saveUserPkg() {
-            let name = document.getElementById('pkg-name').value;
+            let name = document.getElementById('pkg-name').value.trim();
+            let desc = document.getElementById('pkg-desc').value.trim();
             let total = document.getElementById('pkg-total').value;
             let remain = document.getElementById('pkg-remain').value;
             let expire = document.getElementById('pkg-expire').value;
+            let nextDate = document.getElementById('pkg-next-date').value;
+            let showNext = document.getElementById('pkg-show-next').checked;
+            let price = document.getElementById('pkg-price').value;
             
-            if(!name) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อแพ็กเกจ', 'warning');
+            if(!name || !price) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อแพ็กเกจและราคาสุทธิ', 'warning');
             
+            let cleanPayments = currentPkgPayments.map(p => ({
+                date: p.date, amount: Number(p.amount || 0), method: p.method, note: p.note
+            }));
+            let paidAmount = cleanPayments.reduce((sum, p) => sum + p.amount, 0);
+            let statusStr = (paidAmount >= Number(price)) ? 'paid' : (paidAmount > 0 ? 'partial' : 'unpaid');
+
             Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
             try {
-                let newPkg = { id: Date.now().toString(), name: name, total: Number(total), remain: Number(remain), expireDate: expire };
+                let newPkg = { 
+                    id: Date.now().toString(), 
+                    name: name, 
+                    desc: desc,
+                    total: Number(total), 
+                    remain: Number(remain), 
+                    expireDate: expire,
+                    nextServiceDate: nextDate,
+                    showNextDate: showNext,
+                    totalPrice: Number(price),
+                    paidAmount: paidAmount,
+                    paymentStatus: statusStr,
+                    payments: cleanPayments,
+                    assignedAt: new Date().toISOString()
+                };
+                
                 await db.collection("users").doc(currentPkgUserId).update({
                     customPackages: firebase.firestore.FieldValue.arrayUnion(newPkg)
                 });
+                
                 closeUserPkgModal();
-                Swal.fire({ icon: 'success', title: 'เพิ่มแพ็กเกจสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                Swal.fire({ icon: 'success', title: 'มอบแพ็กเกจให้ลูกค้าสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                if(typeof markSystemUpdated === 'function') markSystemUpdated();
             } catch(e) {
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้ ' + e.message, 'error');
             }

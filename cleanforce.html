@@ -1125,19 +1125,50 @@
             
         });
 
-        // 🌟 ฟังก์ชันวาดกล่องแพ็กเกจ VIP และฟังก์ชันกดใช้สิทธิ์
+        // 🌟 ฟังก์ชันวาดกล่องแพ็กเกจ VIP (อัปเกรดการแสดงผล)
         window.renderCustomPackages = function(pkgs) {
-            let html = '<div class="bg-gradient-to-r from-yellow-100 to-yellow-50 p-5 rounded-2xl border border-yellow-200 shadow-sm"><h3 class="font-bold text-yellow-800 mb-3"><i class="fa-solid fa-crown mr-1"></i> แพ็กเกจและโควตาส่วนตัวของคุณ</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">';
+            let html = '<div class="bg-gradient-to-r from-yellow-100 to-yellow-50 p-5 rounded-2xl border border-yellow-200 shadow-sm"><h3 class="font-bold text-yellow-800 mb-4"><i class="fa-solid fa-crown mr-1"></i> แพ็กเกจ VIP / องค์กร ของคุณ</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
             let hasActive = false;
+            
             pkgs.forEach((pkg, index) => {
                 if(pkg.remain > 0) {
                    hasActive = true;
+                   
+                   // จัดรูปแบบวันที่ต่างๆ
+                   let expText = pkg.expireDate ? new Date(pkg.expireDate).toLocaleDateString('th-TH') : 'ไม่มีกำหนด';
+                   let nextDateHtml = '';
+                   if (pkg.showNextDate && pkg.nextServiceDate) {
+                       nextDateHtml = `<div class="bg-blue-50 text-[#000080] p-2.5 rounded-lg text-xs font-bold mt-3 mb-4 border border-blue-100 flex items-center shadow-inner"><i class="fa-solid fa-calendar-check text-primary text-lg mr-2"></i> วันเข้าบริการรอบถัดไป:<br>${new Date(pkg.nextServiceDate).toLocaleDateString('th-TH', { dateStyle: 'long' })}</div>`;
+                   }
+
+                   // จัดรูปแบบการเงิน (ยอดค้างชำระ)
+                   let payStatusHtml = '';
+                   if (pkg.totalPrice > 0) {
+                       let due = pkg.totalPrice - (pkg.paidAmount || 0);
+                       if (due <= 0) {
+                           payStatusHtml = `<span class="text-[10px] bg-green-100 text-green-700 border border-green-200 px-2 py-1 rounded font-bold"><i class="fa-solid fa-check-circle"></i> ชำระครบแล้ว</span>`;
+                       } else {
+                           payStatusHtml = `<span class="text-[10px] bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded font-bold"><i class="fa-solid fa-clock"></i> ค้างชำระ ${(due).toLocaleString()} ฿</span>`;
+                       }
+                   }
+
                    html += `
-                   <div class="bg-white border border-yellow-200 p-4 rounded-xl relative overflow-hidden group hover:shadow-md transition">
-                       <div class="absolute right-0 top-0 bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">เหลือ ${pkg.remain} สิทธิ์</div>
-                       <h4 class="font-bold text-gray-800 text-sm mb-1 w-3/4 truncate">${pkg.name}</h4>
-                       <p class="text-[10px] text-gray-500 mb-3">หมดอายุ: ${pkg.expireDate ? new Date(pkg.expireDate).toLocaleDateString('th-TH') : 'ไม่มีกำหนด'}</p>
-                       <button type="button" onclick="useCustomPackage('${pkg.id}', '${pkg.name}')" class="bg-yellow-50 text-yellow-700 border border-yellow-300 px-4 py-2 rounded-lg text-xs font-bold hover:bg-yellow-500 hover:text-white transition w-full">✨ กดใช้สิทธิ์ทันที</button>
+                   <div class="bg-white border-2 border-yellow-300 p-5 rounded-xl relative overflow-hidden group hover:shadow-lg transition flex flex-col h-full">
+                       <div class="absolute right-0 top-0 bg-yellow-500 text-white text-[11px] font-bold px-4 py-1.5 rounded-bl-xl shadow-sm">เหลือ ${pkg.remain} สิทธิ์</div>
+                       
+                       <h4 class="font-bold text-[#000080] text-base mb-1 pr-16 leading-tight">${pkg.name}</h4>
+                       ${pkg.desc ? `<p class="text-[11px] text-gray-500 mb-3 line-clamp-2">${pkg.desc}</p>` : ''}
+                       
+                       <div class="flex flex-wrap items-center gap-2 mb-2">
+                           <span class="text-[10px] bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded font-bold"><i class="fa-regular fa-calendar-xmark"></i> หมดอายุ: ${expText}</span>
+                           ${payStatusHtml}
+                       </div>
+                       
+                       ${nextDateHtml}
+                       
+                       <div class="mt-auto pt-2">
+                           <button type="button" onclick="useCustomPackage('${pkg.id}', '${pkg.name}')" class="bg-yellow-50 text-yellow-700 border border-yellow-400 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-yellow-500 hover:text-white transition w-full shadow-sm flex justify-center items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles"></i> กดจองใช้สิทธิ์ฟรีทันที</button>
+                       </div>
                    </div>`;
                 }
             });
