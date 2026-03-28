@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanforce | Excellence Cleaning Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="logo-c-cleanforce-rmbg.png" type="image/x-icon"> 
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1EA7E1',
+                        background: '#F3F7FB',
+                        text: '#0F172A',
+                        groupPrimary: '#000080',
+                    },
+                    fontFamily: {
+                        heading: ['Poppins', 'Noto Sans Thai', 'sans-serif'],
+                        body: ['Noto Sans Thai', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans Thai', sans-serif; scroll-behavior: smooth; }
+        .font-heading { font-family: 'Poppins', 'Noto Sans Thai', sans-serif; }
+        
+        .btn-shadow { transition: all 0.3s ease; }
+        .btn-shadow:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(30, 167, 225, 0.4); }
+        
+        .header-bg {
+            background-image: url('hero-bg.png');
+            background-size: cover; background-position: top center;
+        }
+        .hero-bg-cf {
+            background-image: url('hero-bg.png');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+        }
+        
+        /* Custom Checkbox Style for Add-ons */
+        .addon-card { transition: all 0.2s ease-in-out; border: 2px solid transparent; }
+        .addon-card.selected { border-color: #1EA7E1; background-color: #F0F9FF; }
+        .addon-card.selected .check-icon { color: #1EA7E1; opacity: 1; }
+        
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary i { transform: rotate(180deg); }
+
+        /* Marquee Animation for Portfolio */
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-50% - 0.5rem)); }
+        }
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+        .marquee-content {
+            display: flex;
+            width: max-content;
+            animation: scroll-left 30s linear infinite;
+        }
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+
+        /* ซ่อน Scrollbar สำหรับแถบฟีด (แต่ยังเลื่อนได้) */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-text overflow-x-hidden">
+
+    <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
+        <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
+            <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] -z-10"></div>
+
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="bg-groupPrimary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition" title="Back to AllForce Hub">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="#home-cf">
+                    <img src="logo-cleanforce.png" alt="Cleanforce Logo" class="h-10 md:h-12 w-auto object-contain">
+                </a>
+            </div>
+            
+            <nav class="hidden lg:flex items-center space-x-6 font-medium text-[13px] text-gray-700">
+                <a href="#home-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-home">หน้าแรก</a>
+                <a href="#about-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-about">เกี่ยวกับเรา</a>
+                <a href="#services-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-services">บริการ</a>
+                <a href="#booking-cf" class="bg-blue-500 text-white px-5 py-2 rounded-full font-bold transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.8)] [text-shadow:0_0_8px_rgba(255,255,255,0.5)]" data-i18n="nav-btn">จองบริการ</a>
+                <a href="brochure.html" target="_blank" class="hover:text-primary hover:scale-105 transition font-bold text-primary flex items-center gap-1">
+                    <i class="fa-solid fa-cube"></i> โบรชัวร์ 3D
+                </a>
+                <a href="#portfolio-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-portfolio">ผลงาน</a>
+                <a href="#feed-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-feed">ข่าวสาร</a>
+                <a href="#contact-cf" class="hover:text-primary hover:scale-105 transition" data-i18n="nav-contact">ติดต่อเรา</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden lg:flex items-center gap-4 text-gray-400 mr-2 border-r border-gray-200 pr-6">
+                    <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-lg" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-lg" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-lg" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-lg" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+
+                <div class="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full text-[10px] font-bold border border-gray-200">
+                    <button onclick="changeLanguage('mix')" id="lang-mix-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">MIX</button>
+                    <button onclick="changeLanguage('th')" id="lang-th-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">TH</button>
+                    <button onclick="changeLanguage('en')" id="lang-en-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">EN</button>
+                    <button onclick="changeLanguage('ch')" id="lang-ch-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">CH</button>
+                    <button onclick="changeLanguage('ru')" id="lang-ru-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">RU</button>
+                </div>
+                
+                <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition font-bold bg-white/60 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm" id="user-menu-btn">
+                    <i class="fa-regular fa-user-circle text-xl"></i> 
+                    <span id="user-name-display" class="text-xs sm:text-sm hidden sm:inline" data-i18n="nav-login">เข้าสู่ระบบ</span>
+                </a>
+                
+                <button id="mobile-menu-toggle" class="lg:hidden text-2xl text-primary"><i class="fa-solid fa-bars-staggered"></i></button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
+            <div class="flex flex-wrap gap-2 pb-4 border-b border-gray-100">
+                <button onclick="changeLanguage('mix')" id="lang-mix-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">MIX</button>
+                <button onclick="changeLanguage('th')" id="lang-th-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">TH</button>
+                <button onclick="changeLanguage('en')" id="lang-en-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">EN</button>
+                <button onclick="changeLanguage('ch')" id="lang-ch-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">CH</button>
+                <button onclick="changeLanguage('ru')" id="lang-ru-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">RU</button>
+            </div>
+
+            <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
+                <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
+                <span id="mobile-user-name-display" data-i18n="nav-login-mobile">เข้าสู่ระบบ / สมัครสมาชิก</span>
+            </a>
+            <a href="#home-cf" class="block font-bold" data-i18n="nav-home">หน้าแรก</a>
+            <a href="#about-cf" class="block font-bold" data-i18n="nav-about">เกี่ยวกับเรา</a>
+            <a href="#services-cf" class="block font-bold" data-i18n="nav-services">บริการ</a>
+            <a href="#booking-cf" class="block font-bold text-primary" data-i18n="nav-btn">จองบริการ</a>
+            <a href="#portfolio-cf" class="block font-bold" data-i18n="nav-portfolio">ผลงาน</a>
+            <a href="#feed-cf" class="block font-bold" data-i18n="nav-feed">ข่าวสาร</a>
+            <a href="#contact-cf" class="block font-bold" data-i18n="nav-contact">ติดต่อเรา</a>
+        </div>
+    </header>
+
+    <section id="home-cf" class="hero-bg-cf pt-40 pb-20 md:pt-56 md:pb-32 relative px-6">
+        <div class="max-w-7xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-8 border border-gray-100 text-text">
+                <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                <span class="text-xs font-bold uppercase tracking-widest text-gray-500" data-i18n="hero-badge">Trusted by 1000+ Customers</span>
+            </div>
+            <h1 class="text-4xl md:text-7xl font-bold font-heading mb-8 leading-tight text-text" data-i18n="hero-title">
+                คืนความสะอาด สดใส <br> ให้พื้นที่ของคุณ กับ <span class="text-primary">Cleanforce</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed font-body" data-i18n="hero-sub">
+                บริการทำความสะอาดบ้าน คอนโด เฟอร์นิเจอร์ และพื้นที่องค์กร ขจัดคราบ กลิ่น และความสกปรกอย่างหมดจด ด้วยทีมงานมืออาชีพ
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+                <a href="#booking-cf" class="bg-primary text-white px-8 py-4 rounded-2xl font-bold text-lg btn-shadow flex items-center justify-center gap-2">
+                    <span data-i18n="nav-btn">จองบริการ (คำนวณราคา)</span> <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                
+                <a href="brochure.html" target="_blank" class="bg-white text-primary border-2 border-primary px-8 py-4 rounded-2xl font-bold text-lg btn-shadow flex items-center justify-center gap-2 hover:bg-blue-50 transition">
+                    <i class="fa-solid fa-book-open-reader"></i> <span>ดูแผ่นพับ 3D</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto border-t-2 border-gray-300 pt-12">
+                <div class="flex items-center justify-center gap-4 px-6 py-2 text-text">
+                    <div class="w-12 h-12 bg-white/60 rounded-xl flex items-center justify-center text-primary shadow-sm border border-white"><i class="fa-solid fa-user-shield text-xl"></i></div>
+                    <div class="text-left"><p class="text-sm font-bold" data-i18n="hero-feat1">ทีมงานมืออาชีพ</p><p class="text-[10px] text-gray-400" data-i18n="hero-feat1-sub">ผ่านการฝึกอบรมมาตรฐาน</p></div>
+                </div>
+                <div class="flex items-center justify-center gap-4 px-6 py-2 text-text">
+                    <div class="w-12 h-12 bg-white/60 rounded-xl flex items-center justify-center text-primary shadow-sm border border-white"><i class="fa-solid fa-leaf text-xl"></i></div>
+                    <div class="text-left"><p class="text-sm font-bold" data-i18n="hero-feat2">น้ำยาปลอดภัย</p><p class="text-[10px] text-gray-400" data-i18n="hero-feat2-sub">เป็นมิตรต่อเด็กและสัตว์เลี้ยง</p></div>
+                </div>
+                <div class="flex items-center justify-center gap-4 px-6 py-2 text-text">
+                    <div class="w-12 h-12 bg-white/60 rounded-xl flex items-center justify-center text-primary shadow-sm border border-white"><i class="fa-solid fa-hand-holding-heart text-xl"></i></div>
+                    <div class="text-left"><p class="text-sm font-bold" data-i18n="hero-feat3">รับประกันความพอใจ</p><p class="text-[10px] text-gray-400" data-i18n="hero-feat3-sub">ดูแลหลังการบริการ 24 ชม.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="feed-cf" class="py-24 px-6 bg-white border-t border-gray-100 overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-feed">ข่าวสาร & อัปเดต</h2>
+                    <p class="text-gray-500 font-body mt-4" data-i18n="feed-sub">ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce</p>
+                </div>
+            </div>
+
+            <div id="feed-container" class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory hide-scroll">
+                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                        <img src="promotion/promo-phuket-15.png" alt="Feed Promo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-md">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Hot
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-center">
+                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest" data-i18n="feed-tag-promo">Promotion</p>
+                        <h3 class="text-xl font-bold font-heading mb-2 text-text" data-i18n="feed-1-title">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
+                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2" data-i18n="feed-1-desc">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้</p>
+                    </div>
+                </div>
+                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                        <img src="promotion/promo-renovate.png" alt="Feed News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-center">
+                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest" data-i18n="feed-tag-news">News</p>
+                        <h3 class="text-xl font-bold font-heading mb-2 text-text" data-i18n="feed-2-title">บริการใหม่</h3>
+                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2" data-i18n="feed-2-desc">ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที</p>
+                    </div>
+                </div>
+                <div class="snap-start shrink-0 w-[85vw] md:w-[500px] lg:w-[600px] bg-background rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 group relative flex flex-col">
+                    <div class="aspect-video bg-gray-200 relative overflow-hidden">
+                        <img src="promotion/promo-activity.png" alt="Feed Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-center">
+                        <p class="text-xs text-primary mb-2 font-bold uppercase tracking-widest" data-i18n="feed-tag-act">Activity</p>
+                        <h3 class="text-xl font-bold font-heading mb-2 text-text" data-i18n="feed-3-title">ภาพบรรยากาศ Cleaning office</h3>
+                        <p class="text-sm text-gray-500 font-body leading-relaxed line-clamp-2" data-i18n="feed-3-desc">ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mt-4">
+                <div class="flex gap-4">
+                    <button onclick="document.getElementById('feed-container').scrollBy({left: -400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button onclick="document.getElementById('feed-container').scrollBy({left: 400, behavior: 'smooth'})" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-groupPrimary hover:text-white hover:border-groupPrimary transition-all shadow-sm">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <a href="news.html" class="text-groupPrimary font-bold hover:underline flex items-center gap-2">
+                   <span data-i18n="feed-view-all">ดูทั้งหมด</span> <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <section id="about-cf" class="py-24 px-6 bg-white text-text">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+            <div class="flex-1">
+                <div class="relative">
+                    <div class="aspect-video bg-gray-100 rounded-[3rem] overflow-hidden flex items-center justify-center text-gray-400 italic">
+                        <img src="chow/CIM06112601.jpeg" alt="Cleanforce Team" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-primary text-white p-8 rounded-3xl shadow-xl hidden md:block">
+                        <p class="text-4xl font-bold font-heading" data-i18n="about-5yrs">5 ปี</p>
+                        <p class="text-xs font-bold uppercase tracking-widest" data-i18n="about-exp">แห่งประสบการณ์</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 space-y-6">
+                <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-about">เกี่ยวกับเรา</h2>
+                <p class="text-gray-500 leading-relaxed font-body text-sm" data-i18n="about-text1">Cleanforce เริ่มต้นด้วยความมุ่งมั่นที่จะยกระดับมาตรฐานความสะอาดในประเทศไทย เราเชื่อว่าสภาพแวดล้อมที่สะอาดคือพื้นฐานของความสุขและสุขภาพที่ดี</p>
+                <p class="text-gray-500 leading-relaxed font-body text-sm" data-i18n="about-text2">เราคัดเลือกทีมงานอย่างพิถีพิถันและฝึกอบรมด้วยมาตรฐานสากล พร้อมนำเทคโนโลยีการทำความสะอาดที่ทันสมัยที่สุดมาใช้ เพื่อให้มั่นใจว่าลูกค้าของเราจะได้รับการบริการที่พรีเมียมและคุ้มค่าที่สุด</p>
+                <div class="pt-4 grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-primary"></i> <span class="text-sm font-bold" data-i18n="about-check1">ทีมงานตรวจสอบประวัติ</span></div>
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-circle-check text-primary"></i> <span class="text-sm font-bold" data-i18n="about-check2">น้ำยา Food Grade</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services-cf" class="py-24 px-6 bg-background rounded-t-[3rem] md:rounded-t-[5rem] text-text border-t border-gray-100">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-3xl md:text-5xl font-bold font-heading mb-16 text-text" data-i18n="services-title">บริการระดับมืออาชีพ</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="p-8 rounded-[2.5rem] bg-white border border-gray-50 shadow-sm hover:shadow-xl transition-all group text-center">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-broom"></i></div>
+                    <h3 class="text-lg font-bold mb-3" data-i18n="s1-title">General Cleaning</h3>
+                    <p class="text-gray-400 leading-relaxed text-xs font-body" data-i18n="s1-desc">ทำความสะอาดทั่วไป กวาด ถู เช็ดฝุ่นรายวัน</p>
+                </div>
+                <div class="p-8 rounded-[2.5rem] bg-white border border-gray-50 shadow-sm hover:shadow-xl transition-all group text-center text-primary">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-wand-sparkles"></i></div>
+                    <h3 class="text-lg font-bold mb-3 text-text" data-i18n="s2-title">Deep Cleaning</h3>
+                    <p class="text-gray-400 leading-relaxed text-xs font-body" data-i18n="s2-desc">ขัดพื้น ล้างห้องน้ำ ฆ่าเชื้อทุกซอกมุมอย่างละเอียด</p>
+                </div>
+                <div class="p-8 rounded-[2.5rem] bg-white border border-gray-50 shadow-sm hover:shadow-xl transition-all group text-center">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-couch"></i></div>
+                    <h3 class="text-lg font-bold mb-3 text-text" data-i18n="s3-title">Sofa Cleaning</h3>
+                    <p class="text-gray-400 leading-relaxed text-xs font-body" data-i18n="s3-desc">ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ</p>
+                </div>
+                <div class="p-8 rounded-[2.5rem] bg-white border border-gray-50 shadow-sm hover:shadow-xl transition-all group text-center">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-bed"></i></div>
+                    <h3 class="text-lg font-bold mb-3 text-text" data-i18n="s4-title">Mattress Cleaning</h3>
+                    <p class="text-gray-400 leading-relaxed text-xs font-body" data-i18n="s4-desc">กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอน</p>
+                </div>
+                <div class="p-8 rounded-[2.5rem] bg-white border border-gray-50 shadow-sm hover:shadow-xl transition-all group text-center">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-rug"></i></div>
+                    <h3 class="text-lg font-bold mb-3 text-text" data-i18n="s5-title">Carpet Cleaning</h3>
+                    <p class="text-gray-400 leading-relaxed text-xs font-body" data-i18n="s5-desc">ดูแลพรมทุกชนิดด้วยระบบซักแห้งและเป่าลม</p>
+                </div>
+                <div class="p-8 rounded-[2.5rem] bg-white border border-gray-50 shadow-sm hover:shadow-xl transition-all group text-center">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-primary text-2xl mb-6 mx-auto group-hover:scale-110 transition"><i class="fa-solid fa-window-maximize"></i></div>
+                    <h3 class="text-lg font-bold mb-3 text-text" data-i18n="s6-title">Curtain Cleaning</h3>
+                    <p class="text-gray-400 leading-relaxed text-xs font-body" data-i18n="s6-desc">ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="booking-cf" class="py-24 px-6 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold font-heading mb-4 text-text" data-i18n="bk-title">จองบริการทำความสะอาด</h2>
+                <p class="text-gray-500 font-body" data-i18n="bk-subtitle">เลือกระหว่างบริการทำความสะอาดบ้าน หรือ บริการทำความสะอาดเฟอร์นิเจอร์</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 mb-10 max-w-3xl mx-auto">
+                <button id="btn-mode-house" onclick="setServiceMode('house')" class="flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading">
+                    <i class="fa-solid fa-house-chimney text-xl"></i> <span data-i18n="mode-house">บริการทำความสะอาดบ้าน</span>
+                </button>
+                <button id="btn-mode-furn" onclick="setServiceMode('furniture')" class="flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm">
+                    <i class="fa-solid fa-couch text-xl"></i> <span data-i18n="mode-furn">บริการทำความสะอาดเฟอร์นิเจอร์</span>
+                </button>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 relative items-start">
+                
+                <div class="w-full lg:w-2/3 space-y-8">
+                    
+                    <div id="flow-house" class="space-y-8 block">
+                        <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-layer-group"></i></div>
+                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-step1">เลือกรูปแบบการทำความสะอาดบ้าน</h3>
+                            </div>
+
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                                <div class="flex gap-2 w-full md:w-auto overflow-x-auto hide-scroll pb-1">
+                                    <button onclick="filterHouse('all')" id="flt-all" class="px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm">ทั้งหมด</button>
+                                    <button onclick="filterHouse('condo')" id="flt-condo" class="px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors">คอนโด</button>
+                                    <button onclick="filterHouse('house_single')" id="flt-house_single" class="px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors">บ้านเดี่ยว</button>
+                                    <button onclick="filterHouse('villa')" id="flt-villa" class="px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors">วิลล่า</button>
+                                </div>
+                                <select id="sort-house" onchange="sortHouse()" class="w-full md:w-auto bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs outline-none focus:border-primary font-bold text-gray-600 cursor-pointer">
+                                    <option value="default">✨ เรียงตามที่แนะนำ (ลำดับ)</option>
+                                    <option value="price_asc">💵 ราคา: ต่ำ -> สูง</option>
+                                    <option value="price_desc">💎 ราคา: สูง -> ต่ำ</option>
+                                </select>
+                            </div>
+
+                            <div id="dynamic-house-packages" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="col-span-full text-center py-6 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-primary"></i><p>กำลังโหลดแพ็กเกจ...</p></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-plus"></i></div>
+                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-step2">บริการเพิ่มเติม</h3>
+                            </div>
+                            <div id="dynamic-addons-house" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </div>
+                    </div> 
+                    
+                    <div id="flow-furniture" class="space-y-8 hidden">
+                        <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-couch"></i></div>
+                                <h3 class="text-xl font-bold font-heading" data-i18n="bk-furn-step1">เลือกบริการทำความสะอาดเฟอร์นิเจอร์</h3>
+                            </div>
+                            <div id="dynamic-furniture-packages" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="col-span-full text-center py-6 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2 text-primary"></i><p>กำลังโหลดบริการ...</p></div>
+                            </div>
+                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 mt-8">บริการเสริมเพิ่มเติม</h4>
+                            <div id="dynamic-addons-furn" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </div>
+                    </div> 
+                    
+                    <div class="bg-background rounded-3xl p-8 border border-gray-100 shadow-sm">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-address-card"></i></div>
+                            <h3 class="text-xl font-bold font-heading" data-i18n="bk-step3">วัน/เวลา และข้อมูลลูกค้า</h3>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">วันที่ต้องการรับบริการ</label>
+                                    <input type="date" id="bk-date-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">เวลาเริ่มงาน</label>
+                                    <select id="bk-time-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
+                                        <option value="08:00">08:00 น.</option> <option value="09:00">09:00 น.</option> <option value="10:00">10:00 น.</option>
+                                        <option value="13:00">13:00 น.</option> <option value="14:00">14:00 น.</option> <option value="15:00">15:00 น.</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-200 pt-4 mt-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">ชื่อ-นามสกุล / ชื่อบริษัท</label>
+                                    <input type="text" id="bk-name-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">เบอร์โทรศัพท์ติดต่อ</label>
+                                    <input type="tel" id="bk-phone-input" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none">
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-4 mt-4">
+                                <label class="block text-[10px] font-bold uppercase text-gray-500 mb-2">ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)</label>
+                                <textarea id="bk-address-input" rows="2" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-primary outline-none"></textarea>
+                                
+                                <div class="mt-3 flex flex-col items-start gap-2">
+                                    <button type="button" onclick="getLocation()" class="text-xs bg-blue-50 text-primary border border-primary px-4 py-2 rounded-lg font-bold hover:bg-primary hover:text-white transition flex items-center gap-2">
+                                          <i class="fa-solid fa-location-crosshairs"></i> <span data-i18n="bk-gps-btn">แตะเพื่อปักพิกัดปัจจุบัน</span>
+                                    </button>
+                                    <p id="location-status" class="text-[10px] text-gray-400 hidden"></p>
+                                    <input type="hidden" id="bk-gps-link" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                
+                <div class="w-full lg:w-1/3 lg:sticky lg:top-28 z-30 self-start pb-10">
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] overflow-hidden">
+                        <div class="bg-groupPrimary p-6 text-white">
+                            <h3 class="text-xl font-bold font-heading mb-1" data-i18n="sum-title">สรุปคำสั่งซื้อ</h3>
+                            <p class="text-xs opacity-80" data-i18n="sum-sub">Order Summary</p>
+                        </div>
+                        
+                        <div class="p-6 space-y-4 text-sm border-b border-gray-100 max-h-[35vh] lg:max-h-[300px] overflow-y-auto hide-scroll">
+                            <div class="flex justify-between items-start" id="sum-base-row">
+                                <span class="text-gray-500 font-bold max-w-[70%]" id="sum-base-label">ทำความสะอาดพื้นฐาน</span>
+                                <span class="font-bold text-right whitespace-nowrap" id="sum-hours">0 ฿</span>
+                            </div>
+                            <div id="sum-addons-list" class="space-y-2 border-t border-dashed border-gray-200 pt-2 text-primary text-xs font-bold"></div>
+                            <div id="sum-discount-area"></div>
+                        </div>
+                        
+                        <div class="p-5 bg-gray-50 border-b border-gray-100">
+                            <label class="block text-xs font-bold text-gray-600 mb-2">มีโค้ดส่วนลดหรือไม่? (Promo Code)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="promo-code-input" class="flex-1 bg-white border border-gray-200 rounded-lg p-2 text-sm focus:border-primary outline-none uppercase font-mono">
+                                <button onclick="applyPromoCode()" class="bg-gray-800 text-white px-4 rounded-lg text-xs font-bold">ใช้โค้ด</button>
+                            </div>
+                            <p id="promo-msg" class="text-[10px] mt-2 hidden"></p>
+                        </div>
+
+                        <div class="p-6 bg-slate-50">
+                            <div class="mb-5 p-2.5 bg-green-50 rounded-lg border border-green-100 flex items-start gap-2.5 hover:bg-green-100 transition-colors">
+                                <input type="checkbox" id="bk-review-discount" checked onchange="calculateBooking()" class="w-4 h-4 mt-0.5 text-green-600 rounded focus:ring-green-500 cursor-pointer">
+                                <label for="bk-review-discount" class="text-[11px] font-bold text-green-700 cursor-pointer leading-tight" data-i18n="bk-review">ยินดีแชร์ความประทับใจหลังใช้บริการ เพื่อรับส่วนลดพิเศษ</label>
+                            </div>
+
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-xs font-bold text-gray-500 uppercase tracking-widest" data-i18n="sum-total">ยอดชำระสุทธิ</span>
+                                <div class="text-right flex items-baseline gap-2" id="sum-final-price-area">
+                                    <span class="text-lg font-bold text-gray-400 line-through hidden" id="sum-original-price">0</span>
+                                    <div>
+                                        <span class="text-3xl font-bold font-heading text-primary" id="sum-price">0</span>
+                                        <span class="text-sm font-bold text-gray-500 ml-1">THB</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 text-right mb-6">*ราคาอาจเปลี่ยนแปลงตามหน้างานจริง</p>
+                            
+                            <button onclick="submitBooking()" class="w-full bg-[#00B900] text-white py-4 rounded-xl font-bold text-center btn-shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-line text-lg"></i> <span>จองบริการผ่าน LINE</span>
+                            </button>
+                        </div>
+                    </div>
+                </div> 
+                
+            </div> 
+        </div>
+    </section>
+
+    <section id="portfolio-cf" class="py-24 bg-white text-text border-t border-gray-100 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 mb-16 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold font-heading mb-4" data-i18n="nav-portfolio">ผลงานของเรา</h2>
+            <p class="text-gray-500 font-body" data-i18n="portfolio-sub">ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดพรีเมียมจากเรา</p>
+        </div>
+
+        <div class="marquee-container mb-12">
+            <div class="marquee-content gap-4">
+                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
+                    <video src="portfolio/IMG_0541.jpeg" autoplay loop muted playsinline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></video>
+                </div>
+                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
+                    <img src="portfolio/IMG_0547.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
+                    <img src="portfolio/IMG_0571.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
+                    <img src="portfolio/IMG_0568.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="w-64 h-64 sm:w-80 sm:h-80 shrink-0 rounded-3xl overflow-hidden relative group">
+                    <img src="portfolio/IMG_0579.jpeg" alt="Portfolio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-24">
+            <a href="#" class="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary hover:text-white transition-colors" data-i18n="btn-more-portfolio">ดูรูปภาพผลงานทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <section id="contact-cf" class="py-24 px-6 bg-background text-text border-t border-gray-100">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-16">
+            <div class="flex-1 space-y-8">
+                <h2 class="text-3xl md:text-5xl font-bold font-heading text-text" data-i18n="nav-contact">ติดต่อเรา</h2>
+                <p class="text-gray-500 font-body text-sm" data-i18n="contact-sub">ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง</p>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 p-6 bg-white rounded-3xl border border-gray-50 shadow-sm">
+                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-primary shadow-sm min-w-[3rem]"><i class="fa-solid fa-phone"></i></div>
+                        <div><p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Call Center</p><p class="font-bold">062-229-2940</p></div>
+                    </div>
+                    <div class="flex gap-4 p-6 bg-white rounded-3xl border border-gray-50 shadow-sm">
+                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-primary shadow-sm min-w-[3rem] mt-1">
+                           <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                          <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" data-i18n="contact-address-lbl">ที่ตั้ง</p>
+                            <p class="font-bold text-sm leading-relaxed mt-1" data-i18n="contact-address-val">
+                              32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000
+                            </p>
+                          </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-6 bg-white rounded-3xl border border-gray-50 shadow-sm">
+                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-primary shadow-sm min-w-[3rem]"><i class="fa-solid fa-hashtag"></i></div>
+                        <div class="w-full">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2" data-i18n="contact-social-lbl">ติดตามเรา</p>
+                            <div class="flex items-center gap-4 text-gray-400">
+                                <a href="https://www.facebook.com/profile.php?id=61584812790983" target="_blank" class="hover:text-[#1877F2] transition text-xl" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                                <a href="https://www.instagram.com/cleanforceofficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="hover:text-[#E4405F] transition text-xl" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="https://www.tiktok.com/@cleanforcehatyai?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition text-xl" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                                <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-xl" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-gray-100 bg-white text-text text-center">
+        <img src="logo-cleanforce.png" alt="Cleanforce Footer Logo" class="h-10 mx-auto mb-6 object-contain">
+        <div class="mb-6 flex justify-center gap-6">
+            <a href="privacy-policy.html" class="text-[10px] md:text-xs text-gray-400 hover:text-primary transition-colors underline decoration-gray-200 underline-offset-4" data-i18n="footer-privacy">Privacy Policy</a>
+            <a href="#" class="text-[10px] md:text-xs text-gray-400 hover:text-primary transition-colors underline decoration-gray-200 underline-offset-4" data-i18n="footer-terms">Terms of Service</a>
+        </div>
+        <p class="text-gray-400 text-[10px] md:text-xs font-medium" data-i18n="footer-copy">© 2024 Cleanforce Professional Cleaning. All rights reserved.</p>
+    </footer>
+
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
+        <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="bg-[#00B900] text-white w-14 h-14 rounded-full font-bold shadow-2xl hover:scale-110 transition-transform flex items-center justify-center text-3xl relative group">
+            <i class="fa-brands fa-line"></i>
+            <span class="absolute right-16 bg-gray-800 text-white text-[10px] px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none" data-i18n="float-line">สอบถามผ่าน LINE</span>
+        </a>
+    </div>
+
+   <script>
+        var translations = {
+            mix: {
+                "nav-home": "หน้าแรก", "nav-about": "เกี่ยวกับเรา", "nav-services": "บริการ", "nav-portfolio": "ผลงาน", "nav-btn": "จองบริการ", "nav-contact": "ติดต่อเรา", "nav-feed": "ข่าวสาร", "nav-promo": "โปรโมชั่น",
+                "nav-login": "เข้าสู่ระบบ", "nav-login-mobile": "เข้าสู่ระบบ / สมัครสมาชิก", "about-5yrs": "5 ปี",
+                "hero-badge": "Trusted by 1000+ Customers", "hero-title": "คืนความสะอาด สดใส <br> ให้พื้นที่ของคุณ กับ <span class='text-primary'>Cleanforce</span>", "hero-sub": "บริการทำความสะอาดบ้าน คอนโด เฟอร์นิเจอร์ และพื้นที่องค์กร ขจัดคราบ กลิ่น และความสกปรกอย่างหมดจด ด้วยทีมงานมืออาชีพ",
+                "hero-feat1": "ทีมงานมืออาชีพ", "hero-feat1-sub": "ผ่านการฝึกอบรมมาตรฐาน", "hero-feat2": "น้ำยาปลอดภัย", "hero-feat2-sub": "เป็นมิตรต่อเด็กและสัตว์เลี้ยง", "hero-feat3": "รับประกันความพอใจ", "hero-feat3-sub": "ดูแลหลังการบริการ 24 ชม.",
+                "about-exp": "แห่งประสบการณ์", "about-text1": "Cleanforce เริ่มต้นด้วยความมุ่งมั่นที่จะยกระดับมาตรฐานความสะอาดในประเทศไทย เราเชื่อว่าสภาพแวดล้อมที่สะอาดคือพื้นฐานของความสุขและสุขภาพที่ดี", "about-text2": "เราคัดเลือกทีมงานอย่างพิถีพิถันและฝึกอบรมด้วยมาตรฐานสากล พร้อมนำเทคโนโลยีการทำความสะอาดที่ทันสมัยที่สุดมาใช้ เพื่อให้มั่นใจว่าลูกค้าของเราจะได้รับการบริการที่พรีเมียมและคุ้มค่าที่สุด", "about-check1": "ทีมงานตรวจสอบประวัติ", "about-check2": "น้ำยา Food Grade",
+                "feed-tag-promo": "Promotion", "feed-1-title": "ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%", "feed-1-desc": "โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้",
+                "feed-tag-news": "News", "feed-2-title": "บริการใหม่", "feed-2-desc": "ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที",
+                "feed-tag-act": "Activity", "feed-3-title": "ภาพบรรยากาศ Cleaning office", "feed-3-desc": "ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่", "feed-view-all": "ดูทั้งหมด",
+                "mode-house": "บริการทำความสะอาดบ้าน", "mode-furn": "บริการทำความสะอาดเฟอร์นิเจอร์",
+                "bk-title": "จองบริการทำความสะอาด", "bk-subtitle": "เลือกระหว่างบริการทำความสะอาดบ้าน หรือ บริการทำความสะอาดเฟอร์นิเจอร์",
+                "bk-step1": "เลือกแพ็กเกจทำความสะอาดบ้าน", "pkg-general": "ทำความสะอาดทั่วไป", "pkg-deep": "Big / Deep Cleaning",
+                "bk-furn-step1": "เลือกบริการทำความสะอาด",
+                "bk-step2": "บริการเสริม (Add-ons)", "add-equip": "เตรียมอุปกรณ์+น้ำยา", "add-fridge": "ทำความสะอาดตู้เย็น", "add-steam": "ฆ่าเชื้อด้วยไอน้ำ", "add-balcony": "ขัดล้างระเบียง",
+                "add-sofa": "ซักโซฟา (Deep Clean)", "add-sofa-sub": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ",
+                "add-mattress": "ซักที่นอน (Deep Clean)", "add-mattress-sub": "กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอน",
+                "add-carpet": "ซักพรม (Deep Clean)", "add-carpet-sub": "ดูแลพรมทุกชนิดด้วยระบบซักแห้งและเป่าลม",
+                "add-curtain": "ซักผ้าม่าน", "add-curtain-sub": "ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
+                "bk-step3": "วัน/เวลา และข้อมูลลูกค้า", "bk-date": "วันที่ต้องการรับบริการ", "bk-time": "เวลาเริ่มงาน", "bk-address": "ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)", 
+                "bk-name": "ชื่อ-นามสกุล / ชื่อบริษัท", "bk-phone": "เบอร์โทรศัพท์ติดต่อ", "bk-taxid": "เลขประจำตัวผู้เสียภาษี / เลขนิติบุคคล (ถ้ามี)",
+                "bk-key": "ฉันจะไม่อยู่บ้านโปรดรับกุญแจที่:", "bk-review": "รับส่วนลด 200 บาท เมื่อยินดีรีวิวบริการของเรา",
+                "sum-title": "สรุปคำสั่งซื้อ", "sum-sub": "Order Summary", "sum-base": "ทำความสะอาดพื้นฐาน", "sum-total": "ยอดชำระสุทธิ", "sum-note": "*ราคาและเวลาอาจมีการเปลี่ยนแปลงตามหน้างานจริง", "btn-book-now": "ยืนยันและจองผ่าน LINE",
+                "services-title": "บริการระดับมืออาชีพ", 
+                "s1-title": "General Cleaning", "s1-desc": "ทำความสะอาดทั่วไป กวาด ถู เช็ดฝุ่นรายวัน", "s2-title": "Deep Cleaning", "s2-desc": "ขัดพื้น ล้างห้องน้ำ ฆ่าเชื้อทุกซอกมุมอย่างละเอียด", 
+                "s3-title": "Sofa Cleaning", "s3-desc": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ", "s4-title": "Mattress Cleaning", "s4-desc": "กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอน", 
+                "s5-title": "Carpet Cleaning", "s5-desc": "ดูแลพรมทุกชนิดด้วยระบบซักแห้งและเป่าลม", "s6-title": "Curtain Cleaning", "s6-desc": "ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
+                "portfolio-sub": "ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดพรีเมียมจากเรา", "btn-more-portfolio": "ดูรูปภาพผลงานทั้งหมด",
+                "review1-text": "\"ประทับใจมากค่ะ ทีมงานสุภาพ อุปกรณ์ครบครันมาก โซฟากลับมาสะอาดเหมือนใหม่จริงๆ\"", "review1-author": "คุณมินตรา", "review2-text": "\"จองคิวผ่านระบบประเมินราคา สะดวกมาก ราคากับหน้างานจริงตรงกัน แนะนำเลยครับ\"", "review2-author": "คุณอภิชาติ", "review3-text": "\"Deep Cleaning ละเอียดทุกจุด ซอกมุมเล็กๆ ก็เก็บให้หมด สั่งซ้ำแน่นอนค่ะ\"", "review3-author": "คุณวิภา",
+                "contact-sub": "ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง", "contact-social-lbl": "ติดตามเรา",
+                "contact-address-lbl": "ที่ตั้ง", "contact-address-val": "32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000",
+                "footer-privacy": "นโยบายความเป็นส่วนตัว", "footer-terms": "เงื่อนไขการใช้บริการ", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "สอบถามผ่าน LINE",
+                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", "promo-1-title": "1. ลด 15% ฉลองเปิดสาขาภูเก็ต", "promo-1-desc": "สำหรับลูกค้าใหม่ กดเก็บคูปองแล้วนำโค้ดมากรอกในช่อง โค้ดส่วนลด ในตะกร้าสรุปยอด",
+                "promo-2-title": "2. แพ็กคู่คุ้มกว่า ลดทันที 300 บาท", "promo-2-desc": "เมื่อเลือกใช้บริการ ซักที่นอน ร่วมกับ ซักโซฟา (ระบบจะลดราคาให้อัตโนมัติ)",
+                "promo-3-title": "3. ส่วนลดลูกค้ารีวิว ลด 200 บาท", "promo-3-desc": "เพียงติ๊กถูกช่อง ยินดีรีวิวบริการ ในหน้าสรุปคำสั่งซื้อ (ระบบจะลดราคาให้อัตโนมัติ)",
+                "promo-card-title": "ลด 15% ลูกค้าใหม่", "promo-card-desc": "เอาใจคนภูเก็ต! กดเก็บคูปองเพื่อคัดลอกโค้ดไปใช้ในหน้าสรุปยอดได้เลย", "promo-card-code": "รหัสโค้ด (Promo Code)", "promo-card-btn": "คัดลอก & เก็บโค้ด",
+                "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
+                "pkg-gen-1": "2 ชม. (≤ 55 ตร.ม.)", "pkg-gen-2": "3 ชม. (≤ 85 ตร.ม.)", "pkg-gen-3": "4 ชม. (≤ 105 ตร.ม.)",
+                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม.","bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน"
+            },
+            th: {
+                "nav-home": "หน้าแรก", "nav-about": "เกี่ยวกับเรา", "nav-services": "บริการ", "nav-portfolio": "ผลงาน", "nav-btn": "จองบริการ", "nav-contact": "ติดต่อเรา", "nav-feed": "ข่าวสาร", "nav-promo": "โปรโมชั่น",
+                "nav-login": "เข้าสู่ระบบ", "nav-login-mobile": "เข้าสู่ระบบ / สมัครสมาชิก", "about-5yrs": "5 ปี",
+                "hero-badge": "ได้รับความไว้วางใจจากลูกค้ากว่า 1000+ ราย", "hero-title": "คืนความสะอาด สดใส <br> ให้พื้นที่ของคุณ กับ <span class='text-primary'>คลีนฟอร์ซ</span>", "hero-sub": "บริการทำความสะอาดบ้าน คอนโด เฟอร์นิเจอร์ และพื้นที่องค์กร ขจัดคราบ กลิ่น และความสกปรกอย่างหมดจด ด้วยทีมงานมืออาชีพ",
+                "hero-feat1": "ทีมงานมืออาชีพ", "hero-feat1-sub": "ผ่านการฝึกอบรมมาตรฐาน", "hero-feat2": "น้ำยาปลอดภัย", "hero-feat2-sub": "เป็นมิตรต่อเด็กและสัตว์เลี้ยง", "hero-feat3": "รับประกันความพอใจ", "hero-feat3-sub": "ดูแลหลังการบริการ 24 ชม.",
+                "about-exp": "แห่งประสบการณ์", "about-text1": "คลีนฟอร์ซ เริ่มต้นด้วยความมุ่งมั่นที่จะยกระดับมาตรฐานความสะอาดในประเทศไทย เราเชื่อว่าสภาพแวดล้อมที่สะอาดคือพื้นฐานของความสุขและสุขภาพที่ดี", "about-text2": "เราคัดเลือกทีมงานอย่างพิถีพิถันและฝึกอบรมด้วยมาตรฐานระดับสากล พร้อมนำเทคโนโลยีการทำความสะอาดที่ทันสมัยที่สุดมาใช้ เพื่อให้มั่นใจว่าลูกค้าของเราจะได้รับการบริการที่ดีและคุ้มค่าที่สุด", "about-check1": "ทีมงานผ่านการตรวจสอบประวัติ", "about-check2": "น้ำยาทำความสะอาดระดับสัมผัสอาหารได้",
+                "feed-tag-promo": "โปรโมชั่น", "feed-1-title": "ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%", "feed-1-desc": "โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้",
+                "feed-tag-news": "ข่าวสาร", "feed-2-title": "บริการใหม่", "feed-2-desc": "ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที",
+                "feed-tag-act": "กิจกรรม", "feed-3-title": "ภาพบรรยากาศ Cleaning office", "feed-3-desc": "ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่", "feed-view-all": "ดูทั้งหมด",
+                "mode-house": "บริการทำความสะอาดบ้าน", "mode-furn": "บริการทำความสะอาดเฟอร์นิเจอร์",
+                "bk-title": "จองบริการทำความสะอาด", "bk-subtitle": "เลือกระหว่างบริการทำความสะอาดบ้าน หรือ บริการทำความสะอาดเฟอร์นิเจอร์",
+                "bk-step1": "เลือกรูปแบบการทำความสะอาดบ้าน", "pkg-general": "ทำความสะอาดทั่วไป", "pkg-deep": "ทำความสะอาดครั้งใหญ่ (ขจัดคราบฝังลึก)",
+                "bk-furn-step1": "เลือกบริการทำความสะอาด",
+                "bk-step2": "บริการเพิ่มเติม", "add-equip": "ให้ทีมงานเตรียมอุปกรณ์และน้ำยา", "add-fridge": "ทำความสะอาดตู้เย็น", "add-steam": "พ่นฆ่าเชื้อด้วยไอน้ำร้อน", "add-balcony": "ขัดล้างพื้นที่ระเบียง",
+                "add-sofa": "ซักโซฟา (ขจัดคราบฝังลึก)", "add-sofa-sub": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ",
+                "add-mattress": "ซักที่นอน (ขจัดคราบฝังลึก)", "add-mattress-sub": "กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอนที่ดี",
+                "add-carpet": "ซักพรม (ขจัดคราบฝังลึก)", "add-carpet-sub": "ดูแลพรมทุกชนิดด้วยระบบทำความสะอาดและเป่าแห้ง",
+                "add-curtain": "ซักผ้าม่าน", "add-curtain-sub": "ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
+                "bk-step3": "วัน/เวลา และข้อมูลลูกค้า", "bk-date": "วันที่ต้องการรับบริการ", "bk-time": "เวลาเริ่มงาน", "bk-address": "ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)", 
+                "bk-name": "ชื่อ-นามสกุล / ชื่อบริษัท", "bk-phone": "เบอร์โทรศัพท์ติดต่อ", "bk-taxid": "เลขประจำตัวผู้เสียภาษี / เลขนิติบุคคล (ถ้าต้องการใบกำกับภาษี)",
+                "bk-key": "ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:", "bk-review": "รับส่วนลด 200 บาท หากยินดีรีวิวบริการของเรา",
+                "sum-title": "สรุปรายการจอง", "sum-sub": "รายละเอียดค่าบริการ", "sum-base": "ค่าบริการทำความสะอาดพื้นฐาน", "sum-total": "ยอดชำระสุทธิ", "sum-note": "*ราคาและเวลาอาจมีการเปลี่ยนแปลงตามความเหมาะสมของหน้างานจริง", "btn-book-now": "ยืนยันและส่งข้อมูลทางไลน์",
+                "services-title": "บริการของเรา", 
+                "s1-title": "ทำความสะอาดทั่วไป", "s1-desc": "กวาด ถู เช็ดฝุ่น ดูแลความเรียบร้อยในชีวิตประจำวัน", "s2-title": "ทำความสะอาดครั้งใหญ่", "s2-desc": "ขัดพื้น ล้างห้องน้ำ ฆ่าเชื้อทุกซอกมุมอย่างละเอียด", 
+                "s3-title": "บริการซักโซฟา", "s3-desc": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกำจัดกลิ่นอับชื้น", "s4-title": "บริการซักที่นอน", "s4-desc": "กำจัดไรฝุ่นและเชื้อโรคบนเตียงนอน เพื่อสุขภาพที่ดี", 
+                "s5-title": "บริการซักพรม", "s5-desc": "ทำความสะอาดพรมทุกชนิดด้วยระบบมาตรฐานและเป่าลมแห้ง", "s6-title": "บริการซักผ้าม่าน", "s6-desc": "ถอดทำความสะอาดและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
+                "portfolio-sub": "ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดระดับพรีเมียมจากเรา", "btn-more-portfolio": "ดูรูปภาพผลงานทั้งหมด",
+                "review1-text": "\"ประทับใจมากค่ะ ทีมงานสุภาพ อุปกรณ์ครบครันมาก โซฟากลับมาสะอาดเหมือนใหม่จริงๆ\"", "review1-author": "คุณมินตรา", "review2-text": "\"จองคิวผ่านระบบประเมินราคา สะดวกมาก ราคากับหน้างานจริงตรงกัน แนะนำเลยครับ\"", "review2-author": "คุณอภิชาติ", "review3-text": "\"ทำความสะอาดแบบละเอียดทุกจุด ซอกมุมเล็กๆ ก็เก็บให้หมด สั่งซ้ำแน่นอนค่ะ\"", "review3-author": "คุณวิภา",
+                "contact-sub": "ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง", "contact-social-lbl": "ช่องทางการติดตาม",
+                "contact-address-lbl": "สถานที่ตั้ง", "contact-address-val": "32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000",
+                "footer-privacy": "นโยบายความเป็นส่วนตัว", "footer-terms": "เงื่อนไขการใช้บริการ", "footer-copy": "© 2024 คลีนฟอร์ซ โปรเฟสชันนอล คลีนนิ่ง สงวนลิขสิทธิ์", "float-line": "สอบถามผ่านไลน์",
+                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", "promo-1-title": "1. ลด 15% ฉลองเปิดสาขาภูเก็ต", "promo-1-desc": "สำหรับลูกค้าใหม่ กดเก็บคูปองแล้วนำโค้ดมากรอกในช่อง โค้ดส่วนลด ในตะกร้าสรุปยอด",
+                "promo-2-title": "2. แพ็กคู่คุ้มกว่า ลดทันที 300 บาท", "promo-2-desc": "เมื่อเลือกใช้บริการ ซักที่นอน ร่วมกับ ซักโซฟา (ระบบจะลดราคาให้อัตโนมัติ)",
+                "promo-3-title": "3. ส่วนลดลูกค้ารีวิว ลด 200 บาท", "promo-3-desc": "เพียงติ๊กถูกช่อง ยินดีรีวิวบริการ ในหน้าสรุปคำสั่งซื้อ (ระบบจะลดราคาให้อัตโนมัติ)",
+                "promo-card-title": "ลด 15% ลูกค้าใหม่", "promo-card-desc": "เอาใจคนภูเก็ต! กดเก็บคูปองเพื่อคัดลอกโค้ดไปใช้ในหน้าสรุปยอดได้เลย", "promo-card-code": "รหัสโค้ด (Promo Code)", "promo-card-btn": "คัดลอก & เก็บโค้ด",
+                "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
+                "pkg-gen-1": "2 ชม. (≤ 55 ตร.ม.)", "pkg-gen-2": "3 ชม. (≤ 85 ตร.ม.)", "pkg-gen-3": "4 ชม. (≤ 105 ตร.ม.)",
+                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม.","bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน"
+            },
+            en: {
+                "nav-home": "Home", "nav-about": "About", "nav-services": "Services", "nav-portfolio": "Portfolio", "nav-btn": "Book Now", "nav-contact": "Contact", "nav-feed": "News", "nav-promo": "Promotions",
+                "nav-login": "Login", "nav-login-mobile": "Login / Sign Up", "about-5yrs": "5 Years",
+                "hero-badge": "Trusted by 1000+ Customers", "hero-title": "Restore Cleanliness <br> to Your Space with <span class='text-primary'>Cleanforce</span>", "hero-sub": "Professional cleaning for homes, condos, furniture, and corporate spaces. We eliminate stains, odors, and dirt completely.",
+                "hero-feat1": "Professional Team", "hero-feat1-sub": "Standardized Training", "hero-feat2": "Safe Solutions", "hero-feat2-sub": "Child & Pet Friendly", "hero-feat3": "Satisfaction Guarantee", "hero-feat3-sub": "24/7 Customer Support",
+                "about-exp": "of Experience", "about-text1": "Cleanforce started with a commitment to elevate cleaning standards in Thailand. We believe a clean environment is the foundation of happiness and good health.", "about-text2": "We meticulously select our team and provide international standard training, utilizing the most advanced cleaning technology.", "about-check1": "Background-Checked Staff", "about-check2": "Food-Grade Chemicals",
+                "feed-tag-promo": "Promotion", "feed-1-title": "Grand Opening! 15% Off", "feed-1-desc": "Special promotion. 15% off all services when booked this month.",
+                "feed-tag-news": "News", "feed-2-title": "New Service", "feed-2-desc": "Post-renovation cleaning. Ready to move in.",
+                "feed-tag-act": "Activity", "feed-3-title": "Office Cleaning Vibes", "feed-3-desc": "Cleanforce team cleaning the headquarters.", "feed-view-all": "View All",
+                "mode-house": "House Cleaning", "mode-furn": "Furniture Cleaning",
+                "bk-title": "Book Cleaning Service", "bk-subtitle": "Choose between House Cleaning or Furniture Deep Cleaning services.",
+                "bk-step1": "Select House Cleaning Package", "pkg-general": "General Cleaning", "pkg-deep": "Big / Deep Cleaning",
+                "bk-furn-step1": "Select Furniture to Clean",
+                "bk-step2": "Additional Services", "add-equip": "Bring Cleaning Equipment", "add-fridge": "Clean Refrigerator", "add-steam": "Steam Sanitization", "add-balcony": "Balcony Washing",
+                "add-sofa": "Sofa Deep Clean", "add-sofa-sub": "Removes deep stains & odors from upholstery",
+                "add-mattress": "Mattress Deep Clean", "add-mattress-sub": "Eliminates dust mites & germs for better sleep",
+                "add-carpet": "Carpet Deep Clean", "add-carpet-sub": "Care for all types of carpets with dry cleaning and blow drying",
+                "add-curtain": "Curtain Cleaning", "add-curtain-sub": "Remove, wash, and install curtains. Eliminate dust mites and deep stains",
+                "bk-step3": "Date/Time & Customer Info", "bk-date": "Service Date", "bk-time": "Start Time", "bk-address": "Detailed Address (Village/Condo, Room No.)", 
+                "bk-name": "Name-Surname / Company Name", "bk-phone": "Contact Phone Number", "bk-taxid": "Tax ID / Corporate ID (If requested)",
+                "bk-key": "I won't be home, please get the key at:", "bk-review": "Get 200 THB discount if you agree to review our service",
+                "sum-title": "Order Summary", "sum-sub": "Service Details", "sum-base": "Base Cleaning Service", "sum-total": "Net Total", "sum-note": "*Prices and times may change depending on actual site conditions", "btn-book-now": "Confirm & Send via LINE",
+                "services-title": "Our Professional Services", 
+                "s1-title": "General Cleaning", "s1-desc": "Sweep, mop, dust, daily maintenance", "s2-title": "Deep Cleaning", "s2-desc": "Scrub floors, wash bathrooms, sanitize every corner thoroughly", 
+                "s3-title": "Sofa Cleaning", "s3-desc": "Wash upholstery, sofas, remove deep stains and odors", "s4-title": "Mattress Cleaning", "s4-desc": "Eliminate dust mites and germs on the bed for good health", 
+                "s5-title": "Carpet Cleaning", "s5-desc": "Clean all types of carpets with standard system and blow drying", "s6-title": "Curtain Cleaning", "s6-desc": "Remove, clean, and reinstall curtains, remove dust mites",
+                "portfolio-sub": "Impressions from customers who choose our premium cleaning services", "btn-more-portfolio": "View All Portfolio",
+                "review1-text": "\"Very impressed. The team is polite, fully equipped. The sofa is clean like new.\"", "review1-author": "Khun Mintra", "review2-text": "\"Booking through the estimate system is very convenient. The price matches the actual work. Highly recommended.\"", "review2-author": "Khun Apichart", "review3-text": "\"Detailed cleaning in every spot. Even small corners are covered. Will definitely order again.\"", "review3-author": "Khun Wipha",
+                "contact-sub": "Our admin team is ready to answer questions and serve you every day. If you have any further questions, please contact us.", "contact-social-lbl": "Follow Us",
+                "contact-address-lbl": "Location", "contact-address-val": "32/151 @Town 2 Village, Poonphol Road, Soi 1,<br>Talat Nuea, Mueang Phuket, Phuket 83000",
+                "footer-privacy": "Privacy Policy", "footer-terms": "Terms of Service", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "Chat via LINE",
+                "promo-privilege": "Current Privileges & Discounts", "promo-1-title": "1. 15% Off Phuket Branch Opening", "promo-1-desc": "For new customers. Collect the coupon and enter the code in the 'Promo Code' box at checkout.",
+                "promo-2-title": "2. Value Bundle - Get 300 THB Off", "promo-2-desc": "When booking 'Mattress Cleaning' with 'Sofa Cleaning' (Auto applied)",
+                "promo-3-title": "3. Review Discount - Get 200 THB Off", "promo-3-desc": "Just check the 'Agree to review' box in the summary (Auto applied)",
+                "promo-card-title": "15% Off New Customers", "promo-card-desc": "Phuket Special! Collect and copy the code to use at checkout.", "promo-card-code": "Promo Code", "promo-card-btn": "Copy & Collect Code",
+                "promo-input-label": "Have a Promo Code?", "promo-input-btn": "Apply",
+                "pkg-gen-1": "2 hrs (≤ 55 sq.m.)", "pkg-gen-2": "3 hrs (≤ 85 sq.m.)", "pkg-gen-3": "4 hrs (≤ 105 sq.m.)",
+                "pkg-deep-1": "80 sq.m.", "pkg-deep-1-sub": "2 Maids / 4 hrs", "pkg-deep-2": "100 sq.m.", "pkg-deep-2-sub": "3 Maids / 3 hrs", "pkg-deep-3": "150 sq.m.", "pkg-deep-3-sub": "3 Maids / 4 hrs","bk-gps-btn": "Tap to pin current location"
+            },
+            ch: {
+                "nav-home": "首页", "nav-about": "关于我们", "nav-services": "服务", "nav-portfolio": "作品展示", "nav-btn": "立即预约", "nav-contact": "联系我们", "nav-feed": "新闻动态", "nav-promo": "促销活动",
+                "nav-login": "登录", "nav-login-mobile": "登录 / 注册", "about-5yrs": "5 年",
+                "hero-badge": "超过 1000 名客户的信赖", "hero-title": "让您的空间 <br> 恢复洁净与明亮 <span class='text-primary'>Cleanforce</span>", "hero-sub": "提供房屋、公寓、家具和企业空间的专业清洁服务。我们彻底消除污渍、异味和污垢。",
+                "hero-feat1": "专业团队", "hero-feat1-sub": "经过标准化培训", "hero-feat2": "安全清洁剂", "hero-feat2-sub": "儿童与宠物友好", "hero-feat3": "满意保证", "hero-feat3-sub": "24小时售后服务",
+                "about-exp": "经验", "about-text1": "Cleanforce 致力于提升泰国的清洁标准。我们坚信，干净的环境是幸福与健康的基础。", "about-text2": "我们精心挑选团队并提供国际标准的培训，采用最先进的清洁技术，确保我们的客户获得最优质、最划算的服务。", "about-check1": "员工背景调查", "about-check2": "食品级清洁剂",
+                "feed-tag-promo": "促销活动", "feed-1-title": "新店开业！15% 大优惠", "feed-1-desc": "特别促销。本月预订所有服务立减 15%。",
+                "feed-tag-news": "新闻", "feed-2-title": "新服务", "feed-2-desc": "装修后清洁。随时可入住。",
+                "feed-tag-act": "活动", "feed-3-title": "办公室清洁氛围", "feed-3-desc": "Cleanforce 团队进入总部进行清洁。", "feed-view-all": "查看全部",
+                "mode-house": "房屋清洁服务", "mode-furn": "家具清洁服务",
+                "bk-title": "预约清洁服务", "bk-subtitle": "请选择房屋清洁或家具深层清洁服务",
+                "bk-step1": "选择房屋清洁套餐", "pkg-general": "日常普通清洁", "pkg-deep": "大扫除 / 深度清洁",
+                "bk-furn-step1": "选择要清洁的家具",
+                "bk-step2": "附加服务", "add-equip": "自带清洁工具与清洁剂", "add-fridge": "清洁冰箱", "add-steam": "高温蒸汽消毒", "add-balcony": "清洗阳台",
+                "add-sofa": "沙发清洗（深度清洁）", "add-sofa-sub": "清洗沙发，去除深层污渍和异味",
+                "add-mattress": "床垫清洗（深度清洁）", "add-mattress-sub": "消除床垫上的螨虫和细菌，保障健康睡眠",
+                "add-carpet": "地毯清洗（深度清洁）", "add-carpet-sub": "采用干洗和吹干系统护理各种地毯",
+                "add-curtain": "窗帘清洗", "add-curtain-sub": "拆洗和安装窗帘，消除螨虫和深层污渍",
+                "bk-step3": "日期/时间与客户信息", "bk-date": "服务日期", "bk-time": "开始时间", "bk-address": "详细地址（小区/公寓，房间号）", 
+                "bk-name": "姓名 / 公司名称", "bk-phone": "联系电话", "bk-taxid": "纳税人识别号 / 企业税号（如有）",
+                "bk-key": "我不在家，请在以下地点取钥匙：", "bk-review": "如果您同意评价我们的服务，可获得 200 泰铢折扣",
+                "sum-title": "订单摘要", "sum-sub": "订单详情", "sum-base": "基础清洁费用", "sum-total": "实付总额", "sum-note": "*价格和时间可能会根据现场实际情况有所变动", "btn-book-now": "确认并通过 LINE 预约",
+                "services-title": "专业服务", 
+                "s1-title": "日常普通清洁", "s1-desc": "扫地、拖地、日常除尘", "s2-title": "深度清洁", "s2-desc": "刷洗地板、清洗浴室、彻底消毒每个角落", 
+                "s3-title": "沙发清洗", "s3-desc": "清洗靠垫、沙发，去除深层污渍和异味", "s4-title": "床垫清洗", "s4-desc": "消除床垫上的螨虫和细菌，保障睡眠健康", 
+                "s5-title": "地毯清洗", "s5-desc": "采用干洗和吹干系统护理各类地毯", "s6-title": "窗帘清洗", "s6-desc": "拆卸清洗并重新安装窗帘，去除螨虫和深层污渍",
+                "portfolio-sub": "选择我们高级清洁服务的客户所留下的深刻印象", "btn-more-portfolio": "查看所有作品",
+                "review1-text": "\"非常满意。团队很有礼貌，设备齐全。沙发真的像新的一样干净。\"", "review1-author": "Mintra 女士", "review2-text": "\"通过系统估价预约非常方便。价格和现场实际一样。强烈推荐。\"", "review2-author": "Apichart 先生", "review3-text": "\"深度清洁非常细致。连小角落都打扫得干干净净。肯定会再预约。\"", "review3-author": "Wipha 女士",
+                "contact-sub": "我们的管理团队每天都准备好回答您的问题并为您提供服务。如果您有任何疑问，请通过任何渠道联系我们。", "contact-social-lbl": "关注我们",
+                "contact-address-lbl": "地址", "contact-address-val": "普吉府 普吉直辖县 Talat Nuea 区 Poonphol 路 1 巷 @Town2 村 32/151，邮编 83000",
+                "footer-privacy": "隐私政策", "footer-terms": "服务条款", "footer-copy": "© 2024 Cleanforce 专业清洁。保留所有权利。", "float-line": "通过 LINE 咨询",
+                "promo-privilege": "当前特权与折扣", "promo-1-title": "1. 普吉分店开业 15% 折扣", "promo-1-desc": "新客户专享。领取优惠券并在结账时的“优惠码”框中输入代码。",
+                "promo-2-title": "2. 超值套餐 - 立减 300 泰铢", "promo-2-desc": "当同时预订“床垫清洗”和“沙发清洗”时（自动应用）",
+                "promo-3-title": "3. 评价折扣 - 立减 200 泰铢", "promo-3-desc": "只需在摘要中勾选“同意评价”框（自动应用）",
+                "promo-card-title": "新客户 15% 折扣", "promo-card-desc": "普吉岛特惠！领取并复制代码在结账时使用。", "promo-card-code": "优惠码 (Promo Code)", "promo-card-btn": "复制并领取代码",
+                "promo-input-label": "有优惠码吗？ (Promo Code)", "promo-input-btn": "应用",
+                "pkg-gen-1": "2 小时 (≤ 55 平方米)", "pkg-gen-2": "3 小时 (≤ 85 平方米)", "pkg-gen-3": "4 小时 (≤ 105 平方米)",
+                "pkg-deep-1": "80 平方米", "pkg-deep-1-sub": "2 名清洁工 / 4 小时", "pkg-deep-2": "100 平方米", "pkg-deep-2-sub": "3 名清洁工 / 3 小时", "pkg-deep-3": "150 平方米", "pkg-deep-3-sub": "3 名清洁工 / 4 小时","bk-gps-btn": "点击获取当前位置"
+            },
+            ru: {
+                "nav-home": "Главная", "nav-about": "О нас", "nav-services": "Услуги", "nav-portfolio": "Портфолио", "nav-btn": "Забронировать", "nav-contact": "Контакты", "nav-feed": "Новости", "nav-promo": "Акции",
+                "nav-login": "Войти", "nav-login-mobile": "Войти / Регистрация", "about-5yrs": "5 Лет",
+                "hero-badge": "Нам доверяют более 1000 клиентов", "hero-title": "Верните чистоту и свежесть <br> вашему пространству с <span class='text-primary'>Cleanforce</span>", "hero-sub": "Профессиональная уборка домов, квартир, мебели и офисов. Мы полностью устраняем пятна, запахи и грязь.",
+                "hero-feat1": "Профессиональная команда", "hero-feat1-sub": "Стандартизированное обучение", "hero-feat2": "Безопасные средства", "hero-feat2-sub": "Безопасно для детей и животных", "hero-feat3": "Гарантия качества", "hero-feat3-sub": "Круглосуточная поддержка",
+                "about-exp": "опыта", "about-text1": "Cleanforce стремится повысить стандарты уборки в Таиланде. Мы верим, что чистая среда — это основа счастья и здоровья.", "about-text2": "Мы тщательно отбираем нашу команду и проводим обучение по международным стандартам, используя самые передовые технологии очистки.", "about-check1": "Проверка персонала", "about-check2": "Пищевые чистящие средства",
+                "feed-tag-promo": "Акция", "feed-1-title": "Открытие филиала! Скидка 15%", "feed-1-desc": "Специальная акция. Скидка 15% на все услуги при бронировании в этом месяце.",
+                "feed-tag-news": "Новости", "feed-2-title": "Новая услуга", "feed-2-desc": "Уборка после ремонта. Готово к заселению.",
+                "feed-tag-act": "Мероприятие", "feed-3-title": "Атмосфера уборки офиса", "feed-3-desc": "Команда Cleanforce проводит уборку в штаб-квартире.", "feed-view-all": "Смотреть всё",
+                "mode-house": "Уборка дома", "mode-furn": "Чистка мебели",
+                "bk-title": "Забронировать уборку", "bk-subtitle": "Выберите между уборкой дома или глубокой чисткой мебели",
+                "bk-step1": "Выберите пакет уборки дома", "pkg-general": "Общая уборка", "pkg-deep": "Глубокая уборка",
+                "bk-furn-step1": "Выберите услуги",
+                "bk-step2": "Дополнительные услуги", "add-equip": "Наше оборудование", "add-fridge": "Мытье холодильника", "add-steam": "Обработка паром", "add-balcony": "Мытье балкона",
+                "add-sofa": "Химчистка дивана", "add-sofa-sub": "Удаление глубоких пятен и запахов",
+                "add-mattress": "Химчистка матраса", "add-mattress-sub": "Уничтожение пылевых клещей и бактерий",
+                "add-carpet": "Химчистка ковра", "add-carpet-sub": "Чистка ковров любого типа с сушкой",
+                "add-curtain": "Химчистка штор", "add-curtain-sub": "Снятие, стирка и установка штор",
+                "bk-step3": "Дата/Время и Данные", "bk-date": "Дата уборки", "bk-time": "Время начала", "bk-address": "Точный адрес (Вилла/Кондо, номер)", 
+                "bk-name": "Имя-Фамилия / Название компании", "bk-phone": "Контактный телефон", "bk-taxid": "ИНН (для счета-фактуры)",
+                "bk-key": "Меня не будет дома, ключи можно взять здесь:", "bk-review": "Скидка 200 бат за отзыв о нашем сервисе",
+                "sum-title": "Сводка заказа", "sum-sub": "Детали заказа", "sum-base": "Базовая стоимость", "sum-total": "Итого к оплате", "sum-note": "*Цены и время могут измениться после осмотра объекта", "btn-book-now": "Забронировать через LINE",
+                "services-title": "Наши профессиональные услуги", 
+                "s1-title": "Общая уборка", "s1-desc": "Подметание, мытье полов, ежедневная пыль", "s2-title": "Глубокая уборка", "s2-desc": "Тщательная дезинфекция и очистка ванных комнат", 
+                "s3-title": "Химчистка диванов", "s3-desc": "Удаление пятен и затхлых запахов", "s4-title": "Химчистка матрасов", "s4-desc": "Уничтожение пылевых клещей и микробов", 
+                "s5-title": "Химчистка ковров", "s5-desc": "Уход за коврами любого типа с сушкой", "s6-title": "Химчистка штор", "s6-desc": "Снятие, стирка, установка и удаление пыли",
+                "portfolio-sub": "Впечатления клиентов, выбравших наши услуги премиум-класса", "btn-more-portfolio": "Смотреть всё портфолио",
+                "review1-text": "\"Очень впечатлена. Команда вежливая, оборудование отличное. Диван снова как новый.\"", "review1-author": "Г-жа Минтра", "review2-text": "\"Бронировать через систему очень удобно. Цена совпадает с реальной работой.\"", "review2-author": "Г-н Апичарт", "review3-text": "\"Глубокая уборка была выполнена очень тщательно. Обязательно закажу снова.\"", "review3-author": "Г-жа Випха",
+                "contact-sub": "Наша команда готова ответить на ваши вопросы каждый день.", "contact-social-lbl": "Подписывайтесь",
+                "contact-address-lbl": "Адрес", "contact-address-val": "32/151 @Town2, ул. Poonphol, Сой 1,<br>Talat Nuea, Mueang Phuket, Пхукет 83000",
+                "footer-privacy": "Политика конфиденциальности", "footer-terms": "Условия использования", "footer-copy": "© 2024 Cleanforce Professional Cleaning. Все права защищены.", "float-line": "Задать вопрос в LINE",
+                "promo-privilege": "Текущие привилегии и скидки", "promo-1-title": "1. Скидка 15% (открытие на Пхукете)", "promo-1-desc": "Для новых клиентов. Сохраните купон и введите код в поле «Промокод».",
+                "promo-2-title": "2. Выгодный пакет - скидка 300 бат", "promo-2-desc": "При бронировании чистки матраса и дивана (Применяется автоматически)",
+                "promo-3-title": "3. Скидка за отзыв - 200 бат", "promo-3-desc": "Просто отметьте галочкой «Согласен на отзыв» (Применяется автоматически)",
+                "promo-card-title": "Скидка 15% (новым)", "promo-card-desc": "Специально для Пхукета! Скопируйте код для оплаты.", "promo-card-code": "Промокод", "promo-card-btn": "Скопировать код",
+                "promo-input-label": "Есть промокод?", "promo-input-btn": "Применить",
+                "pkg-gen-1": "2 часа (≤ 55 кв.м.)", "pkg-gen-2": "3 часа (≤ 85 кв.м.)", "pkg-gen-3": "4 часа (≤ 105 кв.м.)",
+                "pkg-deep-1": "80 кв.м.", "pkg-deep-1-sub": "2 горничные / 4 часа", "pkg-deep-2": "100 кв.м.", "pkg-deep-2-sub": "3 горничные / 3 часа", "pkg-deep-3": "150 кв.м.", "pkg-deep-3-sub": "3 горничные / 4 часа","bk-gps-btn": "Нажмите, чтобы закрепить местоположение"
+            }
+        };
+
+        var sysAlerts = {
+            mix: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ..." },
+            th: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ..." },
+            en: { errInput: "Please complete all required fields.", errKey: "Please specify key drop-off location.", success: "Booking successful! Redirecting to LINE...", errLocation: "Unable to retrieve location.", promoYes: "✅ Success! Discount applied.", promoNo: "❌ Invalid or expired promo code.", gpsSuccess: "Location pinned successfully!", gpsLoading: "Finding your location..." },
+            ch: { errInput: "请填写所有必填信息", errKey: "请说明钥匙的放置位置", success: "预约成功！正在跳转至 LINE...", errLocation: "无法获取位置信息", promoYes: "✅ 成功！已应用折扣。", promoNo: "❌ 优惠码无效或已过期。", gpsSuccess: "成功获取位置！", gpsLoading: "正在获取您的位置..." },
+            ru: { errInput: "Пожалуйста, заполните все обязательные поля.", errKey: "Пожалуйста, укажите место для ключей.", success: "Бронирование успешно! Переход в LINE...", errLocation: "Не удалось получить местоположение.", promoYes: "✅ Успешно! Скидка применена.", promoNo: "❌ Недействительный или просроченный промокод.", gpsSuccess: "Местоположение успешно определено!", gpsLoading: "Поиск вашего местоположения..." }
+        };
+
+        // ชื่อแพ็กเกจเมื่อดึงไปโชว์ในสรุปยอด
+        var packageNamesMap = {
+            '890':  {mix: "ทั่วไป 2 ชม.", th: "ทั่วไป 2 ชม.", en: "General 2 hrs", ch: "日常普通清洁 2 小时", ru: "Общая уборка 2 часа"},
+            '1063': {mix: "ทั่วไป 3 ชม.", th: "ทั่วไป 3 ชม.", en: "General 3 hrs", ch: "日常普通清洁 3 小时", ru: "Общая уборка 3 часа"},
+            '1293': {mix: "ทั่วไป 4 ชม.", th: "ทั่วไป 4 ชม.", en: "General 4 hrs", ch: "日常普通清洁 4 小时", ru: "Общая уборка 4 часа"},
+            '3144': {mix: "Deep 80 ตร.ม.", th: "Deep 80 ตร.ม.", en: "Deep 80 sq.m.", ch: "深度清洁 80 平方米", ru: "Глубокая 80 кв.м."},
+            '3305': {mix: "Deep 100 ตร.ม.", th: "Deep 100 ตร.ม.", en: "Deep 100 sq.m.", ch: "深度清洁 100 平方米", ru: "Глубокая 100 кв.м."},
+            '4340': {mix: "Deep 150 ตร.ม.", th: "Deep 150 ตร.ม.", en: "Deep 150 sq.m.", ch: "深度清洁 150 平方米", ru: "Глубокая 150 кв.м."}
+        };
+
+        window.currentLang = 'th';
+
+        window.changeLanguage = function(lang) {
+            window.currentLang = lang;
+            var activeClass = 'lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary';
+            var inactiveClass = 'lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary';
+            
+            ['mix','th','en','zh','ru'].forEach(function(l) {
+                var btn = document.getElementById('lang-' + l + '-cf');
+                if(btn) btn.className = (lang === l) ? activeClass : inactiveClass;
+            });
+            
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                if (translations && translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            // เปลี่ยน Placeholder
+            var keyDetail = document.getElementById('bk-key-detail');
+            var nameInput = document.getElementById('bk-name-input');
+            var taxInput = document.getElementById('bk-taxid-input');
+            var addressInput = document.getElementById('bk-address-input');
+            var promoInput = document.getElementById('promo-code-input');
+
+            if(lang === 'th' || lang === 'mix') {
+                if(keyDetail) keyDetail.placeholder = "ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ";
+                if(nameInput) nameInput.placeholder = "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท";
+                if(taxInput) taxInput.placeholder = "สำหรับออกใบกำกับภาษี (สามารถเว้นว่างได้)";
+                if(addressInput) addressInput.placeholder = "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด";
+                if(promoInput) promoInput.placeholder = "พิมพ์โค้ด เช่น PHUKET10";
+            } else if (lang === 'en') {
+                if(keyDetail) keyDetail.placeholder = "Mailbox, Reception, Security Guard, etc.";
+                if(nameInput) nameInput.placeholder = "Contact Name or Company Name";
+                if(taxInput) taxInput.placeholder = "For Tax Invoice (Optional)";
+                if(addressInput) addressInput.placeholder = "Specify the exact location to be cleaned";
+                if(promoInput) promoInput.placeholder = "Enter code e.g. PHUKET10";
+            } else if (lang === 'ch') {
+                if(keyDetail) keyDetail.placeholder = "信箱、前台、保安等，请注明";
+                if(nameInput) nameInput.placeholder = "联系人姓名或公司名称";
+                if(taxInput) taxInput.placeholder = "用于开具税务发票（选填）";
+                if(addressInput) addressInput.placeholder = "请详细说明需要清洁的地点";
+                if(promoInput) promoInput.placeholder = "输入代码 例如 PHUKET10";
+            } else if (lang === 'ru') {
+                if(keyDetail) keyDetail.placeholder = "Почтовый ящик, ресепшн, охрана и т.д.";
+                if(nameInput) nameInput.placeholder = "Имя контакта или название компании";
+                if(taxInput) taxInput.placeholder = "Для налоговой накладной (необязательно)";
+                if(addressInput) addressInput.placeholder = "Укажите точный адрес для уборки";
+                if(promoInput) promoInput.placeholder = "Введите код, напр. PHUKET10";
+            }
+
+            // ถ้ามี Error ค้างอยู่ให้แปลด้วย
+            var msgEl = document.getElementById('promo-msg');
+            if (msgEl && !msgEl.classList.contains('hidden') && activePromoCode === null) {
+                msgEl.textContent = sysAlerts[lang].promoNo;
+            } else if (msgEl && activePromoCode !== null) {
+                msgEl.textContent = sysAlerts[lang].promoYes;
+            }
+
+            window.calculateBooking();
+        }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 2. ตั้งค่าการเชื่อมต่อ (Initialization)
+        var firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
+
+        // เริ่มต้นเชื่อมต่อ
+        if (!firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig); 
+        }
+
+        // กำหนดตัวแปรฐานข้อมูลแบบ Global
+        window.cf_auth = firebase.auth();
+        window.cf_db = firebase.firestore();
+
+        // ระบบจัดการ Login
+        window.cf_auth.onAuthStateChanged(function(user) {
+            if (user) {
+                var userBtn = document.getElementById('user-menu-btn');
+                if (userBtn) {
+                    userBtn.innerHTML = '<img src="' + user.photoURL + '" class="w-8 h-8 rounded-full border border-gray-200"><span class="text-sm font-bold text-gray-800 hidden sm:inline">' + user.displayName + '</span>';
+                    userBtn.href = "profile.html"; 
+                }
+                var userData = JSON.parse(localStorage.getItem('cf_user') || '{}');
+                if(userData.name) {
+                    var nameInput = document.getElementById('bk-name-input');
+                    if(nameInput) nameInput.value = userData.name;
+                }
+                if(userData.phone) {
+                    var phoneInput = document.getElementById('bk-phone-input');
+                    if(phoneInput) phoneInput.value = userData.phone;
+                }
+            }
+        });
+        // --- 📦 คืนค่าข้อมูลภาษาและข้อความแจ้งเตือนที่หายไป ---
+        var translations = {
+            th: { "nav-home": "หน้าแรก", "nav-btn": "จองบริการ", "bk-title": "จองบริการทำความสะอาด", "bk-subtitle": "เลือกระหว่างบริการบ้าน หรือ เฟอร์นิเจอร์", "bk-step1": "เลือกรูปแบบการทำความสะอาดบ้าน", "bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน", "sum-title": "สรุปคำสั่งซื้อ", "btn-book-now": "จองบริการผ่าน LINE" },
+            en: { "nav-home": "Home", "nav-btn": "Book Now", "bk-title": "Book Cleaning", "bk-subtitle": "Choose House or Furniture service", "bk-step1": "Select House Cleaning Package", "bk-gps-btn": "Tap to pin current location", "sum-title": "Order Summary", "btn-book-now": "Confirm & Send via LINE" }
+        };
+
+        var sysAlerts = {
+            th: { promoYes: "✅ ใช้โค้ดสำเร็จ", promoNo: "❌ โค้ดไม่ถูกต้อง", errInput: "กรุณากรอกข้อมูลให้ครบถ้วน" },
+            en: { promoYes: "✅ Success! Applied", promoNo: "❌ Invalid code", errInput: "Please fill all fields" }
+        };
+
+        var packageNamesMap = {
+            '890':  {th: "ทั่วไป 2 ชม.", en: "General 2 hrs"},
+            '1063': {th: "ทั่วไป 3 ชม.", en: "General 3 hrs"},
+            '3144': {th: "Deep 80 ตร.ม.", en: "Deep 80 sq.m."}
+        };
+        // ==========================================
+        // ระบบจัดการข้อมูลและคำนวณราคา (อัปเดตลำดับการทำงานใหม่)
+        // ==========================================
+        let houseDataMaster = [];
+        let currentHouseFilter = 'all';
+        let currentHouseSort = 'default';
+        let dynamicServices = { house: [], furniture: [], addon: [] };
+        let activePromoCode = null;
+        let currentServiceMode = 'house';
+
+       // 1. นำฟังก์ชันคำนวณราคาขึ้นมาไว้บนสุด เพื่อให้พร้อมใช้งานทันทีที่โหลดข้อมูลเสร็จ
+        window.calculateBooking = function() {
+            try {
+                let netPrice = 0; // ยอดรวมที่ลดแล้ว (ดึงมาจากฐานข้อมูล)
+                let addonsHTML = '';
+                let baseName = '';
+
+                // --- 1. จัดการช่องติ๊กรีวิว (บังคับติ๊ก & เปลี่ยนข้อความ) ---
+                let reviewCheckbox = document.getElementById('bk-review-discount');
+                if (reviewCheckbox) {
+                    reviewCheckbox.checked = true; // บังคับติ๊ก
+                    reviewCheckbox.onclick = function(e) { e.preventDefault(); return false; }; // ล็อกไม่ให้เอาติ๊กออก
+                }
+                let reviewLabel = document.querySelector('label[for="bk-review-discount"]');
+                if (reviewLabel) {
+                    reviewLabel.removeAttribute('data-i18n'); // ป้องกันระบบแปลภาษามาทับ
+                    reviewLabel.innerHTML = 'ส่วนลดยินดีแชร์ประสบการณ์การใช้บริการ 15%';
+                }
+
+                // --- 2. คำนวณราคาสุทธิ ---
+                const processSelectedCards = (prefix, parentId) => {
+                    const parentDiv = document.getElementById(parentId);
+                    if (!parentDiv) return;
+
+                    const checkboxes = parentDiv.querySelectorAll(`input[id^="chk_${prefix}_"]:checked`);
+                    checkboxes.forEach(chk => {
+                        let id = chk.id.replace(`chk_${prefix}_`, '');
+                        let name = chk.getAttribute('data-name');
+                        let price = parseInt(chk.getAttribute('data-price')) || 0;
+                        
+                        let qty = 1;
+                        let qtyInput = document.getElementById(`qty_${prefix}_${id}`);
+                        if(qtyInput && !qtyInput.parentElement.classList.contains('hidden')) {
+                            qty = parseInt(qtyInput.value) || 1;
+                        }
+
+                        let itemPrice = price * qty;
+                        netPrice += itemPrice; // นำราคาที่ลดแล้วบวกเข้ายอดรวม
+
+                        let valText = qty > 1 ? `x${qty} (+${itemPrice.toLocaleString()} ฿)` : `+${itemPrice.toLocaleString()} ฿`;
+                        addonsHTML += `<div class="flex justify-between items-start text-gray-500 mb-1.5 leading-tight border-b border-gray-50 pb-1">
+                                        <span class="pr-2"><i class="fa-solid fa-plus text-[8px] mr-1 text-primary"></i> ${name}</span>
+                                        <span class="text-right whitespace-nowrap font-bold text-gray-700">${valText}</span></div>`;
+                    });
+                };
+
+                if (currentServiceMode === 'house') {
+                    const pkgRadio = document.querySelector('input[name="package_house"]:checked');
+                    if (pkgRadio) {
+                        let pkgPrice = parseInt(pkgRadio.getAttribute('data-price')) || 0;
+                        netPrice += pkgPrice;
+                        baseName = pkgRadio.getAttribute('data-name') || "ทำความสะอาดพื้นฐาน";
+                        const sumBaseRow = document.getElementById('sum-base-row');
+                        if (sumBaseRow) {
+                            sumBaseRow.style.display = 'flex';
+                            document.getElementById('sum-base-label').textContent = baseName;
+                            document.getElementById('sum-hours').textContent = pkgPrice.toLocaleString() + ' ฿';
+                        }
+                    }
+                    processSelectedCards('addon_h', 'flow-house'); 
+                } else {
+                    const sumBaseRow = document.getElementById('sum-base-row');
+                    if (sumBaseRow) sumBaseRow.style.display = 'none';
+                    processSelectedCards('furn', 'flow-furniture');  
+                    processSelectedCards('addon_f', 'flow-furniture');
+                }
+
+                // โค้ดส่วนลดโปรโมชั่นที่ลูกค้ากรอกเพิ่ม (ถ้ามี)
+                let discountPromo = (activePromoCode === 'PHUKET10' || activePromoCode === 'PHUKET15') ? Math.round(netPrice * 0.15) : 0;
+                
+                let finalNetPrice = netPrice - discountPromo;
+                if (finalNetPrice < 0) finalNetPrice = 0; 
+                
+                // --- 3. แสดงผลในกล่องสรุปคำสั่งซื้อ ---
+                let discountHTML = '<div class="border-t border-gray-200 mt-4 pt-4 space-y-2">';
+                
+                if (discountPromo > 0) {
+                    discountHTML += `<div class="flex justify-between items-center text-sm text-green-600 font-bold"><span><i class="fa-solid fa-ticket mr-1 text-[10px]"></i> โค้ด (${activePromoCode})</span><span>-${discountPromo.toLocaleString()} ฿</span></div>`;
+                }
+                
+                // โชว์ข้อความส่วนลด 15% (เป็นกิมมิคโชว์เฉยๆ ไม่ได้เอาไปลบเงินซ้ำ)
+                discountHTML += `<div class="flex justify-between items-center text-sm text-green-600 font-bold"><span><i class="fa-solid fa-star mr-1 text-[10px]"></i> ยินดีแชร์ประสบการณ์</span><span>-15%</span></div>`;
+                discountHTML += '</div>';
+
+                const sumAddonsList = document.getElementById('sum-addons-list');
+                if(sumAddonsList) sumAddonsList.innerHTML = addonsHTML;
+                
+                const sumDiscountArea = document.getElementById('sum-discount-area');
+                if(sumDiscountArea) sumDiscountArea.innerHTML = discountHTML;
+                
+                // --- 4. แสดงราคาเต็มขีดทิ้ง (คำนวณย้อนกลับจากยอด 15%) ---
+                const sumOrigPrice = document.getElementById('sum-original-price');
+                if(sumOrigPrice) {
+                    // สร้างราคาเต็มจำลอง โดยเอา Net Price หารด้วย 0.85 เพื่อให้ได้ราคาเต็มที่สมจริง
+                    let fakeOriginalPrice = Math.round(netPrice / 0.85);
+                    sumOrigPrice.textContent = fakeOriginalPrice.toLocaleString();
+                    sumOrigPrice.style.display = 'inline'; // บังคับโชว์เสมอ
+                }
+                
+                const sumPrice = document.getElementById('sum-price');
+                if(sumPrice) sumPrice.textContent = finalNetPrice.toLocaleString();
+
+            } catch (e) {
+                console.error("Error in calculateBooking:", e);
+            }
+        };
+
+        // 2. ฟังก์ชันวาด UI (ย้ายมาไว้ก่อน loadDynamicServices)
+        function renderHouseUI() {
+            try {
+                let filteredData = houseDataMaster;
+                if (currentHouseFilter !== 'all') {
+                    filteredData = houseDataMaster.filter(srv => srv.type === currentHouseFilter);
+                }
+
+                filteredData.sort((a, b) => {
+                    let priceA = a.price || 0;
+                    let priceB = b.price || 0;
+                    if(currentHouseSort === 'price_asc') return priceA - priceB;
+                    if(currentHouseSort === 'price_desc') return priceB - priceA;
+                    return (a.order || 999) - (b.order || 999);
+                });
+
+                let html = '';
+                if(filteredData.length === 0) {
+                    html = `<div class="col-span-full text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-400"><i class="fa-solid fa-box-open text-2xl mb-2"></i><p>ยังไม่มีแพ็กเกจในหมวดหมู่นี้</p></div>`;
+                } else {
+                    filteredData.forEach((srv, index) => {
+                        let safePrice = srv.price || 0;
+                        let safeName = srv.name || "แพ็กเกจทั่วไป";
+                        let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()} ฿</span>` : '';
+                        let detail = srv.details ? `<span class="text-[10px] text-gray-500 font-normal leading-tight mt-1 mb-2 block">${srv.details}</span>` : '';
+                        let staffHours = '';
+                        if(srv.staffCount || srv.durationHours) {
+                            staffHours = `<span class="text-[10px] text-gray-500 font-normal block leading-tight"><i class="fa-solid fa-users text-primary opacity-70"></i> ${srv.staffCount || '-'} คน  <i class="fa-regular fa-clock text-primary opacity-70"></i> ${srv.durationHours || '-'} ชม.</span>`;
+                        }
+                        let typeLabel = srv.type === 'condo' ? 'คอนโด' : (srv.type === 'villa' ? 'วิลล่า' : 'บ้านเดี่ยว');
+
+                        html += `
+                        <label class="cursor-pointer h-full relative">
+                            <input type="radio" name="package_house" value="${srv.id}" data-price="${safePrice}" data-name="${safeName}" class="peer sr-only" ${index===0 ? 'checked' : ''} onchange="window.calculateBooking()">
+                            <div class="p-5 bg-white border-2 border-gray-200 rounded-2xl text-left peer-checked:border-primary peer-checked:bg-blue-50 transition-all font-bold text-sm h-full flex flex-col justify-between overflow-hidden relative">
+                                <div class="absolute top-0 right-0 bg-gray-100 text-gray-400 text-[9px] px-2 py-1 rounded-bl-lg peer-checked:bg-primary peer-checked:text-white transition-colors">${typeLabel}</div>
+                                <div class="pr-6">
+                                    <span class="text-gray-800 text-base leading-tight block mb-1">${safeName}</span>
+                                    ${detail}
+                                    ${staffHours}
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-gray-100 flex items-end justify-between">
+                                    <span class="text-primary text-xl block">${origPrice}${safePrice.toLocaleString()} ฿</span>
+                                </div>
+                            </div>
+                        </label>`;
+                    });
+                }
+                const container = document.getElementById('dynamic-house-packages');
+                if(container) {
+                    container.innerHTML = html;
+                    window.calculateBooking();
+                }
+            } catch(e) {
+                console.error("Render House Error:", e);
+            }
+        }
+
+        function renderOtherUI() {
+            try {
+                const createCardHTML = (items, prefix, iconClass) => {
+                    let html = '';
+                    if(!items || items.length === 0) return `<p class="text-sm text-gray-400 col-span-full">ยังไม่มีบริการเปิดใช้งาน</p>`;
+                    items.sort((a,b) => (a.order || 999) - (b.order || 999));
+
+                    items.forEach(srv => {
+                        let safePrice = srv.price || 0;
+                        let safeName = srv.name || "บริการเสริม";
+                        let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()}</span>` : '';
+                        let needsQty = (srv.unit && srv.unit !== 'เหมา' && srv.unit !== 'ครั้ง'); 
+                        let detail = srv.details ? `<p class="text-[9px] text-gray-500 mt-1 leading-tight">${srv.details}</p>` : '';
+
+                        html += `
+                        <div class="addon-card bg-white p-4 rounded-xl flex flex-col justify-between cursor-pointer border-2 border-transparent shadow-sm hover:border-blue-200 border-gray-100" id="card_${prefix}_${srv.id}" onclick="window.toggleDynamicCard('${prefix}_${srv.id}', event)">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-primary shrink-0 mt-1"><i class="${iconClass}"></i></div>
+                                    <div>
+                                        <p class="font-bold text-sm text-gray-800">${safeName}</p>
+                                        <p class="text-[11px] text-primary font-bold mt-1">${origPrice}${safePrice.toLocaleString()} ฿ ${srv.unit && srv.unit !== 'เหมา' ? '<span class="text-gray-400 font-normal">/'+srv.unit+'</span>' : ''}</p>
+                                        ${detail}
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check text-2xl text-gray-200 check-icon transition-colors"></i>
+                            </div>
+                            ${needsQty ? `
+                            <div class="addon-options hidden mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-3 bg-gray-50 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+                                <label class="text-xs text-gray-500 font-bold">ระบุจำนวน (${srv.unit}):</label>
+                                <input type="number" id="qty_${prefix}_${srv.id}" value="1" min="1" class="w-20 text-sm border border-gray-200 rounded p-1.5 outline-none focus:border-primary text-center bg-white shadow-inner" onclick="event.stopPropagation()" onchange="window.calculateBooking(); event.stopPropagation();" oninput="window.calculateBooking()">
+                            </div>` : ''}
+                            <input type="checkbox" id="chk_${prefix}_${srv.id}" class="hidden" value="${srv.id}" data-name="${safeName}" data-price="${safePrice}" data-unit="${srv.unit}">
+                        </div>`;
+                    });
+                    return html;
+                };
+
+                let furnHTML = document.getElementById('dynamic-furniture-packages');
+                if(furnHTML) furnHTML.innerHTML = createCardHTML(dynamicServices.furniture, 'furn', 'fa-solid fa-couch');
+                let addonHouseHTML = document.getElementById('dynamic-addons-house');
+                if(addonHouseHTML) addonHouseHTML.innerHTML = createCardHTML(dynamicServices.addon, 'addon_h', 'fa-solid fa-plus');
+                let addonFurnHTML = document.getElementById('dynamic-addons-furn');
+                if(addonFurnHTML) addonFurnHTML.innerHTML = createCardHTML(dynamicServices.addon, 'addon_f', 'fa-solid fa-plus');
+            } catch(e) {
+                console.error("Render Other Error:", e);
+            }
+        }
+
+        // 3. ฟังก์ชันดึงข้อมูลจาก Firebase (เรียกทีหลังสุดเพื่อความปลอดภัย)
+        async function loadDynamicServices() {
+            try {
+                if(!window.cf_db) {
+                    console.error("Firebase DB not initialized yet.");
+                    return;
+                }
+                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
+                dynamicServices = { house: [], furniture: [], addon: [] };
+                houseDataMaster = [];
+                
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    
+                    if(data.type === 'house') {
+                        if(data.name && data.name.includes('คอนโด')) data.type = 'condo';
+                        else if(data.name && data.name.includes('วิลล่า')) data.type = 'villa';
+                        else data.type = 'house_single';
+                    }
+
+                    if (data.type === 'condo' || data.type === 'house_single' || data.type === 'villa') {
+                        houseDataMaster.push(data);
+                    } else if (data.type === 'furniture') {
+                        dynamicServices.furniture.push(data);
+                    } else if (data.type === 'addon') {
+                        dynamicServices.addon.push(data);
+                    }
+                });
+
+                renderHouseUI();
+                renderOtherUI();
+            } catch (error) {
+                console.error("Error fetching services: ", error);
+                const housePkgDiv = document.getElementById('dynamic-house-packages');
+                if(housePkgDiv) housePkgDiv.innerHTML = '<div class="col-span-full text-center text-red-500 py-6 font-bold"><i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i><br>ดึงข้อมูลล้มเหลว กรุณารีเฟรชหน้าเว็บ</div>';
+            }
+        }
+
+        // 4. ควบคุม UI (ปุ่มเปลี่ยนโหมด, ตัวกรอง)
+        window.filterHouse = function(type) {
+            currentHouseFilter = type;
+            const btns = ['all', 'condo', 'house_single', 'villa'];
+            btns.forEach(b => {
+                const el = document.getElementById('flt-' + b);
+                if(el) {
+                    el.className = (b === type) 
+                        ? "px-4 py-2 rounded-full text-xs font-bold bg-primary text-white whitespace-nowrap transition-colors shadow-sm" 
+                        : "px-4 py-2 rounded-full text-xs font-bold bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-primary whitespace-nowrap transition-colors";
+                }
+            });
+            renderHouseUI();
+        };
+
+        window.sortHouse = function() {
+            const sortEl = document.getElementById('sort-house');
+            if(sortEl) currentHouseSort = sortEl.value;
+            renderHouseUI();
+        };
+
+        window.setServiceMode = function(mode) {
+            currentServiceMode = mode;
+            var activeClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-primary bg-blue-50 text-primary font-bold transition-all flex items-center justify-center gap-3 shadow-sm font-heading";
+            var inactiveClass = "flex-1 py-4 px-6 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-3 font-heading bg-white shadow-sm";
+            
+            var btnHouse = document.getElementById('btn-mode-house');
+            var btnFurn = document.getElementById('btn-mode-furn');
+            if(btnHouse) btnHouse.className = mode === 'house' ? activeClass : inactiveClass;
+            if(btnFurn) btnFurn.className = mode === 'furniture' ? activeClass : inactiveClass;
+
+            var flowHouse = document.getElementById('flow-house');
+            var flowFurn = document.getElementById('flow-furniture');
+            if(flowHouse) flowHouse.style.display = mode === 'house' ? 'block' : 'none';
+            if(flowFurn) flowFurn.style.display = mode === 'furniture' ? 'block' : 'none';
+
+            window.calculateBooking();
+        };
+
+        window.toggleDynamicCard = function(id, event) {
+            if(event && event.target.tagName === 'INPUT') return;
+            const card = document.getElementById('card_' + id);
+            const chk = document.getElementById('chk_' + id);
+            const optionsDiv = card ? card.querySelector('.addon-options') : null;
+            if(!chk || !card) return;
+            
+            chk.checked = !chk.checked;
+            if(chk.checked) {
+                card.classList.add('selected');
+                card.querySelector('.check-icon').classList.replace('text-gray-200', 'text-primary');
+                if(optionsDiv) optionsDiv.classList.remove('hidden');
+            } else {
+                card.classList.remove('selected');
+                card.querySelector('.check-icon').classList.replace('text-primary', 'text-gray-200');
+                if(optionsDiv) optionsDiv.classList.add('hidden');
+            }
+            window.calculateBooking();
+        };
+
+        window.applyPromoCode = function() {
+            var codeInput = document.getElementById('promo-code-input');
+            if(!codeInput) return;
+            var code = codeInput.value.trim().toUpperCase();
+            var msgEl = document.getElementById('promo-msg');
+            if(!msgEl) return;
+            msgEl.classList.remove('hidden');
+
+            if (code === 'PHUKET10' || code === 'PHUKET15') {
+                activePromoCode = code;
+                msgEl.textContent = "✅ ใช้โค้ดสำเร็จ";
+                msgEl.className = 'text-[10px] mt-2 text-green-600 font-bold';
+            } else if (code === '') {
+                activePromoCode = null;
+                msgEl.classList.add('hidden');
+            } else {
+                activePromoCode = null;
+                msgEl.textContent = "❌ โค้ดไม่ถูกต้อง";
+                msgEl.className = 'text-[10px] mt-2 text-red-500 font-bold';
+            }
+            window.calculateBooking();
+        };
+
+        // 5. ฟังก์ชันสนับสนุนต่างๆ (โค้ดส่วนลด, GPS, ส่งข้อมูล)
+        window.collectCoupon = async function(btnElement, couponData) {
+            var user = firebase.auth().currentUser;
+            if (!user) { alert("กรุณาเข้าสู่ระบบก่อนเก็บคูปองครับ"); window.location.href = 'login.html'; return; }
+            var uid = user.uid;
+            var originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...'; btnElement.disabled = true;
+            try {
+                var couponsRef = window.cf_db.collection('users').doc(uid).collection('coupons');
+                var checkExist = await couponsRef.where('code', '==', couponData.code).get();
+                if (!checkExist.empty) {
+                    alert("คุณได้เก็บคูปองนี้ไปแล้ว! โค้ดคือ: " + couponData.code);
+                    btnElement.className = "w-full bg-gray-400 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
+                    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว'; return;
+                }
+                await couponsRef.add({
+                    code: couponData.code, title: couponData.title, discount: couponData.discount,
+                    condition: couponData.condition, type: couponData.type || 'fixed', status: 'active', 
+                    isUsed: false, collectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                btnElement.className = "w-full bg-gray-400 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed";
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> เก็บแล้ว';
+                alert("เก็บคูปองสำเร็จ! โค้ดของคุณคือ: " + couponData.code);
+            } catch (error) {
+                console.error("Error saving coupon: ", error); alert("เกิดข้อผิดพลาด");
+                btnElement.innerHTML = originalText; btnElement.disabled = false;
+            }
+        };
+
+        window.getLocation = function() {
+            var statusText = document.getElementById('location-status');
+            var gpsInput = document.getElementById('bk-gps-link');
+            if(!statusText || !gpsInput) return;
+            statusText.classList.remove('hidden');
+            statusText.className = "text-[10px] text-blue-500 mt-1 font-bold"; 
+            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังค้นหา...';
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(pos) {
+                        gpsInput.value = 'http://maps.google.com/?q=' + pos.coords.latitude + ',' + pos.coords.longitude;
+                        statusText.innerHTML = "✅ รับพิกัดสำเร็จ!"; statusText.className = "text-[10px] text-green-600 mt-2 font-bold";
+                    },
+                    function(err) {
+                        console.warn("GPS Error: ", err);
+                        statusText.innerHTML = "❌ ไม่สามารถดึงพิกัดได้"; statusText.className = "text-[10px] text-red-500 mt-2 font-bold";
+                    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            }
+        };
+
+        window.submitBooking = async function() {
+            var date = document.getElementById('bk-date-input').value;
+            var time = document.getElementById('bk-time-input').value;
+            var name = document.getElementById('bk-name-input').value.trim();
+            var phone = document.getElementById('bk-phone-input').value.trim();
+            var address = document.getElementById('bk-address-input').value.trim();
+            if(!date || !name || !phone || !address) { alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ"); return; }
+            var submitBtn = document.querySelector('button[onclick="submitBooking()"]');
+            var originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...'; submitBtn.disabled = true;
+            try {
+                var baseSrv = (currentServiceMode === 'house' && document.getElementById('sum-base-label')) ? document.getElementById('sum-base-label').textContent : "ไม่มี";
+                var addonsList = document.querySelectorAll('#sum-addons-list div');
+                var addonsText = addonsList.length > 0 ? Array.from(addonsList).map(el => "- " + el.textContent.trim().replace(/\s+/g, ' ')).join('\n') : "- ไม่มีบริการเสริม\n";
+                var orderData = {
+                    serviceMode: currentServiceMode === 'house' ? 'บริการทำความสะอาดบ้าน' : 'บริการทำความสะอาดเฟอร์นิเจอร์',
+                    baseService: baseSrv, addons: addonsText, customerName: name, phone: phone, bookingDate: date, bookingTime: time, address: address,
+                    promoCode: activePromoCode || "ไม่ได้ใช้",
+                    totalPrice: Number(document.getElementById('sum-price').textContent.replace(/,/g, '')),
+                    status: "pending", createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                var docRef = await window.cf_db.collection("bookings").add(orderData);
+                var summary = "===== CLEANFORCE BOOKING =====\nรหัส: " + docRef.id.slice(0, 6).toUpperCase() + "\nประเภท: " + orderData.serviceMode + "\nแพ็กเกจ: " + baseSrv + "\nบริการเสริม:\n" + addonsText + "------------------------------\nชื่อ: " + name + "\nเบอร์: " + phone + "\nที่อยู่: " + address + "\nนัดหมาย: " + date + " " + time + " น.\n------------------------------\nราคาชำระสุทธิ: " + document.getElementById('sum-price').textContent + " บาท\n==============================";
+                window.location.href = "https://line.me/R/oaMessage/@cleanforce/?" + encodeURIComponent(summary); 
+            } catch (error) {
+                console.error("Booking Error: ", error); alert("เกิดข้อผิดพลาด");
+                submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false;
+            }
+        };
+
+        // เริ่มโหลดข้อมูลเมื่อโครงสร้างหน้าเว็บ (DOM) โหลดเสร็จเท่านั้น เพื่อความเสถียร
+        document.addEventListener('DOMContentLoaded', () => {
+            let tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
+            let dateInput = document.getElementById('bk-date-input');
+            if(dateInput) dateInput.min = tmr.toISOString().split("T")[0];
+            
+            // รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
+            setTimeout(() => {
+                loadDynamicServices();
+            }, 300);
+        });
+    </script>
+</body>
+</html>
