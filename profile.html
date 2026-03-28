@@ -28,6 +28,13 @@
                 <p id="prof-email" class="text-sm text-gray-500">-</p>
             </div>
         </div>
+        <div id="pkg-container" class="hidden bg-gradient-to-r from-yellow-50 to-white rounded-2xl shadow-sm border border-yellow-200 overflow-hidden">
+            <div class="p-4 border-b border-yellow-100 bg-yellow-100/50">
+                <h3 class="font-bold text-yellow-800 flex items-center gap-2"><i class="fa-solid fa-crown"></i> แพ็กเกจและโควตาส่วนตัว</h3>
+            </div>
+            <div id="my-packages" class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                </div>
+        </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 bg-gray-50">
@@ -65,6 +72,39 @@
                 document.getElementById('prof-name').textContent = user.displayName;
                 document.getElementById('prof-email').textContent = user.email;
 
+                // 🌟 ดึงข้อมูลแพ็กเกจ VIP ของตัวเอง
+                db.collection("users").doc(user.uid).onSnapshot(doc => {
+                    if(doc.exists && doc.data().customPackages && doc.data().customPackages.length > 0) {
+                        let pkgs = doc.data().customPackages;
+                        let hasActive = false;
+                        let html = '';
+                        
+                        pkgs.forEach(pkg => {
+                            if(pkg.remain > 0) {
+                                hasActive = true;
+                                let expText = pkg.expireDate ? new Date(pkg.expireDate).toLocaleDateString('th-TH') : 'ไม่มีกำหนด';
+                                html += `
+                                <div class="bg-white border-2 border-yellow-300 p-4 rounded-xl relative">
+                                    <div class="absolute right-0 top-0 bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">เหลือ ${pkg.remain} สิทธิ์</div>
+                                    <h4 class="font-bold text-[#000080] text-sm mb-1 w-3/4 truncate">${pkg.name}</h4>
+                                    <p class="text-[10px] text-gray-500 mb-2 line-clamp-2">${pkg.desc || '-'}</p>
+                                    <div class="flex items-center gap-2 text-[10px] font-bold text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                                        <i class="fa-regular fa-calendar-xmark"></i> หมดอายุ: ${expText}
+                                    </div>
+                                    <a href="cleanforce.html" class="mt-3 block text-center bg-yellow-50 text-yellow-700 border border-yellow-400 px-4 py-2 rounded-lg text-xs font-bold hover:bg-yellow-500 hover:text-white transition w-full shadow-sm">ไปหน้าจองคิวเพื่อใช้สิทธิ์</a>
+                                </div>`;
+                            }
+                        });
+                        
+                        if(hasActive) {
+                            document.getElementById('pkg-container').classList.remove('hidden');
+                            document.getElementById('my-packages').innerHTML = html;
+                        } else {
+                            document.getElementById('pkg-container').classList.add('hidden');
+                        }
+                    }
+                });
+                
                 // ดึงประวัติการจองของตัวเอง (ตัด orderBy ออกเพื่อแก้ปัญหา Index Error และดึงข้อมูลใหม่)
                 db.collection("bookings")
                   .where("userId", "==", user.uid)

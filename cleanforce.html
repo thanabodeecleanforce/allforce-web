@@ -749,7 +749,44 @@
             </div>
         </div>
     </div>
-    
+    <div id="pc-line-modal" class="fixed inset-0 bg-black/80 z-[999] hidden flex-col items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative">
+            <div class="bg-[#000080] p-6 text-white text-center">
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-desktop text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold font-heading">ขั้นตอนสุดท้ายในการจองคิว</h3>
+                <p class="text-blue-200 text-xs mt-1">เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ</p>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <div class="flex gap-4 items-start">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-primary font-bold flex items-center justify-center shrink-0 mt-1">1</div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 text-sm mb-1">คัดลอกข้อความสรุปการจอง</h4>
+                        <p class="text-xs text-gray-500 mb-2">ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว</p>
+                        <textarea id="pc-booking-summary" rows="3" class="w-full text-[10px] p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none resize-none" readonly></textarea>
+                        <button onclick="copyBookingSummary()" class="mt-2 w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i> คัดลอกข้อความ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 items-start">
+                    <div class="w-8 h-8 rounded-full bg-[#00B900]/20 text-[#00B900] font-bold flex items-center justify-center shrink-0">2</div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 text-sm mb-1">ส่งให้แอดมินทาง LINE @cleanforce</h4>
+                        <p class="text-xs text-gray-500 mb-3">คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่าง LINE แล้ว "วางข้อความ" ส่งให้แอดมินได้เลยครับ</p>
+                        <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="w-full py-3 bg-[#00B900] text-white text-sm font-bold rounded-xl hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-brands fa-line text-xl"></i> เปิด LINE เพื่อวางข้อความ
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button onclick="document.getElementById('pc-line-modal').classList.add('hidden')" class="absolute top-4 right-4 text-white/50 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
     <footer class="py-12 px-6 border-t border-gray-100 bg-white text-text text-center">
         <img src="logo-cleanforce.png" alt="Cleanforce Footer Logo" class="h-10 mx-auto mb-6 object-contain">
         <div class="mb-6 flex justify-center gap-6">
@@ -1849,13 +1886,36 @@
                 let encodedMessage = encodeURIComponent(summary);
                 let lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage; 
                 
-                window.location.href = lineUrl;
+                
+                // 🌟 ระบบตรวจจับมือถือ หรือ PC
+                let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+                if (isMobile) {
+                    // ถ้าเป็นมือถือ ให้เด้งเปิดแอป LINE ได้เลย
+                    window.location.href = lineUrl;
+                } else {
+                    // ถ้าเป็นคอมพิวเตอร์ (PC) ให้โชว์ป๊อปอัปให้คัดลอกข้อความ
+                    document.getElementById('pc-booking-summary').value = summary;
+                    document.getElementById('pc-line-modal').classList.remove('hidden');
+                    document.getElementById('pc-line-modal').classList.add('flex');
+                    if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
+                }
 
             } catch (error) {
                 console.error("Booking Error: ", error); 
                 alert("เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้งครับ (" + error.message + ")");
                 if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
             }
+        }
+
+        // ฟังก์ชันกดคัดลอกข้อความ
+        window.copyBookingSummary = function() {
+            let summaryText = document.getElementById('pc-booking-summary');
+            summaryText.select();
+            document.execCommand('copy');
+            
+            const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 2000 });
+            Toast.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว! นำไปวางใน LINE ได้เลย' });
         }
 
 
