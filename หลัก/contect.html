@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Cleanforce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Thai', sans-serif; background-color: #F3F7FB; }
+        .link-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .link-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-12 px-6 bg-gradient-to-br from-[#F3F7FB] to-[#E1EFFE]">
+
+    <div class="w-full max-w-md text-center mb-8 animate-in slide-in-from-top-4 duration-500">
+        <div class="w-24 h-24 mx-auto bg-white rounded-full p-2 shadow-lg mb-4 border-2 border-white">
+            <img src="logo-cleanforce.png" alt="Cleanforce" class="w-full h-full object-contain" onerror="this.src='https://placehold.co/100x100?text=CF'">
+        </div>
+        <h1 class="text-2xl font-bold text-[#000080] font-['Poppins']">Cleanforce</h1>
+        <p class="text-sm text-gray-500 mt-1">Contact us via your preferred channel</p>
+    </div>
+
+    <div class="w-full max-w-md space-y-4 mb-6 z-10">
+        <button onclick="trackAndGo('LINE')" id="btn-line" class="link-card w-full bg-[#00B900] text-white p-4 rounded-2xl flex items-center shadow-sm relative overflow-hidden group">
+            <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            <i class="fa-brands fa-line text-3xl w-12 text-center"></i>
+            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide">LINE Official</span>
+        </button>
+        
+        <button onclick="trackAndGo('WhatsApp')" id="btn-wa" class="link-card w-full bg-[#25D366] text-white p-4 rounded-2xl flex items-center shadow-sm relative overflow-hidden group hidden">
+            <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            <i class="fa-brands fa-whatsapp text-3xl w-12 text-center"></i>
+            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide">WhatsApp</span>
+        </button>
+
+        <button onclick="trackAndGo('WeChat')" id="btn-wechat" class="link-card w-full bg-[#07C160] text-white p-4 rounded-2xl flex items-center shadow-sm relative overflow-hidden group hidden">
+            <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            <i class="fa-brands fa-weixin text-3xl w-12 text-center"></i>
+            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide">WeChat</span>
+        </button>
+
+        <button onclick="trackAndGo('Telegram')" id="btn-tg" class="link-card w-full bg-[#0088cc] text-white p-4 rounded-2xl flex items-center shadow-sm relative overflow-hidden group hidden">
+            <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            <i class="fa-brands fa-telegram text-3xl w-12 text-center"></i>
+            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide">Telegram</span>
+        </button>
+
+        <button onclick="trackAndGo('Facebook')" id="btn-fb" class="link-card w-full bg-[#1877F2] text-white p-4 rounded-2xl flex items-center shadow-sm relative overflow-hidden group hidden">
+            <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            <i class="fa-brands fa-facebook text-3xl w-12 text-center"></i>
+            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide">Facebook Messenger</span>
+        </button>
+    </div>
+
+    <div class="w-full max-w-md">
+        <button onclick="toggleMore()" id="btn-more-toggle" class="w-full bg-white text-gray-600 border border-gray-200 p-4 rounded-2xl flex items-center justify-center gap-2 font-bold hover:bg-gray-50 transition shadow-sm hidden">
+            <i class="fa-solid fa-layer-group text-primary"></i> <span id="more-text">ช่องทางอื่นๆ (More Channels)</span> <i class="fa-solid fa-chevron-down text-xs transition-transform" id="more-icon"></i>
+        </button>
+        
+        <div id="more-channels" class="hidden mt-4 space-y-3">
+            </div>
+    </div>
+
+    <footer class="mt-auto pt-12 text-center text-gray-400 text-xs">
+        <a href="cleanforce.html" class="inline-block hover:text-[#1EA7E1] transition underline decoration-gray-300 underline-offset-4 mb-2">กลับหน้าเว็บไซต์หลัก (Back to Home)</a>
+        <p>© 2024 Cleanforce. All rights reserved.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
+        let linkData = { line: '', whatsapp: '', wechat: '', telegram: '', facebook: '' };
+
+        // โหลดข้อมูลจากฐานข้อมูล
+        db.collection('settings').doc('contact_page').get().then(doc => {
+            if(doc.exists) {
+                let data = doc.data();
+                
+                // Set 5 Main Links
+                if(data.mainLinks) {
+                    linkData = data.mainLinks;
+                    ['line', 'wa', 'wechat', 'tg', 'fb'].forEach((key, idx) => {
+                        let actualKey = ['line', 'whatsapp', 'wechat', 'telegram', 'facebook'][idx];
+                        if(linkData[actualKey]) {
+                            document.getElementById(`btn-${key}`).classList.remove('hidden');
+                        }
+                    });
+                } else {
+                    // Fallback default
+                    linkData.line = "https://line.me/R/ti/p/@cleanforce";
+                    document.getElementById('btn-line').classList.remove('hidden');
+                }
+
+                // Set Custom Links
+                if(data.customLinks && data.customLinks.length > 0) {
+                    document.getElementById('btn-more-toggle').classList.remove('hidden');
+                    let html = '';
+                    data.customLinks.forEach((c, idx) => {
+                        html += `
+                        <button onclick="trackAndGo('Custom_${idx}_${c.name}', '${c.url}')" class="link-card w-full bg-white text-gray-700 border border-gray-200 p-4 rounded-2xl flex items-center shadow-sm group">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                                ${c.img ? `<img src="${c.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-link text-gray-400"></i>`}
+                            </div>
+                            <span class="font-bold flex-1 text-center pr-10 text-[15px]">${c.name}</span>
+                        </button>`;
+                    });
+                    document.getElementById('more-channels').innerHTML = html;
+                }
+                
+                // นับยอดคนเข้าดูหน้าเพจ (View Count)
+                db.collection('settings').doc('contact_page').set({
+                    clickStats: { 'Page_Views': firebase.firestore.FieldValue.increment(1) }
+                }, { merge: true });
+            }
+        });
+
+        function toggleMore() {
+            let moreDiv = document.getElementById('more-channels');
+            let icon = document.getElementById('more-icon');
+            if(moreDiv.classList.contains('hidden')) {
+                moreDiv.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                moreDiv.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function trackAndGo(channel, customUrl = null) {
+            let url = customUrl || linkData[channel.toLowerCase()];
+            if(!url) return alert('ขออภัย ช่องทางนี้กำลังปรับปรุงครับ');
+
+            // บันทึกสถิติการคลิกลง Firebase
+            db.collection('settings').doc('contact_page').set({
+                clickStats: { [channel]: firebase.firestore.FieldValue.increment(1) }
+            }, { merge: true });
+
+            // เด้งไปลิงก์เป้าหมาย
+            setTimeout(() => { window.open(url, '_blank'); }, 150);
+        }
+    </script>
+</body>
+</html>
