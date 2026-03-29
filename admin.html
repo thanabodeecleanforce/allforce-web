@@ -251,6 +251,18 @@
                         <div><label class="text-xs font-bold text-[#07C160]">3. WeChat URL / ID</label><input type="text" id="cnt-wechat" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-green-500 bg-gray-50"></div>
                         <div><label class="text-xs font-bold text-[#0088cc]">4. Telegram URL</label><input type="text" id="cnt-tg" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50"></div>
                         <div class="md:col-span-2"><label class="text-xs font-bold text-[#1877F2]">5. Facebook Messenger URL</label><input type="text" id="cnt-fb" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50"></div>
+                    
+                    <div class="md:col-span-2 border-t pt-4 mt-2">
+                        <label class="text-xs font-bold text-gray-800">รูปภาพพรีวิวเมื่อแชร์ลิงก์ (Link Preview)</label>
+                        <div class="flex gap-2 mt-1">
+                            <input type="text" id="cnt-og-img" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-gray-50" placeholder="ลิงก์รูปภาพ หรือกดปุ่มอัปโหลดด้านขวา ->">
+                            <label class="bg-blue-100 text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-lg cursor-pointer transition flex items-center justify-center shrink-0 shadow-sm" title="อัปโหลดรูปลิงก์พรีวิว">
+                                <i class="fa-solid fa-cloud-arrow-up mr-2"></i> อัปโหลด
+                                <input type="file" class="hidden" accept="image/*" onchange="handleSingleUpload(event, 'cnt-og-img')">
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1">* แนะนำขนาดรูปแนวนอน 1200 x 630 px เพื่อให้โชว์บน LINE หรือ Facebook ได้สวยงาม</p>
+                    </div>
                     </div>
 
                     <div class="flex justify-between items-center border-t pt-6 mb-2">
@@ -1645,6 +1657,7 @@
                     document.getElementById('cnt-wechat').value = main.wechat || '';
                     document.getElementById('cnt-tg').value = main.telegram || '';
                     document.getElementById('cnt-fb').value = main.facebook || '';
+                    document.getElementById('cnt-og-img').value = data.ogImage || '';
 
                     currentCustomContacts = data.customLinks || [];
                     
@@ -1735,10 +1748,14 @@
             };
             let cleanCustom = currentCustomContacts.filter(c => c.name.trim() !== '' && c.url.trim() !== '');
 
+            // ดึงค่ารูปลิงก์พรีวิว
+            let ogImgVal = document.getElementById('cnt-og-img').value.trim(); // 🆕 ดึงข้อมูลรูปพรีวิว
+
             try {
                 await db.collection('settings').doc('contact_page').set({ 
                     mainLinks: mainLinks, 
-                    customLinks: cleanCustom 
+                    customLinks: cleanCustom,
+                    ogImage: ogImgVal // 🆕 บันทึกลงฐานข้อมูล
                 }, { merge: true });
                 
                 Swal.fire({ icon: 'success', title: 'บันทึกหน้าติดต่อสำเร็จ', showConfirmButton: false, timer: 1500 });
@@ -1749,6 +1766,7 @@
             
             btn.innerHTML = originalText;
             btn.disabled = false;
+            
         }
 
         function generateContactQR() {
