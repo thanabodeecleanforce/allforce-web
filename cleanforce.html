@@ -1256,6 +1256,9 @@
                         }
                     }
                 });
+
+                // 🔧 BUG FIX #3: โหลดคูปองที่ลูกค้าเก็บไว้แสดงในฟอร์มจอง
+                loadBookingCoupons();
             }
             
         });
@@ -2680,7 +2683,7 @@
                         <div class="absolute top-0 right-0 bg-yellow-400 text-red-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg">รีบเก็บเลย!</div>
                         <h4 class="font-bold text-primary text-xl tracking-wider">${c.code}</h4>
                         <p class="text-sm text-gray-800 font-semibold mt-1">${discountText}</p>
-                        <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.expiryDate || 'ไม่ระบุ'}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.endDate || 'ไม่ระบุ'}</p>
                         
                         <button onclick="claimSpecificCoupon('${c.code}')" class="mt-3 bg-primary text-white font-bold py-2 px-4 rounded-full w-full shadow hover:scale-105 transition transform duration-200 text-sm flex justify-center items-center gap-2">
                             <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ดเลย
@@ -2704,8 +2707,56 @@
                 myCoupons.push(code);
                 localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
                 Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'เก็บคูปองสำเร็จ! ดูได้ที่หน้าโปรไฟล์', showConfirmButton: false, timer: 3000 });
+                loadBookingCoupons(); // รีเฟรชปุ่มในฟอร์มจองทันที
             } else {
                 Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'คุณเก็บคูปองนี้ไปแล้วครับ', showConfirmButton: false, timer: 2000 });
+            }
+        };
+
+        // 🔧 BUG FIX #3: โหลดคูปองที่ลูกค้าเก็บไว้ แสดงเป็นปุ่ม quick-apply ในฟอร์มจอง
+        window.loadBookingCoupons = async function() {
+            const container = document.getElementById('available-coupons-container');
+            const list = document.getElementById('available-coupons-list');
+            if (!container || !list) return;
+
+            let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+            if (myCoupons.length === 0) { container.classList.add('hidden'); return; }
+
+            try {
+                const snapshot = await window.cf_db.collection('coupons')
+                    .where('isActive', '==', true).get();
+
+                let html = '';
+                let today = new Date().toISOString().split('T')[0];
+
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    // แสดงเฉพาะคูปองที่ลูกค้าเก็บไว้ และยังไม่หมดอายุ
+                    if (!myCoupons.includes(c.code)) return;
+                    if (c.endDate && today > c.endDate) return;
+
+                    let discText = c.discountType === 'percent'
+                        ? `ลด ${c.discountValue}%`
+                        : `ลด ฿${c.discountValue.toLocaleString()}`;
+
+                    html += `
+                        <button type="button"
+                            onclick="autoApplyCoupon('${c.code}')"
+                            class="flex-shrink-0 bg-white border-2 border-dashed border-primary rounded-xl px-3 py-2 text-left hover:bg-blue-50 transition shadow-sm">
+                            <p class="font-mono font-bold text-primary text-sm">${c.code}</p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">${discText}</p>
+                        </button>`;
+                });
+
+                if (html) {
+                    list.innerHTML = html;
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            } catch(e) {
+                console.warn('loadBookingCoupons error:', e);
+                container.classList.add('hidden');
             }
         };
 
@@ -2824,7 +2875,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="absolute top-0 right-0 bg-yellow-400 text-red-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg">รีบเก็บเลย!</div>
                         <h4 class="font-bold text-primary text-xl tracking-wider">${c.code}</h4>
                         <p class="text-sm text-gray-800 font-semibold mt-1">${discountText}</p>
-                        <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.expiryDate || 'ไม่ระบุ'}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.endDate || 'ไม่ระบุ'}</p>
                         
                         <button onclick="claimSpecificCoupon('${c.code}')" class="mt-3 bg-primary text-white font-bold py-2 px-4 rounded-full w-full shadow hover:scale-105 transition transform duration-200 text-sm flex justify-center items-center gap-2">
                             <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ดเลย
@@ -2843,11 +2894,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 5. ฟังก์ชันกดเก็บคูปอง
     window.claimSpecificCoupon = function(code) {
-        navigator.clipboard.writeText(code);
+        // 🔧 BUG FIX: บันทึกลง localStorage ก่อน แล้วค่อย copy clipboard
+        let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+        if (!myCoupons.includes(code)) {
+            myCoupons.push(code);
+            localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
+        }
+        navigator.clipboard.writeText(code).catch(() => {});
         Swal.fire({
             icon: 'success',
             title: 'เก็บโค้ดสำเร็จ!',
-            text: `คัดลอกโค้ด ${code} เรียบร้อยแล้ว`,
+            text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์`,
             showConfirmButton: false,
             timer: 2500
         });
@@ -2911,7 +2968,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="absolute top-0 right-0 bg-yellow-400 text-red-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg">รีบเก็บเลย!</div>
                             <h4 class="font-bold text-primary text-xl tracking-wider">${c.code}</h4>
                             <p class="text-sm text-gray-800 font-semibold mt-1">${discountText}</p>
-                            <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.expiryDate || 'ไม่ระบุ'}</p>
+                            <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.endDate || 'ไม่ระบุ'}</p>
                             
                             <button onclick="claimSpecificCoupon('${c.code}')" class="mt-3 bg-primary text-white font-bold py-2 px-4 rounded-full w-full shadow hover:scale-105 transition transform duration-200 text-sm flex justify-center items-center gap-2">
                                 <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ดเลย
@@ -2930,20 +2987,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // ฟังก์ชันเมื่อกดปุ่ม "เก็บโค้ดเลย"
         window.claimSpecificCoupon = function(code) {
-            // คัดลอกโค้ดลง Clipboard
-            navigator.clipboard.writeText(code);
-            
-            // เช็คว่ามี SweetAlert2 ไหม ถ้ามีใช้แบบสวยๆ ถ้าไม่มีใช้ Alert ธรรมดา (กันพัง)
+            // 🔧 BUG FIX: บันทึกลง localStorage ก่อน แล้วค่อย copy clipboard
+            let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+            if (!myCoupons.includes(code)) {
+                myCoupons.push(code);
+                localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
+            }
+            navigator.clipboard.writeText(code).catch(() => {});
+
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'success',
                     title: 'เก็บโค้ดสำเร็จ!',
-                    text: `คัดลอกโค้ด ${code} เรียบร้อยแล้ว`,
+                    text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์`,
                     showConfirmButton: false,
                     timer: 2500
                 });
             } else {
-                alert(`เก็บโค้ดสำเร็จ! คัดลอกโค้ด ${code} เรียบร้อยแล้ว`);
+                alert(`เก็บโค้ดสำเร็จ! บันทึกโค้ด ${code} เรียบร้อยแล้ว`);
             }
             
             // สั่งปิดหน้าต่างป๊อปอัพ
@@ -2952,6 +3013,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }
+
+            // รีเฟรชคูปองในฟอร์มจอง (ถ้ามี)
+            if (typeof loadBookingCoupons === 'function') loadBookingCoupons();
         };
 
         // ให้ดึงข้อมูลทันทีที่โหลดหน้าเว็บ

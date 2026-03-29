@@ -207,8 +207,10 @@
                     let c = doc.data();
                     if (myCoupons.includes(c.code)) {
                         hasValidCoupon = true;
-                        // แปลงวันหมดอายุเป็นภาษาไทยแบบง่ายๆ
-                        let expiryStr = c.expiryDate ? c.expiryDate.toDate().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : 'ไม่มีกำหนด';
+                        // 🔧 BUG FIX: endDate ถูกบันทึกเป็น string (YYYY-MM-DD) ไม่ใช่ Timestamp
+                        let expiryStr = c.endDate
+                            ? new Date(c.endDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })
+                            : 'ไม่มีกำหนด';
 
                         html += `
                         <div class="border border-primary border-dashed bg-blue-50 rounded-lg p-3 flex justify-between items-center gap-3 relative overflow-hidden">
