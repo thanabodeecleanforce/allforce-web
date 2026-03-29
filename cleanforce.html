@@ -2172,11 +2172,11 @@
         if (appliedCode && netPriceNumber < totalPriceNumber) { // เช็คว่าใส่โค้ดจริงและได้ลดราคาจริง
             try {
                 // ค้นหาคูปองไอดีนั้น
-                const snapshot = await db.collection('coupons').where('code', '==', appliedCode).get();
+                const snapshot = await window.cf_db.collection('coupons').where('code', '==', appliedCode).get();
                 if (!snapshot.empty) {
                     let docId = snapshot.docs[0].id;
                     // สั่งบวกยอด usedCount ขึ้น 1
-                    await db.collection('coupons').doc(docId).update({
+                    await window.cf_db.collection('coupons').doc(docId).update({
                         usedCount: firebase.firestore.FieldValue.increment(1)
                     });
                 }
@@ -2849,12 +2849,12 @@ document.addEventListener('DOMContentLoaded', function() {
         container.innerHTML = '<div class="flex flex-col items-center py-4"><i class="fa-solid fa-spinner fa-spin text-2xl text-primary mb-2"></i><p class="text-sm text-gray-500">กำลังค้นหาคูปอง...</p></div>';
 
         try {
-            // เช็คว่า db ถูกประกาศไว้ในไฟล์หรือยัง (ต้องมีการเชื่อม Firebase ไว้ก่อนหน้า)
-            if (typeof db === 'undefined') {
+            // 🔧 BUG FIX: ใช้ window.cf_db แทน db
+            if (typeof window.cf_db === 'undefined') {
                 throw new Error("ยังไม่ได้เชื่อมต่อ Firebase");
             }
 
-            const snapshot = await db.collection("coupons").where("isActive", "==", true).get();
+            const snapshot = await window.cf_db.collection("coupons").where("isActive", "==", true).get();
             
             if (snapshot.empty) {
                 container.innerHTML = `
