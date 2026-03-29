@@ -2747,6 +2747,87 @@
         window.addEventListener('load', function() {
             setTimeout(showSlideNotification, 3000);
         });
+
+        
+    document.addEventListener('DOMContentLoaded', function() {
+    // 1. ดึงกล่องและปุ่มต่างๆ มารอไว้
+    const modal = document.getElementById('coupon-modal-new');
+    const closeBtn = document.getElementById('close-coupon-btn');
+    const claimBtn = document.getElementById('claim-coupon-btn');
+    const floatingBtn = document.getElementById('floating-coupon-btn');
+
+    // ถ้าหาป๊อปอัพไม่เจอให้หยุดทำงาน (ป้องกันโค้ด error)
+    if (!modal) return;
+
+    // 2. ฟังก์ชันเปิดหน้าต่าง
+    function openModal() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex'); // ทำให้หน้าต่างเด้งมาอยู่ตรงกลางจอ
+    }
+
+    // 3. ฟังก์ชันปิดหน้าต่าง
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // 4. สั่งให้กล่องของขวัญเลื่อนเข้ามาในจอหลังจากเปิดเว็บ 2 วินาที
+    if (floatingBtn) {
+        setTimeout(() => {
+            floatingBtn.classList.remove('hidden');
+            // .show คือ class ใน css ของคุณที่ตั้งให้เลื่อนจากขวาเข้ามา
+            floatingBtn.classList.add('show'); 
+        }, 2000);
+
+        // เมื่อกดกล่องของขวัญ -> ให้เปิด Modal
+        floatingBtn.addEventListener('click', openModal);
+    }
+
+    // 5. เมื่อกดกากบาท -> ให้ปิด Modal
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+
+    // 6. เมื่อคลิกที่พื้นที่สีดำนอกหน้าต่าง -> ให้ปิด Modal
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // 7. เมื่อกดปุ่ม "รับสิทธิ์เลย"
+    if (claimBtn) {
+        claimBtn.addEventListener('click', function() {
+            // ป้องกันการกดรัวๆ และเปลี่ยนข้อความปุ่ม
+            const originalText = claimBtn.innerHTML;
+            claimBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลด...';
+            claimBtn.disabled = true;
+
+            // หน่วงเวลาจำลองการโหลดข้อมูล 1.5 วินาที
+            setTimeout(() => {
+                // เด้งแจ้งเตือนสำเร็จ (ทำงานร่วมกับ SweetAlert2 ในขั้นตอนที่ 1)
+                Swal.fire({
+                    icon: 'success',
+                    title: 'รับคูปองสำเร็จ!',
+                    text: 'นำโค้ดไปใช้ในขั้นตอนการจองได้เลย',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                
+                // ปิดป๊อปอัพและซ่อนกล่องของขวัญทิ้งไปเลย (เพราะรับสิทธิ์ไปแล้ว)
+                closeModal();
+                if (floatingBtn) {
+                    floatingBtn.classList.remove('show');
+                    setTimeout(() => floatingBtn.classList.add('hidden'), 500);
+                }
+                
+                // คืนค่าปุ่มให้กลับมาเหมือนเดิม
+                claimBtn.innerHTML = originalText;
+                claimBtn.disabled = false;
+            }, 1500);
+        });
+    }
+});
     </script>
 
     <div id="slide-notification" class="fixed top-24 -right-full z-50 transition-all duration-500 ease-in-out cursor-pointer shadow-lg rounded-xl bg-white border border-gray-100 w-72 overflow-hidden" onclick="document.getElementById('coupon-modal-new').classList.remove('hidden'); loadAvailableCoupons(); hideSlideNotification();">
@@ -2771,18 +2852,25 @@
         </div>
     </div>
 
-    <div id="coupon-modal-new" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative">
-            <button onclick="document.getElementById('coupon-modal-new').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">
-                 <i class="fa-solid fa-xmark text-lg"></i>
+    <div id="coupon-modal-new" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden items-center justify-center backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative transform transition-all">
+        
+        <button id="close-coupon-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+             <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+
+        <div class="bg-primary text-white text-center py-5">
+            <h2 class="text-xl font-bold"><i class="fa-solid fa-gift mr-2"></i>คูปองพิเศษสำหรับคุณ!</h2>
+        </div>
+        
+        <div class="p-6 text-center">
+            <p class="text-gray-600 mb-4 text-sm">รับส่วนลดพิเศษสำหรับการจองครั้งแรกของคุณ</p>
+            
+            <button id="claim-coupon-btn" class="bg-primary text-white font-bold py-3 px-6 rounded-full w-full shadow-md hover:scale-105 transition transform duration-200">
+                รับสิทธิ์เลย!
             </button>
-            <div class="bg-primary text-white text-center py-5">
-                <h2 class="text-xl font-bold"><i class="fa-solid fa-ticket mr-2"></i>คูปองส่วนลดพิเศษ</h2>
-            </div>
-            <div class="p-4 max-h-[60vh] overflow-y-auto bg-gray-50 space-y-3" id="coupon-list-container">
-                <p class="text-center text-gray-500 text-sm py-4">กำลังโหลดคูปอง...</p>
-            </div>
         </div>
     </div>
+</div>
   </body>
 </html>
