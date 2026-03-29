@@ -278,15 +278,9 @@
                             <h3 class="text-lg font-bold text-[#000080]"><i class="fa-solid fa-list-ol mr-2"></i>จัดการช่องทาง (จัดเรียงได้)</h3>
                             <p class="text-[10px] text-gray-500 mt-1">ลูกศรเพื่อเลื่อนขึ้น-ลง เพื่อเปลี่ยนลำดับความสำคัญ</p>
                         </div>
-                        <div class="flex gap-2">
-                            <select id="new-link-type" class="p-2 border rounded-lg text-xs outline-none font-bold text-primary">
-                                <option value="line">เพิ่ม LINE</option>
-                                <option value="wa">เพิ่ม WhatsApp</option>
-                                <option value="fb">เพิ่ม Facebook</option>
-                                <option value="custom">เพิ่มช่องทางอื่น (กำหนดเอง)</option>
-                            </select>
-                            <button type="button" onclick="addNewContactLink()" class="bg-blue-50 text-primary px-3 py-2 rounded-lg text-xs font-bold border border-blue-200 hover:bg-primary hover:text-white transition"><i class="fa-solid fa-plus"></i></button>
-                        </div>
+                        <button type="button" onclick="addNewContactLink()" class="bg-blue-50 text-primary px-4 py-2.5 rounded-lg text-xs font-bold border border-blue-200 hover:bg-primary hover:text-white transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> เพิ่มช่องทางการติดต่อ
+                        </button>
                     </div>
                     
                     <div id="unified-links-area" class="space-y-3"></div>
@@ -469,6 +463,75 @@
         </div>
     </div>
 
+    <div id="coupon-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
+                <h3 class="font-bold text-lg text-[#000080]" id="coupon-modal-title"><i class="fa-solid fa-ticket text-primary mr-2"></i>สร้างคูปองใหม่</h3>
+                <button onclick="closeCouponModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto hide-scroll flex-1 space-y-4">
+                <input type="hidden" id="cpn-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1">ชื่อแคมเปญ (ให้แอดมินดู)</label><input type="text" id="cpn-name" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary" placeholder="เช่น โปรลดสงกรานต์"></div>
+                    <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1">รหัสโค้ด (ลูกค้ากรอก) <span class="text-red-500">*</span></label><input type="text" id="cpn-code" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary uppercase font-bold text-primary" placeholder="เช่น SONGKRAN26"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">ประเภทส่วนลด</label>
+                        <select id="cpn-type" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white">
+                            <option value="fixed">ลดเป็นบาท (฿)</option>
+                            <option value="percent">ลดเป็นเปอร์เซ็นต์ (%)</option>
+                        </select>
+                    </div>
+                    <div><label class="block text-xs font-bold text-gray-600 mb-1">มูลค่าที่ลด <span class="text-red-500">*</span></label><input type="number" id="cpn-value" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary font-bold text-green-600" placeholder="เช่น 100 หรือ 10"></div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="col-span-2"><label class="block text-xs font-bold text-gray-600 mb-1">จำนวนคูปอง (สิทธิ์)</label><input type="number" id="cpn-limit" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary" placeholder="เว้นว่าง = ไม่จำกัด"></div>
+                    <div class="col-span-2"><label class="block text-xs font-bold text-gray-600 mb-1">ยอดสั่งซื้อขั้นต่ำ (บาท)</label><input type="number" id="cpn-min-spend" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary" placeholder="เช่น 1500"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-bold text-gray-600 mb-1">วันเริ่มต้น</label><input type="date" id="cpn-start" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
+                    <div><label class="block text-xs font-bold text-gray-600 mb-1">วันหมดอายุ</label><input type="date" id="cpn-end" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
+                    <p class="text-[10px] font-bold text-primary uppercase"><i class="fa-solid fa-gears mr-1"></i> เงื่อนไขขั้นสูง (Advanced Rules)</p>
+                    <div><label class="block text-xs font-bold text-gray-600 mb-1">มอบให้เฉพาะอีเมลนี้ (เว้นว่าง = ทุกคนใช้ได้)</label><input type="text" id="cpn-target" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white" placeholder="email1@gmail.com, email2@gmail.com"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">ใช้ร่วมกับโค้ดอื่นได้ไหม?</label>
+                            <select id="cpn-stackable" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white">
+                                <option value="false">❌ ไม่ได้ (โดดๆ)</option><option value="true">✅ ได้ (ลดหลายต่อ)</option>
+                            </select>
+                        </div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">ต้องใช้โค้ดนี้ก่อนถึงใช้ได้</label><input type="text" id="cpn-require" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white uppercase" placeholder="เช่น NEWUSER"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">สถานะ</label>
+                    <select id="cpn-active" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white font-bold text-green-600">
+                        <option value="true">✅ เปิดใช้งาน</option><option value="false">❌ ปิดใช้งานชั่วคราว</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
+                <button onclick="closeCouponModal()" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm transition">ยกเลิก</button>
+                <button onclick="saveCoupon()" class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 shadow-sm text-sm transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกคูปอง</button>
+            </div>
+        </div>
+
+            <div class="p-4 border-t bg-white flex justify-end gap-3 shrink-0">
+                <button onclick="closeUserPkgModal()" class="px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm transition">ยกเลิก</button>
+                <button onclick="saveUserPkg()" class="px-5 py-2.5 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 shadow-md text-sm transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกแพ็กเกจให้ลูกค้า</button>
+            </div>
+        </div>
+    </div>
+    
     <div id="user-pkg-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden animate-in fade-in zoom-in">
             <div class="p-5 border-b bg-yellow-50 flex justify-between items-center">
@@ -536,76 +599,9 @@
                     </div>
                 </div>
             </div>
-
-            <div id="coupon-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
-                <h3 class="font-bold text-lg text-[#000080]" id="coupon-modal-title"><i class="fa-solid fa-ticket text-primary mr-2"></i>สร้างคูปองใหม่</h3>
-                <button onclick="closeCouponModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto hide-scroll flex-1 space-y-4">
-                <input type="hidden" id="cpn-id">
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1">ชื่อแคมเปญ (ให้แอดมินดู)</label><input type="text" id="cpn-name" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary" placeholder="เช่น โปรลดสงกรานต์"></div>
-                    <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1">รหัสโค้ด (ลูกค้ากรอก) <span class="text-red-500">*</span></label><input type="text" id="cpn-code" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary uppercase font-bold text-primary" placeholder="เช่น SONGKRAN26"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">ประเภทส่วนลด</label>
-                        <select id="cpn-type" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white">
-                            <option value="fixed">ลดเป็นบาท (฿)</option>
-                            <option value="percent">ลดเป็นเปอร์เซ็นต์ (%)</option>
-                        </select>
-                    </div>
-                    <div><label class="block text-xs font-bold text-gray-600 mb-1">มูลค่าที่ลด <span class="text-red-500">*</span></label><input type="number" id="cpn-value" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary font-bold text-green-600" placeholder="เช่น 100 หรือ 10"></div>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="col-span-2"><label class="block text-xs font-bold text-gray-600 mb-1">จำนวนคูปอง (สิทธิ์)</label><input type="number" id="cpn-limit" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary" placeholder="เว้นว่าง = ไม่จำกัด"></div>
-                    <div class="col-span-2"><label class="block text-xs font-bold text-gray-600 mb-1">ยอดสั่งซื้อขั้นต่ำ (บาท)</label><input type="number" id="cpn-min-spend" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary" placeholder="เช่น 1500"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-gray-600 mb-1">วันเริ่มต้น</label><input type="date" id="cpn-start" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
-                    <div><label class="block text-xs font-bold text-gray-600 mb-1">วันหมดอายุ</label><input type="date" id="cpn-end" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
-                </div>
-
-                <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
-                    <p class="text-[10px] font-bold text-primary uppercase"><i class="fa-solid fa-gears mr-1"></i> เงื่อนไขขั้นสูง (Advanced Rules)</p>
-                    <div><label class="block text-xs font-bold text-gray-600 mb-1">มอบให้เฉพาะอีเมลนี้ (เว้นว่าง = ทุกคนใช้ได้)</label><input type="text" id="cpn-target" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white" placeholder="email1@gmail.com, email2@gmail.com"></div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">ใช้ร่วมกับโค้ดอื่นได้ไหม?</label>
-                            <select id="cpn-stackable" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white">
-                                <option value="false">❌ ไม่ได้ (โดดๆ)</option><option value="true">✅ ได้ (ลดหลายต่อ)</option>
-                            </select>
-                        </div>
-                        <div><label class="block text-xs font-bold text-gray-600 mb-1">ต้องใช้โค้ดนี้ก่อนถึงใช้ได้</label><input type="text" id="cpn-require" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white uppercase" placeholder="เช่น NEWUSER"></div>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">สถานะ</label>
-                    <select id="cpn-active" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white font-bold text-green-600">
-                        <option value="true">✅ เปิดใช้งาน</option><option value="false">❌ ปิดใช้งานชั่วคราว</option>
-                    </select>
-                </div>
-            </div>
-            <div class="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
-                <button onclick="closeCouponModal()" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm transition">ยกเลิก</button>
-                <button onclick="saveCoupon()" class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 shadow-sm text-sm transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกคูปอง</button>
-            </div>
         </div>
-    </div>
 
-            <div class="p-4 border-t bg-white flex justify-end gap-3 shrink-0">
-                <button onclick="closeUserPkgModal()" class="px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-100 text-sm transition">ยกเลิก</button>
-                <button onclick="saveUserPkg()" class="px-5 py-2.5 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 shadow-md text-sm transition flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกแพ็กเกจให้ลูกค้า</button>
-            </div>
-        </div>
-    </div>
+        
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
@@ -1283,7 +1279,6 @@
             ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container','coupons-container'].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
-                else if (type === 'coupons') { document.getElementById('coupons-container').classList.remove('hidden'); loadCouponsAdmin(); }
             });
 
             // เลือกโชว์ตามแท็บที่กด
@@ -1291,6 +1286,9 @@
                 document.getElementById('social-container').classList.remove('hidden');
                 if (typeof setupSocialForm === 'function') setupSocialForm();
                 if (typeof loadSocialSettings === 'function') loadSocialSettings();
+            }  else if (type === 'coupons') {
+                document.getElementById('coupons-container').classList.remove('hidden'); 
+                loadCouponsAdmin(); 
             } else if (type === 'contact') {
                 document.getElementById('contact-container').classList.remove('hidden');
                 loadContactAdmin();
@@ -1880,6 +1878,35 @@
             });
         }
 
+        // ==========================================
+        // 🌟 ฟังก์ชันจัดการช่องทางการติดต่อ (ที่หายไป)
+        // ==========================================
+        window.addNewContactLink = function() {
+            // สร้างแถวใหม่แบบว่างๆ
+            unifiedLinks.push({ type: 'custom', iconType: 'custom', name: '', url: '', img: '' });
+            renderUnifiedLinks();
+            // สั่งให้กล่องเลือกไอคอน (20 แอป) เด้งขึ้นมาให้เลือกทันที!
+            openIconPicker(unifiedLinks.length - 1); 
+        };
+
+        window.moveContactLink = function(index, direction) {
+            let newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= unifiedLinks.length) return;
+            let temp = unifiedLinks[index];
+            unifiedLinks[index] = unifiedLinks[newIndex];
+            unifiedLinks[newIndex] = temp;
+            renderUnifiedLinks();
+        };
+
+        window.updateUnifiedLink = function(index, field, value) {
+            unifiedLinks[index][field] = value;
+        };
+
+        window.removeUnifiedLink = function(index) {
+            unifiedLinks.splice(index, 1);
+            renderUnifiedLinks();
+        };
+        
         function renderUnifiedLinks() {
             const container = document.getElementById('unified-links-area');
             if(unifiedLinks.length === 0) {
