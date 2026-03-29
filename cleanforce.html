@@ -1179,12 +1179,10 @@
         }
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 2. ตั้งค่าการเชื่อมต่อ (Initialization)
-        var firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
             authDomain: "allforce-hub.firebaseapp.com",
             projectId: "allforce-hub",
@@ -1197,8 +1195,122 @@
             firebase.initializeApp(firebaseConfig); 
         }
 
-        window.cf_auth = firebase.auth();
+        // ประกาศตัวแปรฐานข้อมูลให้ตรงกับที่คุณใช้ใน cleanforce
         window.cf_db = firebase.firestore();
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('coupon-modal-new');
+        const closeBtn = document.getElementById('close-coupon-btn');
+        const slideNotification = document.getElementById('slide-notification');
+
+        // ฟังก์ชันเปิดป๊อปอัพและโหลดคูปอง
+        window.openAndLoadCoupons = function() {
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex'); // ทำให้หน้าต่างอยู่ตรงกลาง
+            
+            loadAvailableCoupons();
+            hideSlideNotification();
+        };
+
+        // ฟังก์ชันปิดป๊อปอัพ
+        function closeCouponModal() {
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        if (closeBtn) closeBtn.addEventListener('click', closeCouponModal);
+        
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeCouponModal();
+            });
+        }
+
+        // ฟังก์ชันซ่อน Slide
+        window.hideSlideNotification = function() {
+            if (slideNotification) {
+                slideNotification.style.right = '-100%';
+            }
+        };
+
+        // ฟังก์ชันดึงคูปองจาก Firebase
+        async function loadAvailableCoupons() {
+            const container = document.getElementById('coupon-list-container');
+            container.innerHTML = '<div class="flex flex-col items-center py-4"><i class="fa-solid fa-spinner fa-spin text-2xl text-primary mb-2"></i><p class="text-sm text-gray-500">กำลังค้นหาคูปอง...</p></div>';
+
+            try {
+                // *** จุดสำคัญ: ใช้ window.cf_db ตามที่คุณตั้งค่าไว้ ***
+                const snapshot = await window.cf_db.collection("coupons").where("isActive", "==", true).get();
+                
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <p class="text-gray-600 mb-4 text-sm">รับส่วนลดพิเศษสำหรับการจองครั้งแรก</p>
+                        <p class="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100">ขณะนี้ไม่มีคูปองที่แจกอยู่</p>
+                    `;
+                    return;
+                }
+
+                let html = '<p class="text-gray-600 mb-4 text-sm">กดเก็บโค้ดด้านล่างเพื่อรับส่วนลดทันที</p>';
+                
+                snapshot.forEach(doc => {
+                    const c = doc.data();
+                    const discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue} บาท`;
+                    
+                    html += `
+                        <div class="border-2 border-primary rounded-xl p-4 mb-3 text-left relative overflow-hidden bg-white shadow-sm hover:shadow-md transition">
+                            <div class="absolute top-0 right-0 bg-yellow-400 text-red-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg">รีบเก็บเลย!</div>
+                            <h4 class="font-bold text-primary text-xl tracking-wider">${c.code}</h4>
+                            <p class="text-sm text-gray-800 font-semibold mt-1">${discountText}</p>
+                            <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.expiryDate || 'ไม่ระบุ'}</p>
+                            
+                            <button onclick="claimSpecificCoupon('${c.code}')" class="mt-3 bg-primary text-white font-bold py-2 px-4 rounded-full w-full shadow hover:scale-105 transition transform duration-200 text-sm flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ดเลย
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                container.innerHTML = '<p class="text-red-500 text-sm">เกิดข้อผิดพลาดในการโหลดคูปอง กรุณาลองใหม่</p>';
+            }
+        }
+
+        // ฟังก์ชันกดเก็บคูปอง
+        window.claimSpecificCoupon = function(code) {
+            navigator.clipboard.writeText(code);
+            Swal.fire({
+                icon: 'success',
+                title: 'เก็บโค้ดสำเร็จ!',
+                text: `คัดลอกโค้ด ${code} เรียบร้อยแล้ว`,
+                showConfirmButton: false,
+                timer: 2500
+            });
+            closeCouponModal();
+        };
+
+        // โชว์ Slide Notification เมื่อเปิดหน้าเว็บ (หน่วงเวลา 2 วินาที)
+        setTimeout(() => {
+            if (slideNotification) {
+                slideNotification.classList.remove('hidden');
+                slideNotification.style.right = '16px'; 
+                
+                let bar = document.getElementById('countdown-bar');
+                if (bar) bar.style.width = '0%';
+                
+                setTimeout(() => {
+                    hideSlideNotification();
+                }, 5000);
+            }
+        }, 2000);
+    });
+    
 
         window.cf_auth.onAuthStateChanged(function(user) {
             if (user) {
