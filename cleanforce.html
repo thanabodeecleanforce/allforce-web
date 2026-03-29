@@ -201,12 +201,6 @@
     </style>
 </head>
 <body class="bg-background text-text overflow-x-hidden">
-    <div id="floating-coupon-btn" class="fixed z-50 cursor-pointer hidden">
-    <div class="bg-red-500 text-white w-12 h-12 rounded-full shadow-[0_4px_15px_rgba(239,68,68,0.5)] flex items-center justify-center border-2 border-white relative hover:scale-110 transition animate-bounce">
-        <i class="fa-solid fa-gift text-xl"></i>
-        <span class="absolute -top-1 -right-1 bg-yellow-400 text-red-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">ใหม่!</span>
-    </div>
-</div>
 
     <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
         <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
@@ -2749,53 +2743,46 @@
         });
 
         
-    document.addEventListener('DOMContentLoaded', function() {
-    // 1. ดึงกล่องและปุ่มต่างๆ มารอไว้
+   document.addEventListener('DOMContentLoaded', function() {
+    // 1. ดึง UI ของ Modal และปุ่มภายใน Modal มาเก็บไว้
     const modal = document.getElementById('coupon-modal-new');
     const closeBtn = document.getElementById('close-coupon-btn');
     const claimBtn = document.getElementById('claim-coupon-btn');
-    const floatingBtn = document.getElementById('floating-coupon-btn');
 
-    // ถ้าหาป๊อปอัพไม่เจอให้หยุดทำงาน (ป้องกันโค้ด error)
+    // ถ้าหาป๊อปอัพไม่เจอให้หยุดทำงาน
     if (!modal) return;
 
-    // 2. ฟังก์ชันเปิดหน้าต่าง
+    // --- ส่วนควบคุมการแสดงผลของ Modal ---
+
+    // *หมายเหตุสำหรับ Dev: หากต้องการให้ป๊อปอัพเด้งขึ้นมาเองทันทีตอนโหลดหน้าเว็บ
+    // ให้เอาเครื่องหมาย // ข้างหน้าบรรทัดด้านล่างนี้ออกครับ
+    // openModal(); 
+
+    // ฟังก์ชันเปิดหน้าต่าง
     function openModal() {
         modal.classList.remove('hidden');
         modal.classList.add('flex'); // ทำให้หน้าต่างเด้งมาอยู่ตรงกลางจอ
     }
 
-    // 3. ฟังก์ชันปิดหน้าต่าง
+    // ฟังก์ชันปิดหน้าต่าง
     function closeModal() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
 
-    // 4. สั่งให้กล่องของขวัญเลื่อนเข้ามาในจอหลังจากเปิดเว็บ 2 วินาที
-    if (floatingBtn) {
-        setTimeout(() => {
-            floatingBtn.classList.remove('hidden');
-            // .show คือ class ใน css ของคุณที่ตั้งให้เลื่อนจากขวาเข้ามา
-            floatingBtn.classList.add('show'); 
-        }, 2000);
-
-        // เมื่อกดกล่องของขวัญ -> ให้เปิด Modal
-        floatingBtn.addEventListener('click', openModal);
-    }
-
-    // 5. เมื่อกดกากบาท -> ให้ปิด Modal
+    // 2. เมื่อกดกากบาท -> ให้ปิด Modal
     if (closeBtn) {
         closeBtn.addEventListener('click', closeModal);
     }
 
-    // 6. เมื่อคลิกที่พื้นที่สีดำนอกหน้าต่าง -> ให้ปิด Modal
+    // 3. เมื่อคลิกที่พื้นที่สีดำนอกหน้าต่าง -> ให้ปิด Modal
     modal.addEventListener('click', function(e) {
         if (e.target === modal) {
             closeModal();
         }
     });
 
-    // 7. เมื่อกดปุ่ม "รับสิทธิ์เลย"
+    // 4. เมื่อกดปุ่ม "รับสิทธิ์เลย"
     if (claimBtn) {
         claimBtn.addEventListener('click', function() {
             // ป้องกันการกดรัวๆ และเปลี่ยนข้อความปุ่ม
@@ -2814,12 +2801,8 @@
                     timer: 2000
                 });
                 
-                // ปิดป๊อปอัพและซ่อนกล่องของขวัญทิ้งไปเลย (เพราะรับสิทธิ์ไปแล้ว)
+                // ปิดป๊อปอัพ
                 closeModal();
-                if (floatingBtn) {
-                    floatingBtn.classList.remove('show');
-                    setTimeout(() => floatingBtn.classList.add('hidden'), 500);
-                }
                 
                 // คืนค่าปุ่มให้กลับมาเหมือนเดิม
                 claimBtn.innerHTML = originalText;
