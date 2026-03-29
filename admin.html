@@ -308,6 +308,9 @@
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
                             <h3 class="text-sm font-bold text-[#000080]"><i class="fa-solid fa-chart-line mr-2"></i>สถิติการคลิก</h3>
+                            <select id="chart-month-selector" onchange="updateChartByMonth(this.value)" class="text-[10px] sm:text-xs p-1 border border-blue-200 rounded-lg outline-none font-bold text-primary bg-blue-50 cursor-pointer shadow-sm">
+                                <option value="6months">ภาพรวม 6 เดือนย้อนหลัง</option>
+                                </select>
                         </div>
                         
                         <div class="w-full aspect-[4/3] relative">
@@ -1675,9 +1678,13 @@
         // ==========================================
         // 🌟 ระบบ Smart Contact (อัปเกรด: เรียงลำดับ + กราฟ)
         // ==========================================
+        // ==========================================
+        // 🌟 ระบบ Smart Contact (สมบูรณ์ 100% + กราฟรายสัปดาห์)
+        // ==========================================
         let unifiedLinks = [];
         let qrCodeInstance = null;
         let chartInstance = null;
+        let globalContactStats = null; // 🆕 ตัวแปรเก็บสถิติไว้สลับกราฟ
 
         async function loadContactAdmin() {
             try {
@@ -1686,12 +1693,9 @@
 
                 if(doc.exists) {
                     let data = doc.data();
-                    
-                    // โหลดภาพแบคกราวด์และพรีวิว
                     document.getElementById('cnt-bg-img').value = data.bgImage || '';
                     document.getElementById('cnt-og-img').value = data.ogImage || '';
 
-                    // 🛠️ ไมเกรตระบบข้อมูลเดิม (ถ้ามี) ให้เป็นระบบเรียงลำดับใหม่
                     unifiedLinks = data.allLinks || [];
                     if(unifiedLinks.length === 0 && data.mainLinks) {
                         ['line', 'wa', 'wechat', 'tg', 'fb'].forEach(k => {
@@ -1701,15 +1705,13 @@
                         if(data.customLinks) data.customLinks.forEach(c => unifiedLinks.push({ type: 'custom', name: c.name, url: c.url, img: c.img }));
                     }
                     
-                    // Render กราฟและสถิติรวม
                     if(data.clickStats) {
-                        renderChart(data.clickStats); // วาดกราฟ
+                        globalContactStats = data.clickStats; // เก็บลงตัวแปร Global
+                        populateMonthSelector(data.clickStats); // 🆕 สร้าง Dropdown เลือกเดือน
+                        renderChart('6months'); // วาดกราฟตั้งต้น
                         
                         statsHTML = '';
-                        let stats = Object.entries(data.clickStats)
-                            .filter(([k,v]) => k !== 'Monthly') // กรองโฟลเดอร์รายเดือนทิ้ง
-                            .sort((a,b) => b[1] - a[1]);
-
+                        let stats = Object.entries(data.clickStats).filter(([k,v]) => k !== 'Monthly' && k !== 'Daily').sort((a,b) => b[1] - a[1]);
                         stats.forEach(([key, val]) => {
                             let isView = key === 'Page_Views';
                             let color = isView ? 'text-blue-600 bg-blue-50' : 'text-gray-600 bg-gray-50';
@@ -1718,42 +1720,86 @@
                         });
                     }
                 }
-                
                 document.getElementById('contact-stats-area').innerHTML = statsHTML;
                 renderUnifiedLinks();
                 generateContactQR();
-
             } catch(e) { console.error("Error loading contact:", e); }
         }
 
-        // วาดกราฟเส้น 6 เดือนล่าสุด
-        function renderChart(statsData) {
-            let ctx = document.getElementById('contactStatsChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy(); // ลบกราฟเก่าทิ้ง
-            
-            if(!statsData.Monthly) return; // ถ้ายังไม่มีเก็บรายเดือน ให้ข้ามไป
+        // 🆕 ฟังก์ชันอัปเดตตัวเลือก Dropdown เดือน
+        function populateMonthSelector(stats) {
+            let selector = document.getElementById('chart-month-selector');
+            selector.innerHTML = '<option value="6months">ภาพรวม 6 เดือนย้อนหลัง</option>';
+            if(stats.Monthly) {
+                // ดึงเดือนทั้งหมดมาเรียงจากล่าสุดไปเก่าสุด
+                let months = Object.keys(stats.Monthly).sort().reverse();
+                months.forEach(m => {
+                    let [yy, mm] = m.split('-');
+                    let date = new Date(yy, mm - 1, 1);
+                    let monthName = date.toLocaleString('th-TH', { month: 'long', year: 'numeric' });
+                    selector.innerHTML += `<option value="${m}">${monthName}</option>`;
+                });
+            }
+        }
 
-            // ดึงเดือนย้อนหลัง 6 เดือน
+        // 🆕 ฟังก์ชันเมื่อกดเปลี่ยน Dropdown
+        window.updateChartByMonth = function(val) {
+            renderChart(val);
+        }
+
+        function renderChart(viewMode) {
+            let canvas = document.getElementById('contactStatsChart');
+            if(!canvas || !globalContactStats) return;
+            let ctx = canvas.getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+
             let labels = [];
             let viewsData = [];
             let clickData = [];
-            
-            let d = new Date();
-            for(let i=5; i>=0; i--) {
-                let tempD = new Date(d.getFullYear(), d.getMonth() - i, 1);
-                let yyyy_mm = tempD.getFullYear() + "-" + String(tempD.getMonth() + 1).padStart(2, '0');
-                let monthName = tempD.toLocaleString('th-TH', { month: 'short' });
+
+            if (viewMode === '6months') {
+                // โหมด: กราฟรายเดือน 6 เดือนย้อนหลัง
+                let monthlyStats = globalContactStats.Monthly || {}; 
+                let d = new Date();
+                for(let i=5; i>=0; i--) {
+                    let tempD = new Date(d.getFullYear(), d.getMonth() - i, 1);
+                    let yyyy_mm = tempD.getFullYear() + "-" + String(tempD.getMonth() + 1).padStart(2, '0');
+                    labels.push(tempD.toLocaleString('th-TH', { month: 'short' }));
+                    let mData = monthlyStats[yyyy_mm] || {};
+                    viewsData.push(mData['Page_Views'] || 0);
+                    clickData.push(Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0));
+                }
+            } else {
+                // 🆕 โหมด: กราฟรายสัปดาห์ (ดูแบบเจาะจงเดือนที่เลือก)
+                let dailyStats = globalContactStats.Daily || {};
                 
-                labels.push(monthName);
+                // กรองหาวันที่เฉพาะเดือนที่เลือก (เช่น ขึ้นต้นด้วย "2026-03")
+                let daysInMonth = Object.keys(dailyStats).filter(d => d.startsWith(viewMode)).sort();
                 
-                // ดึงยอดของเดือนนั้น
-                let mData = statsData.Monthly[yyyy_mm] || {};
-                let vCount = mData['Page_Views'] || 0;
-                // หากยอดคลิกรวม (เอาทุกแชนแนลบวกกัน ลบยอดวิวออก)
-                let cCount = Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0);
-                
-                viewsData.push(vCount);
-                clickData.push(cCount);
+                // สร้างตะกร้าเก็บสถิติแบ่งเป็น 4 สัปดาห์
+                let weeks = {
+                    "สัปดาห์ที่ 1 (1-7)": {v:0, c:0},
+                    "สัปดาห์ที่ 2 (8-14)": {v:0, c:0},
+                    "สัปดาห์ที่ 3 (15-21)": {v:0, c:0},
+                    "สัปดาห์ที่ 4 (22+)": {v:0, c:0}
+                };
+
+                // นำยอดรายวันเทลงตะกร้ารายสัปดาห์
+                daysInMonth.forEach(dateStr => {
+                    let day = parseInt(dateStr.split('-')[2]); // ดึงตัวเลขวันที่ออกมา
+                    let mData = dailyStats[dateStr];
+                    let vCount = mData['Page_Views'] || 0;
+                    let cCount = Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0);
+
+                    if(day <= 7) { weeks["สัปดาห์ที่ 1 (1-7)"].v += vCount; weeks["สัปดาห์ที่ 1 (1-7)"].c += cCount; }
+                    else if(day <= 14) { weeks["สัปดาห์ที่ 2 (8-14)"].v += vCount; weeks["สัปดาห์ที่ 2 (8-14)"].c += cCount; }
+                    else if(day <= 21) { weeks["สัปดาห์ที่ 3 (15-21)"].v += vCount; weeks["สัปดาห์ที่ 3 (15-21)"].c += cCount; }
+                    else { weeks["สัปดาห์ที่ 4 (22+)"].v += vCount; weeks["สัปดาห์ที่ 4 (22+)"].c += cCount; }
+                });
+
+                labels = Object.keys(weeks);
+                viewsData = labels.map(k => weeks[k].v);
+                clickData = labels.map(k => weeks[k].c);
             }
 
             chartInstance = new Chart(ctx, {
@@ -1761,8 +1807,8 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'เข้าชมเพจ', data: viewsData, borderColor: '#1EA7E1', backgroundColor: 'rgba(30,167,225,0.1)', fill: true, tension: 0.4 },
-                        { label: 'คลิกลิงก์', data: clickData, borderColor: '#00B900', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4 }
+                        { label: 'เข้าชม', data: viewsData, borderColor: '#1EA7E1', backgroundColor: 'rgba(30,167,225,0.1)', fill: true, tension: 0.4 },
+                        { label: 'คลิก', data: clickData, borderColor: '#00B900', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4 }
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
@@ -1897,7 +1943,8 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
             btn.disabled = true;
 
-            let cleanLinks = unifiedLinks.filter(c => c.url.trim() !== '');
+            // 🌟 แก้บักบันทึกไม่เข้า: ป้องกัน Error กรณี URL เป็นค่าว่าง
+            let cleanLinks = unifiedLinks.filter(c => (c.url || '').trim() !== '');
 
             try {
                 await db.collection('settings').doc('contact_page').set({ 
@@ -1910,7 +1957,10 @@
                 if(typeof markSystemUpdated === 'function') markSystemUpdated();
                 renderUnifiedLinks();
                 generateContactQR(); // อัปเดต QR
-            } catch(e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error'); }
+            } catch(e) { 
+                console.error(e);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error'); 
+            }
             
             btn.innerHTML = originalText;
             btn.disabled = false;

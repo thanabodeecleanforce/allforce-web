@@ -102,13 +102,13 @@
 
         let d = new Date();
         let currentMonthYear = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+        let currentDate = currentMonthYear + "-" + String(d.getDate()).padStart(2, '0'); // 🆕 เพิ่มตัวแปรเก็บวันที่แบบ YYYY-MM-DD
 
         db.collection('settings').doc('contact_page').get().then(doc => {
             if(doc.exists) {
                 let data = doc.data();
                 
                 if(data.bgImage) document.getElementById('dynamic-bg').style.backgroundImage = `url('${data.bgImage}')`;
-                
                 if(data.ogImage) {
                     let ogMeta = document.getElementById('meta-og-img');
                     let twMeta = document.getElementById('meta-tw-img');
@@ -125,93 +125,61 @@
                     if(data.customLinks) data.customLinks.forEach(c => allLinks.push({ type: 'custom', name: c.name, url: c.url, img: c.img }));
                 }
 
-                // 🌟 ระบบแยกกล่อง (1-5 โชว์เลย, ที่เหลือซ่อน)
-                let mainLinksHtml = '';
-                let moreLinksHtml = '';
+                let mainLinksHtml = ''; let moreLinksHtml = '';
 
                 allLinks.forEach((link, index) => {
-                    // ตรวจสอบว่าใช้ไอคอนจากระบบ หรือ อัปโหลดรูปเอง
                     let typeId = link.iconType || link.type || 'custom'; 
-                    let delay = (index % 5) * 100; // Animation delay
+                    let delay = (index % 5) * 100;
                     let cardHtml = '';
                     
                     if (appPresets[typeId] && typeId !== 'custom') {
                         let p = appPresets[typeId];
-                        cardHtml = `
-                        <button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full ${p.bg} text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group border ${p.border}" style="animation-delay: ${delay}ms">
-                            <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">${p.icon}</div>
-                            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">${link.name}</span>
-                        </button>`;
+                        cardHtml = `<button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full ${p.bg} text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group border ${p.border}" style="animation-delay: ${delay}ms"><div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">${p.icon}</div><span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">${link.name}</span></button>`;
                     } else {
-                        // 🌟 กรอบบังคับรูปภาพให้เป็นวงกลมเท่ากันทั้งหมด
                         let imgHtml = link.img ? `<img src="${link.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-link text-gray-400 group-hover:text-primary transition-colors text-xl"></i>`;
-                        cardHtml = `
-                        <button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full bg-white/80 backdrop-blur-sm text-gray-800 border border-white p-3 px-4 rounded-full flex items-center shadow-sm group hover:border-primary/50 transition-all overflow-hidden relative" style="animation-delay: ${delay}ms">
-                            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden shrink-0 border border-gray-100 shadow-sm z-10">${imgHtml}</div>
-                            <span class="font-bold flex-1 text-center pr-12 text-[15px] z-10 group-hover:text-primary transition-colors">${link.name}</span>
-                        </button>`;
+                        cardHtml = `<button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full bg-white/80 backdrop-blur-sm text-gray-800 border border-white p-3 px-4 rounded-full flex items-center shadow-sm group hover:border-primary/50 transition-all overflow-hidden relative" style="animation-delay: ${delay}ms"><div class="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden shrink-0 border border-gray-100 shadow-sm z-10">${imgHtml}</div><span class="font-bold flex-1 text-center pr-12 text-[15px] z-10 group-hover:text-primary transition-colors">${link.name}</span></button>`;
                     }
 
-                    // แยกกล่องตามลำดับ
-                    if (index < 5) {
-                        mainLinksHtml += cardHtml;
-                    } else {
-                        moreLinksHtml += cardHtml;
-                    }
+                    if (index < 5) mainLinksHtml += cardHtml; else moreLinksHtml += cardHtml;
                 });
 
                 document.getElementById('links-container').innerHTML = mainLinksHtml;
                 
-                // ตรวจสอบว่ามีปุ่มเกิน 5 อันหรือไม่ ถ้ามีให้โชว์ปุ่ม More
                 let moreBtnContainer = document.getElementById('btn-more-toggle');
                 let moreChannelsDiv = document.getElementById('more-channels');
                 
-                // ถ้าระบบไม่มีโค้ดปุ่ม More (จากการแก้ไขครั้งก่อน) ให้สร้างใหม่ต่อท้าย
                 if(!moreBtnContainer) {
-                    let moreWrapper = document.createElement('div');
-                    moreWrapper.className = 'w-full mt-4';
-                    moreWrapper.innerHTML = `
-                        <button onclick="toggleMore()" id="btn-more-toggle" class="hidden w-full bg-white/80 backdrop-blur-sm text-primary border-2 border-primary/30 p-4 rounded-full flex items-center justify-center gap-2 font-bold hover:bg-blue-50 hover:border-primary transition-all shadow-sm group">
-                            <i class="fa-solid fa-layer-group group-hover:scale-110 transition-transform"></i> <span id="more-text">ช่องทางอื่นๆ (More Channels)</span> <i class="fa-solid fa-chevron-down text-xs transition-transform" id="more-icon"></i>
-                        </button>
-                        <div id="more-channels" class="hidden mt-4 space-y-3 animate-in fade-in slide-in-from-top-2"></div>
-                    `;
+                    let moreWrapper = document.createElement('div'); moreWrapper.className = 'w-full mt-4';
+                    moreWrapper.innerHTML = `<button onclick="toggleMore()" id="btn-more-toggle" class="hidden w-full bg-white/80 backdrop-blur-sm text-primary border-2 border-primary/30 p-4 rounded-full flex items-center justify-center gap-2 font-bold hover:bg-blue-50 hover:border-primary transition-all shadow-sm group"><i class="fa-solid fa-layer-group group-hover:scale-110 transition-transform"></i> <span id="more-text">ช่องทางอื่นๆ (More Channels)</span> <i class="fa-solid fa-chevron-down text-xs transition-transform" id="more-icon"></i></button><div id="more-channels" class="hidden mt-4 space-y-3 animate-in fade-in slide-in-from-top-2"></div>`;
                     document.getElementById('links-container').parentNode.insertBefore(moreWrapper, document.querySelector('footer'));
-                    moreBtnContainer = document.getElementById('btn-more-toggle');
-                    moreChannelsDiv = document.getElementById('more-channels');
+                    moreBtnContainer = document.getElementById('btn-more-toggle'); moreChannelsDiv = document.getElementById('more-channels');
                 }
 
-                if (allLinks.length > 5) {
-                    moreBtnContainer.classList.remove('hidden');
-                    moreChannelsDiv.innerHTML = moreLinksHtml;
-                } else {
-                    if(moreBtnContainer) moreBtnContainer.classList.add('hidden');
-                }
+                if (allLinks.length > 5) { moreBtnContainer.classList.remove('hidden'); moreChannelsDiv.innerHTML = moreLinksHtml; } 
+                else { if(moreBtnContainer) moreBtnContainer.classList.add('hidden'); }
 
+                // 🌟 อัปเกรด: บันทึกข้อมูลเข้าหมวดหมู่ รายวัน (Daily) ด้วย
                 db.collection('settings').doc('contact_page').set({
                     [`clickStats.Page_Views`]: firebase.firestore.FieldValue.increment(1),
-                    [`clickStats.Monthly.${currentMonthYear}.Page_Views`]: firebase.firestore.FieldValue.increment(1)
+                    [`clickStats.Monthly.${currentMonthYear}.Page_Views`]: firebase.firestore.FieldValue.increment(1),
+                    [`clickStats.Daily.${currentDate}.Page_Views`]: firebase.firestore.FieldValue.increment(1) // 🆕 เก็บรายวัน
                 }, { merge: true });
             }
         });
 
         function toggleMore() {
-            let moreDiv = document.getElementById('more-channels');
-            let icon = document.getElementById('more-icon');
-            if(moreDiv.classList.contains('hidden')) {
-                moreDiv.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                moreDiv.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
-            }
+            let moreDiv = document.getElementById('more-channels'); let icon = document.getElementById('more-icon');
+            if(moreDiv.classList.contains('hidden')) { moreDiv.classList.remove('hidden'); icon.style.transform = 'rotate(180deg)'; } 
+            else { moreDiv.classList.add('hidden'); icon.style.transform = 'rotate(0deg)'; }
         }
 
         function trackAndGo(channelName, targetUrl) {
             if(!targetUrl) return;
+            // 🌟 อัปเกรด: บันทึกการคลิกลิงก์ลงหมวดหมู่ รายวัน (Daily) ด้วย
             db.collection('settings').doc('contact_page').set({
                 [`clickStats.${channelName}`]: firebase.firestore.FieldValue.increment(1),
-                [`clickStats.Monthly.${currentMonthYear}.${channelName}`]: firebase.firestore.FieldValue.increment(1)
+                [`clickStats.Monthly.${currentMonthYear}.${channelName}`]: firebase.firestore.FieldValue.increment(1),
+                [`clickStats.Daily.${currentDate}.${channelName}`]: firebase.firestore.FieldValue.increment(1) // 🆕 เก็บรายวัน
             }, { merge: true });
             setTimeout(() => { window.open(targetUrl, '_blank'); }, 150);
         }
