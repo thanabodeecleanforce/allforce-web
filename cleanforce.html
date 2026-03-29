@@ -2644,47 +2644,55 @@
         }
         
         
-        // 🌟 อัปเดตฟังก์ชันโหลดคูปอง ดีไซน์ใหม่ โชว์ครบ!
-        async function loadAvailableCoupons() {
-            let container = document.getElementById('coupon-list-container');
-            container.innerHTML = '<p class="text-center text-gray-500 text-sm py-4"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-primary"></i><br>กำลังค้นหาคูปอง...</p>';
-            
-            try {
-                const snapshot = await db.collection('coupons').where('isActive', '==', true).where('isPopup', '==', true).get();
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-center text-gray-400 py-4 text-sm">ตอนนี้ยังไม่มีคูปองแจกครับ รอติดตามโปรหน้านะ!</p>';
-                    return;
-                }
-                
-                let html = '';
-                snapshot.forEach(doc => {
-                    let c = doc.data();
-                    // แปลงวันหมดอายุเป็นภาษาไทยแบบง่ายๆ
-                    let expiryStr = c.expiryDate ? c.expiryDate.toDate().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : 'ไม่มีกำหนด';
-                    
-                    html += `
-                    <div class="flex coupon-modal-card">
-                        <div class="coupon-modal-card-left">
-                            <i class="fa-solid fa-percent text-2xl"></i>
-                            <p class="font-bold text-xs mt-1">ใช้เลย</p>
-                        </div>
-                        <div class="flex-1 p-3">
-                            <p class="font-bold text-primary text-xl tracking-wider">${c.code}</p>
-                            <p class="text-sm font-bold text-gray-700 mt-1">${c.discountType === 'percent' ? 'ลด '+c.discountValue+'%' : 'ลด '+c.discountValue+' บาท'}</p>
-                            <p class="text-[10px] text-gray-500 mt-0.5">เมื่อจองขั้นต่ำ: ${c.minSpend || '0'} บาท</p>
-                            <p class="text-[10px] text-gray-400 mt-0.5"><i class="fa-solid fa-calendar-alt mr-1"></i>หมดอายุ: ${expiryStr}</p>
-                            <button onclick="claimCoupon('${c.code}')" class="bg-groupPrimary text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm hover:bg-opacity-90 transition mt-2 w-full">
-                                <i class="fa-solid fa-download mr-1"></i>เก็บคูปอง
-                            </button>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
-            } catch (error) {
-                console.error("โหลดคูปองพัง:", error);
-                container.innerHTML = '<p class="text-center text-red-500 py-4 text-sm">ดึงข้อมูลคูปองไม่สำเร็จ</p>';
+        // 4. ฟังก์ชันดึงข้อมูลจาก Firebase (แก้ไขชื่อตัวแปรเป็น window.cf_db แล้ว)
+    async function loadAvailableCoupons() {
+        const container = document.getElementById('coupon-list-container');
+        container.innerHTML = '<div class="flex flex-col items-center py-4"><i class="fa-solid fa-spinner fa-spin text-2xl text-primary mb-2"></i><p class="text-sm text-gray-500">กำลังค้นหาคูปอง...</p></div>';
+
+        try {
+            // เช็คและเรียกใช้ตัวแปร window.cf_db ให้ตรงกับไฟล์ของคุณ
+            if (typeof window.cf_db === 'undefined') {
+                throw new Error("ยังไม่ได้เชื่อมต่อ Firebase (ไม่พบตัวแปร window.cf_db)");
             }
+
+            // เปลี่ยนจาก db.collection เป็น window.cf_db.collection
+            const snapshot = await window.cf_db.collection("coupons").where("isActive", "==", true).get();
+            
+            if (snapshot.empty) {
+                container.innerHTML = `
+                    <p class="text-gray-600 mb-4 text-sm">รับส่วนลดพิเศษสำหรับการจองครั้งแรก</p>
+                    <p class="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100">ขณะนี้ไม่มีคูปองที่แจกอยู่</p>
+                `;
+                return;
+            }
+
+            let html = '<p class="text-gray-600 mb-4 text-sm">กดเก็บโค้ดด้านล่างเพื่อรับส่วนลดทันที</p>';
+            
+            snapshot.forEach(doc => {
+                const c = doc.data();
+                const discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue} บาท`;
+                
+                html += `
+                    <div class="border-2 border-primary rounded-xl p-4 mb-3 text-left relative overflow-hidden bg-white shadow-sm hover:shadow-md transition">
+                        <div class="absolute top-0 right-0 bg-yellow-400 text-red-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg">รีบเก็บเลย!</div>
+                        <h4 class="font-bold text-primary text-xl tracking-wider">${c.code}</h4>
+                        <p class="text-sm text-gray-800 font-semibold mt-1">${discountText}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.expiryDate || 'ไม่ระบุ'}</p>
+                        
+                        <button onclick="claimSpecificCoupon('${c.code}')" class="mt-3 bg-primary text-white font-bold py-2 px-4 rounded-full w-full shadow hover:scale-105 transition transform duration-200 text-sm flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ดเลย
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            container.innerHTML = '<p class="text-red-500 text-sm">เกิดข้อผิดพลาดในการโหลดคูปอง กรุณาลองใหม่</p>';
         }
+    }
 
         // 🌟 ฟังก์ชันเวลากดปุ่ม "เก็บคูปอง"
         window.claimCoupon = function(code) {
