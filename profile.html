@@ -19,6 +19,15 @@
         <button onclick="logout()" class="text-red-500 text-sm font-bold bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
     </header>
 
+    <div class="mt-6 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-ticket text-primary"></i> คูปองของฉัน
+            </h2>
+            <div id="my-coupons-list" class="space-y-3">
+                <p class="text-sm text-gray-400 text-center py-4">กำลังโหลดข้อมูลคูปอง...</p>
+            </div>
+        </div>
+
     <main class="max-w-3xl mx-auto p-4 md:p-6 mt-4 space-y-6">
         
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-6">
@@ -177,6 +186,64 @@
                 localStorage.removeItem('cf_user');
                 window.location.href = "cleanforce.html";
             });
+        }
+        // 🌟 ฟังก์ชันดึงคูปองมาแสดงผล ดีไซน์ใหม่ โชว์ครบ!
+        async function loadMyCoupons() {
+            let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+            let container = document.getElementById('my-coupons-list');
+            
+            if (myCoupons.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-400 py-6"><i class="fa-solid fa-box-open text-3xl mb-2 text-gray-300"></i><br><span class="text-sm">คุณยังไม่มีคูปองที่เก็บไว้</span></div>';
+                return;
+            }
+
+            try {
+                // ดึงเฉพาะคูปองที่แอดมินเปิดใช้งาน
+                const snapshot = await db.collection('coupons').where('isActive', '==', true).get();
+                let html = '';
+                let hasValidCoupon = false;
+
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    if (myCoupons.includes(c.code)) {
+                        hasValidCoupon = true;
+                        // แปลงวันหมดอายุเป็นภาษาไทยแบบง่ายๆ
+                        let expiryStr = c.expiryDate ? c.expiryDate.toDate().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : 'ไม่มีกำหนด';
+
+                        html += `
+                        <div class="border border-primary border-dashed bg-blue-50 rounded-lg p-3 flex justify-between items-center gap-3 relative overflow-hidden">
+                            <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border-r-2 border-dashed border-primary"></div>
+                            <div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border-l-2 border-dashed border-primary"></div>
+                            
+                            <div class="flex-1">
+                                <span class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold inline-block mb-1">พร้อมใช้</span>
+                                <p class="font-bold text-gray-800 text-xl tracking-wider">${c.code}</p>
+                                <p class="text-sm font-bold text-gray-700">${c.discountType === 'percent' ? 'ลด '+c.discountValue+'%' : 'ลด '+c.discountValue+' บาท'}</p>
+                                <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${expiryStr}</p>
+                            </div>
+                            <button onclick="copyCoupon('${c.code}')" class="text-primary flex flex-col items-center flex-shrink-0 hover:scale-110 transition">
+                                <i class="fa-regular fa-copy text-xl"></i>
+                                <span class="text-[10px] font-bold mt-1">คัดลอกโค้ด</span>
+                            </button>
+                        </div>`;
+                    }
+                });
+
+                if (!hasValidCoupon) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm">คูปองที่คุณเก็บไว้หมดอายุแล้ว หรือถูกปิดการใช้งาน</div>';
+                } else {
+                    container.innerHTML = html;
+                }
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<p class="text-sm text-red-500 text-center">โหลดข้อมูลคูปองไม่สำเร็จ</p>';
+            }
+        }
+
+        // 🌟 ฟังก์ชันคัดลอกโค้ด
+        window.copyCoupon = function(code) {
+            navigator.clipboard.writeText(code);
+            Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'คัดลอกโค้ดสำเร็จ! นำไปวางตอนจองได้เลย', showConfirmButton: false, timer: 2000 });
         }
     </script>
 </body>

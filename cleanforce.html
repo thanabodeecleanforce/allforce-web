@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="shortcut icon" href="logo-c-cleanforce-rmbg.png" type="image/x-icon"> 
 
@@ -127,9 +128,85 @@
             position: relative;
             z-index: 2;
         }
+
+        /* 🌟 CSS ใหม่สำหรับปุ่มและหน้าต่างคูปอง */
+        #floating-coupon-btn {
+            position: fixed;
+            top: 100px;
+            right: -100%; /* เริ่มต้นซ่อนไว้ */
+            z-index: 50;
+            transition: right 0.5s ease-out; /* อนิเมชั่นเลื่อนเข้า */
+        }
+        #floating-coupon-btn.show {
+            right: 16px; /* เลื่อนเข้ามา */
+        }
+        
+        /* สไตล์ปุ่มสี่เหลี่ยมมน */
+        .coupon-btn-card {
+            background: linear-gradient(135deg, #1EA7E1, #168dc0);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px; /* ขอบมนเล็กน้อย */
+            box-shadow: 0 4px 15px rgba(30, 167, 225, 0.3);
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .coupon-btn-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 167, 225, 0.4);
+        }
+        
+        /* ปุ่มกากบาทปิด */
+        .close-coupon-floating {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #FF5252;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 1px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        /* สไตล์การ์ดคูปองในหน้าต่างป๊อปอัป */
+        .coupon-modal-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #f0f0f0;
+            margin-bottom: 12px;
+        }
+        .coupon-modal-card-left {
+            background: #E3F2FD;
+            color: #1EA7E1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 90px;
+        }
     </style>
 </head>
 <body class="bg-background text-text overflow-x-hidden">
+    <div id="floating-coupon-btn" class="fixed z-50 cursor-pointer hidden">
+    <div class="bg-red-500 text-white w-12 h-12 rounded-full shadow-[0_4px_15px_rgba(239,68,68,0.5)] flex items-center justify-center border-2 border-white relative hover:scale-110 transition animate-bounce">
+        <i class="fa-solid fa-gift text-xl"></i>
+        <span class="absolute -top-1 -right-1 bg-yellow-400 text-red-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">ใหม่!</span>
+    </div>
+</div>
 
     <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
         <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
@@ -2571,7 +2648,141 @@
             
             Swal.fire({ toast: true, position: 'top', icon: 'info', title: 'ยกเลิกคูปองแล้ว', showConfirmButton: false, timer: 2000 });
         }
+        
+        
+        // 🌟 อัปเดตฟังก์ชันโหลดคูปอง ดีไซน์ใหม่ โชว์ครบ!
+        async function loadAvailableCoupons() {
+            let container = document.getElementById('coupon-list-container');
+            container.innerHTML = '<p class="text-center text-gray-500 text-sm py-4"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-primary"></i><br>กำลังค้นหาคูปอง...</p>';
+            
+            try {
+                const snapshot = await db.collection('coupons').where('isActive', '==', true).where('isPopup', '==', true).get();
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-center text-gray-400 py-4 text-sm">ตอนนี้ยังไม่มีคูปองแจกครับ รอติดตามโปรหน้านะ!</p>';
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    // แปลงวันหมดอายุเป็นภาษาไทยแบบง่ายๆ
+                    let expiryStr = c.expiryDate ? c.expiryDate.toDate().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : 'ไม่มีกำหนด';
+                    
+                    html += `
+                    <div class="flex coupon-modal-card">
+                        <div class="coupon-modal-card-left">
+                            <i class="fa-solid fa-percent text-2xl"></i>
+                            <p class="font-bold text-xs mt-1">ใช้เลย</p>
+                        </div>
+                        <div class="flex-1 p-3">
+                            <p class="font-bold text-primary text-xl tracking-wider">${c.code}</p>
+                            <p class="text-sm font-bold text-gray-700 mt-1">${c.discountType === 'percent' ? 'ลด '+c.discountValue+'%' : 'ลด '+c.discountValue+' บาท'}</p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">เมื่อจองขั้นต่ำ: ${c.minSpend || '0'} บาท</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5"><i class="fa-solid fa-calendar-alt mr-1"></i>หมดอายุ: ${expiryStr}</p>
+                            <button onclick="claimCoupon('${c.code}')" class="bg-groupPrimary text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm hover:bg-opacity-90 transition mt-2 w-full">
+                                <i class="fa-solid fa-download mr-1"></i>เก็บคูปอง
+                            </button>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch (error) {
+                console.error("โหลดคูปองพัง:", error);
+                container.innerHTML = '<p class="text-center text-red-500 py-4 text-sm">ดึงข้อมูลคูปองไม่สำเร็จ</p>';
+            }
+        }
+
+        // 🌟 ฟังก์ชันเวลากดปุ่ม "เก็บคูปอง"
+        window.claimCoupon = function(code) {
+            let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+            if (!myCoupons.includes(code)) {
+                myCoupons.push(code);
+                localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'เก็บคูปองสำเร็จ! ดูได้ที่หน้าโปรไฟล์', showConfirmButton: false, timer: 3000 });
+            } else {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'คุณเก็บคูปองนี้ไปแล้วครับ', showConfirmButton: false, timer: 2000 });
+            }
+        };
+
+        // 🌟 ระบบสไลด์แจ้งเตือน 5 วินาที
+        let countdownTimer;
+
+        function showSlideNotification() {
+            const notif = document.getElementById('slide-notification');
+            const countdownText = document.getElementById('countdown-text');
+            const countdownBar = document.getElementById('countdown-bar');
+            
+            // 1. สั่งให้สไลด์เข้ามาจากทางขวา
+            notif.classList.remove('-right-full');
+            notif.classList.add('right-4'); 
+
+            // 2. เริ่มลดความยาวของแถบสี (จากเต็ม 100% ไป 0%) ภายใน 5 วิ
+            setTimeout(() => {
+                countdownBar.style.width = '0%';
+            }, 50); 
+
+            // 3. เริ่มนับถอยหลังตัวเลข
+            let timeLeft = 5;
+            countdownText.innerText = `จะปิดอัตโนมัติใน ${timeLeft} วินาที`;
+
+            countdownTimer = setInterval(() => {
+                timeLeft -= 1;
+                if (timeLeft > 0) {
+                    countdownText.innerText = `จะปิดอัตโนมัติใน ${timeLeft} วินาที`;
+                } else {
+                    hideSlideNotification(); // ครบ 5 วิแล้วสั่งซ่อน
+                }
+            }, 1000);
+        }
+
+        // 🌟 ฟังก์ชันซ่อนแจ้งเตือน (เลื่อนกลับไปทางขวา)
+        function hideSlideNotification() {
+            const notif = document.getElementById('slide-notification');
+            notif.classList.remove('right-4');
+            notif.classList.add('-right-full'); // สไลด์กลับไปซ่อน
+            clearInterval(countdownTimer); // หยุดการนับเวลา
+        }
+
+        // 🌟 โชว์แจ้งเตือนหลังจากลูกค้าเปิดเว็บมา 3 วินาที (ปรับเลข 3000 ได้ตามใจชอบ)
+        window.addEventListener('load', function() {
+            setTimeout(showSlideNotification, 3000);
+        });
     </script>
-    <div id="coupon-toast-container" class="fixed top-24 right-4 z-[90] flex flex-col gap-3 pointer-events-none"></div>
-</body>
+
+    <div id="slide-notification" class="fixed top-24 -right-full z-50 transition-all duration-500 ease-in-out cursor-pointer shadow-lg rounded-xl bg-white border border-gray-100 w-72 overflow-hidden" onclick="document.getElementById('coupon-modal-new').classList.remove('hidden'); loadAvailableCoupons(); hideSlideNotification();">
+        <div class="p-4 relative">
+            <button onclick="event.stopPropagation(); hideSlideNotification();" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10 w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="flex items-center gap-3">
+                <div class="bg-primary bg-opacity-10 text-primary w-11 h-11 rounded-full flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-gift text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm">แจกโค้ดส่วนลด!</h4>
+                    <p class="text-[11px] text-gray-500 mt-0.5">กดรับสิทธิพิเศษเลยตอนนี้</p>
+                </div>
+            </div>
+            <p id="countdown-text" class="text-[10px] text-right text-gray-400 mt-2 font-medium">จะปิดอัตโนมัติใน 5 วินาที</p>
+        </div>
+        <div class="h-1 bg-gray-100 w-full">
+            <div id="countdown-bar" class="h-full bg-primary w-full" style="transition: width 5s linear;"></div>
+        </div>
+    </div>
+
+    <div id="coupon-modal-new" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative">
+            <button onclick="document.getElementById('coupon-modal-new').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">
+                 <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="bg-primary text-white text-center py-5">
+                <h2 class="text-xl font-bold"><i class="fa-solid fa-ticket mr-2"></i>คูปองส่วนลดพิเศษ</h2>
+            </div>
+            <div class="p-4 max-h-[60vh] overflow-y-auto bg-gray-50 space-y-3" id="coupon-list-container">
+                <p class="text-center text-gray-500 text-sm py-4">กำลังโหลดคูปอง...</p>
+            </div>
+        </div>
+    </div>
+  </body>
 </html>
