@@ -1755,18 +1755,40 @@
             let qrBox = document.getElementById('qrcode-box');
             qrBox.innerHTML = ''; // เคลียร์ของเก่า
             
+            // สร้าง container สำหรับ QR Code และโลโก้
+            let qrContainer = document.createElement('div');
+            qrContainer.style.position = 'relative';
+            qrContainer.style.width = '200px';
+            qrContainer.style.height = '200px';
+            qrBox.appendChild(qrContainer);
+
             // สร้างลิงก์อัตโนมัติตาม Domain จริงของคุณ
             let currentDomain = window.location.origin;
             let targetUrl = currentDomain + '/contact.html';
             
-            qrCodeInstance = new QRCode(qrBox, {
+            // สร้าง QR Code
+            qrCodeInstance = new QRCode(qrContainer, {
                 text: targetUrl,
                 width: 200,
                 height: 200,
-                colorDark : "#000080",
+                colorDark : "#1EA7E1", // 🌟 เปลี่ยนเป็นสีฟ้า primary ของ Cleanforce
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+                correctLevel : QRCode.CorrectLevel.H // ใช้ Level H เพื่อให้ QR Code อ่านได้แม้มีโลโก้บัง
             });
+
+            // 🌟 เพิ่มโลโก้ตรงกลาง
+            let logoImg = document.createElement('img');
+            logoImg.src = 'logo-c-cleanforce-rmbg.png'; // ⚠️ ใช้โลโก้ตัว C หรือโลโก้แบบจัตุรัส
+            logoImg.style.position = 'absolute';
+            logoImg.style.top = '50%';
+            logoImg.style.left = '50%';
+            logoImg.style.transform = 'translate(-50%, -50%)';
+            logoImg.style.width = '40px'; // ขนาดของโลโก้ (ประมาณ 20% ของ QR)
+            logoImg.style.height = '40px';
+            logoImg.style.backgroundColor = 'white'; // พื้นหลังสีขาวให้โลโก้เด่นขึ้น
+            logoImg.style.padding = '3px';
+            logoImg.style.borderRadius = '8px'; // ทำขอบมน
+            qrContainer.appendChild(logoImg);
         }
     </script>
     
