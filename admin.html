@@ -511,7 +511,13 @@
                         <div><label class="block text-xs font-bold text-gray-600 mb-1">ต้องใช้โค้ดนี้ก่อนถึงใช้ได้</label><input type="text" id="cpn-require" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-primary bg-white uppercase" placeholder="เช่น NEWUSER"></div>
                     </div>
                 </div>
-                
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">การแสดงผลบนหน้าเว็บ</label>
+                    <select id="cpn-public" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white font-bold text-blue-600">
+                        <option value="true">👁️ โชว์ให้ลูกค้ากดรับได้เลย (Public)</option>
+                        <option value="false">🔒 ซ่อนไว้เป็นโค้ดลับ (Secret)</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">สถานะ</label>
                     <select id="cpn-active" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white font-bold text-green-600">
@@ -531,7 +537,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="user-pkg-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden animate-in fade-in zoom-in">
             <div class="p-5 border-b bg-yellow-50 flex justify-between items-center">
@@ -2262,6 +2268,7 @@
                 document.getElementById('cpn-stackable').value = c.isStackable ? 'true' : 'false';
                 document.getElementById('cpn-require').value = c.prerequisiteCode || '';
                 document.getElementById('cpn-active').value = c.isActive !== false ? 'true' : 'false';
+                document.getElementById('cpn-public').value = c.isPublic !== false ? 'true' : 'false';
             } else {
                 document.getElementById('coupon-modal-title').innerHTML = '<i class="fa-solid fa-ticket text-primary mr-2"></i>สร้างคูปองใหม่';
                 document.getElementById('cpn-id').value = '';
@@ -2294,6 +2301,7 @@
                 isStackable: document.getElementById('cpn-stackable').value === 'true',
                 prerequisiteCode: document.getElementById('cpn-require').value.trim().toUpperCase(),
                 isActive: document.getElementById('cpn-active').value === 'true',
+                isPublic: document.getElementById('cpn-public').value === 'true',
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 

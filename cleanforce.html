@@ -334,6 +334,12 @@
         </div>
     </section>
 
+    <div id="available-coupons-container" class="mb-2 hidden">
+                            <h4 class="text-[11px] font-bold text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-gift text-pink-500"></i> <span data-i18n="available-coupons">คูปองโปรโมชั่นสำหรับคุณ</span></h4>
+                            <div id="available-coupons-list" class="flex gap-3 overflow-x-auto pb-2 hide-scroll">
+                                </div>
+                        </div>
+
     <section id="clients-cf" class="py-16 px-6 bg-white border-t border-gray-100 overflow-hidden hidden">
         <div class="max-w-7xl mx-auto text-center mb-8">
             <div class="inline-flex items-center gap-2 bg-blue-50 px-4 py-1.5 rounded-full mb-3">
@@ -2230,6 +2236,7 @@
             
             // 3. รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
             setTimeout(() => {
+                loadPublicCoupons(); // โหลดคูปองโชว์ให้ลูกค้าทันที
                 loadDynamicServices();
                 loadSocialProfile();
                 loadClientsWeb(); 
@@ -2363,6 +2370,88 @@
             document.getElementById('portfolio-modal').classList.remove('flex');
             document.body.style.overflow = ''; // ปลดล็อคเลื่อนหน้าเว็บ
         }
+        // ==========================================
+        // 🌟 ระบบแจกคูปองหน้าเว็บ (Public Coupons)
+        // ==========================================
+        window.loadPublicCoupons = async function() {
+            try {
+                // ดึงเฉพาะคูปองที่ "เปิดใช้งาน" และ "สั่งให้โชว์บนเว็บ"
+                const snapshot = await window.cf_db.collection("coupons")
+                    .where("isActive", "==", true)
+                    .where("isPublic", "==", true)
+                    .get();
+                
+                let html = '';
+                let today = new Date().toISOString().split('T')[0];
+
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    
+                    // 1. กรองคูปองที่หมดอายุ หรือยังไม่ถึงเวลาเริ่ม หรือสิทธิ์เต็มทิ้งไป
+                    if (c.startDate && today < c.startDate) return;
+                    if (c.endDate && today > c.endDate) return;
+                    if (c.usageLimit && (c.usedCount || 0) >= c.usageLimit) return; 
+
+                    let discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue.toLocaleString()} ฿`;
+                    let minSpendText = c.minSpend ? `ขั้นต่ำ ${c.minSpend.toLocaleString()} ฿` : 'ไม่มีขั้นต่ำ';
+                    
+                    // 2. ป้ายเตือนความเร่งด่วน (Urgency Badge) 🔥
+                    let badgeHtml = '';
+                    if (c.endDate) {
+                        let end = new Date(c.endDate);
+                        let now = new Date();
+                        let diffTime = Math.abs(end - now);
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        if (diffDays <= 3) {
+                            badgeHtml = `<span class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse border border-white">หมดเขตใน ${diffDays} วัน!</span>`;
+                        }
+                    }
+
+                    // 3. ป้ายเตือนสิทธิ์ใกล้เต็ม
+                    if (c.usageLimit) {
+                        let remaining = c.usageLimit - (c.usedCount || 0);
+                        if (remaining <= 5) {
+                            badgeHtml = `<span class="absolute -top-2 -right-2 bg-orange-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse border border-white">เหลือเพียง ${remaining} สิทธิ์!</span>`;
+                        }
+                    }
+
+                    html += `
+                    <div class="relative min-w-[200px] max-w-[220px] bg-gradient-to-tr from-blue-50 to-white border border-blue-200 rounded-xl p-3 shadow-sm shrink-0 flex flex-col justify-between hover:border-primary transition-colors">
+                        ${badgeHtml}
+                        <div class="mb-2">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-bold text-primary text-sm">${discountText}</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded border border-blue-200">${c.code}</span>
+                            </div>
+                            <p class="text-[10px] text-gray-700 font-bold truncate">${c.name || 'โปรโมชั่นพิเศษ'}</p>
+                            <p class="text-[9px] text-gray-500 mt-0.5"><i class="fa-solid fa-circle-info mr-1"></i>${minSpendText}</p>
+                        </div>
+                        <button type="button" onclick="autoApplyCoupon('${c.code}')" class="w-full bg-[#000080] text-white text-[10px] font-bold py-1.5 rounded-lg hover:bg-blue-800 transition shadow-sm flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ด & ใช้เลย
+                        </button>
+                    </div>
+                    `;
+                });
+
+                let container = document.getElementById('available-coupons-container');
+                let list = document.getElementById('available-coupons-list');
+                
+                if (html) {
+                    list.innerHTML = html;
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden'); // ซ่อนถ้าไม่มีคูปอง
+                }
+            } catch(e) { console.error("Error loading coupons:", e); }
+        };
+
+        // 🌟 ฟังก์ชันกดรับคูปองอัตโนมัติ
+        window.autoApplyCoupon = function(code) {
+            let inputEl = document.getElementById('promo-code-input');
+            inputEl.value = code;
+            applyPromoCode(); // สั่งให้ระบบเช็คเงื่อนไขและหักเงินทันที
+        };
     </script>
 </body>
 </html>
