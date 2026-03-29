@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         tailwind.config = {
@@ -1643,98 +1644,178 @@
                 el.textContent = 'ยังไม่มีประวัติการอัปเดต';
             }
         });
+
         // ==========================================
-        // 🌟 ระบบ Smart Contact
+        // 🌟 ระบบ Smart Contact (อัปเกรด: เรียงลำดับ + กราฟ)
         // ==========================================
-        let currentCustomContacts = [];
+        let unifiedLinks = [];
         let qrCodeInstance = null;
+        let chartInstance = null;
 
         async function loadContactAdmin() {
             try {
                 const doc = await db.collection('settings').doc('contact_page').get();
-                let statsHTML = '<p class="text-xs text-gray-500 italic text-center py-2">ยังไม่มีข้อมูลสถิติ</p>';
+                let statsHTML = '<p class="text-[10px] text-gray-500 italic text-center">ยังไม่มีข้อมูลสถิติ</p>';
 
                 if(doc.exists) {
                     let data = doc.data();
-                    let main = data.mainLinks || {};
-                    document.getElementById('cnt-line').value = main.line || '';
-                    document.getElementById('cnt-wa').value = main.whatsapp || '';
-                    document.getElementById('cnt-wechat').value = main.wechat || '';
-                    document.getElementById('cnt-tg').value = main.telegram || '';
-                    document.getElementById('cnt-fb').value = main.facebook || '';
+                    
+                    // โหลดภาพแบคกราวด์และพรีวิว
+                    document.getElementById('cnt-bg-img').value = data.bgImage || '';
                     document.getElementById('cnt-og-img').value = data.ogImage || '';
 
-                    currentCustomContacts = data.customLinks || [];
+                    // 🛠️ ไมเกรตระบบข้อมูลเดิม (ถ้ามี) ให้เป็นระบบเรียงลำดับใหม่
+                    unifiedLinks = data.allLinks || [];
+                    if(unifiedLinks.length === 0 && data.mainLinks) {
+                        ['line', 'wa', 'wechat', 'tg', 'fb'].forEach(k => {
+                            let aKey = k==='wa'?'whatsapp':k==='tg'?'telegram':k==='fb'?'facebook':k;
+                            if(data.mainLinks[aKey]) unifiedLinks.push({ type: k, name: aKey.toUpperCase(), url: data.mainLinks[aKey] });
+                        });
+                        if(data.customLinks) data.customLinks.forEach(c => unifiedLinks.push({ type: 'custom', name: c.name, url: c.url, img: c.img }));
+                    }
                     
-                    // Render Stats
+                    // Render กราฟและสถิติรวม
                     if(data.clickStats) {
+                        renderChart(data.clickStats); // วาดกราฟ
+                        
                         statsHTML = '';
-                        let stats = Object.entries(data.clickStats).sort((a,b) => b[1] - a[1]);
+                        let stats = Object.entries(data.clickStats)
+                            .filter(([k,v]) => k !== 'Monthly') // กรองโฟลเดอร์รายเดือนทิ้ง
+                            .sort((a,b) => b[1] - a[1]);
+
                         stats.forEach(([key, val]) => {
-                            let color = key === 'Page_Views' ? 'text-blue-600 bg-blue-100' : 'text-gray-700 bg-white border border-gray-200';
-                            let icon = key === 'Page_Views' ? '<i class="fa-solid fa-eye mr-2"></i>ยอดเข้าชม' : key;
-                            statsHTML += `<div class="flex justify-between items-center p-3 rounded-lg ${color} text-xs font-bold shadow-sm"><span>${icon}</span><span class="text-sm">${val.toLocaleString()} ครั้ง</span></div>`;
+                            let isView = key === 'Page_Views';
+                            let color = isView ? 'text-blue-600 bg-blue-50' : 'text-gray-600 bg-gray-50';
+                            let icon = isView ? '<i class="fa-solid fa-eye mr-2"></i>ยอดเข้าชมรวม' : key;
+                            statsHTML += `<div class="flex justify-between items-center px-3 py-2 rounded-lg ${color} text-[10px] font-bold"><span>${icon}</span><span class="text-xs">${val.toLocaleString()}</span></div>`;
                         });
                     }
                 }
                 
                 document.getElementById('contact-stats-area').innerHTML = statsHTML;
-                renderCustomContacts();
+                renderUnifiedLinks();
                 generateContactQR();
 
             } catch(e) { console.error("Error loading contact:", e); }
         }
 
-        function renderCustomContacts() {
-            const container = document.getElementById('contact-custom-area');
-            if(currentCustomContacts.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-400 italic bg-gray-50 p-3 rounded-lg border border-dashed border-gray-200">ยังไม่มีช่องทางอื่น กดเพิ่มด้านบนเลยครับ</p>';
+        // วาดกราฟเส้น 6 เดือนล่าสุด
+        function renderChart(statsData) {
+            let ctx = document.getElementById('contactStatsChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy(); // ลบกราฟเก่าทิ้ง
+            
+            if(!statsData.Monthly) return; // ถ้ายังไม่มีเก็บรายเดือน ให้ข้ามไป
+
+            // ดึงเดือนย้อนหลัง 6 เดือน
+            let labels = [];
+            let viewsData = [];
+            let clickData = [];
+            
+            let d = new Date();
+            for(let i=5; i>=0; i--) {
+                let tempD = new Date(d.getFullYear(), d.getMonth() - i, 1);
+                let yyyy_mm = tempD.getFullYear() + "-" + String(tempD.getMonth() + 1).padStart(2, '0');
+                let monthName = tempD.toLocaleString('th-TH', { month: 'short' });
+                
+                labels.push(monthName);
+                
+                // ดึงยอดของเดือนนั้น
+                let mData = statsData.Monthly[yyyy_mm] || {};
+                let vCount = mData['Page_Views'] || 0;
+                // หากยอดคลิกรวม (เอาทุกแชนแนลบวกกัน ลบยอดวิวออก)
+                let cCount = Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0);
+                
+                viewsData.push(vCount);
+                clickData.push(cCount);
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'เข้าชมเพจ', data: viewsData, borderColor: '#1EA7E1', backgroundColor: 'rgba(30,167,225,0.1)', fill: true, tension: 0.4 },
+                        { label: 'คลิกลิงก์', data: clickData, borderColor: '#00B900', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+            });
+        }
+
+        // ระบบจัดเรียงลิงก์
+        function renderUnifiedLinks() {
+            const container = document.getElementById('unified-links-area');
+            if(unifiedLinks.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic bg-gray-50 p-3 rounded text-center">ยังไม่มีช่องทาง กดเพิ่มด้านบนเลยครับ</p>';
                 return;
             }
+            
             let html = '';
-            currentCustomContacts.forEach((c, idx) => {
+            unifiedLinks.forEach((c, idx) => {
+                let isCustom = c.type === 'custom';
+                let iconHtml = isCustom 
+                    ? `<div class="w-8 h-8 rounded bg-white flex items-center justify-center overflow-hidden border shrink-0">${c.img ? `<img src="${c.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-image text-gray-300"></i>`}</div>`
+                    : `<div class="w-8 h-8 rounded bg-blue-100 text-blue-600 flex items-center justify-center font-bold uppercase text-[10px] shrink-0">${c.type}</div>`;
+
                 html += `
-                <div class="flex flex-col sm:flex-row items-center gap-2 bg-white p-3 rounded-xl border border-gray-200 shadow-sm relative">
-                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0 overflow-hidden border border-gray-200">
-                        ${c.img ? `<img src="${c.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-image text-gray-300"></i>`}
+                <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm relative">
+                    <div class="flex flex-col gap-1 pr-2 border-r border-gray-100">
+                        <button onclick="moveContactLink(${idx}, -1)" class="text-gray-300 hover:text-primary transition" ${idx===0?'disabled opacity-30':''}><i class="fa-solid fa-chevron-up text-[10px]"></i></button>
+                        <button onclick="moveContactLink(${idx}, 1)" class="text-gray-300 hover:text-primary transition" ${idx===unifiedLinks.length-1?'disabled opacity-30':''}><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                     </div>
-                    <div class="flex-1 w-full space-y-2">
+                    ${iconHtml}
+                    <div class="flex-1 space-y-1.5 w-full">
                         <div class="flex gap-2">
-                            <input type="text" placeholder="ชื่อช่องทาง (เช่น Instagram, Website)" value="${c.name || ''}" onchange="updateCustomContact(${idx}, 'name', this.value)" class="w-1/2 p-2 border rounded text-xs outline-none focus:border-primary font-bold">
-                            <label class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-3 py-2 rounded cursor-pointer transition flex items-center justify-center shrink-0 text-xs font-bold" title="อัพโหลดโลโก้">
-                                <i class="fa-solid fa-upload mr-1"></i> โลโก้
+                            <input type="text" placeholder="ชื่อช่องทาง" value="${c.name || ''}" onchange="updateUnifiedLink(${idx}, 'name', this.value)" class="w-1/2 p-1.5 border rounded text-xs outline-none focus:border-primary font-bold">
+                            ${isCustom ? `
+                            <label class="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-2 py-1 rounded cursor-pointer transition flex items-center justify-center shrink-0 text-[10px] font-bold" title="อัปโหลดโลโก้">
+                                <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline ml-1">โลโก้</span>
                                 <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event, 'contact_icons', ${idx})">
-                            </label>
+                            </label>` : ''}
                         </div>
-                        <input type="text" placeholder="URL ปลายทาง (https://...)" value="${c.url || ''}" onchange="updateCustomContact(${idx}, 'url', this.value)" class="w-full p-2 border rounded text-xs outline-none focus:border-primary text-blue-500">
+                        <input type="text" placeholder="URL ปลายทาง (https://...)" value="${c.url || ''}" onchange="updateUnifiedLink(${idx}, 'url', this.value)" class="w-full p-1.5 border rounded text-xs outline-none focus:border-primary text-blue-500">
                     </div>
-                    <button type="button" onclick="removeCustomContact(${idx})" class="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto text-red-400 hover:bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
+                    <button type="button" onclick="removeUnifiedLink(${idx})" class="text-red-400 hover:bg-red-50 p-2 rounded-lg transition shrink-0"><i class="fa-solid fa-trash"></i></button>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
-        function addCustomContact() { currentCustomContacts.push({ name: '', url: '', img: '' }); renderCustomContacts(); }
-        function updateCustomContact(index, field, value) { currentCustomContacts[index][field] = value; }
-        function removeCustomContact(index) { currentCustomContacts.splice(index, 1); renderCustomContacts(); }
+        function addNewContactLink() {
+            let type = document.getElementById('new-link-type').value;
+            let name = type === 'line' ? 'LINE Official' : type === 'wa' ? 'WhatsApp' : type === 'fb' ? 'Facebook' : 'ช่องทางใหม่';
+            unifiedLinks.push({ type: type, name: name, url: '', img: '' });
+            renderUnifiedLinks();
+        }
+        function updateUnifiedLink(index, field, value) { unifiedLinks[index][field] = value; }
+        function removeUnifiedLink(index) { unifiedLinks.splice(index, 1); renderUnifiedLinks(); }
+        
+        // ฟังก์ชันสลับตำแหน่ง Array ขึ้น-ลง
+        function moveContactLink(index, direction) {
+            if (index + direction < 0 || index + direction >= unifiedLinks.length) return;
+            let element = unifiedLinks[index];
+            unifiedLinks.splice(index, 1); // ลบออก
+            unifiedLinks.splice(index + direction, 0, element); // ใส่กลับที่ใหม่
+            renderUnifiedLinks();
+        }
 
-        // ต้องผูก handleImageUpload ให้รองรับ contact_icons ด้วย
+        // ต้องผูกฟังก์ชันอัปโหลดให้รองรับ Array ใหม่
         const originalHandleImageUpload = window.handleImageUpload;
         window.handleImageUpload = async function(event, type, index) {
             if(type === 'contact_icons') {
                 const file = event.target.files[0];
                 if (!file) return;
-                Swal.fire({ title: 'กำลังอัพโหลดโลโก้...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+                Swal.fire({ title: 'กำลังอัพโหลด...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
                 try {
                     const fileRef = firebase.storage().ref().child(`contact_icons/${Date.now()}_${file.name}`);
                     await fileRef.put(file);
-                    currentCustomContacts[index].img = await fileRef.getDownloadURL();
-                    renderCustomContacts();
+                    unifiedLinks[index].img = await fileRef.getDownloadURL();
+                    renderUnifiedLinks();
                     Swal.fire({ icon: 'success', title: 'อัพโหลดสำเร็จ!', showConfirmButton: false, timer: 1000 });
                 } catch (error) { Swal.fire('เกิดข้อผิดพลาด', error.message, 'error'); }
                 event.target.value = '';
             } else if (originalHandleImageUpload) {
-                originalHandleImageUpload(event, type, index); // ไปเรียกฟังก์ชันเดิมของลูกค้า/ผลงาน
+                originalHandleImageUpload(event, type, index); 
             }
         };
 
@@ -1744,34 +1825,101 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
             btn.disabled = true;
 
-            let mainLinks = {
-                line: document.getElementById('cnt-line').value.trim(),
-                whatsapp: document.getElementById('cnt-wa').value.trim(),
-                wechat: document.getElementById('cnt-wechat').value.trim(),
-                telegram: document.getElementById('cnt-tg').value.trim(),
-                facebook: document.getElementById('cnt-fb').value.trim()
-            };
-            let cleanCustom = currentCustomContacts.filter(c => c.name.trim() !== '' && c.url.trim() !== '');
-
-            // ดึงค่ารูปลิงก์พรีวิว
-            let ogImgVal = document.getElementById('cnt-og-img').value.trim(); // 🆕 ดึงข้อมูลรูปพรีวิว
+            let cleanLinks = unifiedLinks.filter(c => c.url.trim() !== '');
 
             try {
                 await db.collection('settings').doc('contact_page').set({ 
-                    mainLinks: mainLinks, 
-                    customLinks: cleanCustom,
-                    ogImage: ogImgVal // 🆕 บันทึกลงฐานข้อมูล
+                    allLinks: cleanLinks,
+                    bgImage: document.getElementById('cnt-bg-img').value.trim(),
+                    ogImage: document.getElementById('cnt-og-img').value.trim()
                 }, { merge: true });
                 
-                Swal.fire({ icon: 'success', title: 'บันทึกหน้าติดต่อสำเร็จ', showConfirmButton: false, timer: 1500 });
+                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500 });
                 if(typeof markSystemUpdated === 'function') markSystemUpdated();
-                renderCustomContacts();
-                generateContactQR();
+                renderUnifiedLinks();
+                generateContactQR(); // อัปเดต QR
             } catch(e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error'); }
             
             btn.innerHTML = originalText;
             btn.disabled = false;
+        }
+
+        function generateContactQR() {
+            let qrBox = document.getElementById('qrcode-box');
+            qrBox.innerHTML = '';
+            let qrContainer = document.createElement('div');
+            qrContainer.style.position = 'relative';
+            qrContainer.style.width = '200px'; qrContainer.style.height = '200px';
+            qrBox.appendChild(qrContainer);
+
+            let targetUrl = window.location.origin + '/contact.html';
             
+            qrCodeInstance = new QRCode(qrContainer, {
+                text: targetUrl, width: 200, height: 200,
+                colorDark : "#1EA7E1", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H
+            });
+
+            let logoImg = document.createElement('img');
+            logoImg.src = 'logo-c-cleanforce-rmbg.png'; 
+            logoImg.style.position = 'absolute'; logoImg.style.top = '50%'; logoImg.style.left = '50%';
+            logoImg.style.transform = 'translate(-50%, -50%)'; logoImg.style.width = '40px'; logoImg.style.height = '40px';
+            logoImg.style.backgroundColor = 'white'; logoImg.style.padding = '3px'; logoImg.style.borderRadius = '8px';
+            qrContainer.appendChild(logoImg);
+        }
+
+        function downloadContactQR() {
+            let qrContainer = document.getElementById('qrcode-box').firstChild;
+            if (!qrContainer) return Swal.fire('แจ้งเตือน', 'กรุณาสร้าง QR Code ก่อน', 'warning');
+
+            let qrImgElement = qrContainer.querySelector('img[src^="data:image"]');
+            let canvasElement = qrContainer.querySelector('canvas');
+            let qrSource = qrImgElement ? qrImgElement.src : (canvasElement ? canvasElement.toDataURL() : null);
+
+            if (!qrSource) return Swal.fire('ข้อผิดพลาด', 'ไม่พบรูปภาพ QR Code', 'error');
+            Swal.fire({ title: 'กำลังประมวลผลรูปภาพ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080; canvas.height = 1080;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let imgQR = new Image(); imgQR.crossOrigin = "Anonymous";
+            imgQR.onload = function() {
+                ctx.drawImage(imgQR, 40, 40, 1000, 1000); 
+
+                let imgLogo = new Image(); imgLogo.crossOrigin = "Anonymous";
+                imgLogo.src = 'logo-c-cleanforce-rmbg.png'; 
+                
+                imgLogo.onload = function() {
+                    const logoSize = 220; const center = 1080 / 2;
+                    const logoX = center - (logoSize / 2); const logoY = center - (logoSize / 2);
+
+                    ctx.fillStyle = '#ffffff'; ctx.beginPath(); const radius = 25; 
+                    ctx.moveTo(logoX - 15 + radius, logoY - 15); ctx.lineTo(logoX + logoSize + 15 - radius, logoY - 15);
+                    ctx.quadraticCurveTo(logoX + logoSize + 15, logoY - 15, logoX + logoSize + 15, logoY - 15 + radius);
+                    ctx.lineTo(logoX + logoSize + 15, logoY + logoSize + 15 - radius);
+                    ctx.quadraticCurveTo(logoX + logoSize + 15, logoY + logoSize + 15, logoX + logoSize + 15 - radius, logoY + logoSize + 15);
+                    ctx.lineTo(logoX - 15 + radius, logoY + logoSize + 15);
+                    ctx.quadraticCurveTo(logoX - 15, logoY + logoSize + 15, logoX - 15, logoY + logoSize + 15 - radius);
+                    ctx.lineTo(logoX - 15, logoY - 15 + radius);
+                    ctx.quadraticCurveTo(logoX - 15, logoY - 15, logoX - 15 + radius, logoY - 15); ctx.fill();
+
+                    ctx.drawImage(imgLogo, logoX, logoY, logoSize, logoSize);
+                    triggerDownload(canvas);
+                };
+                imgLogo.onerror = function() { triggerDownload(canvas); };
+            };
+            imgQR.src = qrSource;
+        }
+
+        function triggerDownload(canvas) {
+            let finalImageURL = canvas.toDataURL("image/png");
+            let link = document.createElement('a');
+            link.download = 'Cleanforce_Contact_QR_1080px.png'; 
+            link.href = finalImageURL; link.click();
+            Swal.close();
+            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            Toast.fire({ icon: 'success', title: 'ดาวน์โหลด QR Code สำเร็จ!' });
         }
 
         function generateContactQR() {

@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Cleanforce</title>
     <meta name="title" content="Cleanforce | ช่องทางการติดต่อ">
-    <meta name="description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม ขจัดคราบฝังลึกและไรฝุ่น">
+    <meta name="description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://all-force.com/contact.html"> <meta property="og:title" content="Cleanforce | ช่องทางการติดต่อ">
+    <meta property="og:url" content="https://all-force.com/contact.html">
+    <meta property="og:title" content="Cleanforce | ช่องทางการติดต่อ">
     <meta property="og:description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม ขจัดคราบฝังลึกและไรฝุ่น">
-    <meta id="meta-og-img" property="og:image" content="https://www.all-force.com/preview-cleanforce.png">
+    <meta id="meta-og-img" property="og:image" content="https://all-force.com/logo-cleanforce.png?v=3"> 
+    <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://all-force.com/contact.html">
     <meta property="twitter:title" content="Cleanforce | ช่องทางการติดต่อ">
-    <meta property="twitter:description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม ขจัดคราบฝังลึกและไรฝุ่น">
-    <meta id="meta-tw-img" property="twitter:image" content="https://www.all-force.com/preview-cleanforce.png">
-    <title>Contact Us | Cleanforce</title>
+    <meta property="twitter:description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม">
+    <meta id="meta-tw-img" property="twitter:image" content="https://all-force.com/logo-cleanforce.png?v=3">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -22,97 +25,29 @@
     
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: '#1EA7E1', background: '#F3F7FB', text: '#0F172A', groupPrimary: '#000080' },
-                    fontFamily: { heading: ['Poppins', 'Noto Sans Thai', 'sans-serif'], body: ['Noto Sans Thai', 'sans-serif'] }
-                }
-            }
+            theme: { extend: { colors: { primary: '#1EA7E1', background: '#F3F7FB', text: '#0F172A', groupPrimary: '#000080' }, fontFamily: { heading: ['Poppins', 'Noto Sans Thai', 'sans-serif'], body: ['Noto Sans Thai', 'sans-serif'] } } }
         }
     </script>
-    
     <style>
         body { font-family: 'Noto Sans Thai', sans-serif; background-color: #F3F7FB; }
-        
-        /* ลบกรอบสี่เหลี่ยมไฮไลท์เวลาใช้นิ้วแตะบนมือถือ */
         * { -webkit-tap-highlight-color: transparent; }
-
-        /* =========================================
-           🌟 1. เอฟเฟกต์ปุ่มตั้งต้น (ยุบตัวสู้มือ)
-           ========================================= */
-        .link-card { 
-            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2); 
-            will-change: transform, box-shadow;
-            position: relative;
-            overflow: hidden; /* กั้นแสงไม่ให้ล้นออกนอกขอบปุ่ม */
-        }
-        
-        /* ตอนเอาเมาส์ชี้ ให้ปุ่มลอยขึ้นนิดๆ */
-        @media (hover: hover) {
-            .link-card:hover { 
-                transform: translateY(-4px) scale(1.03); 
-                box-shadow: 0 20px 30px -5px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.4); 
-            }
-        }
-        
-        /* ตอนใช้นิ้วแตะ ให้ปุ่มยุบตัวลงลึก */
-        .link-card:active { 
-            transform: scale(0.92) translateY(2px) !important; 
-            box-shadow: 0 5px 10px -5px rgba(0,0,0,0.1) !important; 
-            filter: brightness(0.95);
-        }
-        
-        /* =========================================
-           ✨ 2. เอฟเฟกต์แสงวิบวับวิ่งผ่านปุ่ม (แก้ไขให้โชว์ 100%)
-           ========================================= */
-        @keyframes premium-shine {
-            0% { left: -100%; opacity: 0; }
-            15% { opacity: 1; }
-            60% { left: 100%; opacity: 1; }
-            100% { left: 100%; opacity: 0; }
-        }
-        
-        /* สร้างเส้นแสงพาดทับปุ่มโดยตรง */
-        .link-card::before {
-            content: '';
-            position: absolute;
-            top: 0; 
-            left: -100%; 
-            width: 50%; 
-            height: 100%;
-            /* ปรับแสงให้สว่างและกว้างขึ้น */
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg); 
-            z-index: 20; /* ดันแสงให้อยู่ชั้นบนสุด พาดผ่านตัวหนังสือได้เลย */
-            pointer-events: none; 
-        }
-        
-        /* สั่งให้แสงวิ่งรัวๆ เมื่อเอาเมาส์ชี้ หรือ เอานิ้วแตะ */
-        .link-card:hover::before,
-        .link-card:active::before { 
-            animation: premium-shine 1.5s ease-in-out infinite; 
-        }
-
-        /* =========================================
-           🌀 3. ไอคอนเด้งดุ๊กดิ๊ก 
-           ========================================= */
-        .link-card i {
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .link-card:hover i,
-        .link-card:active i {
-            transform: scale(1.25) rotate(8deg);
-        }
+        .link-card { transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2); will-change: transform, box-shadow; position: relative; overflow: hidden; }
+        @media (hover: hover) { .link-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 30px -5px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.4); } }
+        .link-card:active { transform: scale(0.92) translateY(2px) !important; box-shadow: 0 5px 10px -5px rgba(0,0,0,0.1) !important; filter: brightness(0.95); }
+        @keyframes premium-shine { 0% { left: -100%; opacity: 0; } 15% { opacity: 1; } 60% { left: 100%; opacity: 1; } 100% { left: 100%; opacity: 0; } }
+        .link-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); z-index: 20; pointer-events: none; }
+        .link-card:hover::before, .link-card:active::before { animation: premium-shine 1.5s ease-in-out infinite; }
+        .link-card i { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
+        .link-card:hover i, .link-card:active i { transform: scale(1.25) rotate(8deg); }
+        .link-card span { position: relative; z-index: 2; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-10 px-6 font-body relative overflow-x-hidden">
 
-    <div class="fixed inset-0 z-0 opacity-40 bg-[url('hero-bg.jpg')] bg-cover bg-center bg-no-repeat pointer-events-none"></div>
+    <div id="dynamic-bg" class="fixed inset-0 z-0 opacity-40 bg-[url('hero-bg.jpg')] bg-cover bg-center bg-no-repeat pointer-events-none transition-all duration-1000"></div>
     <div class="fixed inset-0 z-0 bg-gradient-to-b from-white/60 to-[#F3F7FB] pointer-events-none"></div>
 
     <div class="relative z-10 w-full max-w-md flex flex-col items-center">
-        
         <div class="w-full text-center mb-10 animate-in slide-in-from-top-4 duration-500">
             <div class="w-28 h-28 mx-auto bg-white rounded-full p-2 shadow-[0_0_20px_rgba(30,167,225,0.2)] mb-4 border-2 border-primary/20 relative">
                 <img src="logo-cleanforce.png" alt="Cleanforce" class="w-full h-full object-contain rounded-full" onerror="this.src='https://placehold.co/100x100?text=CF'">
@@ -122,50 +57,8 @@
             <p class="text-sm text-gray-500 mt-1 font-medium bg-white/60 inline-block px-4 py-1 rounded-full shadow-sm border border-white">บริการทำความสะอาดพรีเมียม</p>
         </div>
 
-        <div class="w-full space-y-4 mb-8">
-            <button onclick="trackAndGo('LINE')" id="btn-line" class="link-card w-full bg-[#00B900] text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group shine-effect border border-[#00B900]/50">
-                <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">
-                    <i class="fa-brands fa-line text-3xl"></i>
-                </div>
-                <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">LINE Official</span>
-            </button>
-            
-            <button onclick="trackAndGo('WhatsApp')" id="btn-wa" class="link-card w-full bg-[#25D366] text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group shine-effect border border-[#25D366]/50 hidden">
-                <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">
-                    <i class="fa-brands fa-whatsapp text-3xl"></i>
-                </div>
-                <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">WhatsApp</span>
-            </button>
-
-            <button onclick="trackAndGo('WeChat')" id="btn-wechat" class="link-card w-full bg-[#07C160] text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group shine-effect border border-[#07C160]/50 hidden">
-                <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">
-                    <i class="fa-brands fa-weixin text-3xl"></i>
-                </div>
-                <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">WeChat</span>
-            </button>
-
-            <button onclick="trackAndGo('Telegram')" id="btn-tg" class="link-card w-full bg-[#0088cc] text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group shine-effect border border-[#0088cc]/50 hidden">
-                <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">
-                    <i class="fa-brands fa-telegram text-3xl"></i>
-                </div>
-                <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">Telegram</span>
-            </button>
-
-            <button onclick="trackAndGo('Facebook')" id="btn-fb" class="link-card w-full bg-[#1877F2] text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group shine-effect border border-[#1877F2]/50 hidden">
-                <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">
-                    <i class="fa-brands fa-facebook text-3xl"></i>
-                </div>
-                <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">Facebook</span>
-            </button>
-        </div>
-
-        <div class="w-full">
-            <button onclick="toggleMore()" id="btn-more-toggle" class="w-full bg-white text-primary border-2 border-primary/30 p-4 rounded-full flex items-center justify-center gap-2 font-bold hover:bg-blue-50 hover:border-primary transition-all shadow-sm hidden group">
-                <i class="fa-solid fa-layer-group group-hover:scale-110 transition-transform"></i> <span id="more-text">ช่องทางอื่นๆ (More Channels)</span> <i class="fa-solid fa-chevron-down text-xs transition-transform" id="more-icon"></i>
-            </button>
-            
-            <div id="more-channels" class="hidden mt-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-                </div>
+        <div id="links-container" class="w-full space-y-4 mb-8">
+            <div class="text-center py-10 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>กำลังโหลดช่องทางการติดต่อ...</div>
         </div>
 
         <footer class="mt-16 pt-8 text-center w-full border-t border-gray-200/50">
@@ -174,7 +67,6 @@
             </a>
             <p class="text-gray-400 text-[10px] font-medium">© 2026 Cleanforce. All rights reserved.</p>
         </footer>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -192,12 +84,28 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        let linkData = { line: '', whatsapp: '', wechat: '', telegram: '', facebook: '' };
+        // สีและไอคอนมาตรฐาน
+        const presets = {
+            line: { bg: 'bg-[#00B900]', icon: '<i class="fa-brands fa-line text-3xl"></i>', border: 'border-[#00B900]/50' },
+            wa: { bg: 'bg-[#25D366]', icon: '<i class="fa-brands fa-whatsapp text-3xl"></i>', border: 'border-[#25D366]/50' },
+            wechat: { bg: 'bg-[#07C160]', icon: '<i class="fa-brands fa-weixin text-3xl"></i>', border: 'border-[#07C160]/50' },
+            tg: { bg: 'bg-[#0088cc]', icon: '<i class="fa-brands fa-telegram text-3xl"></i>', border: 'border-[#0088cc]/50' },
+            fb: { bg: 'bg-[#1877F2]', icon: '<i class="fa-brands fa-facebook text-3xl"></i>', border: 'border-[#1877F2]/50' }
+        };
 
-        // โหลดข้อมูลจากฐานข้อมูล
+        let d = new Date();
+        let currentMonthYear = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+
         db.collection('settings').doc('contact_page').get().then(doc => {
             if(doc.exists) {
                 let data = doc.data();
+                
+                // เปลี่ยนพื้นหลัง
+                if(data.bgImage) {
+                    document.getElementById('dynamic-bg').style.backgroundImage = `url('${data.bgImage}')`;
+                }
+                
+                // เปลี่ยนรูปพรีวิว (Link Preview)
                 if(data.ogImage) {
                     let ogMeta = document.getElementById('meta-og-img');
                     let twMeta = document.getElementById('meta-tw-img');
@@ -205,61 +113,63 @@
                     if(twMeta) twMeta.setAttribute('content', data.ogImage);
                 }
                 
-                if(data.mainLinks) {
-                    linkData = data.mainLinks;
-                    ['line', 'wa', 'wechat', 'tg', 'fb'].forEach((key, idx) => {
-                        let actualKey = ['line', 'whatsapp', 'wechat', 'telegram', 'facebook'][idx];
-                        if(linkData[actualKey]) {
-                            document.getElementById(`btn-${key}`).classList.remove('hidden');
-                        }
+                // แสดงผลลิงก์
+                let linksHtml = '';
+                let allLinks = data.allLinks || []; // ใช้ระบบโครงสร้างข้อมูลใหม่
+
+                // กรณีข้อมูลเก่า ยังไม่โดนอัปเกรด
+                if(allLinks.length === 0 && data.mainLinks) {
+                    ['line', 'wa', 'wechat', 'tg', 'fb'].forEach((k) => {
+                        let aKey = k==='wa'?'whatsapp':k==='tg'?'telegram':k==='fb'?'facebook':k;
+                        if(data.mainLinks[aKey]) allLinks.push({ type: k, name: aKey.toUpperCase(), url: data.mainLinks[aKey] });
                     });
-                } else {
-                    linkData.line = "https://line.me/R/ti/p/@cleanforce";
-                    document.getElementById('btn-line').classList.remove('hidden');
+                    if(data.customLinks) {
+                        data.customLinks.forEach(c => allLinks.push({ type: 'custom', name: c.name, url: c.url, img: c.img }));
+                    }
                 }
 
-                if(data.customLinks && data.customLinks.length > 0) {
-                    document.getElementById('btn-more-toggle').classList.remove('hidden');
-                    let html = '';
-                    data.customLinks.forEach((c, idx) => {
-                        html += `
-                        <button onclick="trackAndGo('Custom_${idx}_${c.name}', '${c.url}')" class="link-card w-full bg-white/80 backdrop-blur-sm text-gray-800 border border-white p-3 px-4 rounded-full flex items-center shadow-sm group hover:border-primary/50 transition-all shine-effect overflow-hidden relative">
-                            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden shrink-0 border border-gray-100 shadow-sm z-10">
-                                ${c.img ? `<img src="${c.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-link text-gray-400 group-hover:text-primary transition-colors"></i>`}
-                            </div>
-                            <span class="font-bold flex-1 text-center pr-12 text-[15px] z-10 group-hover:text-primary transition-colors">${c.name}</span>
+                allLinks.forEach((link, index) => {
+                    let typeId = link.type || 'custom';
+                    let delay = index * 100; // Animation delay
+                    
+                    if (presets[typeId]) {
+                        // รูปแบบปุ่มหลัก (Main App)
+                        let p = presets[typeId];
+                        linksHtml += `
+                        <button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full ${p.bg} text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group border ${p.border}" style="animation-delay: ${delay}ms">
+                            <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">${p.icon}</div>
+                            <span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">${link.name}</span>
                         </button>`;
-                    });
-                    document.getElementById('more-channels').innerHTML = html;
-                }
+                    } else {
+                        // รูปแบบช่องทางเสริม (Custom)
+                        let imgHtml = link.img ? `<img src="${link.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-link text-gray-400 group-hover:text-primary transition-colors"></i>`;
+                        linksHtml += `
+                        <button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full bg-white/80 backdrop-blur-sm text-gray-800 border border-white p-3 px-4 rounded-full flex items-center shadow-sm group hover:border-primary/50 transition-all overflow-hidden relative" style="animation-delay: ${delay}ms">
+                            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden shrink-0 border border-gray-100 shadow-sm z-10">${imgHtml}</div>
+                            <span class="font-bold flex-1 text-center pr-12 text-[15px] z-10 group-hover:text-primary transition-colors">${link.name}</span>
+                        </button>`;
+                    }
+                });
+
+                document.getElementById('links-container').innerHTML = linksHtml;
                 
+                // บันทึกสถิติรายเดือน
                 db.collection('settings').doc('contact_page').set({
-                    clickStats: { 'Page_Views': firebase.firestore.FieldValue.increment(1) }
+                    [`clickStats.Page_Views`]: firebase.firestore.FieldValue.increment(1),
+                    [`clickStats.Monthly.${currentMonthYear}.Page_Views`]: firebase.firestore.FieldValue.increment(1)
                 }, { merge: true });
             }
         });
 
-        function toggleMore() {
-            let moreDiv = document.getElementById('more-channels');
-            let icon = document.getElementById('more-icon');
-            if(moreDiv.classList.contains('hidden')) {
-                moreDiv.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                moreDiv.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function trackAndGo(channel, customUrl = null) {
-            let url = customUrl || linkData[channel.toLowerCase()];
-            if(!url) return alert('ขออภัย ช่องทางนี้กำลังปรับปรุงครับ');
-
+        function trackAndGo(channelName, targetUrl) {
+            if(!targetUrl) return;
+            // บันทึกคลิกรายช่องทาง ทั้งยอดรวม และยอดรายเดือน
             db.collection('settings').doc('contact_page').set({
-                clickStats: { [channel]: firebase.firestore.FieldValue.increment(1) }
+                [`clickStats.${channelName}`]: firebase.firestore.FieldValue.increment(1),
+                [`clickStats.Monthly.${currentMonthYear}.${channelName}`]: firebase.firestore.FieldValue.increment(1)
             }, { merge: true });
 
-            setTimeout(() => { window.open(url, '_blank'); }, 150);
+            setTimeout(() => { window.open(targetUrl, '_blank'); }, 150);
         }
     </script>
 </body>
