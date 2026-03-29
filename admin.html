@@ -1804,21 +1804,22 @@
             }
             
             let html = '';
-            // เพิ่มสีให้ไอคอนใหม่ๆ
+            // 🌟 เพิ่มสีให้ไอคอนใหม่ๆ รองรับทุกแอป
             const iconPreviews = {
                 'line': 'bg-[#00B900] text-white', 'wa': 'bg-[#25D366] text-white', 'fb': 'bg-[#1877F2] text-white',
                 'ig': 'bg-pink-500 text-white', 'tiktok': 'bg-black text-white', 'yt': 'bg-red-500 text-white',
-                'linkedin': 'bg-[#0A66C2] text-white', 'lemon8': 'bg-yellow-400 text-gray-800', 'tg': 'bg-[#0088cc] text-white', 
-                'wechat': 'bg-[#07C160] text-white', 'vk': 'bg-[#0077FF] text-white', 'viber': 'bg-[#7360F2] text-white',
-                'kakao': 'bg-[#FEE500] text-black', 'snapchat': 'bg-[#FFFC00] text-black', 'x': 'bg-black text-white',
-                'weibo': 'bg-[#DF2029] text-white', 'tripadvisor': 'bg-[#34E0A1] text-white',
-                'email': 'bg-gray-500 text-white', 'phone': 'bg-gray-800 text-white', 'web': 'bg-gray-600 text-white', 'map': 'bg-red-500 text-white'
+                'shopee': 'bg-[#EE4D2D] text-white', 'lazada': 'bg-[#0F146D] text-white', 'linkedin': 'bg-[#0A66C2] text-white',
+                'lemon8': 'bg-yellow-400 text-gray-800', 'tg': 'bg-[#0088cc] text-white', 'wechat': 'bg-[#07C160] text-white',
+                'vk': 'bg-[#0077FF] text-white', 'viber': 'bg-[#7360F2] text-white', 'kakao': 'bg-[#FEE500] text-black',
+                'snapchat': 'bg-[#FFFC00] text-black', 'x': 'bg-black text-white', 'weibo': 'bg-[#DF2029] text-white',
+                'tripadvisor': 'bg-[#34E0A1] text-white', 'email': 'bg-gray-500 text-white', 'phone': 'bg-gray-800 text-white', 
+                'web': 'bg-gray-600 text-white', 'map': 'bg-red-500 text-white'
             };
 
             unifiedLinks.forEach((c, idx) => {
                 let currentIconType = c.iconType || c.type || 'custom';
-                let iconHtml = '';
                 
+                let iconHtml = '';
                 if (currentIconType === 'custom' && c.img) {
                     iconHtml = `<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 shrink-0"><img src="${c.img}" class="w-full h-full object-cover"></div>`;
                 } else if (iconPreviews[currentIconType]) {
@@ -1856,7 +1857,7 @@
         }
 
         window.openIconPicker = function(index) {
-            // 🌟 ศูนย์รวมไอคอนระดับโลก
+            // 🌟 ศูนย์รวมไอคอนระดับโลกจัดเต็ม 20 แอป
             const apps = [
                 { id: 'wa', name: 'WhatsApp', icon: '<i class="fa-brands fa-whatsapp text-3xl text-[#25D366]"></i>' },
                 { id: 'fb', name: 'Facebook', icon: '<i class="fa-brands fa-facebook text-3xl text-[#1877F2]"></i>' },
@@ -1880,6 +1881,7 @@
                 { id: 'phone', name: 'เบอร์โทร', icon: '<i class="fa-solid fa-phone text-3xl text-gray-700"></i>' }
             ];
 
+            // ปรับตารางเป็น 5 คอลัมน์ ให้เรียงสวยๆ
             let html = '<div class="grid grid-cols-4 sm:grid-cols-5 gap-2 p-1">';
             apps.forEach(app => {
                 html += `<button onclick="Swal.clickConfirm()" data-id="${app.id}" class="icon-pick-btn flex flex-col items-center justify-center p-2 border rounded-xl hover:bg-blue-50 hover:border-primary transition gap-1 shadow-sm">${app.icon}<span class="text-[9px] font-bold text-gray-600 truncate w-full text-center">${app.name}</span></button>`;
@@ -1893,10 +1895,13 @@
                 html: html,
                 showConfirmButton: false,
                 showCloseButton: true,
-                width: '600px',
+                width: '600px', // ขยายกล่องให้กว้างขึ้น
                 didOpen: () => {
                     document.querySelectorAll('.icon-pick-btn').forEach(btn => {
-                        btn.onclick = () => { selectedId = btn.getAttribute('data-id'); Swal.close(); }
+                        btn.onclick = () => { 
+                            selectedId = btn.getAttribute('data-id'); 
+                            Swal.close(); 
+                        }
                     });
                 }
             }).then(() => {
