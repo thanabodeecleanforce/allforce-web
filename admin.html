@@ -1676,15 +1676,12 @@
         });
 
         // ==========================================
-        // 🌟 ระบบ Smart Contact (อัปเกรด: เรียงลำดับ + กราฟ)
-        // ==========================================
-        // ==========================================
         // 🌟 ระบบ Smart Contact (สมบูรณ์ 100% + กราฟรายสัปดาห์)
         // ==========================================
         let unifiedLinks = [];
         let qrCodeInstance = null;
         let chartInstance = null;
-        let globalContactStats = null; // 🆕 ตัวแปรเก็บสถิติไว้สลับกราฟ
+        let globalContactStats = null; 
 
         async function loadContactAdmin() {
             try {
@@ -1706,9 +1703,12 @@
                     }
                     
                     if(data.clickStats) {
-                        globalContactStats = data.clickStats; // เก็บลงตัวแปร Global
-                        populateMonthSelector(data.clickStats); // 🆕 สร้าง Dropdown เลือกเดือน
-                        renderChart('6months'); // วาดกราฟตั้งต้น
+                        globalContactStats = data.clickStats;
+                        populateMonthSelector(data.clickStats);
+                        
+                        // 🌟 ดึงค่าจาก Dropdown (ซึ่งจะตั้งเป็นเดือนปัจจุบันอัตโนมัติ) มาวาดกราฟสัปดาห์
+                        let currentSelectedMonth = document.getElementById('chart-month-selector').value;
+                        renderChart(currentSelectedMonth); 
                         
                         statsHTML = '';
                         let stats = Object.entries(data.clickStats).filter(([k,v]) => k !== 'Monthly' && k !== 'Daily').sort((a,b) => b[1] - a[1]);
@@ -1726,26 +1726,31 @@
             } catch(e) { console.error("Error loading contact:", e); }
         }
 
-        // 🆕 ฟังก์ชันอัปเดตตัวเลือก Dropdown เดือน
         function populateMonthSelector(stats) {
             let selector = document.getElementById('chart-month-selector');
-            selector.innerHTML = '<option value="6months">ภาพรวม 6 เดือนย้อนหลัง</option>';
-            if(stats.Monthly) {
-                // ดึงเดือนทั้งหมดมาเรียงจากล่าสุดไปเก่าสุด
+            selector.innerHTML = ''; // 🌟 ลบโหมด 6 เดือนทิ้งไปเลย
+            
+            let d = new Date();
+            let currentMonthStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+
+            if(stats.Monthly && Object.keys(stats.Monthly).length > 0) {
                 let months = Object.keys(stats.Monthly).sort().reverse();
+                if(!months.includes(currentMonthStr)) months.unshift(currentMonthStr);
+                
                 months.forEach(m => {
                     let [yy, mm] = m.split('-');
                     let date = new Date(yy, mm - 1, 1);
                     let monthName = date.toLocaleString('th-TH', { month: 'long', year: 'numeric' });
-                    selector.innerHTML += `<option value="${m}">${monthName}</option>`;
+                    let isSelected = (m === currentMonthStr) ? 'selected' : '';
+                    selector.innerHTML += `<option value="${m}" ${isSelected}>${monthName} (รายสัปดาห์)</option>`;
                 });
+            } else {
+                let monthName = d.toLocaleString('th-TH', { month: 'long', year: 'numeric' });
+                selector.innerHTML = `<option value="${currentMonthStr}" selected>${monthName} (รายสัปดาห์)</option>`;
             }
         }
 
-        // 🆕 ฟังก์ชันเมื่อกดเปลี่ยน Dropdown
-        window.updateChartByMonth = function(val) {
-            renderChart(val);
-        }
+        window.updateChartByMonth = function(val) { renderChart(val); }
 
         function renderChart(viewMode) {
             let canvas = document.getElementById('contactStatsChart');
@@ -1753,54 +1758,32 @@
             let ctx = canvas.getContext('2d');
             if(chartInstance) chartInstance.destroy();
 
-            let labels = [];
-            let viewsData = [];
-            let clickData = [];
+            // 🌟 โหมด: กราฟรายสัปดาห์ (เจาะจงเฉพาะเดือนที่เลือกเท่านั้น)
+            let dailyStats = globalContactStats.Daily || {};
+            let daysInMonth = Object.keys(dailyStats).filter(d => d.startsWith(viewMode)).sort();
+            
+            let weeks = {
+                "สัปดาห์ 1 (วันที่ 1-7)": {v:0, c:0},
+                "สัปดาห์ 2 (วันที่ 8-14)": {v:0, c:0},
+                "สัปดาห์ 3 (วันที่ 15-21)": {v:0, c:0},
+                "สัปดาห์ 4 (วันที่ 22+)": {v:0, c:0}
+            };
 
-            if (viewMode === '6months') {
-                // โหมด: กราฟรายเดือน 6 เดือนย้อนหลัง
-                let monthlyStats = globalContactStats.Monthly || {}; 
-                let d = new Date();
-                for(let i=5; i>=0; i--) {
-                    let tempD = new Date(d.getFullYear(), d.getMonth() - i, 1);
-                    let yyyy_mm = tempD.getFullYear() + "-" + String(tempD.getMonth() + 1).padStart(2, '0');
-                    labels.push(tempD.toLocaleString('th-TH', { month: 'short' }));
-                    let mData = monthlyStats[yyyy_mm] || {};
-                    viewsData.push(mData['Page_Views'] || 0);
-                    clickData.push(Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0));
-                }
-            } else {
-                // 🆕 โหมด: กราฟรายสัปดาห์ (ดูแบบเจาะจงเดือนที่เลือก)
-                let dailyStats = globalContactStats.Daily || {};
-                
-                // กรองหาวันที่เฉพาะเดือนที่เลือก (เช่น ขึ้นต้นด้วย "2026-03")
-                let daysInMonth = Object.keys(dailyStats).filter(d => d.startsWith(viewMode)).sort();
-                
-                // สร้างตะกร้าเก็บสถิติแบ่งเป็น 4 สัปดาห์
-                let weeks = {
-                    "สัปดาห์ที่ 1 (1-7)": {v:0, c:0},
-                    "สัปดาห์ที่ 2 (8-14)": {v:0, c:0},
-                    "สัปดาห์ที่ 3 (15-21)": {v:0, c:0},
-                    "สัปดาห์ที่ 4 (22+)": {v:0, c:0}
-                };
+            daysInMonth.forEach(dateStr => {
+                let day = parseInt(dateStr.split('-')[2]);
+                let mData = dailyStats[dateStr];
+                let vCount = mData['Page_Views'] || 0;
+                let cCount = Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0);
 
-                // นำยอดรายวันเทลงตะกร้ารายสัปดาห์
-                daysInMonth.forEach(dateStr => {
-                    let day = parseInt(dateStr.split('-')[2]); // ดึงตัวเลขวันที่ออกมา
-                    let mData = dailyStats[dateStr];
-                    let vCount = mData['Page_Views'] || 0;
-                    let cCount = Object.keys(mData).reduce((sum, key) => key !== 'Page_Views' ? sum + mData[key] : sum, 0);
+                if(day <= 7) { weeks["สัปดาห์ 1 (วันที่ 1-7)"].v += vCount; weeks["สัปดาห์ 1 (วันที่ 1-7)"].c += cCount; }
+                else if(day <= 14) { weeks["สัปดาห์ 2 (วันที่ 8-14)"].v += vCount; weeks["สัปดาห์ 2 (วันที่ 8-14)"].c += cCount; }
+                else if(day <= 21) { weeks["สัปดาห์ 3 (วันที่ 15-21)"].v += vCount; weeks["สัปดาห์ 3 (วันที่ 15-21)"].c += cCount; }
+                else { weeks["สัปดาห์ 4 (วันที่ 22+)"].v += vCount; weeks["สัปดาห์ 4 (วันที่ 22+)"].c += cCount; }
+            });
 
-                    if(day <= 7) { weeks["สัปดาห์ที่ 1 (1-7)"].v += vCount; weeks["สัปดาห์ที่ 1 (1-7)"].c += cCount; }
-                    else if(day <= 14) { weeks["สัปดาห์ที่ 2 (8-14)"].v += vCount; weeks["สัปดาห์ที่ 2 (8-14)"].c += cCount; }
-                    else if(day <= 21) { weeks["สัปดาห์ที่ 3 (15-21)"].v += vCount; weeks["สัปดาห์ที่ 3 (15-21)"].c += cCount; }
-                    else { weeks["สัปดาห์ที่ 4 (22+)"].v += vCount; weeks["สัปดาห์ที่ 4 (22+)"].c += cCount; }
-                });
-
-                labels = Object.keys(weeks);
-                viewsData = labels.map(k => weeks[k].v);
-                clickData = labels.map(k => weeks[k].c);
-            }
+            let labels = Object.keys(weeks);
+            let viewsData = labels.map(k => weeks[k].v);
+            let clickData = labels.map(k => weeks[k].c);
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
@@ -1815,7 +1798,6 @@
             });
         }
 
-        // ระบบจัดเรียงลิงก์ (เพิ่มปุ่มเลือกไอคอนสำเร็จรูป)
         function renderUnifiedLinks() {
             const container = document.getElementById('unified-links-area');
             if(unifiedLinks.length === 0) {
@@ -1824,18 +1806,18 @@
             }
             
             let html = '';
-            // ข้อมูลไอคอนสำหรับพรีวิวในหน้าแอดมิน
+            // เพิ่มสีให้ไอคอนใหม่ๆ
             const iconPreviews = {
                 'line': 'bg-[#00B900] text-white', 'wa': 'bg-[#25D366] text-white', 'fb': 'bg-[#1877F2] text-white',
                 'ig': 'bg-pink-500 text-white', 'tiktok': 'bg-black text-white', 'yt': 'bg-red-500 text-white',
-                'shopee': 'bg-[#EE4D2D] text-white', 'lazada': 'bg-[#0F146D] text-white', 'phone': 'bg-gray-800 text-white', 'web': 'bg-gray-600 text-white'
+                'shopee': 'bg-[#EE4D2D] text-white', 'lazada': 'bg-[#0F146D] text-white', 'linkedin': 'bg-[#0A66C2] text-white',
+                'lemon8': 'bg-yellow-400 text-gray-800', 'tg': 'bg-[#0088cc] text-white', 'wechat': 'bg-[#07C160] text-white',
+                'phone': 'bg-gray-800 text-white', 'web': 'bg-gray-600 text-white'
             };
 
             unifiedLinks.forEach((c, idx) => {
-                let isCustom = c.type === 'custom';
                 let currentIconType = c.iconType || c.type || 'custom';
                 
-                // รูปแบบการโชว์ไอคอนด้านซ้าย
                 let iconHtml = '';
                 if (currentIconType === 'custom' && c.img) {
                     iconHtml = `<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 shrink-0"><img src="${c.img}" class="w-full h-full object-cover"></div>`;
@@ -1855,7 +1837,7 @@
                     <div class="flex-1 space-y-1.5 w-full">
                         <div class="flex gap-2">
                             <input type="text" placeholder="ชื่อช่องทาง" value="${c.name || ''}" onchange="updateUnifiedLink(${idx}, 'name', this.value)" class="w-full p-1.5 border rounded text-xs outline-none focus:border-primary font-bold">
-                            ${isCustom ? `
+                            
                             <div class="flex gap-1 shrink-0">
                                 <button type="button" onclick="openIconPicker(${idx})" class="bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100 px-2 py-1 rounded cursor-pointer transition flex items-center justify-center text-[10px] font-bold" title="เลือกไอคอนแอปดัง">
                                     <i class="fa-solid fa-icons"></i> <span class="hidden sm:inline ml-1">ระบบ</span>
@@ -1864,7 +1846,8 @@
                                     <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline ml-1">อัปโหลด</span>
                                     <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event, 'contact_icons', ${idx})">
                                 </label>
-                            </div>` : ''}
+                            </div>
+
                         </div>
                         <input type="text" placeholder="URL ปลายทาง (https://...)" value="${c.url || ''}" onchange="updateUnifiedLink(${idx}, 'url', this.value)" class="w-full p-1.5 border rounded text-xs outline-none focus:border-primary text-blue-500">
                     </div>
@@ -1872,6 +1855,56 @@
                 </div>`;
             });
             container.innerHTML = html;
+        }
+
+        window.openIconPicker = function(index) {
+            // 🌟 เพิ่มไอคอนทั้งหมดตามที่ขอครับ
+            const apps = [
+                { id: 'line', name: 'LINE', icon: '<i class="fa-brands fa-line text-3xl text-[#00B900]"></i>' },
+                { id: 'fb', name: 'Facebook', icon: '<i class="fa-brands fa-facebook text-3xl text-[#1877F2]"></i>' },
+                { id: 'ig', name: 'Instagram', icon: '<i class="fa-brands fa-instagram text-3xl text-pink-500"></i>' },
+                { id: 'tiktok', name: 'TikTok', icon: '<i class="fa-brands fa-tiktok text-3xl text-black"></i>' },
+                { id: 'wa', name: 'WhatsApp', icon: '<i class="fa-brands fa-whatsapp text-3xl text-[#25D366]"></i>' },
+                { id: 'lemon8', name: 'Lemon8', icon: '<i class="fa-solid fa-lemon text-3xl text-yellow-500"></i>' },
+                { id: 'tg', name: 'Telegram', icon: '<i class="fa-brands fa-telegram text-3xl text-[#0088cc]"></i>' },
+                { id: 'linkedin', name: 'LinkedIn', icon: '<i class="fa-brands fa-linkedin text-3xl text-[#0A66C2]"></i>' },
+                { id: 'wechat', name: 'WeChat', icon: '<i class="fa-brands fa-weixin text-3xl text-[#07C160]"></i>' },
+                { id: 'yt', name: 'YouTube', icon: '<i class="fa-brands fa-youtube text-3xl text-red-500"></i>' },
+                { id: 'shopee', name: 'Shopee', icon: '<i class="fa-solid fa-bag-shopping text-3xl text-orange-500"></i>' },
+                { id: 'lazada', name: 'Lazada', icon: '<i class="fa-solid fa-heart text-3xl text-blue-800"></i>' },
+                { id: 'phone', name: 'เบอร์โทร', icon: '<i class="fa-solid fa-phone text-3xl text-gray-700"></i>' },
+                { id: 'web', name: 'เว็บไซต์', icon: '<i class="fa-solid fa-globe text-3xl text-blue-500"></i>' }
+            ];
+
+            let html = '<div class="grid grid-cols-3 sm:grid-cols-4 gap-3 p-2">';
+            apps.forEach(app => {
+                html += `<button onclick="Swal.clickConfirm()" data-id="${app.id}" class="icon-pick-btn flex flex-col items-center justify-center p-3 border rounded-xl hover:bg-blue-50 hover:border-primary transition gap-2 shadow-sm">${app.icon}<span class="text-[10px] font-bold text-gray-600">${app.name}</span></button>`;
+            });
+            html += '</div>';
+
+            let selectedId = null;
+
+            Swal.fire({
+                title: '<span class="text-sm font-bold text-[#000080]">เลือกไอคอนแอปพลิเคชัน</span>',
+                html: html,
+                showConfirmButton: false,
+                showCloseButton: true,
+                width: '600px',
+                didOpen: () => {
+                    document.querySelectorAll('.icon-pick-btn').forEach(btn => {
+                        btn.onclick = () => {
+                            selectedId = btn.getAttribute('data-id');
+                            Swal.close();
+                        }
+                    });
+                }
+            }).then(() => {
+                if (selectedId) {
+                    unifiedLinks[index].iconType = selectedId; 
+                    unifiedLinks[index].img = ''; 
+                    renderUnifiedLinks();
+                }
+            });
         }
 
         // 🆕 ฟังก์ชันหน้าต่างเลือกไอคอน
