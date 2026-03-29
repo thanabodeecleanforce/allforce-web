@@ -30,16 +30,63 @@
     </script>
     <style>
         body { font-family: 'Noto Sans Thai', sans-serif; background-color: #F3F7FB; }
-        * { -webkit-tap-highlight-color: transparent; }
-        .link-card { transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2); will-change: transform, box-shadow; position: relative; overflow: hidden; }
-        @media (hover: hover) { .link-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 20px 30px -5px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.4); } }
-        .link-card:active { transform: scale(0.92) translateY(2px) !important; box-shadow: 0 5px 10px -5px rgba(0,0,0,0.1) !important; filter: brightness(0.95); }
-        @keyframes premium-shine { 0% { left: -100%; opacity: 0; } 15% { opacity: 1; } 60% { left: 100%; opacity: 1; } 100% { left: 100%; opacity: 0; } }
-        .link-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); z-index: 20; pointer-events: none; }
-        .link-card:hover::before, .link-card:active::before { animation: premium-shine 1.5s ease-in-out infinite; }
-        .link-card i { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
-        .link-card:hover i, .link-card:active i { transform: scale(1.25) rotate(8deg); }
-        .link-card span { position: relative; z-index: 2; }
+* { -webkit-tap-highlight-color: transparent; }
+
+.link-card { 
+    transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2); 
+    will-change: transform, box-shadow; 
+    position: relative; 
+    overflow: hidden; 
+}
+
+@media (hover: hover) { 
+    .link-card:hover { 
+        transform: translateY(-4px) scale(1.03); 
+        box-shadow: 0 20px 30px -5px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.4); 
+    } 
+}
+.link-card:active { 
+    transform: scale(0.92) translateY(2px) !important; 
+    box-shadow: 0 5px 10px -5px rgba(0,0,0,0.1) !important; 
+    filter: brightness(0.95); 
+}
+
+/* 🌟 เอฟเฟกต์แสงวิ่งว้าบเดียว */
+@keyframes shine-sweep {
+    0% { left: -150%; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { left: 150%; opacity: 0; }
+}
+
+/* องค์ประกอบของแสงที่ซ่อนรอไว้ในปุ่ม */
+.link-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%; /* ซ่อนไว้ทางซ้าย */
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* 1. เมื่อเอาเมาส์ชี้ หรือ เอานิ้วกด ให้เล่นแสงว้าบเดียว (forwards เพื่อให้หยุดที่เฟรมสุดท้าย ไม่กระตุกกลับ) */
+.link-card:hover::after,
+.link-card:active::after {
+    animation: shine-sweep 0.7s ease-in-out forwards;
+}
+
+/* 2. คลาสสำหรับตอนเลื่อนจอ (จะถูกดึงมาใช้ร่วมกับ JavaScript) */
+.link-card.scrolling-shine::after {
+    animation: shine-sweep 0.7s ease-in-out forwards;
+}
+
+.link-card i { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
+.link-card:hover i, .link-card:active i { transform: scale(1.25) rotate(8deg); }
+.link-card span { position: relative; z-index: 2; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-10 px-6 font-body relative overflow-x-hidden">
@@ -143,7 +190,7 @@
                     
                     if (appPresets[typeId] && typeId !== 'custom') {
                         let p = appPresets[typeId];
-                        cardHtml = `<button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full ${p.bg} text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group border ${p.border}" style="animation-delay: ${delay}ms"><div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">${p.icon}</div><span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">${link.name}</span></button>`;
+                        cardHtml = `<button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card shine-effect w-full ${p.bg} text-white p-3 px-4 rounded-full flex items-center shadow-lg relative overflow-hidden group border ${p.border}" style="animation-delay: ${delay}ms"><div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center shrink-0 backdrop-blur-sm z-10">${p.icon}</div><span class="font-bold flex-1 text-center pr-12 text-lg tracking-wide z-10">${link.name}</span></button>`;
                     } else {
                         let imgHtml = link.img ? `<img src="${link.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-link text-gray-400 group-hover:text-primary transition-colors text-xl"></i>`;
                         cardHtml = `<button onclick="trackAndGo('${link.name}', '${link.url}')" class="animate-in slide-in-from-bottom-4 fade-in duration-500 fill-mode-both link-card w-full bg-white/80 backdrop-blur-sm text-gray-800 border border-white p-3 px-4 rounded-full flex items-center shadow-sm group hover:border-primary/50 transition-all overflow-hidden relative" style="animation-delay: ${delay}ms"><div class="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden shrink-0 border border-gray-100 shadow-sm z-10">${imgHtml}</div><span class="font-bold flex-1 text-center pr-12 text-[15px] z-10 group-hover:text-primary transition-colors">${link.name}</span></button>`;
@@ -192,6 +239,22 @@
             }, { merge: true });
             setTimeout(() => { window.open(targetUrl, '_blank'); }, 150);
         }
+
+// 🌟 ฟังก์ชันควบคุมแสงวิ่งเมื่อเลื่อนจอ (เล่นว้าบเดียว)
+let isScrolling;
+window.addEventListener('scroll', function (event) {
+    // เลือกปุ่มทั้งหมดที่มีคลาส link-card
+    const buttons = document.querySelectorAll('.link-card');
+    
+    // ใส่คลาสกระตุ้นให้แสงวิ่ง
+    buttons.forEach(btn => btn.classList.add('scrolling-shine'));
+
+    window.clearTimeout(isScrolling);
+    isScrolling = setTimeout(function() {
+        // ถอดคลาสออกเมื่อแสงวิ่งจบ (0.7 วิ) เพื่อให้พร้อมแสดงผลรอบใหม่เมื่อมีการเลื่อนจอครั้งถัดไป
+        buttons.forEach(btn => btn.classList.remove('scrolling-shine'));
+    }, 700); 
+}, false);
     </script>
 </body>
 </html>

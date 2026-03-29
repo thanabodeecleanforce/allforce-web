@@ -30,6 +30,7 @@
         }
     </script>
     <style>
+
         body { font-family: 'Noto Sans Thai', sans-serif; scroll-behavior: smooth; }
         .font-heading { font-family: 'Poppins', 'Noto Sans Thai', sans-serif; }
         
@@ -189,18 +190,18 @@
                 <button onclick="changeLanguage('ch')" id="lang-ch-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">CH</button>
                 <button onclick="changeLanguage('ru')" id="lang-ru-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">RU</button>
             </div>
-
+            
             <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
                 <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
                 <span id="mobile-user-name-display" data-i18n="nav-login-mobile">เข้าสู่ระบบ / สมัครสมาชิก</span>
             </a>
-            <a href="#home-cf" class="block font-bold" data-i18n="nav-home">หน้าแรก</a>
-            <a href="#about-cf" class="block font-bold" data-i18n="nav-about">เกี่ยวกับเรา</a>
-            <a href="#services-cf" class="block font-bold" data-i18n="nav-services">บริการ</a>
-            <a href="#booking-cf" class="block font-bold text-primary" data-i18n="nav-btn">เลือกบริการ</a>
-            <a href="#portfolio-cf" class="block font-bold" data-i18n="nav-portfolio">ผลงาน</a>
-            <a href="#feed-cf" class="block font-bold" data-i18n="nav-feed">ข่าวสาร</a>
-            <a href="#contact-cf" class="block font-bold" data-i18n="nav-contact">ติดต่อเรา</a>
+            <a href="#home-cf" class="block font-bold" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-home">หน้าแรก</a>
+<a href="#about-cf" class="block font-bold" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-about">เกี่ยวกับเรา</a>
+<a href="#services-cf" class="block font-bold" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-services">บริการ</a>
+<a href="#booking-cf" class="block font-bold text-primary" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-btn">เลือกบริการ</a>
+<a href="#portfolio-cf" class="block font-bold" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-portfolio">ผลงาน</a>
+<a href="#feed-cf" class="block font-bold" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-feed">ข่าวสาร</a>
+<a href="#contact-cf" class="block font-bold" onclick="document.getElementById('mobile-menu').classList.add('hidden')" data-i18n="nav-contact">ติดต่อเรา</a>
         </div>
     </header>
 
@@ -334,6 +335,20 @@
         </div>
     </section>
 
+    <section id="public-coupons-section" class="py-12 px-6 bg-gradient-to-b from-white to-blue-50/30 border-t border-gray-100 hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center gap-2 bg-pink-50 px-4 py-1.5 rounded-full mb-3">
+                    <i class="fa-solid fa-gift text-pink-500 animate-bounce"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-pink-600">Special Offers</span>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold font-heading text-[#000080]" data-i18n="promo-privilege">สิทธิพิเศษและส่วนลดตอนนี้</h2>
+            </div>
+            
+            <div id="main-coupons-list" class="flex flex-wrap justify-center gap-4">
+                </div>
+        </div>
+    </section>
 
     <section id="clients-cf" class="py-16 px-6 bg-white border-t border-gray-100 overflow-hidden hidden">
         <div class="max-w-7xl mx-auto text-center mb-8">
@@ -617,12 +632,13 @@
                             <div id="available-coupons-list" class="flex gap-3 overflow-x-auto pb-2 hide-scroll">
                                 </div>
                         </div>
-                        
+
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 mt-4 shadow-sm">
                             <label class="block text-xs font-bold text-[#000080] mb-2" data-i18n="promo-input-label">มีโค้ดส่วนลดหรือไม่? (Promo Code)</label>
                             <div class="flex gap-2">
                                 <input type="text" id="promo-code-input" class="flex-1 bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:border-primary outline-none uppercase font-mono font-bold text-primary" placeholder="กรอกรหัสส่วนลดที่นี่...">
                                 <button type="button" id="btn-apply-promo" onclick="applyPromoCode()" class="bg-[#000080] text-white px-5 rounded-lg text-xs font-bold hover:bg-blue-800 transition shadow-sm whitespace-nowrap min-w-[80px]" data-i18n="promo-input-btn">ใช้โค้ด</button>
+                                <button onclick="clearCoupon()" id="btn-clear-coupon" class="hidden text-red-500 underline text-sm ml-2">ยกเลิก</button>
                             </div>
                             
                             <div id="applied-coupons-area" class="space-y-2 mt-3 empty:hidden"></div>
@@ -1565,7 +1581,7 @@
         // 🌟 ฟังก์ชันตรวจสอบและใช้งานคูปอง
         window.applyPromoCode = async function() {
             let inputEl = document.getElementById('promo-code-input');
-            let code = inputEl.value.trim().toUpperCase();
+            let code = document.getElementById('promo-code-input').value.toUpperCase().trim();
             let btn = document.getElementById('btn-apply-promo');
             
             if(!code) return Swal.fire({ toast: true, position: 'top', icon: 'warning', title: sysAlerts[window.currentLang].errInput || 'กรุณากรอกโค้ดส่วนลด', showConfirmButton: false, timer: 1500 });
@@ -2051,7 +2067,7 @@
                 }
 
                 // สร้างข้อความสรุปยอดเข้า LINE
-                let summary = "===== CLEANFORCE BOOKING =====\n" +
+                let summary = "==== 📝 ใบจองบริการ (รอแอดมินยืนยัน) ====\n" +
                               "รหัสการจอง: " + orderId + "\n" +
                               "ประเภท: " + modeName + "\n" +
                               "บริการหลัก: " + baseServiceText + "\n" +
@@ -2066,13 +2082,31 @@
                               "พิกัด GPS: " + (gpsLink ? gpsLink : "-") + "\n" +
                               "กุญแจ: " + keyInfo + "\n" +
                               "------------------------------\n" +
-                              "ราคาชำระสุทธิ: " + netPriceNumber.toLocaleString() + " บาท (ราคาเต็ม " + grossPrice.toLocaleString() + " บาท)\n" +
+                              "ราคาสุทธิที่ระบบคำนวณ: " + netPriceNumber.toLocaleString() + " บาท (ราคาเต็ม " + grossPrice.toLocaleString() + " บาท)\n" +
                               "ส่วนลดแพ็กเกจ: " + (baseDiscountAmount > 0 ? `ลด ${percentDiscount}% (-${baseDiscountAmount.toLocaleString()} ฿)` : 'ไม่มี') + "\n" +
                               "การรีวิว: " + reviewText + "\n" +
                               "โค้ดส่วนลด: " + promoText +
+                              "🚨 (หมายเหตุ: แอดมินโปรดตรวจสอบความถูกต้องของราคาและส่วนลดอีกครั้งก่อนคอนเฟิร์มลูกค้า)\n" +
                               "==============================";
 
                 let encodedMessage = encodeURIComponent(summary);
+                // 🌟 อัปเดตยอดการใช้คูปองในฐานข้อมูล (ถ้ามีการใช้คูปอง)
+        let appliedCode = document.getElementById('promo-code-input').value.toUpperCase().trim();
+        if (appliedCode && netPriceNumber < totalPriceNumber) { // เช็คว่าใส่โค้ดจริงและได้ลดราคาจริง
+            try {
+                // ค้นหาคูปองไอดีนั้น
+                const snapshot = await db.collection('coupons').where('code', '==', appliedCode).get();
+                if (!snapshot.empty) {
+                    let docId = snapshot.docs[0].id;
+                    // สั่งบวกยอด usedCount ขึ้น 1
+                    await db.collection('coupons').doc(docId).update({
+                        usedCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
+            } catch (error) {
+                console.error("อัปเดตยอดคูปองไม่สำเร็จ: ", error);
+            }
+        }
                 let lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage;
                 
                 
@@ -2376,7 +2410,6 @@
         // ==========================================
         window.loadPublicCoupons = async function() {
             try {
-                // ดึงเฉพาะคูปองที่ "เปิดใช้งาน" และ "สั่งให้โชว์บนเว็บ"
                 const snapshot = await window.cf_db.collection("coupons")
                     .where("isActive", "==", true)
                     .where("isPublic", "==", true)
@@ -2384,11 +2417,12 @@
                 
                 let html = '';
                 let today = new Date().toISOString().split('T')[0];
+                let popupCoupons = []; // เก็บคูปองที่จะเด้ง Popup
 
                 snapshot.forEach(doc => {
                     let c = doc.data();
+                    c.id = doc.id;
                     
-                    // 1. กรองคูปองที่หมดอายุ หรือยังไม่ถึงเวลาเริ่ม หรือสิทธิ์เต็มทิ้งไป
                     if (c.startDate && today < c.startDate) return;
                     if (c.endDate && today > c.endDate) return;
                     if (c.usageLimit && (c.usedCount || 0) >= c.usageLimit) return; 
@@ -2396,55 +2430,126 @@
                     let discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue.toLocaleString()} ฿`;
                     let minSpendText = c.minSpend ? `ขั้นต่ำ ${c.minSpend.toLocaleString()} ฿` : 'ไม่มีขั้นต่ำ';
                     
-                    // 2. ป้ายเตือนความเร่งด่วน (Urgency Badge) 🔥
                     let badgeHtml = '';
                     if (c.endDate) {
                         let end = new Date(c.endDate);
                         let now = new Date();
-                        let diffTime = Math.abs(end - now);
-                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        
-                        if (diffDays <= 3) {
-                            badgeHtml = `<span class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse border border-white">หมดเขตใน ${diffDays} วัน!</span>`;
-                        }
+                        let diffDays = Math.ceil(Math.abs(end - now) / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 3) badgeHtml = `<span class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">หมดเขตใน ${diffDays} วัน!</span>`;
                     }
 
-                    // 3. ป้ายเตือนสิทธิ์ใกล้เต็ม
-                    if (c.usageLimit) {
-                        let remaining = c.usageLimit - (c.usedCount || 0);
-                        if (remaining <= 5) {
-                            badgeHtml = `<span class="absolute -top-2 -right-2 bg-orange-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse border border-white">เหลือเพียง ${remaining} สิทธิ์!</span>`;
-                        }
-                    }
-
+                    // สร้างการ์ดแสดงบนหน้าเว็บ (ใต้ เกี่ยวกับเรา)
                     html += `
-                    <div class="relative min-w-[200px] max-w-[220px] bg-gradient-to-tr from-blue-50 to-white border border-blue-200 rounded-xl p-3 shadow-sm shrink-0 flex flex-col justify-between hover:border-primary transition-colors">
+                    <div class="relative w-full md:w-64 bg-white border-2 border-blue-100 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-primary transition-all flex flex-col">
                         ${badgeHtml}
-                        <div class="mb-2">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-bold text-primary text-sm">${discountText}</span>
-                                <span class="text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded border border-blue-200">${c.code}</span>
+                        <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-3">
+                            <div>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">${c.code}</p>
+                                <span class="font-bold text-primary text-xl">${discountText}</span>
                             </div>
-                            <p class="text-[10px] text-gray-700 font-bold truncate">${c.name || 'โปรโมชั่นพิเศษ'}</p>
-                            <p class="text-[9px] text-gray-500 mt-0.5"><i class="fa-solid fa-circle-info mr-1"></i>${minSpendText}</p>
+                            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-primary"><i class="fa-solid fa-ticket text-lg"></i></div>
                         </div>
-                        <button type="button" onclick="autoApplyCoupon('${c.code}')" class="w-full bg-[#000080] text-white text-[10px] font-bold py-1.5 rounded-lg hover:bg-blue-800 transition shadow-sm flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ด & ใช้เลย
+                        <div class="mb-4 flex-1">
+                            <p class="text-sm font-bold text-gray-800 leading-tight">${c.name || 'โปรโมชั่นพิเศษ'}</p>
+                            <p class="text-[10px] text-gray-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-circle-check text-green-500"></i> ${minSpendText}</p>
+                        </div>
+                        <button type="button" onclick="autoApplyCouponAndScroll('${c.code}')" class="w-full bg-blue-50 text-primary border border-blue-200 text-xs font-bold py-2.5 rounded-xl hover:bg-primary hover:text-white transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ด & จองเลย
                         </button>
-                    </div>
-                    `;
+                    </div>`;
+
+                    // ถ้าแอดมินติ๊กให้เป็น Popup เก็บไว้ก่อน
+                    if (c.isPopup) popupCoupons.push(c);
                 });
 
-                let container = document.getElementById('available-coupons-container');
-                let list = document.getElementById('available-coupons-list');
+                // นำไปแสดงที่โซนใต้ เกี่ยวกับเรา
+                let section = document.getElementById('public-coupons-section');
+                let list = document.getElementById('main-coupons-list');
                 
                 if (html) {
                     list.innerHTML = html;
-                    container.classList.remove('hidden');
+                    section.classList.remove('hidden');
                 } else {
-                    container.classList.add('hidden'); // ซ่อนถ้าไม่มีคูปอง
+                    section.classList.add('hidden');
                 }
+
+                // 🌟 ระบบ Popup เด้งเตือนมุมขวาบน (หน่วงเวลาสักนิดให้เว็บโหลดเสร็จก่อน)
+                if (popupCoupons.length > 0) {
+                    setTimeout(() => showCouponPopups(popupCoupons), 1500);
+                }
+
             } catch(e) { console.error("Error loading coupons:", e); }
+        };
+
+        // 🌟 สร้างฟังก์ชันโชว์ Popup
+        window.showCouponPopups = function(coupons) {
+            let container = document.getElementById('coupon-toast-container');
+            if(!container) return;
+
+            coupons.forEach((c, index) => {
+                // หน่วงเวลาให้เด้งทีละอัน (ถ้ามีหลายอัน) อันละ 500ms
+                setTimeout(() => {
+                    let discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue.toLocaleString()} ฿`;
+                    
+                    let toast = document.createElement('div');
+                    toast.className = 'pointer-events-auto bg-white border border-gray-100 rounded-2xl shadow-xl p-4 w-72 md:w-80 flex gap-3 items-center transform transition-all duration-500 translate-x-[120%] opacity-0 relative overflow-hidden';
+                    
+                    // แถบสีตกแต่งด้านซ้าย
+                    let colorBar = document.createElement('div');
+                    colorBar.className = 'absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-pink-500 to-orange-400';
+                    toast.appendChild(colorBar);
+
+                    toast.innerHTML += `
+                        <div class="w-12 h-12 bg-pink-50 rounded-full flex items-center justify-center text-pink-500 shrink-0">
+                            <i class="fa-solid fa-gift text-xl animate-bounce"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold text-gray-400 mb-0.5">โค้ดพิเศษสำหรับคุณ!</p>
+                            <p class="font-bold text-gray-800 text-sm leading-tight">${c.name || 'รับส่วนลดพิเศษ'}</p>
+                            <div class="mt-1.5 flex items-center gap-2">
+                                <span class="text-xs font-bold text-primary">${discountText}</span>
+                                <span class="text-[9px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border">${c.code}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // กดที่ป๊อปอัพเพื่อไปหน้าจอง
+                    toast.style.cursor = 'pointer';
+                    toast.onclick = function(e) {
+                        if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'I') {
+                            autoApplyCouponAndScroll(c.code);
+                            toast.remove();
+                        }
+                    };
+
+                    container.appendChild(toast);
+
+                    // อนิเมชั่นสไลด์เข้ามา
+                    requestAnimationFrame(() => {
+                        toast.classList.remove('translate-x-[120%]', 'opacity-0');
+                    });
+
+                    // ให้มันหายไปเองหลัง 8 วินาที
+                    setTimeout(() => {
+                        toast.classList.add('translate-x-[120%]', 'opacity-0');
+                        setTimeout(() => toast.remove(), 500); // รอให้เลื่อนออกเสร็จค่อยลบ HTML
+                    }, 8000);
+
+                }, index * 500); 
+            });
+        };
+
+        // ปรับให้พอกดคูปองแล้ว ให้เลื่อนจอไปที่แบบฟอร์มการจองอัตโนมัติ
+        window.autoApplyCouponAndScroll = function(code) {
+            let inputEl = document.getElementById('promo-code-input');
+            if(inputEl) {
+                inputEl.value = code;
+                applyPromoCode(); 
+                document.getElementById('booking-cf').scrollIntoView({ behavior: 'smooth' });
+                
+                // แจ้งเตือนให้ลูกค้ารู้ว่าใส่โค้ดให้แล้ว
+                Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'เก็บโค้ดแล้ว! ระบบจะคำนวณส่วนลดให้ในขั้นตอนสรุปยอดครับ', showConfirmButton: false, timer: 3000 });
+            }
         };
 
         // 🌟 ฟังก์ชันกดรับคูปองอัตโนมัติ
@@ -2453,6 +2558,20 @@
             inputEl.value = code;
             applyPromoCode(); // สั่งให้ระบบเช็คเงื่อนไขและหักเงินทันที
         };
+        // 🌟 ฟังก์ชันยกเลิกการใช้คูปอง
+        function clearCoupon() {
+            document.getElementById('btn-clear-coupon').classList.remove('hidden');
+            document.getElementById('promo-code-input').value = '';
+            document.getElementById('btn-clear-coupon').classList.add('hidden'); // ซ่อนปุ่มยกเลิก
+            
+            // รีเซ็ตราคาให้กลับเป็นราคาเต็ม
+            netPriceNumber = totalPriceNumber; 
+            document.getElementById('discount-amount').innerText = "0 บาท"; // (เปลี่ยนไอดีให้ตรงกับของคุณ)
+            document.getElementById('net-price').innerText = netPriceNumber.toLocaleString() + " บาท";
+            
+            Swal.fire({ toast: true, position: 'top', icon: 'info', title: 'ยกเลิกคูปองแล้ว', showConfirmButton: false, timer: 2000 });
+        }
     </script>
+    <div id="coupon-toast-container" class="fixed top-24 right-4 z-[90] flex flex-col gap-3 pointer-events-none"></div>
 </body>
 </html>
