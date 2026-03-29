@@ -1769,7 +1769,7 @@
             });
         }
 
-        // ระบบจัดเรียงลิงก์
+        // ระบบจัดเรียงลิงก์ (เพิ่มปุ่มเลือกไอคอนสำเร็จรูป)
         function renderUnifiedLinks() {
             const container = document.getElementById('unified-links-area');
             if(unifiedLinks.length === 0) {
@@ -1778,14 +1778,29 @@
             }
             
             let html = '';
+            // ข้อมูลไอคอนสำหรับพรีวิวในหน้าแอดมิน
+            const iconPreviews = {
+                'line': 'bg-[#00B900] text-white', 'wa': 'bg-[#25D366] text-white', 'fb': 'bg-[#1877F2] text-white',
+                'ig': 'bg-pink-500 text-white', 'tiktok': 'bg-black text-white', 'yt': 'bg-red-500 text-white',
+                'shopee': 'bg-[#EE4D2D] text-white', 'lazada': 'bg-[#0F146D] text-white', 'phone': 'bg-gray-800 text-white', 'web': 'bg-gray-600 text-white'
+            };
+
             unifiedLinks.forEach((c, idx) => {
                 let isCustom = c.type === 'custom';
-                let iconHtml = isCustom 
-                    ? `<div class="w-8 h-8 rounded bg-white flex items-center justify-center overflow-hidden border shrink-0">${c.img ? `<img src="${c.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-image text-gray-300"></i>`}</div>`
-                    : `<div class="w-8 h-8 rounded bg-blue-100 text-blue-600 flex items-center justify-center font-bold uppercase text-[10px] shrink-0">${c.type}</div>`;
+                let currentIconType = c.iconType || c.type || 'custom';
+                
+                // รูปแบบการโชว์ไอคอนด้านซ้าย
+                let iconHtml = '';
+                if (currentIconType === 'custom' && c.img) {
+                    iconHtml = `<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 shrink-0"><img src="${c.img}" class="w-full h-full object-cover"></div>`;
+                } else if (iconPreviews[currentIconType]) {
+                    iconHtml = `<div class="w-8 h-8 rounded-full ${iconPreviews[currentIconType]} flex items-center justify-center font-bold uppercase text-[10px] shrink-0"><i class="fa-solid fa-icons"></i></div>`;
+                } else {
+                    iconHtml = `<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 shrink-0"><i class="fa-solid fa-link text-gray-300"></i></div>`;
+                }
 
                 html += `
-                <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm relative">
+                <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm relative hover:border-blue-300 transition-colors">
                     <div class="flex flex-col gap-1 pr-2 border-r border-gray-100">
                         <button onclick="moveContactLink(${idx}, -1)" class="text-gray-300 hover:text-primary transition" ${idx===0?'disabled opacity-30':''}><i class="fa-solid fa-chevron-up text-[10px]"></i></button>
                         <button onclick="moveContactLink(${idx}, 1)" class="text-gray-300 hover:text-primary transition" ${idx===unifiedLinks.length-1?'disabled opacity-30':''}><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
@@ -1793,12 +1808,17 @@
                     ${iconHtml}
                     <div class="flex-1 space-y-1.5 w-full">
                         <div class="flex gap-2">
-                            <input type="text" placeholder="ชื่อช่องทาง" value="${c.name || ''}" onchange="updateUnifiedLink(${idx}, 'name', this.value)" class="w-1/2 p-1.5 border rounded text-xs outline-none focus:border-primary font-bold">
+                            <input type="text" placeholder="ชื่อช่องทาง" value="${c.name || ''}" onchange="updateUnifiedLink(${idx}, 'name', this.value)" class="w-full p-1.5 border rounded text-xs outline-none focus:border-primary font-bold">
                             ${isCustom ? `
-                            <label class="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-2 py-1 rounded cursor-pointer transition flex items-center justify-center shrink-0 text-[10px] font-bold" title="อัปโหลดโลโก้">
-                                <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline ml-1">โลโก้</span>
-                                <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event, 'contact_icons', ${idx})">
-                            </label>` : ''}
+                            <div class="flex gap-1 shrink-0">
+                                <button type="button" onclick="openIconPicker(${idx})" class="bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100 px-2 py-1 rounded cursor-pointer transition flex items-center justify-center text-[10px] font-bold" title="เลือกไอคอนแอปดัง">
+                                    <i class="fa-solid fa-icons"></i> <span class="hidden sm:inline ml-1">ระบบ</span>
+                                </button>
+                                <label class="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-2 py-1 rounded cursor-pointer transition flex items-center justify-center text-[10px] font-bold" title="อัปโหลดรูปเอง">
+                                    <i class="fa-solid fa-upload"></i> <span class="hidden sm:inline ml-1">อัปโหลด</span>
+                                    <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event, 'contact_icons', ${idx})">
+                                </label>
+                            </div>` : ''}
                         </div>
                         <input type="text" placeholder="URL ปลายทาง (https://...)" value="${c.url || ''}" onchange="updateUnifiedLink(${idx}, 'url', this.value)" class="w-full p-1.5 border rounded text-xs outline-none focus:border-primary text-blue-500">
                     </div>
@@ -1808,25 +1828,49 @@
             container.innerHTML = html;
         }
 
-        function addNewContactLink() {
-            let type = document.getElementById('new-link-type').value;
-            let name = type === 'line' ? 'LINE Official' : type === 'wa' ? 'WhatsApp' : type === 'fb' ? 'Facebook' : 'ช่องทางใหม่';
-            unifiedLinks.push({ type: type, name: name, url: '', img: '' });
-            renderUnifiedLinks();
-        }
-        function updateUnifiedLink(index, field, value) { unifiedLinks[index][field] = value; }
-        function removeUnifiedLink(index) { unifiedLinks.splice(index, 1); renderUnifiedLinks(); }
-        
-        // ฟังก์ชันสลับตำแหน่ง Array ขึ้น-ลง
-        function moveContactLink(index, direction) {
-            if (index + direction < 0 || index + direction >= unifiedLinks.length) return;
-            let element = unifiedLinks[index];
-            unifiedLinks.splice(index, 1); // ลบออก
-            unifiedLinks.splice(index + direction, 0, element); // ใส่กลับที่ใหม่
-            renderUnifiedLinks();
+        // 🆕 ฟังก์ชันหน้าต่างเลือกไอคอน
+        window.openIconPicker = function(index) {
+            const apps = [
+                { id: 'ig', name: 'Instagram', icon: '<i class="fa-brands fa-instagram text-3xl text-pink-500"></i>' },
+                { id: 'tiktok', name: 'TikTok', icon: '<i class="fa-brands fa-tiktok text-3xl text-black"></i>' },
+                { id: 'yt', name: 'YouTube', icon: '<i class="fa-brands fa-youtube text-3xl text-red-500"></i>' },
+                { id: 'shopee', name: 'Shopee', icon: '<i class="fa-solid fa-bag-shopping text-3xl text-orange-500"></i>' },
+                { id: 'lazada', name: 'Lazada', icon: '<i class="fa-solid fa-heart text-3xl text-blue-800"></i>' },
+                { id: 'phone', name: 'เบอร์โทร', icon: '<i class="fa-solid fa-phone text-3xl text-gray-700"></i>' },
+                { id: 'web', name: 'เว็บไซต์', icon: '<i class="fa-solid fa-globe text-3xl text-blue-500"></i>' }
+            ];
+
+            let html = '<div class="grid grid-cols-3 gap-3 p-2">';
+            apps.forEach(app => {
+                html += `<button onclick="Swal.clickConfirm()" data-id="${app.id}" class="icon-pick-btn flex flex-col items-center justify-center p-4 border rounded-xl hover:bg-gray-50 hover:border-primary transition gap-2 shadow-sm">${app.icon}<span class="text-[10px] font-bold text-gray-600">${app.name}</span></button>`;
+            });
+            html += '</div>';
+
+            let selectedId = null;
+
+            Swal.fire({
+                title: '<span class="text-base font-bold text-[#000080]">เลือกไอคอนแอปพลิเคชัน</span>',
+                html: html,
+                showConfirmButton: false,
+                showCloseButton: true,
+                didOpen: () => {
+                    document.querySelectorAll('.icon-pick-btn').forEach(btn => {
+                        btn.onclick = () => {
+                            selectedId = btn.getAttribute('data-id');
+                            Swal.close();
+                        }
+                    });
+                }
+            }).then(() => {
+                if (selectedId) {
+                    unifiedLinks[index].iconType = selectedId; // บันทึกว่าใช้ไอคอนจากระบบ
+                    unifiedLinks[index].img = ''; // เคลียร์รูปเก่าทิ้ง (ถ้ามี)
+                    renderUnifiedLinks();
+                }
+            });
         }
 
-        // ต้องผูกฟังก์ชันอัปโหลดให้รองรับ Array ใหม่
+        // อัปเดตฟังก์ชันอัปโหลด เพื่อให้เคลียร์ค่า iconType ทิ้งเมื่อเลือกอัปโหลดรูปเอง
         const originalHandleImageUpload = window.handleImageUpload;
         window.handleImageUpload = async function(event, type, index) {
             if(type === 'contact_icons') {
@@ -1837,6 +1881,7 @@
                     const fileRef = firebase.storage().ref().child(`contact_icons/${Date.now()}_${file.name}`);
                     await fileRef.put(file);
                     unifiedLinks[index].img = await fileRef.getDownloadURL();
+                    unifiedLinks[index].iconType = 'custom'; // 🆕 รีเซ็ตกลับเป็น custom
                     renderUnifiedLinks();
                     Swal.fire({ icon: 'success', title: 'อัพโหลดสำเร็จ!', showConfirmButton: false, timer: 1000 });
                 } catch (error) { Swal.fire('เกิดข้อผิดพลาด', error.message, 'error'); }
@@ -1869,84 +1914,6 @@
             
             btn.innerHTML = originalText;
             btn.disabled = false;
-        }
-
-        function generateContactQR() {
-            let qrBox = document.getElementById('qrcode-box');
-            qrBox.innerHTML = '';
-            let qrContainer = document.createElement('div');
-            qrContainer.style.position = 'relative';
-            qrContainer.style.width = '200px'; qrContainer.style.height = '200px';
-            qrBox.appendChild(qrContainer);
-
-            let targetUrl = window.location.origin + '/contact.html';
-            
-            qrCodeInstance = new QRCode(qrContainer, {
-                text: targetUrl, width: 200, height: 200,
-                colorDark : "#1EA7E1", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H
-            });
-
-            let logoImg = document.createElement('img');
-            logoImg.src = 'logo-c-cleanforce-rmbg.png'; 
-            logoImg.style.position = 'absolute'; logoImg.style.top = '50%'; logoImg.style.left = '50%';
-            logoImg.style.transform = 'translate(-50%, -50%)'; logoImg.style.width = '40px'; logoImg.style.height = '40px';
-            logoImg.style.backgroundColor = 'white'; logoImg.style.padding = '3px'; logoImg.style.borderRadius = '8px';
-            qrContainer.appendChild(logoImg);
-        }
-
-        function downloadContactQR() {
-            let qrContainer = document.getElementById('qrcode-box').firstChild;
-            if (!qrContainer) return Swal.fire('แจ้งเตือน', 'กรุณาสร้าง QR Code ก่อน', 'warning');
-
-            let qrImgElement = qrContainer.querySelector('img[src^="data:image"]');
-            let canvasElement = qrContainer.querySelector('canvas');
-            let qrSource = qrImgElement ? qrImgElement.src : (canvasElement ? canvasElement.toDataURL() : null);
-
-            if (!qrSource) return Swal.fire('ข้อผิดพลาด', 'ไม่พบรูปภาพ QR Code', 'error');
-            Swal.fire({ title: 'กำลังประมวลผลรูปภาพ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
-
-            const canvas = document.createElement('canvas');
-            canvas.width = 1080; canvas.height = 1080;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            let imgQR = new Image(); imgQR.crossOrigin = "Anonymous";
-            imgQR.onload = function() {
-                ctx.drawImage(imgQR, 40, 40, 1000, 1000); 
-
-                let imgLogo = new Image(); imgLogo.crossOrigin = "Anonymous";
-                imgLogo.src = 'logo-c-cleanforce-rmbg.png'; 
-                
-                imgLogo.onload = function() {
-                    const logoSize = 220; const center = 1080 / 2;
-                    const logoX = center - (logoSize / 2); const logoY = center - (logoSize / 2);
-
-                    ctx.fillStyle = '#ffffff'; ctx.beginPath(); const radius = 25; 
-                    ctx.moveTo(logoX - 15 + radius, logoY - 15); ctx.lineTo(logoX + logoSize + 15 - radius, logoY - 15);
-                    ctx.quadraticCurveTo(logoX + logoSize + 15, logoY - 15, logoX + logoSize + 15, logoY - 15 + radius);
-                    ctx.lineTo(logoX + logoSize + 15, logoY + logoSize + 15 - radius);
-                    ctx.quadraticCurveTo(logoX + logoSize + 15, logoY + logoSize + 15, logoX + logoSize + 15 - radius, logoY + logoSize + 15);
-                    ctx.lineTo(logoX - 15 + radius, logoY + logoSize + 15);
-                    ctx.quadraticCurveTo(logoX - 15, logoY + logoSize + 15, logoX - 15, logoY + logoSize + 15 - radius);
-                    ctx.lineTo(logoX - 15, logoY - 15 + radius);
-                    ctx.quadraticCurveTo(logoX - 15, logoY - 15, logoX - 15 + radius, logoY - 15); ctx.fill();
-
-                    ctx.drawImage(imgLogo, logoX, logoY, logoSize, logoSize);
-                    triggerDownload(canvas);
-                };
-                imgLogo.onerror = function() { triggerDownload(canvas); };
-            };
-            imgQR.src = qrSource;
-        }
-
-        function triggerDownload(canvas) {
-            let finalImageURL = canvas.toDataURL("image/png");
-            let link = document.createElement('a');
-            link.download = 'Cleanforce_Contact_QR_1080px.png'; 
-            link.href = finalImageURL; link.click();
-            Swal.close();
-            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-            Toast.fire({ icon: 'success', title: 'ดาวน์โหลด QR Code สำเร็จ!' });
         }
 
         function generateContactQR() {
