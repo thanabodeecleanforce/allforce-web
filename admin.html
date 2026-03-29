@@ -279,6 +279,11 @@
                 <div class="w-full lg:w-1/3 bg-[#F3F7FB] p-6 rounded-2xl border border-gray-200 flex flex-col items-center">
                     <h3 class="text-base font-bold text-gray-800 mb-4 w-full border-b border-gray-300 pb-2"><i class="fa-solid fa-qrcode mr-2"></i>QR Code ของคุณ</h3>
                     <div id="qrcode-box" class="bg-white p-4 rounded-xl shadow-sm mb-4"></div>
+                    
+                    <button onclick="downloadContactQR()" class="bg-primary text-white w-full py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-md mb-3 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-download"></i> ดาวน์โหลดรูป QR (1080px)
+                    </button>
+                    
                     <a href="contact.html" target="_blank" class="text-primary text-sm font-bold underline mb-6 hover:text-blue-700">ดูหน้าเว็บจริง (Preview)</a>
                     
                     <h3 class="text-base font-bold text-gray-800 mb-4 w-full border-b border-gray-300 pb-2"><i class="fa-solid fa-chart-pie mr-2"></i>สถิติการคลิก (Dashboard)</h3>
@@ -1807,6 +1812,92 @@
             logoImg.style.padding = '3px';
             logoImg.style.borderRadius = '8px'; // ทำขอบมน
             qrContainer.appendChild(logoImg);
+        }
+
+        // ==========================================
+        // 🌟 ฟังก์ชันดาวน์โหลด QR Code + โลโก้ (ขนาด 1080x1080)
+        // ==========================================
+        function downloadContactQR() {
+            let qrContainer = document.getElementById('qrcode-box').firstChild;
+            if (!qrContainer) return Swal.fire('แจ้งเตือน', 'กรุณาสร้าง QR Code ก่อน', 'warning');
+
+            // หาภาพ QR Code ที่ระบบสร้างไว้
+            let qrImgElement = qrContainer.querySelector('img[src^="data:image"]');
+            let canvasElement = qrContainer.querySelector('canvas');
+            let qrSource = qrImgElement ? qrImgElement.src : (canvasElement ? canvasElement.toDataURL() : null);
+
+            if (!qrSource) return Swal.fire('ข้อผิดพลาด', 'ไม่พบรูปภาพ QR Code', 'error');
+
+            Swal.fire({ title: 'กำลังประมวลผลรูปภาพ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            // สร้าง Canvas ขนาดใหญ่ 1080x1080
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1080;
+            const ctx = canvas.getContext('2d');
+
+            // เทพื้นหลังสีขาว
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // โหลดและวาดภาพ QR Code ให้ขยายเต็ม 1080px
+            let imgQR = new Image();
+            imgQR.crossOrigin = "Anonymous";
+            imgQR.onload = function() {
+                // วาด QR Code
+                ctx.drawImage(imgQR, 40, 40, 1000, 1000); // เว้นขอบขาว 40px
+
+                // โหลดภาพโลโก้
+                let imgLogo = new Image();
+                imgLogo.crossOrigin = "Anonymous";
+                imgLogo.src = 'logo-c-cleanforce-rmbg.png'; // ⚠️ รูปโลโก้เดียวกับที่โชว์หน้าเว็บ
+                
+                imgLogo.onload = function() {
+                    const logoSize = 220; // ขนาดโลโก้ประมาณ 20%
+                    const center = 1080 / 2;
+                    const logoX = center - (logoSize / 2);
+                    const logoY = center - (logoSize / 2);
+
+                    // วาดกล่องสีขาวขอบมน (ทับเส้น QR ตรงกลาง)
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    const radius = 25; // ความมนของขอบโลโก้
+                    ctx.moveTo(logoX - 15 + radius, logoY - 15);
+                    ctx.lineTo(logoX + logoSize + 15 - radius, logoY - 15);
+                    ctx.quadraticCurveTo(logoX + logoSize + 15, logoY - 15, logoX + logoSize + 15, logoY - 15 + radius);
+                    ctx.lineTo(logoX + logoSize + 15, logoY + logoSize + 15 - radius);
+                    ctx.quadraticCurveTo(logoX + logoSize + 15, logoY + logoSize + 15, logoX + logoSize + 15 - radius, logoY + logoSize + 15);
+                    ctx.lineTo(logoX - 15 + radius, logoY + logoSize + 15);
+                    ctx.quadraticCurveTo(logoX - 15, logoY + logoSize + 15, logoX - 15, logoY + logoSize + 15 - radius);
+                    ctx.lineTo(logoX - 15, logoY - 15 + radius);
+                    ctx.quadraticCurveTo(logoX - 15, logoY - 15, logoX - 15 + radius, logoY - 15);
+                    ctx.fill();
+
+                    // วาดรูปโลโก้ทับลงไป
+                    ctx.drawImage(imgLogo, logoX, logoY, logoSize, logoSize);
+
+                    // โหลดภาพส่งให้ลูกค้า
+                    triggerDownload(canvas);
+                };
+
+                // ถ้าโลโก้โหลดไม่ขึ้น (เช่น ติดปัญหาตอนเทส) ให้โหลดออกแบบไม่มีโลโก้ไปก่อน
+                imgLogo.onerror = function() { triggerDownload(canvas); };
+            };
+            imgQR.src = qrSource;
+        }
+
+        // ฟังก์ชันย่อยสำหรับกดบันทึกรูปลงเครื่อง
+        function triggerDownload(canvas) {
+            let finalImageURL = canvas.toDataURL("image/png");
+            let link = document.createElement('a');
+            link.download = 'Cleanforce_Contact_QR_1080px.png'; // ชื่อไฟล์ที่ได้
+            link.href = finalImageURL;
+            link.click();
+            Swal.close();
+            
+            // แจ้งเตือนความสำเร็จ
+            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            Toast.fire({ icon: 'success', title: 'ดาวน์โหลด QR Code สำเร็จ!' });
         }
     </script>
     
