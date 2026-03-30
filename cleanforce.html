@@ -200,92 +200,132 @@
         }
     </style>
 
-    <script src="lang.js"></script>
-
-    <script>
+    <script src="lang.js"></script> <script>
         window.currentLang = 'th';
-        window.translationMode = 'custom'; // ค่าเริ่มต้น
+        window.translationMode = 'custom';
 
-        // 1. ฟังก์ชันเช็คตั้งค่าภาษาจากแอดมิน
+        // 🌟 ชุดภาษาหลัก 5 ภาษา
+        const mainLangs = [
+            { code: 'mix', name: 'Original (ค่าเริ่มต้น)', flag: '🌐' },
+            { code: 'th', name: 'Thai (ไทย)', flag: '🇹🇭' },
+            { code: 'en', name: 'English (อังกฤษ)', flag: '🇬🇧' },
+            { code: 'ch', name: 'Chinese (จีน)', flag: '🇨🇳' },
+            { code: 'ru', name: 'Russian (รัสเซีย)', flag: '🇷🇺' }
+        ];
+
+        // 🌟 ชุดภาษารอง (ยอดฮิตจาก Google)
+        const otherLangs = [
+            { code: 'ja', name: 'Japanese (ญี่ปุ่น)', flag: '🇯🇵' },
+            { code: 'ko', name: 'Korean (เกาหลี)', flag: '🇰🇷' },
+            { code: 'fr', name: 'French (ฝรั่งเศส)', flag: '🇫🇷' },
+            { code: 'de', name: 'German (เยอรมัน)', flag: '🇩🇪' },
+            { code: 'es', name: 'Spanish (สเปน)', flag: '🇪🇸' },
+            { code: 'it', name: 'Italian (อิตาลี)', flag: '🇮🇹' },
+            { code: 'vi', name: 'Vietnamese (เวียดนาม)', flag: '🇻🇳' },
+            { code: 'hi', name: 'Hindi (ฮินดี)', flag: '🇮🇳' },
+            { code: 'ar', name: 'Arabic (อาหรับ)', flag: '🇸🇦' },
+            { code: 'id', name: 'Indonesian (อินโดนีเซีย)', flag: '🇮🇩' },
+            { code: 'my', name: 'Burmese (พม่า)', flag: '🇲🇲' },
+            { code: 'lo', name: 'Lao (ลาว)', flag: '🇱🇦' }
+        ];
+
+        // ==========================================
+        // 1. ฟังก์ชันตั้งค่าระบบ (ทำงานตอนโหลดเว็บ)
+        // ==========================================
         async function initTranslationSystem() {
             try {
-                if (typeof window.cf_db === 'undefined') return;
-                const doc = await window.cf_db.collection('settings').doc('system_config').get();
-                if (doc.exists && doc.data().translateMode) {
-                    window.translationMode = doc.data().translateMode;
+                if (typeof window.cf_db !== 'undefined') {
+                    const doc = await window.cf_db.collection('settings').doc('system_config').get();
+                    if (doc.exists && doc.data().translateMode) {
+                        window.translationMode = doc.data().translateMode;
+                    }
                 }
-            } catch(e) { console.log("โหลดตั้งค่าภาษาไม่สำเร็จ ใช้ค่าเริ่มต้น"); }
+            } catch(e) { console.log("โหลดตั้งค่าไม่สำเร็จ"); }
 
-            // ถ้าแอดมินเลือกโหมด Google ค่อยเสกสคริปต์ขึ้นมา
-            if (window.translationMode === 'google') {
-                let div = document.createElement('div');
-                div.id = 'google_translate_element';
-                div.style.display = 'none';
-                document.body.appendChild(div);
-
-                window.googleTranslateElementInit = function() {
-                    new google.translate.TranslateElement({
-                        pageLanguage: 'th',
-                        includedLanguages: 'th,en,zh-CN,ru',
-                        autoDisplay: false
-                    }, 'google_translate_element');
-                };
-
-                let script = document.createElement('script');
-                script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-                document.body.appendChild(script);
-            }
+            // โหลดสคริปต์ Google เผื่อไว้เสมอ เพราะเรามีภาษารองให้ลูกค้าเลือก
+            loadGoogleTranslateScript();
         }
 
-        // 2. ฟังก์ชันช่วยแปลคำจากฐานข้อมูล
-        function getDBText(textKey) {
-            if (!textKey) return '';
-            // ดึงจากตัวแปร window.cf_dbTranslations ที่อยู่ใน lang.js
-            if (window.cf_dbTranslations && window.cf_dbTranslations[textKey] && window.cf_dbTranslations[textKey][window.currentLang]) {
-                return window.cf_dbTranslations[textKey][window.currentLang];
-            }
-            return textKey;
+        function loadGoogleTranslateScript() {
+            let div = document.createElement('div');
+            div.id = 'google_translate_element';
+            document.body.appendChild(div);
+
+            window.googleTranslateElementInit = function() {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'th',
+                    autoDisplay: false
+                }, 'google_translate_element');
+            };
+
+            let script = document.createElement('script');
+            script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+            document.body.appendChild(script);
         }
 
-        // 3. เปลี่ยนคำใน Placeholder ของช่องกรอกข้อมูล
-        function updatePlaceholdersCustom(lang) {
-            if (typeof window.cf_sysAlerts !== 'undefined' && window.cf_sysAlerts[lang]) {
-                let alerts = window.cf_sysAlerts[lang];
-                let keyDetail = document.getElementById('bk-key-detail');
-                let nameFInput = document.getElementById('bk-fname');
-                let addressInput = document.getElementById('bk-houseNo');
-                let promoInput = document.getElementById('promo-code-input');
-                let noteInput = document.getElementById('bk-special-note');
-
-                if(keyDetail) keyDetail.placeholder = alerts.placeKey || '';
-                if(nameFInput) nameFInput.placeholder = alerts.placeName || '';
-                if(addressInput) addressInput.placeholder = alerts.placeAddress || '';
-                if(promoInput) promoInput.placeholder = alerts.placePromo || '';
-                if(noteInput) noteInput.placeholder = alerts.placeNote || '';
-            }
+        // ==========================================
+        // 2. ระบบหน้าต่างป๊อปอัป ค้นหาภาษา
+        // ==========================================
+        window.openLangModal = function() {
+            document.getElementById('lang-search').value = '';
+            renderLangList('');
+            document.getElementById('lang-modal').classList.remove('hidden');
+            document.getElementById('lang-modal').classList.add('flex');
         }
 
-        // 4. ฟังก์ชันหลักเวลากดปุ่ม 5 ภาษา
+        window.closeLangModal = function() {
+            document.getElementById('lang-modal').classList.add('hidden');
+            document.getElementById('lang-modal').classList.remove('flex');
+        }
+
+        window.searchLang = function() {
+            let q = document.getElementById('lang-search').value.toLowerCase();
+            renderLangList(q);
+        }
+
+        function renderLangList(query) {
+            let mainHtml = '';
+            mainLangs.forEach(l => {
+                if(l.name.toLowerCase().includes(query) || l.code.includes(query)) {
+                    let active = (window.currentLang === l.code) ? 'border-primary bg-blue-50 text-primary ring-1 ring-primary' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50';
+                    mainHtml += `<button onclick="selectLang('${l.code}', '${l.name}')" class="w-full text-left px-4 py-3 rounded-xl border ${active} transition flex items-center gap-3 font-bold text-sm shadow-sm"><span class="text-xl w-8 text-center">${l.flag}</span> ${l.name}</button>`;
+                }
+            });
+            document.getElementById('main-lang-list').innerHTML = mainHtml || '<p class="text-xs text-gray-400 px-4 py-2">ไม่พบภาษาในหมวดนี้</p>';
+
+            let otherHtml = '';
+            otherLangs.forEach(l => {
+                if(l.name.toLowerCase().includes(query) || l.code.includes(query)) {
+                    let active = (window.currentLang === l.code) ? 'border-primary bg-blue-50 text-primary ring-1 ring-primary' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-gray-50';
+                    otherHtml += `<button onclick="selectLang('${l.code}', '${l.name}')" class="w-full text-left px-4 py-3 rounded-xl border ${active} transition flex items-center gap-3 font-bold text-sm shadow-sm"><span class="text-xl w-8 text-center">${l.flag}</span> ${l.name}</button>`;
+                }
+            });
+            document.getElementById('other-lang-list').innerHTML = otherHtml || '<p class="text-xs text-gray-400 px-4 py-2">ไม่พบภาษาในหมวดนี้</p>';
+        }
+
+        window.selectLang = function(code, name) {
+            let displayCode = code.toUpperCase();
+            if(document.getElementById('current-lang-text')) document.getElementById('current-lang-text').innerText = displayCode;
+            if(document.getElementById('mobile-current-lang-text')) document.getElementById('mobile-current-lang-text').innerText = displayCode;
+            changeLanguage(code);
+            closeLangModal();
+        }
+
+        // ==========================================
+        // 3. ฟังก์ชันสลับภาษา (Hybrid Engine - สมองกลหลัก)
+        // ==========================================
         window.changeLanguage = function(lang) {
             window.currentLang = lang;
             
-            // เปลี่ยนสีปุ่มเมนู Desktop & Mobile
-            var activeClass = 'lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary';
-            var inactiveClass = 'lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary';
-            var activeMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold bg-primary text-white transition';
-            var inactiveMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition';
-            
-            ['mix','th','en','ch','ru'].forEach(function(l) {
-                var btn = document.getElementById('lang-' + l + '-cf');
-                if(btn) btn.className = (lang === l) ? activeClass : inactiveClass;
-                var btnMob = document.getElementById('lang-' + l + '-mobile');
-                if(btnMob) btnMob.className = (lang === l) ? activeMobClass : inactiveMobClass; 
-            });
+            // เช็คว่าลูกค้าเลือกภาษานอกเหนือจาก 5 ภาษาหลักที่เราเตรียมไว้หรือไม่
+            let isExtendedLang = !['mix', 'th', 'en', 'ch', 'ru'].includes(lang);
 
-            // 🌟 แยกการทำงานตามโหมดที่แอดมินเลือก
-            if (window.translationMode === 'google') {
-                // โหมด 1: Google Translate
-                let googleLangCode = lang === 'ch' ? 'zh-CN' : (lang === 'mix' ? 'th' : lang);
+            // ถ้าแอดมินบังคับใช้ Google หรือลูกค้าเลือกภาษาแปลกๆ (ที่ต้องพึ่ง Google)
+            if (window.translationMode === 'google' || isExtendedLang) {
+                let googleLangCode = lang;
+                if (lang === 'ch') googleLangCode = 'zh-CN';
+                if (lang === 'mix') googleLangCode = 'th';
+                
                 let selectField = document.querySelector(".goog-te-combo");
                 if (selectField) {
                     selectField.value = googleLangCode;
@@ -300,7 +340,7 @@
                     }, 1000);
                 }
             } else {
-                // โหมด 2: ระบบทำมือ (ดึงจาก lang.js)
+                // ถ้าแอดมินใช้โหมด Custom และลูกค้าอยู่ใน 5 ภาษาหลัก
                 document.querySelectorAll('[data-i18n]').forEach(function(el) {
                     var key = el.getAttribute('data-i18n');
                     if (window.cf_translations && window.cf_translations[lang] && window.cf_translations[lang][key]) {
@@ -309,10 +349,38 @@
                 });
                 updatePlaceholdersCustom(lang);
                 refreshDynamicData();
+                
+                // รีเซ็ตกล่อง Google Translate กลับเป็นไทย
+                let selectField = document.querySelector(".goog-te-combo");
+                if (selectField && selectField.value !== 'th') {
+                     selectField.value = 'th';
+                     selectField.dispatchEvent(new Event('change'));
+                }
             }
         }
 
-        // รีเฟรชตะกร้าและข้อมูลจาก Firebase
+        // ==========================================
+        // 4. เครื่องมือยิบย่อย (แปล Placeholder & ดึงข้อมูลแพ็กเกจ)
+        // ==========================================
+        function getDBText(textKey) {
+            if (!textKey) return '';
+            if (window.cf_dbTranslations && window.cf_dbTranslations[textKey] && window.cf_dbTranslations[textKey][window.currentLang]) {
+                return window.cf_dbTranslations[textKey][window.currentLang];
+            }
+            return textKey;
+        }
+
+        function updatePlaceholdersCustom(lang) {
+            if (typeof window.cf_sysAlerts !== 'undefined' && window.cf_sysAlerts[lang]) {
+                let alerts = window.cf_sysAlerts[lang];
+                let els = { 'bk-key-detail': 'placeKey', 'bk-fname': 'placeName', 'bk-houseNo': 'placeAddress', 'promo-code-input': 'placePromo', 'bk-special-note': 'placeNote' };
+                for (let id in els) {
+                    let el = document.getElementById(id);
+                    if(el) el.placeholder = alerts[els[id]] || '';
+                }
+            }
+        }
+
         function refreshDynamicData() {
             if (typeof renderCategories === 'function') renderCategories();
             if (typeof renderTypes === 'function' && typeof currentStep !== 'undefined' && currentStep === 2) renderTypes();
@@ -372,13 +440,11 @@
                     <a href="https://www.youtube.com/@ALLFORCE-hatyai/videos" target="_blank" class="hover:text-[#FF0000] transition text-lg" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
                 </div>
 
-                <div class="hidden sm:flex items-center gap-1 bg-white/60 p-1 rounded-full text-[10px] font-bold border border-gray-200">
-                    <button onclick="changeLanguage('mix')" id="lang-mix-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">MIX</button>
-                    <button onclick="changeLanguage('th')" id="lang-th-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">TH</button>
-                    <button onclick="changeLanguage('en')" id="lang-en-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">EN</button>
-                    <button onclick="changeLanguage('ch')" id="lang-ch-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">CH</button>
-                    <button onclick="changeLanguage('ru')" id="lang-ru-cf" class="lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary">RU</button>
-                </div>
+                <button onclick="openLangModal()" class="hidden sm:flex items-center gap-2 bg-white/60 px-4 py-2 rounded-full text-xs font-bold border border-gray-200 text-gray-700 hover:text-primary hover:bg-white transition shadow-sm mr-2">
+                    <i class="fa-solid fa-globe text-primary"></i>
+                    <span id="current-lang-text">MIX</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+                </button>
                 
                 <a href="login.html" class="flex items-center gap-2 text-gray-700 hover:text-primary transition font-bold bg-white/60 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm" id="user-menu-btn">
                     <i class="fa-regular fa-user-circle text-xl"></i> 
@@ -390,13 +456,10 @@
         </div>
         
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-t p-6 space-y-4 shadow-xl font-heading absolute top-20 left-0 w-full z-50">
-            <div class="flex flex-wrap gap-2 pb-4 border-b border-gray-100">
-                <button onclick="changeLanguage('mix')" id="lang-mix-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">MIX</button>
-                <button onclick="changeLanguage('th')" id="lang-th-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">TH</button>
-                <button onclick="changeLanguage('en')" id="lang-en-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">EN</button>
-                <button onclick="changeLanguage('ch')" id="lang-ch-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">CH</button>
-                <button onclick="changeLanguage('ru')" id="lang-ru-mobile" class="lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition">RU</button>
-            </div>
+            <button onclick="openLangModal(); document.getElementById('mobile-menu').classList.add('hidden');" class="w-full flex items-center justify-between bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:text-primary transition shadow-sm mb-4">
+                <div class="flex items-center gap-3"><i class="fa-solid fa-globe text-primary"></i> เลือกภาษาเว็บ</div>
+                <div class="flex items-center gap-2"><span id="mobile-current-lang-text" class="bg-white px-2 py-1 rounded-md border border-gray-200 text-xs">MIX</span> <i class="fa-solid fa-chevron-down text-[10px]"></i></div>
+            </button>
             
             <a href="login.html" class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-700 font-bold mb-4" id="mobile-user-menu-btn">
                 <i class="fa-regular fa-user-circle text-2xl text-primary"></i> 
@@ -2024,7 +2087,7 @@
                 let encodedMessage = encodeURIComponent(summary);
                 // 🌟 อัปเดตยอดการใช้คูปองในฐานข้อมูล (ถ้ามีการใช้คูปอง)
         let appliedCode = document.getElementById('promo-code-input').value.toUpperCase().trim();
-        if (appliedCode && netPriceNumber < totalPriceNumber) { // เช็คว่าใส่โค้ดจริงและได้ลดราคาจริง
+        if (appliedCode && netPriceNumber < grossPrice) { // เช็คว่าใส่โค้ดจริงและได้ลดราคาจริง
             try {
                 // ค้นหาคูปองไอดีนั้น
                 const snapshot = await window.cf_db.collection('coupons').where('code', '==', appliedCode).get();
@@ -2916,5 +2979,29 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
     </div>
 </div>
+
+
+<div id="lang-modal" class="fixed inset-0 bg-black/60 z-[999] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-[#000080] text-lg"><i class="fa-solid fa-globe text-primary mr-2"></i>เลือกภาษา (Language)</h3>
+            <button onclick="closeLangModal()" class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="p-4 border-b border-gray-100 bg-white shadow-sm z-10">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
+                <input type="text" id="lang-search" onkeyup="searchLang()" placeholder="ค้นหาภาษา (เช่น English, จีน, ru)..." class="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none focus:border-primary focus:bg-white transition-colors font-bold text-gray-700">
+            </div>
+        </div>
+        <div class="overflow-y-auto p-3 flex-1 bg-gray-50/50 hide-scroll" id="lang-list-container">
+            <div class="px-2 pt-2 pb-2 text-[10px] font-bold text-primary uppercase flex items-center gap-2"><i class="fa-solid fa-star"></i> ภาษาหลัก (Main)</div>
+            <div id="main-lang-list" class="space-y-2 px-1"></div>
+            
+            <div class="px-2 pt-6 pb-2 text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2"><i class="fa-solid fa-robot"></i> ภาษาอื่นๆ (Google Translate)</div>
+            <div id="other-lang-list" class="space-y-2 px-1 pb-4"></div>
+        </div>
+    </div>
+</div>
+
   </body>
 </html>
