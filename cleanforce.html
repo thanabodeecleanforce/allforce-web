@@ -548,44 +548,44 @@
     <section id="booking-cf" class="py-24 px-6 bg-white border-t border-gray-100 relative">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-bold font-heading mb-4 text-[#000080]">จองบริการทำความสะอาด</h2>
-                <p class="text-gray-500 font-body">ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน</p>
+                <h2 class="text-4xl md:text-5xl font-bold font-heading mb-4 text-[#000080]" data-i18n="bk-main-title">จองบริการทำความสะอาด</h2>
+<p class="text-gray-500 font-body" data-i18n="bk-main-sub">ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน</p>
             </div>
 
             <div class="bg-[#F3F7FB] rounded-[2.5rem] p-4 md:p-8 border border-gray-100 shadow-inner relative min-h-[400px]">
 
                 <div id="step-header" class="hidden items-center justify-between mb-6 text-sm font-bold text-gray-400 border-b border-gray-200 pb-4">
-                    <button onclick="changeStep(-1)" class="flex items-center gap-1 hover:text-primary transition-colors"><i class="fa-solid fa-arrow-left"></i> กลับ</button>
+                   <button onclick="changeStep(-1)" class="flex items-center gap-1 hover:text-primary transition-colors"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="wiz-back">กลับ</span></button>
                     <span id="step-text">ขั้นตอนที่ 1 / 5</span>
                 </div>
 
                 <div id="step-1" class="step-section space-y-6">
                     <div id="user-custom-packages" class="mb-4 empty:hidden"></div>
 
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]">1. เลือกสถานที่ / หมวดหมู่บริการ</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step1-title">1. เลือกสถานที่ / หมวดหมู่บริการ</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="ui-categories">
                     </div>
                 </div>
 
                 <div id="step-2" class="step-section hidden space-y-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]">2. เลือกแพ็กเกจการทำความสะอาด</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step2-title">2. เลือกแพ็กเกจการทำความสะอาด</h2>
                     <div id="ui-types" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    <button onclick="changeStep(1)" id="btn-next-2" disabled class="w-full bg-primary disabled:bg-gray-300 text-white p-4 rounded-xl font-bold mt-6 shadow-sm transition-all">ดำเนินการต่อ</button>
+                    <button onclick="changeStep(1)" id="btn-next-2" disabled class="w-full bg-primary disabled:bg-gray-300 text-white p-4 rounded-xl font-bold mt-6 shadow-sm transition-all"data-i18n="wiz-btn-next">ดำเนินการต่อ</button>
                 </div>
 
                 <div id="step-3" class="step-section hidden space-y-6">
                     <div class="mb-2">
-                        <h2 class="text-xl md:text-2xl font-bold text-[#000080]">3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ</h2>
-                        <p class="text-xs text-gray-500 mt-1">เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ</p>
+                        <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step3-title">3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ</h2>
+<p class="text-xs text-gray-500 mt-1" data-i18n="wiz-step3-sub">เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ</p>
                     </div>
                     
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-6 shadow-sm">
                         <div>
-                            <p class="font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-baby text-primary mr-2"></i>มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?</p>
-                            <p class="text-[10px] text-gray-500 mb-3">เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด</p>
+                            <p class="font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-baby text-primary mr-2"></i><span data-i18n="wiz-q1">มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?</span></p>
+<p class="text-[10px] text-gray-500 mb-3" data-i18n="wiz-q1-sub">เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด</p>
                             <div class="flex gap-2 max-w-sm">
-                                <button onclick="setBtnToggle('kids', 'yes')" id="btn-kids-yes" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-gray-50 text-gray-500 border-gray-100">มี</button>
-                                <button onclick="setBtnToggle('kids', 'no')" id="btn-kids-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-primary text-white border-primary">ไม่มี</button>
+                                <button onclick="setBtnToggle('kids', 'yes')" id="btn-kids-yes" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-gray-50 text-gray-500 border-gray-100"data-i18n="btn-yes">มี</button>
+                                <button onclick="setBtnToggle('kids', 'no')" id="btn-kids-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-primary text-white border-primary"data-i18n="btn-no">ไม่มี</button>
                             </div>
                         </div>
 
@@ -735,11 +735,10 @@
                      <i id="float-cart-chevron" class="fa-solid fa-chevron-up text-gray-400 transition-transform"></i>
                  </div>
                  <div class="flex items-end justify-between">
-                     <span class="text-xs font-bold text-gray-500 uppercase">ยอดชำระสุทธิ</span>
-                     <div class="text-right">
-                         <div id="float-orig-price-container" class="text-[10px] text-gray-400 mb-0.5 font-bold hidden">
-                             ราคาเดิม <span class="line-through decoration-red-500 decoration-2 text-red-500 ml-1" id="float-orig-price">0</span>
-                         </div>
+                     <span class="text-xs font-bold text-gray-500 uppercase" data-i18n="cart-net">ยอดชำระสุทธิ</span>
+                     <div id="float-orig-price-container" class="text-[10px] text-gray-400 mb-0.5 font-bold hidden">
+   <span data-i18n="cart-orig">ราคาเดิม</span> <span class="line-through decoration-red-500 decoration-2 text-red-500 ml-1" id="float-orig-price">0</span>
+</div>
                          <span class="text-2xl font-extrabold text-primary" id="float-net-price">0</span><span class="text-[10px] font-bold text-gray-500 ml-1">THB</span>
                      </div>
                  </div>
@@ -850,19 +849,19 @@
                 <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fa-solid fa-desktop text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold font-heading">ขั้นตอนสุดท้ายในการจองคิว</h3>
-                <p class="text-blue-200 text-xs mt-1">เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ</p>
+                <h3 class="text-xl font-bold font-heading" data-i18n="pc-modal-title">ขั้นตอนสุดท้ายในการจองคิว</h3>
+<p class="text-blue-200 text-xs mt-1" data-i18n="pc-modal-sub">เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ</p>
             </div>
             
             <div class="p-6 space-y-6">
                 <div class="flex gap-4 items-start">
                     <div class="w-8 h-8 rounded-full bg-blue-100 text-primary font-bold flex items-center justify-center shrink-0 mt-1">1</div>
                     <div class="flex-1">
-                        <h4 class="font-bold text-gray-800 text-sm mb-1">คัดลอกข้อความสรุปการจอง</h4>
-                        <p class="text-xs text-gray-500 mb-2">ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว</p>
+                        <h4 class="font-bold text-gray-800 text-sm mb-1" data-i18n="pc-step1">คัดลอกข้อความสรุปการจอง</h4>
+<p class="text-xs text-gray-500 mb-2" data-i18n="pc-step1-sub">ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว</p>
                         <textarea id="pc-booking-summary" rows="3" class="w-full text-[10px] p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none resize-none" readonly></textarea>
                         <button onclick="copyBookingSummary()" class="mt-2 w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition flex items-center justify-center gap-2">
-                            <i class="fa-regular fa-copy"></i> คัดลอกข้อความ
+                            <i class="fa-regular fa-copy"data-i18n="pc-btn-copy"><i class="fa-regular fa-copy"></i> คัดลอกข้อความ</button>
                         </button>
                     </div>
                 </div>
@@ -870,10 +869,10 @@
                 <div class="flex gap-4 items-start">
                     <div class="w-8 h-8 rounded-full bg-[#00B900]/20 text-[#00B900] font-bold flex items-center justify-center shrink-0">2</div>
                     <div class="flex-1">
-                        <h4 class="font-bold text-gray-800 text-sm mb-1">ส่งให้แอดมินทาง LINE @cleanforce</h4>
+                        <h4 class="font-bold text-gray-800 text-sm mb-1" data-i18n="pc-step2">ส่งให้แอดมินทาง LINE</h4>
                         <p class="text-xs text-gray-500 mb-3">คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่าง LINE แล้ว "วางข้อความ" ส่งให้แอดมินได้เลยครับ</p>
                         <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="w-full py-3 bg-[#00B900] text-white text-sm font-bold rounded-xl hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-brands fa-line text-xl"></i> เปิด LINE เพื่อวางข้อความ
+                            <i class="fa-brands fa-line text-xl"data-i18n="pc-btn-line"><i class="fa-brands fa-line text-xl"></i> เปิด LINE เพื่อวางข้อความ</button>
                         </a>
                     </div>
                 </div>
@@ -909,35 +908,41 @@
                 "feed-tag-promo": "Promotion", "feed-1-title": "ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%", "feed-1-desc": "โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้",
                 "feed-tag-news": "News", "feed-2-title": "บริการใหม่", "feed-2-desc": "ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที",
                 "feed-tag-act": "Activity", "feed-3-title": "ภาพบรรยากาศ Cleaning office", "feed-3-desc": "ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่", "feed-view-all": "ดูทั้งหมด",
-                "mode-house": "บริการทำความสะอาดบ้าน", "mode-furn": "บริการทำความสะอาดเฟอร์นิเจอร์",
-                "bk-title": "จองบริการทำความสะอาด", "bk-subtitle": "เลือกระหว่างบริการทำความสะอาดบ้าน หรือ บริการทำความสะอาดเฟอร์นิเจอร์",
-                "bk-step1": "เลือกแพ็กเกจทำความสะอาดบ้าน", "pkg-general": "ทำความสะอาดทั่วไป", "pkg-deep": "Big / Deep Cleaning",
-                "bk-furn-step1": "เลือกบริการทำความสะอาด",
-                "bk-step2": "บริการเสริม (Add-ons)", "add-equip": "เตรียมอุปกรณ์+น้ำยา", "add-fridge": "ทำความสะอาดตู้เย็น", "add-steam": "ฆ่าเชื้อด้วยไอน้ำ", "add-balcony": "ขัดล้างระเบียง",
-                "add-sofa": "ซักโซฟา (Deep Clean)", "add-sofa-sub": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ",
-                "add-mattress": "ซักที่นอน (Deep Clean)", "add-mattress-sub": "กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอน",
-                "add-carpet": "ซักพรม (Deep Clean)", "add-carpet-sub": "ดูแลพรมทุกชนิดด้วยระบบซักแห้งและเป่าลม",
-                "add-curtain": "ซักผ้าม่าน", "add-curtain-sub": "ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
-                "bk-step3": "วัน/เวลา และข้อมูลลูกค้า", "bk-date": "วันที่ต้องการรับบริการ", "bk-time": "เวลาเริ่มงาน", "bk-address": "ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)", 
-                "bk-name": "ชื่อ-นามสกุล / ชื่อบริษัท", "bk-phone": "เบอร์โทรศัพท์ติดต่อ", "bk-taxid": "เลขประจำตัวผู้เสียภาษี / เลขนิติบุคคล (ถ้ามี)",
-                "bk-key": "ฉันจะไม่อยู่บ้านโปรดรับกุญแจที่:", "bk-review": "รับส่วนลด 200 บาท เมื่อยินดีรีวิวบริการของเรา",
-                "sum-title": "สรุปคำสั่งซื้อ", "sum-sub": "Order Summary", "sum-base": "ทำความสะอาดพื้นฐาน", "sum-total": "ยอดชำระสุทธิ", "sum-note": "*ราคาและเวลาอาจมีการเปลี่ยนแปลงตามหน้างานจริง", "btn-book-now": "ยืนยันและจองผ่าน LINE",
                 "services-title": "บริการระดับมืออาชีพ", 
-                "s1-title": "General Cleaning", "s1-desc": "ทำความสะอาดทั่วไป กวาด ถู เช็ดฝุ่นรายวัน", "s2-title": "Deep Cleaning", "s2-desc": "ขัดพื้น ล้างห้องน้ำ ฆ่าเชื้อทุกซอกมุมอย่างละเอียด", 
-                "s3-title": "Sofa Cleaning", "s3-desc": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ", "s4-title": "Mattress Cleaning", "s4-desc": "กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอน", 
-                "s5-title": "Carpet Cleaning", "s5-desc": "ดูแลพรมทุกชนิดด้วยระบบซักแห้งและเป่าลม", "s6-title": "Curtain Cleaning", "s6-desc": "ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
                 "portfolio-sub": "ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดพรีเมียมจากเรา", "btn-more-portfolio": "ดูรูปภาพผลงานทั้งหมด",
-                "review1-text": "\"ประทับใจมากค่ะ ทีมงานสุภาพ อุปกรณ์ครบครันมาก โซฟากลับมาสะอาดเหมือนใหม่จริงๆ\"", "review1-author": "คุณมินตรา", "review2-text": "\"จองคิวผ่านระบบประเมินราคา สะดวกมาก ราคากับหน้างานจริงตรงกัน แนะนำเลยครับ\"", "review2-author": "คุณอภิชาติ", "review3-text": "\"Deep Cleaning ละเอียดทุกจุด ซอกมุมเล็กๆ ก็เก็บให้หมด สั่งซ้ำแน่นอนค่ะ\"", "review3-author": "คุณวิภา",
                 "contact-sub": "ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง", "contact-social-lbl": "ติดตามเรา",
                 "contact-address-lbl": "ที่ตั้ง", "contact-address-val": "32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000",
-                "footer-privacy": "นโยบายความเป็นส่วนตัว", "footer-terms": "เงื่อนไขการใช้บริการ", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "สอบถามผ่าน LINE",
-                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", "promo-1-title": "1. ลด 15% ฉลองเปิดสาขาภูเก็ต", "promo-1-desc": "สำหรับลูกค้าใหม่ กดเก็บคูปองแล้วนำโค้ดมากรอกในช่อง โค้ดส่วนลด ในตะกร้าสรุปยอด",
-                "promo-2-title": "2. แพ็กคู่คุ้มกว่า ลดทันที 300 บาท", "promo-2-desc": "เมื่อเลือกใช้บริการ ซักที่นอน ร่วมกับ ซักโซฟา (ระบบจะลดราคาให้อัตโนมัติ)",
-                "promo-3-title": "3. ส่วนลดลูกค้ารีวิว ลด 200 บาท", "promo-3-desc": "เพียงติ๊กถูกช่อง ยินดีรีวิวบริการ ในหน้าสรุปคำสั่งซื้อ (ระบบจะลดราคาให้อัตโนมัติ)",
-                "promo-card-title": "ลด 15% ลูกค้าใหม่", "promo-card-desc": "เอาใจคนภูเก็ต! กดเก็บคูปองเพื่อคัดลอกโค้ดไปใช้ในหน้าสรุปยอดได้เลย", "promo-card-code": "รหัสโค้ด (Promo Code)", "promo-card-btn": "คัดลอก & เก็บโค้ด",
+                "footer-privacy": "Privacy Policy", "footer-terms": "Terms of Service", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "สอบถามผ่าน LINE",
+                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", 
                 "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
-                "pkg-gen-1": "2 ชม. (≤ 55 ตร.ม.)", "pkg-gen-2": "3 ชม. (≤ 85 ตร.ม.)", "pkg-gen-3": "4 ชม. (≤ 105 ตร.ม.)",
-                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม.","bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน"
+                
+                // --- ส่วนที่เพิ่มใหม่สำหรับ Booking Wizard ---
+                "bk-main-title": "จองบริการทำความสะอาด", "bk-main-sub": "ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน",
+                "wiz-back": "กลับ",
+                "wiz-step1-title": "1. เลือกสถานที่ / หมวดหมู่บริการ",
+                "wiz-step2-title": "2. เลือกแพ็กเกจการทำความสะอาด",
+                "wiz-btn-next": "ดำเนินการต่อ", "wiz-btn-next-sum": "สรุปคำสั่งซื้อขั้นสุดท้าย",
+                "wiz-step3-title": "3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ", "wiz-step3-sub": "เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ",
+                "wiz-q1": "มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?", "wiz-q1-sub": "เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด",
+                "wiz-q2": "มีสัตว์เลี้ยงในบ้านหรือไม่?", "wiz-q2-sub": "เพื่อเตรียมอุปกรณ์เก็บขนสัตว์ และระมัดระวังการเปิด-ปิดประตู",
+                "wiz-q3": "จุดที่ต้องการให้เน้นเป็นพิเศษ (ถ้ามี)", "wiz-q3-sub": "เช่น 'เน้นขัดคราบกระจกห้องน้ำ' หรือ 'มีฝุ่นเยอะใต้เตียง'",
+                "btn-yes": "มี", "btn-no": "ไม่มี",
+                "wiz-step4-title": "4. วันนัดหมาย และ ข้อมูลลูกค้า",
+                "wiz-time-title": "เวลานัดหมาย", "wiz-date-lbl": "วันที่", "wiz-time-lbl": "เวลา",
+                "wiz-contact-title": "ข้อมูลผู้ติดต่อ", "wiz-addr-title": "ที่อยู่ (เฉพาะภูเก็ต)",
+                "wiz-gps-btn1": "ปักพิกัดปัจจุบัน", "wiz-gps-btn2": "วางลิงก์ Maps เอง",
+                "bk-key": "ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:",
+                "wiz-step5-title": "สรุปคำสั่งซื้อ", "wiz-step5-sub": "ตรวจสอบความถูกต้องก่อนยืนยัน",
+                "wiz-addon-title": "เพิ่มบริการเสริม รับส่วนลดพิเศษ!", "wiz-addon-sub": "เพิ่ม 1 ชิ้น รับส่วนลดรวม 5% ยิ่งเพิ่มยิ่งคุ้ม (ลดเพิ่ม 1% ทุกชิ้น)",
+                "sum-base": "บริการหลัก", "available-coupons": "คูปองโปรโมชั่นสำหรับคุณ",
+                "btn-book-now": "ยืนยันการจองผ่าน LINE",
+                
+                // --- ส่วนที่เพิ่มใหม่สำหรับ Float Cart & Modals ---
+                "cart-net": "ยอดชำระสุทธิ", "cart-orig": "ราคาเดิม",
+                "toast-title": "แจกโค้ดส่วนลด!", "toast-sub": "กดรับสิทธิพิเศษเลยตอนนี้",
+                "pc-modal-title": "ขั้นตอนสุดท้ายในการจองคิว", "pc-modal-sub": "เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ",
+                "pc-step1": "คัดลอกข้อความสรุปการจอง", "pc-step1-sub": "ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว", "pc-btn-copy": "คัดลอกข้อความ",
+                "pc-step2": "ส่งให้แอดมินทาง LINE", "pc-step2-sub": "คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่าง LINE แล้ว 'วางข้อความ' ส่งให้แอดมินได้เลยครับ", "pc-btn-line": "เปิด LINE เพื่อวางข้อความ"
             },
             th: {
                 "nav-home": "หน้าแรก", "nav-about": "เกี่ยวกับเรา", "nav-services": "บริการ", "nav-portfolio": "ผลงาน", "nav-btn": "เลือกบริการ", "nav-contact": "ติดต่อเรา", "nav-feed": "ข่าวสาร", "nav-promo": "โปรโมชั่น",
@@ -948,35 +953,39 @@
                 "feed-tag-promo": "โปรโมชั่น", "feed-1-title": "ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%", "feed-1-desc": "โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้",
                 "feed-tag-news": "ข่าวสาร", "feed-2-title": "บริการใหม่", "feed-2-desc": "ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที",
                 "feed-tag-act": "กิจกรรม", "feed-3-title": "ภาพบรรยากาศ Cleaning office", "feed-3-desc": "ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่", "feed-view-all": "ดูทั้งหมด",
-                "mode-house": "บริการทำความสะอาดบ้าน", "mode-furn": "บริการทำความสะอาดเฟอร์นิเจอร์",
-                "bk-title": "จองบริการทำความสะอาด", "bk-subtitle": "เลือกระหว่างบริการทำความสะอาดบ้าน หรือ บริการทำความสะอาดเฟอร์นิเจอร์",
-                "bk-step1": "เลือกรูปแบบการทำความสะอาดบ้าน", "pkg-general": "ทำความสะอาดทั่วไป", "pkg-deep": "ทำความสะอาดครั้งใหญ่ (ขจัดคราบฝังลึก)",
-                "bk-furn-step1": "เลือกบริการทำความสะอาด",
-                "bk-step2": "บริการเพิ่มเติม", "add-equip": "ให้ทีมงานเตรียมอุปกรณ์และน้ำยา", "add-fridge": "ทำความสะอาดตู้เย็น", "add-steam": "พ่นฆ่าเชื้อด้วยไอน้ำร้อน", "add-balcony": "ขัดล้างพื้นที่ระเบียง",
-                "add-sofa": "ซักโซฟา (ขจัดคราบฝังลึก)", "add-sofa-sub": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกลิ่นอับ",
-                "add-mattress": "ซักที่นอน (ขจัดคราบฝังลึก)", "add-mattress-sub": "กำจัดไรฝุ่นและเชื้อโรคบนที่นอนเพื่อสุขภาพการนอนที่ดี",
-                "add-carpet": "ซักพรม (ขจัดคราบฝังลึก)", "add-carpet-sub": "ดูแลพรมทุกชนิดด้วยระบบทำความสะอาดและเป่าแห้ง",
-                "add-curtain": "ซักผ้าม่าน", "add-curtain-sub": "ถอดซักและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
-                "bk-step3": "วัน/เวลา และข้อมูลลูกค้า", "bk-date": "วันที่ต้องการรับบริการ", "bk-time": "เวลาเริ่มงาน", "bk-address": "ที่อยู่แบบละเอียด (หมู่บ้าน/คอนโด เลขที่ห้อง)", 
-                "bk-name": "ชื่อ-นามสกุล / ชื่อบริษัท", "bk-phone": "เบอร์โทรศัพท์ติดต่อ", "bk-taxid": "เลขประจำตัวผู้เสียภาษี / เลขนิติบุคคล (ถ้าต้องการใบกำกับภาษี)",
-                "bk-key": "ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:", "bk-review": "รับส่วนลด 200 บาท หากยินดีรีวิวบริการของเรา",
-                "sum-title": "สรุปรายการจอง", "sum-sub": "รายละเอียดค่าบริการ", "sum-base": "ค่าบริการทำความสะอาดพื้นฐาน", "sum-total": "ยอดชำระสุทธิ", "sum-note": "*ราคาและเวลาอาจมีการเปลี่ยนแปลงตามความเหมาะสมของหน้างานจริง", "btn-book-now": "ยืนยันและส่งข้อมูลทางไลน์",
                 "services-title": "บริการของเรา", 
-                "s1-title": "ทำความสะอาดทั่วไป", "s1-desc": "กวาด ถู เช็ดฝุ่น ดูแลความเรียบร้อยในชีวิตประจำวัน", "s2-title": "ทำความสะอาดครั้งใหญ่", "s2-desc": "ขัดพื้น ล้างห้องน้ำ ฆ่าเชื้อทุกซอกมุมอย่างละเอียด", 
-                "s3-title": "บริการซักโซฟา", "s3-desc": "ซักเบาะ โซฟา ขจัดคราบฝังลึกและกำจัดกลิ่นอับชื้น", "s4-title": "บริการซักที่นอน", "s4-desc": "กำจัดไรฝุ่นและเชื้อโรคบนเตียงนอน เพื่อสุขภาพที่ดี", 
-                "s5-title": "บริการซักพรม", "s5-desc": "ทำความสะอาดพรมทุกชนิดด้วยระบบมาตรฐานและเป่าลมแห้ง", "s6-title": "บริการซักผ้าม่าน", "s6-desc": "ถอดทำความสะอาดและติดตั้งผ้าม่าน ขจัดไรฝุ่นและคราบฝังลึก",
                 "portfolio-sub": "ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดระดับพรีเมียมจากเรา", "btn-more-portfolio": "ดูรูปภาพผลงานทั้งหมด",
-                "review1-text": "\"ประทับใจมากค่ะ ทีมงานสุภาพ อุปกรณ์ครบครันมาก โซฟากลับมาสะอาดเหมือนใหม่จริงๆ\"", "review1-author": "คุณมินตรา", "review2-text": "\"จองคิวผ่านระบบประเมินราคา สะดวกมาก ราคากับหน้างานจริงตรงกัน แนะนำเลยครับ\"", "review2-author": "คุณอภิชาติ", "review3-text": "\"ทำความสะอาดแบบละเอียดทุกจุด ซอกมุมเล็กๆ ก็เก็บให้หมด สั่งซ้ำแน่นอนค่ะ\"", "review3-author": "คุณวิภา",
                 "contact-sub": "ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง", "contact-social-lbl": "ช่องทางการติดตาม",
                 "contact-address-lbl": "สถานที่ตั้ง", "contact-address-val": "32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000",
                 "footer-privacy": "นโยบายความเป็นส่วนตัว", "footer-terms": "เงื่อนไขการใช้บริการ", "footer-copy": "© 2024 คลีนฟอร์ซ โปรเฟสชันนอล คลีนนิ่ง สงวนลิขสิทธิ์", "float-line": "สอบถามผ่านไลน์",
-                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", "promo-1-title": "1. ลด 15% ฉลองเปิดสาขาภูเก็ต", "promo-1-desc": "สำหรับลูกค้าใหม่ กดเก็บคูปองแล้วนำโค้ดมากรอกในช่อง โค้ดส่วนลด ในตะกร้าสรุปยอด",
-                "promo-2-title": "2. แพ็กคู่คุ้มกว่า ลดทันที 300 บาท", "promo-2-desc": "เมื่อเลือกใช้บริการ ซักที่นอน ร่วมกับ ซักโซฟา (ระบบจะลดราคาให้อัตโนมัติ)",
-                "promo-3-title": "3. ส่วนลดลูกค้ารีวิว ลด 200 บาท", "promo-3-desc": "เพียงติ๊กถูกช่อง ยินดีรีวิวบริการ ในหน้าสรุปคำสั่งซื้อ (ระบบจะลดราคาให้อัตโนมัติ)",
-                "promo-card-title": "ลด 15% ลูกค้าใหม่", "promo-card-desc": "เอาใจคนภูเก็ต! กดเก็บคูปองเพื่อคัดลอกโค้ดไปใช้ในหน้าสรุปยอดได้เลย", "promo-card-code": "รหัสโค้ด (Promo Code)", "promo-card-btn": "คัดลอก & เก็บโค้ด",
+                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", 
                 "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
-                "pkg-gen-1": "2 ชม. (≤ 55 ตร.ม.)", "pkg-gen-2": "3 ชม. (≤ 85 ตร.ม.)", "pkg-gen-3": "4 ชม. (≤ 105 ตร.ม.)",
-                "pkg-deep-1": "80 ตร.ม.", "pkg-deep-1-sub": "แม่บ้าน 2 คน / 4 ชม.", "pkg-deep-2": "100 ตร.ม.", "pkg-deep-2-sub": "แม่บ้าน 3 คน / 3 ชม.", "pkg-deep-3": "150 ตร.ม.", "pkg-deep-3-sub": "แม่บ้าน 3 คน / 4 ชม.","bk-gps-btn": "แตะเพื่อปักพิกัดปัจจุบัน"
+                
+                "bk-main-title": "จองบริการทำความสะอาด", "bk-main-sub": "ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน",
+                "wiz-back": "กลับ",
+                "wiz-step1-title": "1. เลือกสถานที่ / หมวดหมู่บริการ",
+                "wiz-step2-title": "2. เลือกแพ็กเกจการทำความสะอาด",
+                "wiz-btn-next": "ดำเนินการต่อ", "wiz-btn-next-sum": "สรุปคำสั่งซื้อขั้นสุดท้าย",
+                "wiz-step3-title": "3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ", "wiz-step3-sub": "เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ",
+                "wiz-q1": "มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?", "wiz-q1-sub": "เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด",
+                "wiz-q2": "มีสัตว์เลี้ยงในบ้านหรือไม่?", "wiz-q2-sub": "เพื่อเตรียมอุปกรณ์เก็บขนสัตว์ และระมัดระวังการเปิด-ปิดประตู",
+                "wiz-q3": "จุดที่ต้องการให้เน้นเป็นพิเศษ (ถ้ามี)", "wiz-q3-sub": "เช่น 'เน้นขัดคราบกระจกห้องน้ำ' หรือ 'มีฝุ่นเยอะใต้เตียง'",
+                "btn-yes": "มี", "btn-no": "ไม่มี",
+                "wiz-step4-title": "4. วันนัดหมาย และ ข้อมูลลูกค้า",
+                "wiz-time-title": "เวลานัดหมาย", "wiz-date-lbl": "วันที่", "wiz-time-lbl": "เวลา",
+                "wiz-contact-title": "ข้อมูลผู้ติดต่อ", "wiz-addr-title": "ที่อยู่ (เฉพาะภูเก็ต)",
+                "wiz-gps-btn1": "ปักพิกัดปัจจุบัน", "wiz-gps-btn2": "วางลิงก์ Maps เอง",
+                "bk-key": "ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:",
+                "wiz-step5-title": "สรุปคำสั่งซื้อ", "wiz-step5-sub": "ตรวจสอบความถูกต้องก่อนยืนยัน",
+                "wiz-addon-title": "เพิ่มบริการเสริม รับส่วนลดพิเศษ!", "wiz-addon-sub": "เพิ่ม 1 ชิ้น รับส่วนลดรวม 5% ยิ่งเพิ่มยิ่งคุ้ม (ลดเพิ่ม 1% ทุกชิ้น)",
+                "sum-base": "บริการหลัก", "available-coupons": "คูปองโปรโมชั่นสำหรับคุณ",
+                "btn-book-now": "ยืนยันการจองผ่านไลน์",
+                
+                "cart-net": "ยอดชำระสุทธิ", "cart-orig": "ราคาเดิม",
+                "toast-title": "แจกโค้ดส่วนลด!", "toast-sub": "กดรับสิทธิพิเศษเลยตอนนี้",
+                "pc-modal-title": "ขั้นตอนสุดท้ายในการจองคิว", "pc-modal-sub": "เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ",
+                "pc-step1": "คัดลอกข้อความสรุปการจอง", "pc-step1-sub": "ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว", "pc-btn-copy": "คัดลอกข้อความ",
+                "pc-step2": "ส่งให้แอดมินทางไลน์", "pc-step2-sub": "คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่างไลน์ แล้ว 'วางข้อความ' ส่งให้แอดมินได้เลยครับ", "pc-btn-line": "เปิดไลน์เพื่อวางข้อความ"
             },
             en: {
                 "nav-home": "Home", "nav-about": "About", "nav-services": "Services", "nav-portfolio": "Portfolio", "nav-btn": "Book Now", "nav-contact": "Contact", "nav-feed": "News", "nav-promo": "Promotions",
@@ -987,35 +996,39 @@
                 "feed-tag-promo": "Promotion", "feed-1-title": "Grand Opening! 15% Off", "feed-1-desc": "Special promotion. 15% off all services when booked this month.",
                 "feed-tag-news": "News", "feed-2-title": "New Service", "feed-2-desc": "Post-renovation cleaning. Ready to move in.",
                 "feed-tag-act": "Activity", "feed-3-title": "Office Cleaning Vibes", "feed-3-desc": "Cleanforce team cleaning the headquarters.", "feed-view-all": "View All",
-                "mode-house": "House Cleaning", "mode-furn": "Furniture Cleaning",
-                "bk-title": "Book Cleaning Service", "bk-subtitle": "Choose between House Cleaning or Furniture Deep Cleaning services.",
-                "bk-step1": "Select House Cleaning Package", "pkg-general": "General Cleaning", "pkg-deep": "Big / Deep Cleaning",
-                "bk-furn-step1": "Select Furniture to Clean",
-                "bk-step2": "Additional Services", "add-equip": "Bring Cleaning Equipment", "add-fridge": "Clean Refrigerator", "add-steam": "Steam Sanitization", "add-balcony": "Balcony Washing",
-                "add-sofa": "Sofa Deep Clean", "add-sofa-sub": "Removes deep stains & odors from upholstery",
-                "add-mattress": "Mattress Deep Clean", "add-mattress-sub": "Eliminates dust mites & germs for better sleep",
-                "add-carpet": "Carpet Deep Clean", "add-carpet-sub": "Care for all types of carpets with dry cleaning and blow drying",
-                "add-curtain": "Curtain Cleaning", "add-curtain-sub": "Remove, wash, and install curtains. Eliminate dust mites and deep stains",
-                "bk-step3": "Date/Time & Customer Info", "bk-date": "Service Date", "bk-time": "Start Time", "bk-address": "Detailed Address (Village/Condo, Room No.)", 
-                "bk-name": "Name-Surname / Company Name", "bk-phone": "Contact Phone Number", "bk-taxid": "Tax ID / Corporate ID (If requested)",
-                "bk-key": "I won't be home, please get the key at:", "bk-review": "Get 200 THB discount if you agree to review our service",
-                "sum-title": "Order Summary", "sum-sub": "Service Details", "sum-base": "Base Cleaning Service", "sum-total": "Net Total", "sum-note": "*Prices and times may change depending on actual site conditions", "btn-book-now": "Confirm & Send via LINE",
                 "services-title": "Our Professional Services", 
-                "s1-title": "General Cleaning", "s1-desc": "Sweep, mop, dust, daily maintenance", "s2-title": "Deep Cleaning", "s2-desc": "Scrub floors, wash bathrooms, sanitize every corner thoroughly", 
-                "s3-title": "Sofa Cleaning", "s3-desc": "Wash upholstery, sofas, remove deep stains and odors", "s4-title": "Mattress Cleaning", "s4-desc": "Eliminate dust mites and germs on the bed for good health", 
-                "s5-title": "Carpet Cleaning", "s5-desc": "Clean all types of carpets with standard system and blow drying", "s6-title": "Curtain Cleaning", "s6-desc": "Remove, clean, and reinstall curtains, remove dust mites",
                 "portfolio-sub": "Impressions from customers who choose our premium cleaning services", "btn-more-portfolio": "View All Portfolio",
-                "review1-text": "\"Very impressed. The team is polite, fully equipped. The sofa is clean like new.\"", "review1-author": "Khun Mintra", "review2-text": "\"Booking through the estimate system is very convenient. The price matches the actual work. Highly recommended.\"", "review2-author": "Khun Apichart", "review3-text": "\"Detailed cleaning in every spot. Even small corners are covered. Will definitely order again.\"", "review3-author": "Khun Wipha",
                 "contact-sub": "Our admin team is ready to answer questions and serve you every day. If you have any further questions, please contact us.", "contact-social-lbl": "Follow Us",
                 "contact-address-lbl": "Location", "contact-address-val": "32/151 @Town 2 Village, Poonphol Road, Soi 1,<br>Talat Nuea, Mueang Phuket, Phuket 83000",
                 "footer-privacy": "Privacy Policy", "footer-terms": "Terms of Service", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "Chat via LINE",
-                "promo-privilege": "Current Privileges & Discounts", "promo-1-title": "1. 15% Off Phuket Branch Opening", "promo-1-desc": "For new customers. Collect the coupon and enter the code in the 'Promo Code' box at checkout.",
-                "promo-2-title": "2. Value Bundle - Get 300 THB Off", "promo-2-desc": "When booking 'Mattress Cleaning' with 'Sofa Cleaning' (Auto applied)",
-                "promo-3-title": "3. Review Discount - Get 200 THB Off", "promo-3-desc": "Just check the 'Agree to review' box in the summary (Auto applied)",
-                "promo-card-title": "15% Off New Customers", "promo-card-desc": "Phuket Special! Collect and copy the code to use at checkout.", "promo-card-code": "Promo Code", "promo-card-btn": "Copy & Collect Code",
+                "promo-privilege": "Current Privileges & Discounts", 
                 "promo-input-label": "Have a Promo Code?", "promo-input-btn": "Apply",
-                "pkg-gen-1": "2 hrs (≤ 55 sq.m.)", "pkg-gen-2": "3 hrs (≤ 85 sq.m.)", "pkg-gen-3": "4 hrs (≤ 105 sq.m.)",
-                "pkg-deep-1": "80 sq.m.", "pkg-deep-1-sub": "2 Maids / 4 hrs", "pkg-deep-2": "100 sq.m.", "pkg-deep-2-sub": "3 Maids / 3 hrs", "pkg-deep-3": "150 sq.m.", "pkg-deep-3-sub": "3 Maids / 4 hrs","bk-gps-btn": "Tap to pin current location"
+                
+                "bk-main-title": "Book Cleaning Service", "bk-main-sub": "Estimate price and book online instantly in 5 steps",
+                "wiz-back": "Back",
+                "wiz-step1-title": "1. Select Location / Category",
+                "wiz-step2-title": "2. Select Cleaning Package",
+                "wiz-btn-next": "Continue", "wiz-btn-next-sum": "Finalize Order Summary",
+                "wiz-step3-title": "3. Safety & Special Care Information", "wiz-step3-sub": "So our team can prepare the best and most suitable solutions for your home",
+                "wiz-q1": "Any children under 1 year old?", "wiz-q1-sub": "To select the most gentle and safe cleaning agents",
+                "wiz-q2": "Any pets in the house?", "wiz-q2-sub": "To prepare hair removal tools and carefully manage doors",
+                "wiz-q3": "Areas requiring special focus (Optional)", "wiz-q3-sub": "e.g., 'Focus on bathroom glass stains' or 'Dust under the bed'",
+                "btn-yes": "Yes", "btn-no": "No",
+                "wiz-step4-title": "4. Appointment Date & Customer Info",
+                "wiz-time-title": "Appointment Time", "wiz-date-lbl": "Date", "wiz-time-lbl": "Time",
+                "wiz-contact-title": "Contact Information", "wiz-addr-title": "Address (Phuket Only)",
+                "wiz-gps-btn1": "Pin Current Location", "wiz-gps-btn2": "Paste Maps Link",
+                "bk-key": "I won't be home, please get the key at:",
+                "wiz-step5-title": "Order Summary", "wiz-step5-sub": "Please verify before confirming",
+                "wiz-addon-title": "Add Services for Special Discounts!", "wiz-addon-sub": "Add 1 item, get 5% off. More items = more discounts (+1% per item)",
+                "sum-base": "Base Service", "available-coupons": "Promo Coupons for You",
+                "btn-book-now": "Confirm via LINE",
+                
+                "cart-net": "Net Total", "cart-orig": "Original Price",
+                "toast-title": "Discount Code Alert!", "toast-sub": "Claim your special privilege now",
+                "pc-modal-title": "Final Step for Booking", "pc-modal-sub": "Since you are on a PC, please follow these 2 steps",
+                "pc-step1": "Copy Booking Summary", "pc-step1-sub": "The system has prepared your order summary", "pc-btn-copy": "Copy Text",
+                "pc-step2": "Send to Admin via LINE", "pc-step2-sub": "Click the button below to open LINE and 'Paste' the text to our admin", "pc-btn-line": "Open LINE to Paste Text"
             },
             ch: {
                 "nav-home": "首页", "nav-about": "关于我们", "nav-services": "服务", "nav-portfolio": "作品展示", "nav-btn": "立即预约", "nav-contact": "联系我们", "nav-feed": "新闻动态", "nav-promo": "促销活动",
@@ -1026,35 +1039,39 @@
                 "feed-tag-promo": "促销活动", "feed-1-title": "新店开业！15% 大优惠", "feed-1-desc": "特别促销。本月预订所有服务立减 15%。",
                 "feed-tag-news": "新闻", "feed-2-title": "新服务", "feed-2-desc": "装修后清洁。随时可入住。",
                 "feed-tag-act": "活动", "feed-3-title": "办公室清洁氛围", "feed-3-desc": "Cleanforce 团队进入总部进行清洁。", "feed-view-all": "查看全部",
-                "mode-house": "房屋清洁服务", "mode-furn": "家具清洁服务",
-                "bk-title": "预约清洁服务", "bk-subtitle": "请选择房屋清洁或家具深层清洁服务",
-                "bk-step1": "选择房屋清洁套餐", "pkg-general": "日常普通清洁", "pkg-deep": "大扫除 / 深度清洁",
-                "bk-furn-step1": "选择要清洁的家具",
-                "bk-step2": "附加服务", "add-equip": "自带清洁工具与清洁剂", "add-fridge": "清洁冰箱", "add-steam": "高温蒸汽消毒", "add-balcony": "清洗阳台",
-                "add-sofa": "沙发清洗（深度清洁）", "add-sofa-sub": "清洗沙发，去除深层污渍和异味",
-                "add-mattress": "床垫清洗（深度清洁）", "add-mattress-sub": "消除床垫上的螨虫和细菌，保障健康睡眠",
-                "add-carpet": "地毯清洗（深度清洁）", "add-carpet-sub": "采用干洗和吹干系统护理各种地毯",
-                "add-curtain": "窗帘清洗", "add-curtain-sub": "拆洗和安装窗帘，消除螨虫和深层污渍",
-                "bk-step3": "日期/时间与客户信息", "bk-date": "服务日期", "bk-time": "开始时间", "bk-address": "详细地址（小区/公寓，房间号）", 
-                "bk-name": "姓名 / 公司名称", "bk-phone": "联系电话", "bk-taxid": "纳税人识别号 / 企业税号（如有）",
-                "bk-key": "我不在家，请在以下地点取钥匙：", "bk-review": "如果您同意评价我们的服务，可获得 200 泰铢折扣",
-                "sum-title": "订单摘要", "sum-sub": "订单详情", "sum-base": "基础清洁费用", "sum-total": "实付总额", "sum-note": "*价格和时间可能会根据现场实际情况有所变动", "btn-book-now": "确认并通过 LINE 预约",
                 "services-title": "专业服务", 
-                "s1-title": "日常普通清洁", "s1-desc": "扫地、拖地、日常除尘", "s2-title": "深度清洁", "s2-desc": "刷洗地板、清洗浴室、彻底消毒每个角落", 
-                "s3-title": "沙发清洗", "s3-desc": "清洗靠垫、沙发，去除深层污渍和异味", "s4-title": "床垫清洗", "s4-desc": "消除床垫上的螨虫和细菌，保障睡眠健康", 
-                "s5-title": "地毯清洗", "s5-desc": "采用干洗和吹干系统护理各类地毯", "s6-title": "窗帘清洗", "s6-desc": "拆卸清洗并重新安装窗帘，去除螨虫和深层污渍",
                 "portfolio-sub": "选择我们高级清洁服务的客户所留下的深刻印象", "btn-more-portfolio": "查看所有作品",
-                "review1-text": "\"非常满意。团队很有礼貌，设备齐全。沙发真的像新的一样干净。\"", "review1-author": "Mintra 女士", "review2-text": "\"通过系统估价预约非常方便。价格和现场实际一样。强烈推荐。\"", "review2-author": "Apichart 先生", "review3-text": "\"深度清洁非常细致。连小角落都打扫得干干净净。肯定会再预约。\"", "review3-author": "Wipha 女士",
                 "contact-sub": "我们的管理团队每天都准备好回答您的问题并为您提供服务。如果您有任何疑问，请通过任何渠道联系我们。", "contact-social-lbl": "关注我们",
                 "contact-address-lbl": "地址", "contact-address-val": "普吉府 普吉直辖县 Talat Nuea 区 Poonphol 路 1 巷 @Town2 村 32/151，邮编 83000",
                 "footer-privacy": "隐私政策", "footer-terms": "服务条款", "footer-copy": "© 2024 Cleanforce 专业清洁。保留所有权利。", "float-line": "通过 LINE 咨询",
-                "promo-privilege": "当前特权与折扣", "promo-1-title": "1. 普吉分店开业 15% 折扣", "promo-1-desc": "新客户专享。领取优惠券并在结账时的“优惠码”框中输入代码。",
-                "promo-2-title": "2. 超值套餐 - 立减 300 泰铢", "promo-2-desc": "当同时预订“床垫清洗”和“沙发清洗”时（自动应用）",
-                "promo-3-title": "3. 评价折扣 - 立减 200 泰铢", "promo-3-desc": "只需在摘要中勾选“同意评价”框（自动应用）",
-                "promo-card-title": "新客户 15% 折扣", "promo-card-desc": "普吉岛特惠！领取并复制代码在结账时使用。", "promo-card-code": "优惠码 (Promo Code)", "promo-card-btn": "复制并领取代码",
+                "promo-privilege": "当前特权与折扣", 
                 "promo-input-label": "有优惠码吗？ (Promo Code)", "promo-input-btn": "应用",
-                "pkg-gen-1": "2 小时 (≤ 55 平方米)", "pkg-gen-2": "3 小时 (≤ 85 平方米)", "pkg-gen-3": "4 小时 (≤ 105 平方米)",
-                "pkg-deep-1": "80 平方米", "pkg-deep-1-sub": "2 名清洁工 / 4 小时", "pkg-deep-2": "100 平方米", "pkg-deep-2-sub": "3 名清洁工 / 3 小时", "pkg-deep-3": "150 平方米", "pkg-deep-3-sub": "3 名清洁工 / 4 小时","bk-gps-btn": "点击获取当前位置"
+                
+                "bk-main-title": "预约清洁服务", "bk-main-sub": "只需 5 步，即可在线估价并立即预约",
+                "wiz-back": "返回",
+                "wiz-step1-title": "1. 选择地点 / 类别",
+                "wiz-step2-title": "2. 选择清洁套餐",
+                "wiz-btn-next": "继续", "wiz-btn-next-sum": "最终确认订单",
+                "wiz-step3-title": "3. 安全与特别护理信息", "wiz-step3-sub": "以便我们的团队为您准备最适合的清洁剂",
+                "wiz-q1": "家里有1岁以下的儿童吗？", "wiz-q1-sub": "为了选择最温和安全的清洁剂",
+                "wiz-q2": "家里有宠物吗？", "wiz-q2-sub": "以便准备除毛工具并小心开关门",
+                "wiz-q3": "需要特别关注的区域（选填）", "wiz-q3-sub": "例如：'重点清洁浴室玻璃污渍' 或 '床下灰尘多'",
+                "btn-yes": "有", "btn-no": "没有",
+                "wiz-step4-title": "4. 预约日期与客户信息",
+                "wiz-time-title": "预约时间", "wiz-date-lbl": "日期", "wiz-time-lbl": "时间",
+                "wiz-contact-title": "联系信息", "wiz-addr-title": "地址（仅限普吉岛）",
+                "wiz-gps-btn1": "定位当前位置", "wiz-gps-btn2": "粘贴地图链接",
+                "bk-key": "我不在家，请在以下地点取钥匙：",
+                "wiz-step5-title": "订单摘要", "wiz-step5-sub": "确认前请仔细核对",
+                "wiz-addon-title": "添加附加服务，享受特别折扣！", "wiz-addon-sub": "增加 1 项服务，享受 5% 折扣。项目越多折扣越大（每项额外 -1%）",
+                "sum-base": "基础服务", "available-coupons": "为您准备的优惠券",
+                "btn-book-now": "通过 LINE 确认",
+                
+                "cart-net": "实付总额", "cart-orig": "原价",
+                "toast-title": "折扣码提醒！", "toast-sub": "立即领取您的专属特权",
+                "pc-modal-title": "预约的最后一步", "pc-modal-sub": "由于您正在使用电脑，请按以下2个步骤操作",
+                "pc-step1": "复制订单摘要", "pc-step1-sub": "系统已为您准备好订单摘要文本", "pc-btn-copy": "复制文本",
+                "pc-step2": "通过 LINE 发送给客服", "pc-step2-sub": "点击下方按钮打开 LINE，将文本“粘贴”发送给我们的客服", "pc-btn-line": "打开 LINE 并粘贴文本"
             },
             ru: {
                 "nav-home": "Главная", "nav-about": "О нас", "nav-services": "Услуги", "nav-portfolio": "Портфолио", "nav-btn": "Забронировать", "nav-contact": "Контакты", "nav-feed": "Новости", "nav-promo": "Акции",
@@ -1065,54 +1082,48 @@
                 "feed-tag-promo": "Акция", "feed-1-title": "Открытие филиала! Скидка 15%", "feed-1-desc": "Специальная акция. Скидка 15% на все услуги при бронировании в этом месяце.",
                 "feed-tag-news": "Новости", "feed-2-title": "Новая услуга", "feed-2-desc": "Уборка после ремонта. Готово к заселению.",
                 "feed-tag-act": "Мероприятие", "feed-3-title": "Атмосфера уборки офиса", "feed-3-desc": "Команда Cleanforce проводит уборку в штаб-квартире.", "feed-view-all": "Смотреть всё",
-                "mode-house": "Уборка дома", "mode-furn": "Чистка мебели",
-                "bk-title": "Забронировать уборку", "bk-subtitle": "Выберите между уборкой дома или глубокой чисткой мебели",
-                "bk-step1": "Выберите пакет уборки дома", "pkg-general": "Общая уборка", "pkg-deep": "Глубокая уборка",
-                "bk-furn-step1": "Выберите услуги",
-                "bk-step2": "Дополнительные услуги", "add-equip": "Наше оборудование", "add-fridge": "Мытье холодильника", "add-steam": "Обработка паром", "add-balcony": "Мытье балкона",
-                "add-sofa": "Химчистка дивана", "add-sofa-sub": "Удаление глубоких пятен и запахов",
-                "add-mattress": "Химчистка матраса", "add-mattress-sub": "Уничтожение пылевых клещей и бактерий",
-                "add-carpet": "Химчистка ковра", "add-carpet-sub": "Чистка ковров любого типа с сушкой",
-                "add-curtain": "Химчистка штор", "add-curtain-sub": "Снятие, стирка и установка штор",
-                "bk-step3": "Дата/Время и Данные", "bk-date": "Дата уборки", "bk-time": "Время начала", "bk-address": "Точный адрес (Вилла/Кондо, номер)", 
-                "bk-name": "Имя-Фамилия / Название компании", "bk-phone": "Контактный телефон", "bk-taxid": "ИНН (для счета-фактуры)",
-                "bk-key": "Меня не будет дома, ключи можно взять здесь:", "bk-review": "Скидка 200 бат за отзыв о нашем сервисе",
-                "sum-title": "Сводка заказа", "sum-sub": "Детали заказа", "sum-base": "Базовая стоимость", "sum-total": "Итого к оплате", "sum-note": "*Цены и время могут измениться после осмотра объекта", "btn-book-now": "Забронировать через LINE",
                 "services-title": "Наши профессиональные услуги", 
-                "s1-title": "Общая уборка", "s1-desc": "Подметание, мытье полов, ежедневная пыль", "s2-title": "Глубокая уборка", "s2-desc": "Тщательная дезинфекция и очистка ванных комнат", 
-                "s3-title": "Химчистка диванов", "s3-desc": "Удаление пятен и затхлых запахов", "s4-title": "Химчистка матрасов", "s4-desc": "Уничтожение пылевых клещей и микробов", 
-                "s5-title": "Химчистка ковров", "s5-desc": "Уход за коврами любого типа с сушкой", "s6-title": "Химчистка штор", "s6-desc": "Снятие, стирка, установка и удаление пыли",
                 "portfolio-sub": "Впечатления клиентов, выбравших наши услуги премиум-класса", "btn-more-portfolio": "Смотреть всё портфолио",
-                "review1-text": "\"Очень впечатлена. Команда вежливая, оборудование отличное. Диван снова как новый.\"", "review1-author": "Г-жа Минтра", "review2-text": "\"Бронировать через систему очень удобно. Цена совпадает с реальной работой.\"", "review2-author": "Г-н Апичарт", "review3-text": "\"Глубокая уборка была выполнена очень тщательно. Обязательно закажу снова.\"", "review3-author": "Г-жа Випха",
                 "contact-sub": "Наша команда готова ответить на ваши вопросы каждый день.", "contact-social-lbl": "Подписывайтесь",
                 "contact-address-lbl": "Адрес", "contact-address-val": "32/151 @Town2, ул. Poonphol, Сой 1,<br>Talat Nuea, Mueang Phuket, Пхукет 83000",
                 "footer-privacy": "Политика конфиденциальности", "footer-terms": "Условия использования", "footer-copy": "© 2024 Cleanforce Professional Cleaning. Все права защищены.", "float-line": "Задать вопрос в LINE",
-                "promo-privilege": "Текущие привилегии и скидки", "promo-1-title": "1. Скидка 15% (открытие на Пхукете)", "promo-1-desc": "Для новых клиентов. Сохраните купон и введите код в поле «Промокод».",
-                "promo-2-title": "2. Выгодный пакет - скидка 300 бат", "promo-2-desc": "При бронировании чистки матраса и дивана (Применяется автоматически)",
-                "promo-3-title": "3. Скидка за отзыв - 200 бат", "promo-3-desc": "Просто отметьте галочкой «Согласен на отзыв» (Применяется автоматически)",
-                "promo-card-title": "Скидка 15% (новым)", "promo-card-desc": "Специально для Пхукета! Скопируйте код для оплаты.", "promo-card-code": "Промокод", "promo-card-btn": "Скопировать код",
+                "promo-privilege": "Текущие привилегии и скидки", 
                 "promo-input-label": "Есть промокод?", "promo-input-btn": "Применить",
-                "pkg-gen-1": "2 часа (≤ 55 кв.м.)", "pkg-gen-2": "3 часа (≤ 85 кв.м.)", "pkg-gen-3": "4 часа (≤ 105 кв.м.)",
-                "pkg-deep-1": "80 кв.м.", "pkg-deep-1-sub": "2 горничные / 4 часа", "pkg-deep-2": "100 кв.м.", "pkg-deep-2-sub": "3 горничные / 3 часа", "pkg-deep-3": "150 кв.м.", "pkg-deep-3-sub": "3 горничные / 4 часа","bk-gps-btn": "Нажмите, чтобы закрепить местоположение"
+                
+                "bk-main-title": "Забронировать уборку", "bk-main-sub": "Оценка стоимости и бронирование онлайн за 5 шагов",
+                "wiz-back": "Назад",
+                "wiz-step1-title": "1. Выберите локацию / категорию",
+                "wiz-step2-title": "2. Выберите пакет уборки",
+                "wiz-btn-next": "Далее", "wiz-btn-next-sum": "Перейти к оплате",
+                "wiz-step3-title": "3. Безопасность и особый уход", "wiz-step3-sub": "Чтобы наша команда подготовила лучшие средства для вашего дома",
+                "wiz-q1": "Есть ли дети до 1 года?", "wiz-q1-sub": "Для выбора наиболее щадящих средств",
+                "wiz-q2": "Есть ли домашние животные?", "wiz-q2-sub": "Для подготовки средств от шерсти",
+                "wiz-q3": "Особые пожелания (необязательно)", "wiz-q3-sub": "Например: 'Уделите внимание стеклам в ванной'",
+                "btn-yes": "Да", "btn-no": "Нет",
+                "wiz-step4-title": "4. Дата и Контакты",
+                "wiz-time-title": "Время визита", "wiz-date-lbl": "Дата", "wiz-time-lbl": "Время",
+                "wiz-contact-title": "Контактная информация", "wiz-addr-title": "Адрес (Только Пхукет)",
+                "wiz-gps-btn1": "Определить местоположение", "wiz-gps-btn2": "Вставить ссылку на карту",
+                "bk-key": "Меня не будет дома, ключи можно взять здесь:",
+                "wiz-step5-title": "Сводка заказа", "wiz-step5-sub": "Пожалуйста, проверьте перед подтверждением",
+                "wiz-addon-title": "Добавьте услуги и получите скидку!", "wiz-addon-sub": "1 услуга = скидка 5%. Больше услуг = больше скидка (+1% за каждую)",
+                "sum-base": "Базовая услуга", "available-coupons": "Доступные промокоды",
+                "btn-book-now": "Подтвердить через LINE",
+                
+                "cart-net": "Итого к оплате", "cart-orig": "Старая цена",
+                "toast-title": "Скидочный купон!", "toast-sub": "Получите привилегию прямо сейчас",
+                "pc-modal-title": "Последний шаг бронирования", "pc-modal-sub": "Поскольку вы используете ПК, выполните эти 2 шага",
+                "pc-step1": "Скопируйте детали заказа", "pc-step1-sub": "Система подготовила текст вашего заказа", "pc-btn-copy": "Скопировать текст",
+                "pc-step2": "Отправьте администратору в LINE", "pc-step2-sub": "Нажмите кнопку ниже, чтобы открыть LINE и вставить текст", "pc-btn-line": "Открыть LINE и вставить"
             }
         };
 
         var sysAlerts = {
-            mix: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ..." },
-            th: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ..." },
-            en: { errInput: "Please complete all required fields.", errKey: "Please specify key drop-off location.", success: "Booking successful! Redirecting to LINE...", errLocation: "Unable to retrieve location.", promoYes: "✅ Success! Discount applied.", promoNo: "❌ Invalid or expired promo code.", gpsSuccess: "Location pinned successfully!", gpsLoading: "Finding your location..." },
-            ch: { errInput: "请填写所有必填信息", errKey: "请说明钥匙的放置位置", success: "预约成功！正在跳转至 LINE...", errLocation: "无法获取位置信息", promoYes: "✅ 成功！已应用折扣。", promoNo: "❌ 优惠码无效或已过期。", gpsSuccess: "成功获取位置！", gpsLoading: "正在获取您的位置..." },
-            ru: { errInput: "Пожалуйста, заполните все обязательные поля.", errKey: "Пожалуйста, укажите место для ключей.", success: "Бронирование успешно! Переход в LINE...", errLocation: "Не удалось получить местоположение.", promoYes: "✅ Успешно! Скидка применена.", promoNo: "❌ Недействительный или просроченный промокод.", gpsSuccess: "Местоположение успешно определено!", gpsLoading: "Поиск вашего местоположения..." }
-        };
-
-        // ชื่อแพ็กเกจเมื่อดึงไปโชว์ในสรุปยอด
-        var packageNamesMap = {
-            '890':  {mix: "ทั่วไป 2 ชม.", th: "ทั่วไป 2 ชม.", en: "General 2 hrs", ch: "日常普通清洁 2 小时", ru: "Общая уборка 2 часа"},
-            '1063': {mix: "ทั่วไป 3 ชม.", th: "ทั่วไป 3 ชม.", en: "General 3 hrs", ch: "日常普通清洁 3 小时", ru: "Общая уборка 3 часа"},
-            '1293': {mix: "ทั่วไป 4 ชม.", th: "ทั่วไป 4 ชม.", en: "General 4 hrs", ch: "日常普通清洁 4 小时", ru: "Общая уборка 4 часа"},
-            '3144': {mix: "Deep 80 ตร.ม.", th: "Deep 80 ตร.ม.", en: "Deep 80 sq.m.", ch: "深度清洁 80 平方米", ru: "Глубокая 80 кв.м."},
-            '3305': {mix: "Deep 100 ตร.ม.", th: "Deep 100 ตร.ม.", en: "Deep 100 sq.m.", ch: "深度清洁 100 平方米", ru: "Глубокая 100 кв.м."},
-            '4340': {mix: "Deep 150 ตร.ม.", th: "Deep 150 ตร.ม.", en: "Deep 150 sq.m.", ch: "深度清洁 150 平方米", ru: "Глубокая 150 кв.м."}
+            mix: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ...", placeKey: "ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ", placeName: "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท", placeAddress: "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด", placePromo: "พิมพ์โค้ด เช่น PHUKET10", placeNote: "พิมพ์ข้อความที่นี่... (ไม่บังคับ)" },
+            th: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ...", placeKey: "ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ", placeName: "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท", placeAddress: "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด", placePromo: "พิมพ์โค้ด เช่น PHUKET10", placeNote: "พิมพ์ข้อความที่นี่... (ไม่บังคับ)" },
+            en: { errInput: "Please complete all required fields.", errKey: "Please specify key drop-off location.", success: "Booking successful! Redirecting to LINE...", errLocation: "Unable to retrieve location.", promoYes: "✅ Success! Discount applied.", promoNo: "❌ Invalid or expired promo code.", gpsSuccess: "Location pinned successfully!", gpsLoading: "Finding your location...", placeKey: "Mailbox, Reception, Security Guard, etc.", placeName: "Contact Name or Company Name", placeAddress: "Specify the exact location to be cleaned", placePromo: "Enter code e.g. PHUKET10", placeNote: "Type your message here... (Optional)" },
+            ch: { errInput: "请填写所有必填信息", errKey: "请说明钥匙的放置位置", success: "预约成功！正在跳转至 LINE...", errLocation: "无法获取位置信息", promoYes: "✅ 成功！已应用折扣。", promoNo: "❌ 优惠码无效或已过期。", gpsSuccess: "成功获取位置！", gpsLoading: "正在获取您的位置...", placeKey: "信箱、前台、保安等，请注明", placeName: "联系人姓名或公司名称", placeAddress: "请详细说明需要清洁的地点", placePromo: "输入代码 例如 PHUKET10", placeNote: "在此输入您的留言... (选填)" },
+            ru: { errInput: "Пожалуйста, заполните все обязательные поля.", errKey: "Пожалуйста, укажите место для ключей.", success: "Бронирование успешно! Переход в LINE...", errLocation: "Не удалось получить местоположение.", promoYes: "✅ Успешно! Скидка применена.", promoNo: "❌ Недействительный или просроченный промокод.", gpsSuccess: "Местоположение успешно определено!", gpsLoading: "Поиск вашего местоположения...", placeKey: "Почтовый ящик, ресепшн, охрана и т.д.", placeName: "Имя контакта или название компании", placeAddress: "Укажите точный адрес для уборки", placePromo: "Введите код, напр. PHUKET10", placeNote: "Введите сообщение здесь... (Необязательно)" }
         };
 
         window.currentLang = 'th';
@@ -1122,11 +1133,21 @@
             var activeClass = 'lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary';
             var inactiveClass = 'lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary';
             
-            ['mix','th','en','zh','ru'].forEach(function(l) {
+            // อัปเดตปุ่มภาษาบน Desktop
+            ['mix','th','en','ch','ru'].forEach(function(l) {
                 var btn = document.getElementById('lang-' + l + '-cf');
                 if(btn) btn.className = (lang === l) ? activeClass : inactiveClass;
             });
             
+            // อัปเดตปุ่มภาษาบน Mobile
+            var activeMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold bg-primary text-white transition';
+            var inactiveMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition';
+            ['mix','th','en','ch','ru'].forEach(function(l) {
+                var btnMob = document.getElementById('lang-' + l + '-mobile');
+                if(btnMob) btnMob.className = (lang === l) ? activeMobClass : inactiveMobClass;
+            });
+            
+            // แปลข้อความที่มี attribute data-i18n
             document.querySelectorAll('[data-i18n]').forEach(function(el) {
                 var key = el.getAttribute('data-i18n');
                 if (translations && translations[lang] && translations[lang][key]) {
@@ -1134,48 +1155,23 @@
                 }
             });
 
-            // เปลี่ยน Placeholder
+            // เปลี่ยนข้อความ Placeholder ต่างๆ ดึงจาก sysAlerts อัตโนมัติ
             var keyDetail = document.getElementById('bk-key-detail');
-            var nameInput = document.getElementById('bk-name-input');
-            var taxInput = document.getElementById('bk-taxid-input');
-            var addressInput = document.getElementById('bk-address-input');
+            var nameFInput = document.getElementById('bk-fname');
+            var addressInput = document.getElementById('bk-houseNo');
             var promoInput = document.getElementById('promo-code-input');
+            var noteInput = document.getElementById('bk-special-note');
 
-            if(lang === 'th' || lang === 'mix') {
-                if(keyDetail) keyDetail.placeholder = "ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ";
-                if(nameInput) nameInput.placeholder = "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท";
-                if(taxInput) taxInput.placeholder = "สำหรับออกใบกำกับภาษี (สามารถเว้นว่างได้)";
-                if(addressInput) addressInput.placeholder = "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด";
-                if(promoInput) promoInput.placeholder = "พิมพ์โค้ด เช่น PHUKET10";
-            } else if (lang === 'en') {
-                if(keyDetail) keyDetail.placeholder = "Mailbox, Reception, Security Guard, etc.";
-                if(nameInput) nameInput.placeholder = "Contact Name or Company Name";
-                if(taxInput) taxInput.placeholder = "For Tax Invoice (Optional)";
-                if(addressInput) addressInput.placeholder = "Specify the exact location to be cleaned";
-                if(promoInput) promoInput.placeholder = "Enter code e.g. PHUKET10";
-            } else if (lang === 'ch') {
-                if(keyDetail) keyDetail.placeholder = "信箱、前台、保安等，请注明";
-                if(nameInput) nameInput.placeholder = "联系人姓名或公司名称";
-                if(taxInput) taxInput.placeholder = "用于开具税务发票（选填）";
-                if(addressInput) addressInput.placeholder = "请详细说明需要清洁的地点";
-                if(promoInput) promoInput.placeholder = "输入代码 例如 PHUKET10";
-            } else if (lang === 'ru') {
-                if(keyDetail) keyDetail.placeholder = "Почтовый ящик, ресепшн, охрана и т.д.";
-                if(nameInput) nameInput.placeholder = "Имя контакта или название компании";
-                if(taxInput) taxInput.placeholder = "Для налоговой накладной (необязательно)";
-                if(addressInput) addressInput.placeholder = "Укажите точный адрес для уборки";
-                if(promoInput) promoInput.placeholder = "Введите код, напр. PHUKET10";
+            if(keyDetail) keyDetail.placeholder = sysAlerts[lang].placeKey;
+            if(nameFInput) nameFInput.placeholder = sysAlerts[lang].placeName;
+            if(addressInput) addressInput.placeholder = sysAlerts[lang].placeAddress;
+            if(promoInput) promoInput.placeholder = sysAlerts[lang].placePromo;
+            if(noteInput) noteInput.placeholder = sysAlerts[lang].placeNote;
+
+            // รีเฟรชส่วนที่ต้องคำนวณใหม่
+            if (typeof window.calculatePricing === 'function') {
+                window.calculatePricing();
             }
-
-            // ถ้ามี Error ค้างอยู่ให้แปลด้วย
-            var msgEl = document.getElementById('promo-msg');
-            if (msgEl && !msgEl.classList.contains('hidden') && appliedCoupons.length === 0) {
-                msgEl.textContent = sysAlerts[lang].promoNo;
-            } else if (msgEl && appliedCoupons.length > 0) {
-                msgEl.textContent = sysAlerts[lang].promoYes;
-            }
-
-            window.calculateBooking();
         }
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -3034,8 +3030,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <i class="fa-solid fa-gift text-xl"></i>
             </div>
             <div>
-                <h4 class="font-bold text-gray-800 text-sm">แจกโค้ดส่วนลด!</h4>
-                <p class="text-[11px] text-gray-500 mt-0.5">กดรับสิทธิพิเศษเลยตอนนี้</p>
+                <h4 class="font-bold text-gray-800 text-sm" data-i18n="toast-title">แจกโค้ดส่วนลด!</h4>
+<p class="text-[11px] text-gray-500 mt-0.5" data-i18n="toast-sub">กดรับสิทธิพิเศษเลยตอนนี้</p>
             </div>
         </div>
         <p id="countdown-text" class="text-[10px] text-right text-gray-400 mt-2 font-medium">จะปิดอัตโนมัติใน 5 วินาที</p>
