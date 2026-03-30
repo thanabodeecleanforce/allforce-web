@@ -50,7 +50,7 @@
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-4 md:p-6 mt-4">
+    <main id="admin-main-content" class="max-w-6xl mx-auto p-4 md:p-6 mt-4 hidden">
         
         <div class="flex justify-between items-end mb-6">
             <div>
@@ -807,25 +807,30 @@
                 }
 
                 if (!role) {
-                    // ไม่มี role = ไม่ใช่ admin
-                    await Swal.fire({
-                        icon: 'error',
-                        title: 'ไม่มีสิทธิ์เข้าถึง',
-                        html: `บัญชี <b>${user.email}</b><br>ยังไม่ได้รับสิทธิ์เป็น Admin<br><small class="text-gray-400">ติดต่อ Superadmin เพื่อขอสิทธิ์</small>`,
-                        allowOutsideClick: false,
-                        confirmButtonText: 'กลับหน้าหลัก'
-                    });
-                    auth.signOut();
-                    window.location.href = "cleanforce.html";
-                    return;
-                }
+                // ไม่มี role = ไม่ใช่ admin
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่มีสิทธิ์เข้าถึง',
+                    html: `บัญชี <b>${user.email}</b><br>ยังไม่ได้รับสิทธิ์เป็น Admin<br><small class="text-gray-400">ติดต่อ Superadmin เพื่อขอสิทธิ์</small>`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false, // 👈 เพิ่มบรรทัดนี้เพื่อล็อคไม่ให้กดปุ่ม ESC บนคีย์บอร์ดเพื่อปิดป๊อปอัป
+                    confirmButtonText: 'กลับหน้าหลัก'
+                });
+                auth.signOut();
+                window.location.href = "cleanforce.html";
+                return;
+            }
 
-                // เก็บ role ไว้ใช้ทั่ว page
-                window.currentAdminRole = role;
-                window.currentAdminUid = user.uid;
-                applyRoleUI(role);
-                loadData(); // โหลดข้อมูล services
-                loadLastUpdated();
+            // 👈 เช็คผ่านแล้ว ค่อยสั่งให้เปิดแสดงหน้าจอหลัก
+            document.getElementById('admin-main-content').classList.remove('hidden');
+
+            // เก็บ role ไว้ใช้ทั่ว page
+            window.currentAdminRole = role;
+            window.currentAdminUid = user.uid;
+            applyRoleUI(role);
+            loadData(); // โหลดข้อมูล services
+            loadVatState(); // 👈 นำโหลด VAT มาไว้ตรงนี้เพื่อให้โหลดหลังจากเช็คสิทธิ์ผ่าน
+            // loadLastUpdated(); (ถ้าบรรทัดนี้มี error ให้ลบทิ้งได้เลย เพราะมี onSnapshot ทำงานอยู่แล้วด้านล่าง)
 
             } catch (e) {
                 console.error("Role check error:", e);
@@ -1207,9 +1212,6 @@
             }
         }
 
-        // โหลดข้อมูลเมื่อเปิดหน้า
-        document.addEventListener('DOMContentLoaded', loadData);
-
         // 10. ระบบ VAT 7% (เปิด/ปิด พร้อมยืนยันรหัสผ่าน)
         let isVatEnabled = false;
 
@@ -1301,12 +1303,6 @@
                 }
             }
         }
-
-        // โหลดข้อมูลเมื่อเปิดหน้า
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            loadVatState();
-        });
 
         // 11. ระบบจัดการโซเชียล (อัปเดตระบบ Reels & ขนาดรูป & อัพโหลด)
         function setupSocialForm() {
