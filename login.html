@@ -55,19 +55,20 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // 2. เช็คสถานะ (ถ้าล็อกอินอยู่แล้ว ให้เด้งกลับ)
+        // 2. เช็คสถานะ — ถ้าล็อกอินอยู่แล้ว redirect กลับหน้าที่มา
         auth.onAuthStateChanged((user) => {
             if (user) {
                 let prevPage = document.referrer || "";
-                // เช็คให้ครอบคลุมชื่อไฟล์ใหม่
-                if (prevPage.includes("cleanforce.html")) {
-    window.location.href = "cleanforce.html";
-} else if (prevPage.includes("admin.html")) {
-    // ...
-} else {
-    window.location.href = "cleanforce.html"; // หน้าเริ่มต้น
-
-            }}
+                if (prevPage.includes("admin.html")) {
+                    window.location.href = "admin.html";
+                } else if (prevPage.includes("profile.html")) {
+                    window.location.href = "profile.html";
+                } else if (prevPage.includes("cleanforce.html")) {
+                    window.location.href = "cleanforce.html";
+                } else {
+                    window.location.href = "cleanforce.html"; // default
+                }
+            }
         });
 
         // 3. ฟังก์ชันล็อกอิน

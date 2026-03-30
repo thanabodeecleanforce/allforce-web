@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; }
+        .card-skeleton { animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -26,49 +28,124 @@
         <div class="mb-10 text-center">
             <h1 class="text-3xl md:text-5xl font-bold mb-4 text-gray-800">ข่าวสาร & โปรโมชั่น</h1>
             <p class="text-gray-500">อัปเดตกิจกรรมและโปรโมชั่นพิเศษจาก Cleanforce ทั้งหมดที่นี่</p>
+
+            <div class="flex justify-center gap-2 mt-6 flex-wrap">
+                <button onclick="filterNews('all')" data-filter="all" class="filter-btn px-4 py-1.5 rounded-full text-sm font-bold bg-blue-600 text-white transition">ทั้งหมด</button>
+                <button onclick="filterNews('promotion')" data-filter="promotion" class="filter-btn px-4 py-1.5 rounded-full text-sm font-bold bg-white border border-gray-200 text-gray-600 hover:border-blue-400 transition">Promotion</button>
+                <button onclick="filterNews('news')" data-filter="news" class="filter-btn px-4 py-1.5 rounded-full text-sm font-bold bg-white border border-gray-200 text-gray-600 hover:border-blue-400 transition">News</button>
+                <button onclick="filterNews('activity')" data-filter="activity" class="filter-btn px-4 py-1.5 rounded-full text-sm font-bold bg-white border border-gray-200 text-gray-600 hover:border-blue-400 transition">Activity</button>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-            <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group flex flex-col hover:shadow-lg transition-all">
-                <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promo-phuket-15.png" alt="Promo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                    <div class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Hot
-                    </div>
-                </div>
-                <div class="p-6 flex-1 flex flex-col">
-                    <p class="text-xs text-blue-600 mb-2 font-bold uppercase tracking-widest">Promotion</p>
-                    <h3 class="text-xl font-bold mb-2 text-gray-800">ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed mb-4">โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้เท่านั้น</p>
-                    <a href="cleanforce.html#booking-cf" class="mt-auto text-blue-600 font-bold hover:underline text-sm">จองบริการทันที <i class="fa-solid fa-arrow-right"></i></a>
-                </div>
+        <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="card-skeleton bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+                <div class="aspect-video bg-gray-200"></div>
+                <div class="p-6 space-y-3"><div class="h-3 bg-gray-200 rounded w-1/3"></div><div class="h-5 bg-gray-200 rounded w-3/4"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
             </div>
-
-            <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group flex flex-col hover:shadow-lg transition-all">
-                <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promo-renovate.png" alt="News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                </div>
-                <div class="p-6 flex-1 flex flex-col">
-                    <p class="text-xs text-blue-600 mb-2 font-bold uppercase tracking-widest">News</p>
-                    <h3 class="text-xl font-bold mb-2 text-gray-800">บริการใหม่</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที ด้วยอุปกรณ์ครบชุด</p>
-                </div>
+            <div class="card-skeleton bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+                <div class="aspect-video bg-gray-200"></div>
+                <div class="p-6 space-y-3"><div class="h-3 bg-gray-200 rounded w-1/3"></div><div class="h-5 bg-gray-200 rounded w-3/4"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
             </div>
-
-            <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group flex flex-col hover:shadow-lg transition-all">
-                <div class="aspect-video bg-gray-200 relative overflow-hidden">
-                    <img src="promotion/promo-activity.png" alt="Activity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                </div>
-                <div class="p-6 flex-1 flex flex-col">
-                    <p class="text-xs text-blue-600 mb-2 font-bold uppercase tracking-widest">Activity</p>
-                    <h3 class="text-xl font-bold mb-2 text-gray-800">ภาพบรรยากาศ Cleaning office</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่ของลูกค้า</p>
-                </div>
+            <div class="card-skeleton bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+                <div class="aspect-video bg-gray-200"></div>
+                <div class="p-6 space-y-3"><div class="h-3 bg-gray-200 rounded w-1/3"></div><div class="h-5 bg-gray-200 rounded w-3/4"></div><div class="h-3 bg-gray-200 rounded w-full"></div></div>
             </div>
+        </div>
 
+        <div id="empty-state" class="hidden text-center py-20">
+            <i class="fa-regular fa-newspaper text-5xl text-gray-300 mb-4"></i>
+            <p class="text-gray-400 text-lg">ยังไม่มีข่าวในหมวดนี้</p>
         </div>
     </main>
-    
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let allNewsData = [];
+        let currentFilter = 'all';
+
+        const typeConfig = {
+            promotion: { label: 'Promotion', color: 'text-red-500',   dotBg: 'bg-red-500'   },
+            news:      { label: 'News',       color: 'text-blue-600',  dotBg: 'bg-blue-600'  },
+            activity:  { label: 'Activity',   color: 'text-green-600', dotBg: 'bg-green-600' }
+        };
+
+        function buildCard(n) {
+            const cfg = typeConfig[n.type] || { label: n.type || 'News', color: 'text-blue-600', dotBg: 'bg-blue-600' };
+
+            const imgHtml = n.imageUrl
+                ? '<img src="' + n.imageUrl + '" alt="' + (n.title||'') + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.parentElement.classList.add(\'bg-gradient-to-br\',\'from-blue-50\',\'to-blue-100\');this.remove()">'
+                : '<div class="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center"><i class="fa-regular fa-newspaper text-4xl text-blue-200"></i></div>';
+
+            const badgeHtml = n.badge
+                ? '<div class="absolute top-4 left-4 ' + (n.badge.toLowerCase()==='hot' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-red-700') + ' text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1"><span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> ' + n.badge + '</div>'
+                : '';
+
+            const ctaHtml = n.ctaLink
+                ? '<a href="' + n.ctaLink + '" class="mt-auto ' + cfg.color + ' font-bold hover:underline text-sm">' + (n.ctaText || 'ดูเพิ่มเติม') + ' <i class="fa-solid fa-arrow-right"></i></a>'
+                : '';
+
+            return '<div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 group flex flex-col hover:shadow-lg transition-all">'
+                + '<div class="aspect-video bg-gray-200 relative overflow-hidden">' + imgHtml + badgeHtml + '</div>'
+                + '<div class="p-6 flex-1 flex flex-col">'
+                + '<p class="text-xs ' + cfg.color + ' mb-2 font-bold uppercase tracking-widest">' + cfg.label + '</p>'
+                + '<h3 class="text-xl font-bold mb-2 text-gray-800">' + (n.title||'') + '</h3>'
+                + '<p class="text-sm text-gray-500 leading-relaxed mb-4 flex-1">' + (n.description||'') + '</p>'
+                + ctaHtml
+                + '</div></div>';
+        }
+
+        function renderNews(data) {
+            const grid  = document.getElementById('news-grid');
+            const empty = document.getElementById('empty-state');
+            const list  = currentFilter === 'all' ? data : data.filter(function(n){ return n.type === currentFilter; });
+
+            if (list.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                grid.innerHTML = list.map(buildCard).join('');
+            }
+        }
+
+        function filterNews(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(function(btn) {
+                var active = btn.dataset.filter === type;
+                btn.className = 'filter-btn px-4 py-1.5 rounded-full text-sm font-bold transition '
+                    + (active ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-blue-400');
+            });
+            renderNews(allNewsData);
+        }
+
+        db.collection("news")
+            .where("isActive", "==", true)
+            .orderBy("order")
+            .get()
+            .then(function(snapshot) {
+                allNewsData = [];
+                snapshot.forEach(function(doc) {
+                    allNewsData.push(Object.assign({ id: doc.id }, doc.data()));
+                });
+                renderNews(allNewsData);
+            })
+            .catch(function(err) {
+                console.error("โหลดข่าวไม่สำเร็จ:", err);
+                document.getElementById('news-grid').innerHTML =
+                    '<div class="col-span-3 text-center py-16 text-gray-400"><i class="fa-solid fa-triangle-exclamation text-3xl mb-3 block"></i><p>ไม่สามารถโหลดข่าวได้ในขณะนี้</p></div>';
+            });
+    </script>
 </body>
 </html>
