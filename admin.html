@@ -37,6 +37,15 @@
                 </div>
             </div>
         </div>
+
+        <div id="admin-lang-setting" class="hidden md:flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 mr-2">
+    <i class="fa-solid fa-language text-primary text-xs"></i>
+    <select id="admin-translate-mode" onchange="saveTranslateMode()" class="bg-transparent text-[10px] font-bold text-gray-600 outline-none cursor-pointer hover:text-primary transition">
+        <option value="google">Google AI</option>
+        <option value="custom">Custom (lang.js)</option>
+    </select>
+</div>
+
         <div class="flex items-center gap-3">
             <div id="admin-user-info" class="flex items-center gap-2 text-white">
                 <i class="fa-solid fa-spinner fa-spin text-blue-200"></i>
@@ -782,7 +791,20 @@
             // เริ่มต้นโหลด tab แรกที่มีสิทธิ์
             const firstTab = allowed[0];
             if (firstTab) filterData(firstTab);
+            const langSetting = document.getElementById('admin-lang-setting'); // 👈 ดึง ID สวิตช์
+
+            if (role === 'staff') {
+                if(langSetting) langSetting.classList.add('hidden'); // 👈 ซ่อนถ้าเป็น Staff
+                // ... โค้ดเดิมของคุณ ...
+            } else if (role === 'manager') {
+                if(langSetting) langSetting.classList.add('hidden'); // 👈 ซ่อนถ้าเป็น Manager
+                // ... โค้ดเดิมของคุณ ...
+            } else if (role === 'superadmin') {
+                if(langSetting) langSetting.classList.remove('hidden'); // 👈 แสดงเฉพาะ Superadmin
+                langSetting.classList.add('flex');
+            }
         }
+        
 
         // 🔒 Auth Guard — ตรวจ role จาก Firestore
         auth.onAuthStateChanged(async user => {
@@ -831,6 +853,7 @@
             loadData(); // โหลดข้อมูล services
             loadVatState(); // 👈 นำโหลด VAT มาไว้ตรงนี้เพื่อให้โหลดหลังจากเช็คสิทธิ์ผ่าน
             // loadLastUpdated(); (ถ้าบรรทัดนี้มี error ให้ลบทิ้งได้เลย เพราะมี onSnapshot ทำงานอยู่แล้วด้านล่าง)
+            loadSystemConfig(); // 👈 ต้องมีบรรทัดนี้ ระบบถึงจะดึงค่าจาก DB มาโชว์ที่สวิตช์
 
             } catch (e) {
                 console.error("Role check error:", e);
@@ -2662,6 +2685,33 @@
                 if (!str) return '';
                 return str.toString().replace(/[&<>'"]/g,
                 function(tag){ return { '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[tag] || tag; })
+        }
+
+
+        // ==========================================
+        // 🌐 ระบบสลับโหมดแปลภาษา (Header Switch)
+        // ==========================================
+        async function loadSystemConfig() {
+            try {
+                const doc = await db.collection('settings').doc('system_config').get();
+                if (doc.exists && doc.data().translateMode) {
+                    document.getElementById('admin-translate-mode').value = doc.data().translateMode;
+                }
+            } catch (error) { console.error("Error loading config:", error); }
+        }
+
+        async function saveTranslateMode() {
+            let mode = document.getElementById('admin-translate-mode').value;
+            try {
+                await db.collection('settings').doc('system_config').set({ 
+                    translateMode: mode,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'อัปเดตระบบแปลภาษาแล้ว', showConfirmButton: false, timer: 1500 });
+            } catch(e) {
+                Swal.fire('Error', e.message, 'error');
+            }
         }
 
     </script>

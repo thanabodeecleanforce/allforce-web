@@ -199,6 +199,127 @@
             min-width: 90px;
         }
     </style>
+
+    <script src="lang.js"></script>
+
+    <script>
+        window.currentLang = 'th';
+        window.translationMode = 'custom'; // ค่าเริ่มต้น
+
+        // 1. ฟังก์ชันเช็คตั้งค่าภาษาจากแอดมิน
+        async function initTranslationSystem() {
+            try {
+                if (typeof window.cf_db === 'undefined') return;
+                const doc = await window.cf_db.collection('settings').doc('system_config').get();
+                if (doc.exists && doc.data().translateMode) {
+                    window.translationMode = doc.data().translateMode;
+                }
+            } catch(e) { console.log("โหลดตั้งค่าภาษาไม่สำเร็จ ใช้ค่าเริ่มต้น"); }
+
+            // ถ้าแอดมินเลือกโหมด Google ค่อยเสกสคริปต์ขึ้นมา
+            if (window.translationMode === 'google') {
+                let div = document.createElement('div');
+                div.id = 'google_translate_element';
+                div.style.display = 'none';
+                document.body.appendChild(div);
+
+                window.googleTranslateElementInit = function() {
+                    new google.translate.TranslateElement({
+                        pageLanguage: 'th',
+                        includedLanguages: 'th,en,zh-CN,ru',
+                        autoDisplay: false
+                    }, 'google_translate_element');
+                };
+
+                let script = document.createElement('script');
+                script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+                document.body.appendChild(script);
+            }
+        }
+
+        // 2. ฟังก์ชันช่วยแปลคำจากฐานข้อมูล
+        function getDBText(textKey) {
+            if (!textKey) return '';
+            // ดึงจากตัวแปร window.cf_dbTranslations ที่อยู่ใน lang.js
+            if (window.cf_dbTranslations && window.cf_dbTranslations[textKey] && window.cf_dbTranslations[textKey][window.currentLang]) {
+                return window.cf_dbTranslations[textKey][window.currentLang];
+            }
+            return textKey;
+        }
+
+        // 3. เปลี่ยนคำใน Placeholder ของช่องกรอกข้อมูล
+        function updatePlaceholdersCustom(lang) {
+            if (typeof window.cf_sysAlerts !== 'undefined' && window.cf_sysAlerts[lang]) {
+                let alerts = window.cf_sysAlerts[lang];
+                let keyDetail = document.getElementById('bk-key-detail');
+                let nameFInput = document.getElementById('bk-fname');
+                let addressInput = document.getElementById('bk-houseNo');
+                let promoInput = document.getElementById('promo-code-input');
+                let noteInput = document.getElementById('bk-special-note');
+
+                if(keyDetail) keyDetail.placeholder = alerts.placeKey || '';
+                if(nameFInput) nameFInput.placeholder = alerts.placeName || '';
+                if(addressInput) addressInput.placeholder = alerts.placeAddress || '';
+                if(promoInput) promoInput.placeholder = alerts.placePromo || '';
+                if(noteInput) noteInput.placeholder = alerts.placeNote || '';
+            }
+        }
+
+        // 4. ฟังก์ชันหลักเวลากดปุ่ม 5 ภาษา
+        window.changeLanguage = function(lang) {
+            window.currentLang = lang;
+            
+            // เปลี่ยนสีปุ่มเมนู Desktop & Mobile
+            var activeClass = 'lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary';
+            var inactiveClass = 'lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary';
+            var activeMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold bg-primary text-white transition';
+            var inactiveMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition';
+            
+            ['mix','th','en','ch','ru'].forEach(function(l) {
+                var btn = document.getElementById('lang-' + l + '-cf');
+                if(btn) btn.className = (lang === l) ? activeClass : inactiveClass;
+                var btnMob = document.getElementById('lang-' + l + '-mobile');
+                if(btnMob) btnMob.className = (lang === l) ? activeMobClass : inactiveMobClass; 
+            });
+
+            // 🌟 แยกการทำงานตามโหมดที่แอดมินเลือก
+            if (window.translationMode === 'google') {
+                // โหมด 1: Google Translate
+                let googleLangCode = lang === 'ch' ? 'zh-CN' : (lang === 'mix' ? 'th' : lang);
+                let selectField = document.querySelector(".goog-te-combo");
+                if (selectField) {
+                    selectField.value = googleLangCode;
+                    selectField.dispatchEvent(new Event('change'));
+                } else {
+                    setTimeout(() => {
+                        let retrySelect = document.querySelector(".goog-te-combo");
+                        if (retrySelect) {
+                            retrySelect.value = googleLangCode;
+                            retrySelect.dispatchEvent(new Event('change'));
+                        }
+                    }, 1000);
+                }
+            } else {
+                // โหมด 2: ระบบทำมือ (ดึงจาก lang.js)
+                document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                    var key = el.getAttribute('data-i18n');
+                    if (window.cf_translations && window.cf_translations[lang] && window.cf_translations[lang][key]) {
+                        el.innerHTML = window.cf_translations[lang][key];
+                    }
+                });
+                updatePlaceholdersCustom(lang);
+                refreshDynamicData();
+            }
+        }
+
+        // รีเฟรชตะกร้าและข้อมูลจาก Firebase
+        function refreshDynamicData() {
+            if (typeof renderCategories === 'function') renderCategories();
+            if (typeof renderTypes === 'function' && typeof currentStep !== 'undefined' && currentStep === 2) renderTypes();
+            if (typeof renderAddons === 'function' && typeof currentStep !== 'undefined' && currentStep === 5) renderAddons();
+            if (typeof window.calculatePricing === 'function') window.calculatePricing();
+        }
+    </script>
 </head>
 <body class="bg-background text-text overflow-x-hidden">
     <style>
@@ -209,19 +330,6 @@
     .goog-tooltip:hover { display: none !important; }
     .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
 </style>
-
-<div id="google_translate_element"></div>
-
-<script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-      pageLanguage: 'th', 
-      includedLanguages: 'th,en,zh-CN,ru', // กำหนดภาษาที่รองรับ (ไทย, อังกฤษ, จีน, รัสเซีย)
-      autoDisplay: false
-  }, 'google_translate_element');
-}
-</script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
         <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
@@ -916,381 +1024,6 @@ function googleTranslateElementInit() {
         </a>
     </div>
 
-   <script>
-        var translations = {
-            mix: {
-                "nav-home": "หน้าแรก", "nav-about": "เกี่ยวกับเรา", "nav-services": "บริการ", "nav-portfolio": "ผลงาน", "nav-btn": "เลือกบริการ", "nav-contact": "ติดต่อเรา", "nav-feed": "ข่าวสาร", "nav-promo": "โปรโมชั่น",
-                "nav-login": "เข้าสู่ระบบ", "nav-login-mobile": "เข้าสู่ระบบ / สมัครสมาชิก", "about-5yrs": "5 ปี",
-                "hero-badge": "Trusted by 1000+ Customers", "hero-title": "คืนความสะอาด สดใส <br> ให้พื้นที่ของคุณ กับ <span class='text-primary'>Cleanforce</span>", "hero-sub": "บริการทำความสะอาดบ้าน คอนโด เฟอร์นิเจอร์ และพื้นที่องค์กร ขจัดคราบ กลิ่น และความสกปรกอย่างหมดจด ด้วยทีมงานมืออาชีพ",
-                "hero-feat1": "ทีมงานมืออาชีพ", "hero-feat1-sub": "ผ่านการฝึกอบรมมาตรฐาน", "hero-feat2": "น้ำยาปลอดภัย", "hero-feat2-sub": "เป็นมิตรต่อเด็กและสัตว์เลี้ยง", "hero-feat3": "รับประกันความพอใจ", "hero-feat3-sub": "ดูแลหลังการบริการ 24 ชม.",
-                "about-exp": "แห่งประสบการณ์", "about-text1": "Cleanforce เริ่มต้นด้วยความมุ่งมั่นที่จะยกระดับมาตรฐานความสะอาดในประเทศไทย เราเชื่อว่าสภาพแวดล้อมที่สะอาดคือพื้นฐานของความสุขและสุขภาพที่ดี", "about-text2": "เราคัดเลือกทีมงานอย่างพิถีพิถันและฝึกอบรมด้วยมาตรฐานสากล พร้อมนำเทคโนโลยีการทำความสะอาดที่ทันสมัยที่สุดมาใช้ เพื่อให้มั่นใจว่าลูกค้าของเราจะได้รับการบริการที่พรีเมียมและคุ้มค่าที่สุด", "about-check1": "ทีมงานตรวจสอบประวัติ", "about-check2": "น้ำยา Food Grade",
-                "feed-tag-promo": "Promotion", "feed-1-title": "ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%", "feed-1-desc": "โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้",
-                "feed-tag-news": "News", "feed-2-title": "บริการใหม่", "feed-2-desc": "ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที",
-                "feed-tag-act": "Activity", "feed-3-title": "ภาพบรรยากาศ Cleaning office", "feed-3-desc": "ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่", "feed-view-all": "ดูทั้งหมด",
-                "services-title": "บริการระดับมืออาชีพ", 
-                "portfolio-sub": "ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดพรีเมียมจากเรา", "btn-more-portfolio": "ดูรูปภาพผลงานทั้งหมด",
-                "contact-sub": "ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง", "contact-social-lbl": "ติดตามเรา",
-                "contact-address-lbl": "ที่ตั้ง", "contact-address-val": "32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000",
-                "footer-privacy": "Privacy Policy", "footer-terms": "Terms of Service", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "สอบถามผ่าน LINE",
-                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", 
-                "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
-                
-                // --- ส่วนที่เพิ่มใหม่สำหรับ Booking Wizard ---
-                "bk-main-title": "จองบริการทำความสะอาด", "bk-main-sub": "ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน",
-                "wiz-back": "กลับ",
-                "wiz-step1-title": "1. เลือกสถานที่ / หมวดหมู่บริการ",
-                "wiz-step2-title": "2. เลือกแพ็กเกจการทำความสะอาด",
-                "wiz-btn-next": "ดำเนินการต่อ", "wiz-btn-next-sum": "สรุปคำสั่งซื้อขั้นสุดท้าย",
-                "wiz-step3-title": "3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ", "wiz-step3-sub": "เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ",
-                "wiz-q1": "มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?", "wiz-q1-sub": "เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด",
-                "wiz-q2": "มีสัตว์เลี้ยงในบ้านหรือไม่?", "wiz-q2-sub": "เพื่อเตรียมอุปกรณ์เก็บขนสัตว์ และระมัดระวังการเปิด-ปิดประตู",
-                "wiz-q3": "จุดที่ต้องการให้เน้นเป็นพิเศษ (ถ้ามี)", "wiz-q3-sub": "เช่น 'เน้นขัดคราบกระจกห้องน้ำ' หรือ 'มีฝุ่นเยอะใต้เตียง'",
-                "btn-yes": "มี", "btn-no": "ไม่มี",
-                "wiz-step4-title": "4. วันนัดหมาย และ ข้อมูลลูกค้า",
-                "wiz-time-title": "เวลานัดหมาย", "wiz-date-lbl": "วันที่", "wiz-time-lbl": "เวลา",
-                "wiz-contact-title": "ข้อมูลผู้ติดต่อ", "wiz-addr-title": "ที่อยู่ (เฉพาะภูเก็ต)",
-                "wiz-gps-btn1": "ปักพิกัดปัจจุบัน", "wiz-gps-btn2": "วางลิงก์ Maps เอง",
-                "bk-key": "ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:",
-                "wiz-step5-title": "สรุปคำสั่งซื้อ", "wiz-step5-sub": "ตรวจสอบความถูกต้องก่อนยืนยัน",
-                "wiz-addon-title": "เพิ่มบริการเสริม รับส่วนลดพิเศษ!", "wiz-addon-sub": "เพิ่ม 1 ชิ้น รับส่วนลดรวม 5% ยิ่งเพิ่มยิ่งคุ้ม (ลดเพิ่ม 1% ทุกชิ้น)",
-                "sum-base": "บริการหลัก", "available-coupons": "คูปองโปรโมชั่นสำหรับคุณ",
-                "btn-book-now": "ยืนยันการจองผ่าน LINE",
-                
-                // --- ส่วนที่เพิ่มใหม่สำหรับ Float Cart & Modals ---
-                "cart-net": "ยอดชำระสุทธิ", "cart-orig": "ราคาเดิม",
-                "toast-title": "แจกโค้ดส่วนลด!", "toast-sub": "กดรับสิทธิพิเศษเลยตอนนี้",
-                "pc-modal-title": "ขั้นตอนสุดท้ายในการจองคิว", "pc-modal-sub": "เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ",
-                "pc-step1": "คัดลอกข้อความสรุปการจอง", "pc-step1-sub": "ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว", "pc-btn-copy": "คัดลอกข้อความ",
-                "pc-step2": "ส่งให้แอดมินทาง LINE", "pc-step2-sub": "คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่าง LINE แล้ว 'วางข้อความ' ส่งให้แอดมินได้เลยครับ", "pc-btn-line": "เปิด LINE เพื่อวางข้อความ",
-                "nav-brochure": "โบรชัวร์ 3D", "hero-btn-portfolio": "ดูผลงานของเรา", "hero-btn-brochure": "ดูแผ่นพับ 3D",
-                "feed-sub": "ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce",
-"client-badge": "Trusted by Partners",
-"client-title": "ลูกค้าที่ไว้วางใจเรา",
-"social-title": "ติดตามเราบนโซเชียลมีเดีย",
-"social-sub": "อัปเดตผลงาน โปรโมชั่น และเคล็ดลับการดูแลบ้านได้ทุกวัน",
-"desc-1": "Cleanforce บริการทำความสะอาดครบวงจร มาตรฐาน ALLFORCE GROUP",
-"desc-2": "แม่บ้านรายครั้ง/สัปดาห์/เดือน",
-"desc-3": "พร้อม Deep Clean ไอน้ำ ดูแลโซฟา ฟูก พรม ม่าน อย่างมืออาชีพ",
-"port-house": "ผลงานทำความสะอาดบ้าน / คอนโด",
-"port-furn": "ผลงานซักเฟอร์นิเจอร์",
-"modal-port-house": "หมวด: ทำความสะอาดบ้าน / คอนโด",
-"modal-port-furn": "หมวด: ซักเฟอร์นิเจอร์"
-            },
-            th: {
-                "nav-home": "หน้าแรก", "nav-about": "เกี่ยวกับเรา", "nav-services": "บริการ", "nav-portfolio": "ผลงาน", "nav-btn": "เลือกบริการ", "nav-contact": "ติดต่อเรา", "nav-feed": "ข่าวสาร", "nav-promo": "โปรโมชั่น",
-                "nav-login": "เข้าสู่ระบบ", "nav-login-mobile": "เข้าสู่ระบบ / สมัครสมาชิก", "about-5yrs": "5 ปี",
-                "hero-badge": "ได้รับความไว้วางใจจากลูกค้ากว่า 1000+ ราย", "hero-title": "คืนความสะอาด สดใส <br> ให้พื้นที่ของคุณ กับ <span class='text-primary'>คลีนฟอร์ซ</span>", "hero-sub": "บริการทำความสะอาดบ้าน คอนโด เฟอร์นิเจอร์ และพื้นที่องค์กร ขจัดคราบ กลิ่น และความสกปรกอย่างหมดจด ด้วยทีมงานมืออาชีพ",
-                "hero-feat1": "ทีมงานมืออาชีพ", "hero-feat1-sub": "ผ่านการฝึกอบรมมาตรฐาน", "hero-feat2": "น้ำยาปลอดภัย", "hero-feat2-sub": "เป็นมิตรต่อเด็กและสัตว์เลี้ยง", "hero-feat3": "รับประกันความพอใจ", "hero-feat3-sub": "ดูแลหลังการบริการ 24 ชม.",
-                "about-exp": "แห่งประสบการณ์", "about-text1": "คลีนฟอร์ซ เริ่มต้นด้วยความมุ่งมั่นที่จะยกระดับมาตรฐานความสะอาดในประเทศไทย เราเชื่อว่าสภาพแวดล้อมที่สะอาดคือพื้นฐานของความสุขและสุขภาพที่ดี", "about-text2": "เราคัดเลือกทีมงานอย่างพิถีพิถันและฝึกอบรมด้วยมาตรฐานระดับสากล พร้อมนำเทคโนโลยีการทำความสะอาดที่ทันสมัยที่สุดมาใช้ เพื่อให้มั่นใจว่าลูกค้าของเราจะได้รับการบริการที่ดีและคุ้มค่าที่สุด", "about-check1": "ทีมงานผ่านการตรวจสอบประวัติ", "about-check2": "น้ำยาทำความสะอาดระดับสัมผัสอาหารได้",
-                "feed-tag-promo": "โปรโมชั่น", "feed-1-title": "ฉลองเปิดสาขาใหม่! ลดจัดหนัก 15%", "feed-1-desc": "โปรโมชั่นสุดพิเศษ ทุกบริการ ลดทันที 15% เมื่อจองภายในเดือนนี้",
-                "feed-tag-news": "ข่าวสาร", "feed-2-title": "บริการใหม่", "feed-2-desc": "ทำความสะอาด หลังรีโนเวท พร้อมเข้าอยู่ทันที",
-                "feed-tag-act": "กิจกรรม", "feed-3-title": "ภาพบรรยากาศ Cleaning office", "feed-3-desc": "ทีมงาน Cleanforce เข้าทำการคลีนนิ่งสำนักงานใหญ่", "feed-view-all": "ดูทั้งหมด",
-                "services-title": "บริการของเรา", 
-                "portfolio-sub": "ความประทับใจจากลูกค้าที่เลือกใช้บริการทำความสะอาดระดับพรีเมียมจากเรา", "btn-more-portfolio": "ดูรูปภาพผลงานทั้งหมด",
-                "contact-sub": "ทีมงานแอดมินพร้อมตอบคำถามและให้บริการคุณทุกวัน หากมีข้อสงสัยเพิ่มเติมสามารถติดต่อได้ทุกช่องทาง", "contact-social-lbl": "ช่องทางการติดตาม",
-                "contact-address-lbl": "สถานที่ตั้ง", "contact-address-val": "32/151 หมู่บ้าน@ทาวน์2 ถนนพูนผล ซอย 1<br>ตำบลตลาดเหนือ อำเภอเมืองภูเก็ต จังหวัดภูเก็ต 83000",
-                "footer-privacy": "นโยบายความเป็นส่วนตัว", "footer-terms": "เงื่อนไขการใช้บริการ", "footer-copy": "© 2024 คลีนฟอร์ซ โปรเฟสชันนอล คลีนนิ่ง สงวนลิขสิทธิ์", "float-line": "สอบถามผ่านไลน์",
-                "promo-privilege": "สิทธิพิเศษและส่วนลดตอนนี้", 
-                "promo-input-label": "มีโค้ดส่วนลดหรือไม่? (Promo Code)", "promo-input-btn": "ใช้โค้ด",
-                
-                "bk-main-title": "จองบริการทำความสะอาด", "bk-main-sub": "ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน",
-                "wiz-back": "กลับ",
-                "wiz-step1-title": "1. เลือกสถานที่ / หมวดหมู่บริการ",
-                "wiz-step2-title": "2. เลือกแพ็กเกจการทำความสะอาด",
-                "wiz-btn-next": "ดำเนินการต่อ", "wiz-btn-next-sum": "สรุปคำสั่งซื้อขั้นสุดท้าย",
-                "wiz-step3-title": "3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ", "wiz-step3-sub": "เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ",
-                "wiz-q1": "มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?", "wiz-q1-sub": "เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด",
-                "wiz-q2": "มีสัตว์เลี้ยงในบ้านหรือไม่?", "wiz-q2-sub": "เพื่อเตรียมอุปกรณ์เก็บขนสัตว์ และระมัดระวังการเปิด-ปิดประตู",
-                "wiz-q3": "จุดที่ต้องการให้เน้นเป็นพิเศษ (ถ้ามี)", "wiz-q3-sub": "เช่น 'เน้นขัดคราบกระจกห้องน้ำ' หรือ 'มีฝุ่นเยอะใต้เตียง'",
-                "btn-yes": "มี", "btn-no": "ไม่มี",
-                "wiz-step4-title": "4. วันนัดหมาย และ ข้อมูลลูกค้า",
-                "wiz-time-title": "เวลานัดหมาย", "wiz-date-lbl": "วันที่", "wiz-time-lbl": "เวลา",
-                "wiz-contact-title": "ข้อมูลผู้ติดต่อ", "wiz-addr-title": "ที่อยู่ (เฉพาะภูเก็ต)",
-                "wiz-gps-btn1": "ปักพิกัดปัจจุบัน", "wiz-gps-btn2": "วางลิงก์ Maps เอง",
-                "bk-key": "ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:",
-                "wiz-step5-title": "สรุปคำสั่งซื้อ", "wiz-step5-sub": "ตรวจสอบความถูกต้องก่อนยืนยัน",
-                "wiz-addon-title": "เพิ่มบริการเสริม รับส่วนลดพิเศษ!", "wiz-addon-sub": "เพิ่ม 1 ชิ้น รับส่วนลดรวม 5% ยิ่งเพิ่มยิ่งคุ้ม (ลดเพิ่ม 1% ทุกชิ้น)",
-                "sum-base": "บริการหลัก", "available-coupons": "คูปองโปรโมชั่นสำหรับคุณ",
-                "btn-book-now": "ยืนยันการจองผ่านไลน์",
-                
-                "cart-net": "ยอดชำระสุทธิ", "cart-orig": "ราคาเดิม",
-                "toast-title": "แจกโค้ดส่วนลด!", "toast-sub": "กดรับสิทธิพิเศษเลยตอนนี้",
-                "pc-modal-title": "ขั้นตอนสุดท้ายในการจองคิว", "pc-modal-sub": "เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ",
-                "pc-step1": "คัดลอกข้อความสรุปการจอง", "pc-step1-sub": "ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว", "pc-btn-copy": "คัดลอกข้อความ",
-                "pc-step2": "ส่งให้แอดมินทางไลน์", "pc-step2-sub": "คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่างไลน์ แล้ว 'วางข้อความ' ส่งให้แอดมินได้เลยครับ", "pc-btn-line": "เปิดไลน์เพื่อวางข้อความ",
-                "nav-brochure": "โบรชัวร์ 3D", "hero-btn-portfolio": "ดูผลงานของเรา", "hero-btn-brochure": "ดูแผ่นพับ 3D",
-                "feed-sub": "ติดตามโปรโมชั่น กิจกรรม และอัปเดตล่าสุดจาก Cleanforce",
-"client-badge": "Trusted by Partners",
-"client-title": "ลูกค้าที่ไว้วางใจเรา",
-"social-title": "ติดตามเราบนโซเชียลมีเดีย",
-"social-sub": "อัปเดตผลงาน โปรโมชั่น และเคล็ดลับการดูแลบ้านได้ทุกวัน",
-"desc-1": "Cleanforce บริการทำความสะอาดครบวงจร มาตรฐาน ALLFORCE GROUP",
-"desc-2": "แม่บ้านรายครั้ง/สัปดาห์/เดือน",
-"desc-3": "พร้อม Deep Clean ไอน้ำ ดูแลโซฟา ฟูก พรม ม่าน อย่างมืออาชีพ",
-"port-house": "ผลงานทำความสะอาดบ้าน / คอนโด",
-"port-furn": "ผลงานซักเฟอร์นิเจอร์",
-"modal-port-house": "หมวด: ทำความสะอาดบ้าน / คอนโด",
-"modal-port-furn": "หมวด: ซักเฟอร์นิเจอร์"
-            },
-            en: {
-                "nav-home": "Home", "nav-about": "About", "nav-services": "Services", "nav-portfolio": "Portfolio", "nav-btn": "Book Now", "nav-contact": "Contact", "nav-feed": "News", "nav-promo": "Promotions",
-                "nav-login": "Login", "nav-login-mobile": "Login / Sign Up", "about-5yrs": "5 Years",
-                "hero-badge": "Trusted by 1000+ Customers", "hero-title": "Restore Cleanliness <br> to Your Space with <span class='text-primary'>Cleanforce</span>", "hero-sub": "Professional cleaning for homes, condos, furniture, and corporate spaces. We eliminate stains, odors, and dirt completely.",
-                "hero-feat1": "Professional Team", "hero-feat1-sub": "Standardized Training", "hero-feat2": "Safe Solutions", "hero-feat2-sub": "Child & Pet Friendly", "hero-feat3": "Satisfaction Guarantee", "hero-feat3-sub": "24/7 Customer Support",
-                "about-exp": "of Experience", "about-text1": "Cleanforce started with a commitment to elevate cleaning standards in Thailand. We believe a clean environment is the foundation of happiness and good health.", "about-text2": "We meticulously select our team and provide international standard training, utilizing the most advanced cleaning technology.", "about-check1": "Background-Checked Staff", "about-check2": "Food-Grade Chemicals",
-                "feed-tag-promo": "Promotion", "feed-1-title": "Grand Opening! 15% Off", "feed-1-desc": "Special promotion. 15% off all services when booked this month.",
-                "feed-tag-news": "News", "feed-2-title": "New Service", "feed-2-desc": "Post-renovation cleaning. Ready to move in.",
-                "feed-tag-act": "Activity", "feed-3-title": "Office Cleaning Vibes", "feed-3-desc": "Cleanforce team cleaning the headquarters.", "feed-view-all": "View All",
-                "services-title": "Our Professional Services", 
-                "portfolio-sub": "Impressions from customers who choose our premium cleaning services", "btn-more-portfolio": "View All Portfolio",
-                "contact-sub": "Our admin team is ready to answer questions and serve you every day. If you have any further questions, please contact us.", "contact-social-lbl": "Follow Us",
-                "contact-address-lbl": "Location", "contact-address-val": "32/151 @Town 2 Village, Poonphol Road, Soi 1,<br>Talat Nuea, Mueang Phuket, Phuket 83000",
-                "footer-privacy": "Privacy Policy", "footer-terms": "Terms of Service", "footer-copy": "© 2024 Cleanforce Professional Cleaning. All rights reserved.", "float-line": "Chat via LINE",
-                "promo-privilege": "Current Privileges & Discounts", 
-                "promo-input-label": "Have a Promo Code?", "promo-input-btn": "Apply",
-                
-                "bk-main-title": "Book Cleaning Service", "bk-main-sub": "Estimate price and book online instantly in 5 steps",
-                "wiz-back": "Back",
-                "wiz-step1-title": "1. Select Location / Category",
-                "wiz-step2-title": "2. Select Cleaning Package",
-                "wiz-btn-next": "Continue", "wiz-btn-next-sum": "Finalize Order Summary",
-                "wiz-step3-title": "3. Safety & Special Care Information", "wiz-step3-sub": "So our team can prepare the best and most suitable solutions for your home",
-                "wiz-q1": "Any children under 1 year old?", "wiz-q1-sub": "To select the most gentle and safe cleaning agents",
-                "wiz-q2": "Any pets in the house?", "wiz-q2-sub": "To prepare hair removal tools and carefully manage doors",
-                "wiz-q3": "Areas requiring special focus (Optional)", "wiz-q3-sub": "e.g., 'Focus on bathroom glass stains' or 'Dust under the bed'",
-                "btn-yes": "Yes", "btn-no": "No",
-                "wiz-step4-title": "4. Appointment Date & Customer Info",
-                "wiz-time-title": "Appointment Time", "wiz-date-lbl": "Date", "wiz-time-lbl": "Time",
-                "wiz-contact-title": "Contact Information", "wiz-addr-title": "Address (Phuket Only)",
-                "wiz-gps-btn1": "Pin Current Location", "wiz-gps-btn2": "Paste Maps Link",
-                "bk-key": "I won't be home, please get the key at:",
-                "wiz-step5-title": "Order Summary", "wiz-step5-sub": "Please verify before confirming",
-                "wiz-addon-title": "Add Services for Special Discounts!", "wiz-addon-sub": "Add 1 item, get 5% off. More items = more discounts (+1% per item)",
-                "sum-base": "Base Service", "available-coupons": "Promo Coupons for You",
-                "btn-book-now": "Confirm via LINE",
-                
-                "cart-net": "Net Total", "cart-orig": "Original Price",
-                "toast-title": "Discount Code Alert!", "toast-sub": "Claim your special privilege now",
-                "pc-modal-title": "Final Step for Booking", "pc-modal-sub": "Since you are on a PC, please follow these 2 steps",
-                "pc-step1": "Copy Booking Summary", "pc-step1-sub": "The system has prepared your order summary", "pc-btn-copy": "Copy Text",
-                "pc-step2": "Send to Admin via LINE", "pc-step2-sub": "Click the button below to open LINE and 'Paste' the text to our admin", "pc-btn-line": "Open LINE to Paste Text",
-                "nav-brochure": "3D Brochure", "hero-btn-portfolio": "View Portfolio", "hero-btn-brochure": "View 3D Brochure",
-                "feed-sub": "Follow promotions, activities, and the latest updates from Cleanforce",
-"client-badge": "Trusted by Partners",
-"client-title": "Clients Who Trust Us",
-"social-title": "Follow Us on Social Media",
-"social-sub": "Daily updates on our portfolio, promotions, and home care tips",
-"desc-1": "Cleanforce Comprehensive Cleaning Services, ALLFORCE GROUP Standard",
-"desc-2": "Maid service per time/week/month",
-"desc-3": "With professional Steam Deep Clean for sofas, mattresses, carpets, and curtains",
-"port-house": "House / Condo Portfolio",
-"port-furn": "Furniture Cleaning Portfolio",
-"modal-port-house": "Category: House / Condo",
-"modal-port-furn": "Category: Furniture Cleaning"
-            },
-            ch: {
-                "nav-home": "首页", "nav-about": "关于我们", "nav-services": "服务", "nav-portfolio": "作品展示", "nav-btn": "立即预约", "nav-contact": "联系我们", "nav-feed": "新闻动态", "nav-promo": "促销活动",
-                "nav-login": "登录", "nav-login-mobile": "登录 / 注册", "about-5yrs": "5 年",
-                "hero-badge": "超过 1000 名客户的信赖", "hero-title": "让您的空间 <br> 恢复洁净与明亮 <span class='text-primary'>Cleanforce</span>", "hero-sub": "提供房屋、公寓、家具和企业空间的专业清洁服务。我们彻底消除污渍、异味和污垢。",
-                "hero-feat1": "专业团队", "hero-feat1-sub": "经过标准化培训", "hero-feat2": "安全清洁剂", "hero-feat2-sub": "儿童与宠物友好", "hero-feat3": "满意保证", "hero-feat3-sub": "24小时售后服务",
-                "about-exp": "经验", "about-text1": "Cleanforce 致力于提升泰国的清洁标准。我们坚信，干净的环境是幸福与健康的基础。", "about-text2": "我们精心挑选团队并提供国际标准的培训，采用最先进的清洁技术，确保我们的客户获得最优质、最划算的服务。", "about-check1": "员工背景调查", "about-check2": "食品级清洁剂",
-                "feed-tag-promo": "促销活动", "feed-1-title": "新店开业！15% 大优惠", "feed-1-desc": "特别促销。本月预订所有服务立减 15%。",
-                "feed-tag-news": "新闻", "feed-2-title": "新服务", "feed-2-desc": "装修后清洁。随时可入住。",
-                "feed-tag-act": "活动", "feed-3-title": "办公室清洁氛围", "feed-3-desc": "Cleanforce 团队进入总部进行清洁。", "feed-view-all": "查看全部",
-                "services-title": "专业服务", 
-                "portfolio-sub": "选择我们高级清洁服务的客户所留下的深刻印象", "btn-more-portfolio": "查看所有作品",
-                "contact-sub": "我们的管理团队每天都准备好回答您的问题并为您提供服务。如果您有任何疑问，请通过任何渠道联系我们。", "contact-social-lbl": "关注我们",
-                "contact-address-lbl": "地址", "contact-address-val": "普吉府 普吉直辖县 Talat Nuea 区 Poonphol 路 1 巷 @Town2 村 32/151，邮编 83000",
-                "footer-privacy": "隐私政策", "footer-terms": "服务条款", "footer-copy": "© 2024 Cleanforce 专业清洁。保留所有权利。", "float-line": "通过 LINE 咨询",
-                "promo-privilege": "当前特权与折扣", 
-                "promo-input-label": "有优惠码吗？ (Promo Code)", "promo-input-btn": "应用",
-                
-                "bk-main-title": "预约清洁服务", "bk-main-sub": "只需 5 步，即可在线估价并立即预约",
-                "wiz-back": "返回",
-                "wiz-step1-title": "1. 选择地点 / 类别",
-                "wiz-step2-title": "2. 选择清洁套餐",
-                "wiz-btn-next": "继续", "wiz-btn-next-sum": "最终确认订单",
-                "wiz-step3-title": "3. 安全与特别护理信息", "wiz-step3-sub": "以便我们的团队为您准备最适合的清洁剂",
-                "wiz-q1": "家里有1岁以下的儿童吗？", "wiz-q1-sub": "为了选择最温和安全的清洁剂",
-                "wiz-q2": "家里有宠物吗？", "wiz-q2-sub": "以便准备除毛工具并小心开关门",
-                "wiz-q3": "需要特别关注的区域（选填）", "wiz-q3-sub": "例如：'重点清洁浴室玻璃污渍' 或 '床下灰尘多'",
-                "btn-yes": "有", "btn-no": "没有",
-                "wiz-step4-title": "4. 预约日期与客户信息",
-                "wiz-time-title": "预约时间", "wiz-date-lbl": "日期", "wiz-time-lbl": "时间",
-                "wiz-contact-title": "联系信息", "wiz-addr-title": "地址（仅限普吉岛）",
-                "wiz-gps-btn1": "定位当前位置", "wiz-gps-btn2": "粘贴地图链接",
-                "bk-key": "我不在家，请在以下地点取钥匙：",
-                "wiz-step5-title": "订单摘要", "wiz-step5-sub": "确认前请仔细核对",
-                "wiz-addon-title": "添加附加服务，享受特别折扣！", "wiz-addon-sub": "增加 1 项服务，享受 5% 折扣。项目越多折扣越大（每项额外 -1%）",
-                "sum-base": "基础服务", "available-coupons": "为您准备的优惠券",
-                "btn-book-now": "通过 LINE 确认",
-                
-                "cart-net": "实付总额", "cart-orig": "原价",
-                "toast-title": "折扣码提醒！", "toast-sub": "立即领取您的专属特权",
-                "pc-modal-title": "预约的最后一步", "pc-modal-sub": "由于您正在使用电脑，请按以下2个步骤操作",
-                "pc-step1": "复制订单摘要", "pc-step1-sub": "系统已为您准备好订单摘要文本", "pc-btn-copy": "复制文本",
-                "pc-step2": "通过 LINE 发送给客服", "pc-step2-sub": "点击下方按钮打开 LINE，将文本“粘贴”发送给我们的客服", "pc-btn-line": "打开 LINE 并粘贴文本",
-                "nav-brochure": "3D宣传册", "hero-btn-portfolio": "查看作品", "hero-btn-brochure": "查看3D宣传册",
-                "feed-sub": "关注 Cleanforce 的促销、活动和最新动态",
-"client-badge": "合作伙伴的信赖",
-"client-title": "信赖我们的客户",
-"social-title": "在社交媒体上关注我们",
-"social-sub": "每天更新作品展示、促销活动和家居保养提示",
-"desc-1": "Cleanforce 综合清洁服务，ALLFORCE GROUP 标准",
-"desc-2": "单次/每周/每月保洁服务",
-"desc-3": "提供专业的蒸汽深度清洁，护理沙发、床垫、地毯和窗帘",
-"port-house": "房屋 / 公寓清洁作品",
-"port-furn": "家具清洁作品",
-"modal-port-house": "类别：房屋 / 公寓清洁",
-"modal-port-furn": "类别：家具清洁"
-            },
-            ru: {
-                "nav-home": "Главная", "nav-about": "О нас", "nav-services": "Услуги", "nav-portfolio": "Портфолио", "nav-btn": "Забронировать", "nav-contact": "Контакты", "nav-feed": "Новости", "nav-promo": "Акции",
-                "nav-login": "Войти", "nav-login-mobile": "Войти / Регистрация", "about-5yrs": "5 Лет",
-                "hero-badge": "Нам доверяют более 1000 клиентов", "hero-title": "Верните чистоту и свежесть <br> вашему пространству с <span class='text-primary'>Cleanforce</span>", "hero-sub": "Профессиональная уборка домов, квартир, мебели и офисов. Мы полностью устраняем пятна, запахи и грязь.",
-                "hero-feat1": "Профессиональная команда", "hero-feat1-sub": "Стандартизированное обучение", "hero-feat2": "Безопасные средства", "hero-feat2-sub": "Безопасно для детей и животных", "hero-feat3": "Гарантия качества", "hero-feat3-sub": "Круглосуточная поддержка",
-                "about-exp": "опыта", "about-text1": "Cleanforce стремится повысить стандарты уборки в Таиланде. Мы верим, что чистая среда — это основа счастья и здоровья.", "about-text2": "Мы тщательно отбираем нашу команду и проводим обучение по международным стандартам, используя самые передовые технологии очистки.", "about-check1": "Проверка персонала", "about-check2": "Пищевые чистящие средства",
-                "feed-tag-promo": "Акция", "feed-1-title": "Открытие филиала! Скидка 15%", "feed-1-desc": "Специальная акция. Скидка 15% на все услуги при бронировании в этом месяце.",
-                "feed-tag-news": "Новости", "feed-2-title": "Новая услуга", "feed-2-desc": "Уборка после ремонта. Готово к заселению.",
-                "feed-tag-act": "Мероприятие", "feed-3-title": "Атмосфера уборки офиса", "feed-3-desc": "Команда Cleanforce проводит уборку в штаб-квартире.", "feed-view-all": "Смотреть всё",
-                "services-title": "Наши профессиональные услуги", 
-                "portfolio-sub": "Впечатления клиентов, выбравших наши услуги премиум-класса", "btn-more-portfolio": "Смотреть всё портфолио",
-                "contact-sub": "Наша команда готова ответить на ваши вопросы каждый день.", "contact-social-lbl": "Подписывайтесь",
-                "contact-address-lbl": "Адрес", "contact-address-val": "32/151 @Town2, ул. Poonphol, Сой 1,<br>Talat Nuea, Mueang Phuket, Пхукет 83000",
-                "footer-privacy": "Политика конфиденциальности", "footer-terms": "Условия использования", "footer-copy": "© 2024 Cleanforce Professional Cleaning. Все права защищены.", "float-line": "Задать вопрос в LINE",
-                "promo-privilege": "Текущие привилегии и скидки", 
-                "promo-input-label": "Есть промокод?", "promo-input-btn": "Применить",
-                
-                "bk-main-title": "Забронировать уборку", "bk-main-sub": "Оценка стоимости и бронирование онлайн за 5 шагов",
-                "wiz-back": "Назад",
-                "wiz-step1-title": "1. Выберите локацию / категорию",
-                "wiz-step2-title": "2. Выберите пакет уборки",
-                "wiz-btn-next": "Далее", "wiz-btn-next-sum": "Перейти к оплате",
-                "wiz-step3-title": "3. Безопасность и особый уход", "wiz-step3-sub": "Чтобы наша команда подготовила лучшие средства для вашего дома",
-                "wiz-q1": "Есть ли дети до 1 года?", "wiz-q1-sub": "Для выбора наиболее щадящих средств",
-                "wiz-q2": "Есть ли домашние животные?", "wiz-q2-sub": "Для подготовки средств от шерсти",
-                "wiz-q3": "Особые пожелания (необязательно)", "wiz-q3-sub": "Например: 'Уделите внимание стеклам в ванной'",
-                "btn-yes": "Да", "btn-no": "Нет",
-                "wiz-step4-title": "4. Дата и Контакты",
-                "wiz-time-title": "Время визита", "wiz-date-lbl": "Дата", "wiz-time-lbl": "Время",
-                "wiz-contact-title": "Контактная информация", "wiz-addr-title": "Адрес (Только Пхукет)",
-                "wiz-gps-btn1": "Определить местоположение", "wiz-gps-btn2": "Вставить ссылку на карту",
-                "bk-key": "Меня не будет дома, ключи можно взять здесь:",
-                "wiz-step5-title": "Сводка заказа", "wiz-step5-sub": "Пожалуйста, проверьте перед подтверждением",
-                "wiz-addon-title": "Добавьте услуги и получите скидку!", "wiz-addon-sub": "1 услуга = скидка 5%. Больше услуг = больше скидка (+1% за каждую)",
-                "sum-base": "Базовая услуга", "available-coupons": "Доступные промокоды",
-                "btn-book-now": "Подтвердить через LINE",
-                
-                "cart-net": "Итого к оплате", "cart-orig": "Старая цена",
-                "toast-title": "Скидочный купон!", "toast-sub": "Получите привилегию прямо сейчас",
-                "pc-modal-title": "Последний шаг бронирования", "pc-modal-sub": "Поскольку вы используете ПК, выполните эти 2 шага",
-                "pc-step1": "Скопируйте детали заказа", "pc-step1-sub": "Система подготовила текст вашего заказа", "pc-btn-copy": "Скопировать текст",
-                "pc-step2": "Отправьте администратору в LINE", "pc-step2-sub": "Нажмите кнопку ниже, чтобы открыть LINE и вставить текст", "pc-btn-line": "Открыть LINE и вставить",
-                "nav-brochure": "3D Брошюра", "hero-btn-portfolio": "Смотреть портфолио", "hero-btn-brochure": "Смотреть 3D Брошюру",
-                "feed-sub": "Следите за акциями, мероприятиями и последними новостями от Cleanforce",
-"client-badge": "Доверие партнеров",
-"client-title": "Клиенты, которые нам доверяют",
-"social-title": "Следите за нами в соцсетях",
-"social-sub": "Ежедневные обновления портфолио, акций и советов по уходу за домом",
-"desc-1": "Комплексные клининговые услуги Cleanforce, стандарт ALLFORCE GROUP",
-"desc-2": "Услуги горничной разово/в неделю/в месяц",
-"desc-3": "С профессиональной глубокой очисткой паром для диванов, матрасов, ковров и штор",
-"port-house": "Портфолио: Дом / Кондо",
-"port-furn": "Портфолио: Чистка мебели",
-"modal-port-house": "Категория: Уборка дома / кондо",
-"modal-port-furn": "Категория: Чистка мебели"
-            }
-        };
-
-        var sysAlerts = {
-            mix: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ...", placeKey: "ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ", placeName: "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท", placeAddress: "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด", placePromo: "พิมพ์โค้ด เช่น PHUKET10", placeNote: "พิมพ์ข้อความที่นี่... (ไม่บังคับ)" },
-            th: { errInput: "กรุณากรอกข้อมูลให้ครบถ้วนครับ", errKey: "โปรดระบุสถานที่รับกุญแจครับ", success: "บันทึกข้อมูลสำเร็จ! ระบบกำลังพาท่านไปยัง LINE", errLocation: "ไม่สามารถดึงพิกัดได้", promoYes: "✅ ยินดีด้วย! ใช้โค้ดส่วนลดสำเร็จ", promoNo: "❌ โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว", gpsSuccess: "รับพิกัดสำเร็จ!", gpsLoading: "กำลังค้นหาตำแหน่งของคุณ...", placeKey: "ตู้จดหมาย, แผนกต้อนรับ, รปภ. หรืออื่นๆ โปรดระบุ", placeName: "ระบุชื่อผู้ติดต่อ หรือ ชื่อบริษัท", placeAddress: "ระบุสถานที่ที่ต้องการให้เข้าไปทำความสะอาด", placePromo: "พิมพ์โค้ด เช่น PHUKET10", placeNote: "พิมพ์ข้อความที่นี่... (ไม่บังคับ)" },
-            en: { errInput: "Please complete all required fields.", errKey: "Please specify key drop-off location.", success: "Booking successful! Redirecting to LINE...", errLocation: "Unable to retrieve location.", promoYes: "✅ Success! Discount applied.", promoNo: "❌ Invalid or expired promo code.", gpsSuccess: "Location pinned successfully!", gpsLoading: "Finding your location...", placeKey: "Mailbox, Reception, Security Guard, etc.", placeName: "Contact Name or Company Name", placeAddress: "Specify the exact location to be cleaned", placePromo: "Enter code e.g. PHUKET10", placeNote: "Type your message here... (Optional)" },
-            ch: { errInput: "请填写所有必填信息", errKey: "请说明钥匙的放置位置", success: "预约成功！正在跳转至 LINE...", errLocation: "无法获取位置信息", promoYes: "✅ 成功！已应用折扣。", promoNo: "❌ 优惠码无效或已过期。", gpsSuccess: "成功获取位置！", gpsLoading: "正在获取您的位置...", placeKey: "信箱、前台、保安等，请注明", placeName: "联系人姓名或公司名称", placeAddress: "请详细说明需要清洁的地点", placePromo: "输入代码 例如 PHUKET10", placeNote: "在此输入您的留言... (选填)" },
-            ru: { errInput: "Пожалуйста, заполните все обязательные поля.", errKey: "Пожалуйста, укажите место для ключей.", success: "Бронирование успешно! Переход в LINE...", errLocation: "Не удалось получить местоположение.", promoYes: "✅ Успешно! Скидка применена.", promoNo: "❌ Недействительный или просроченный промокод.", gpsSuccess: "Местоположение успешно определено!", gpsLoading: "Поиск вашего местоположения...", placeKey: "Почтовый ящик, ресепшн, охрана и т.д.", placeName: "Имя контакта или название компании", placeAddress: "Укажите точный адрес для уборки", placePromo: "Введите код, напр. PHUKET10", placeNote: "Введите сообщение здесь... (Необязательно)" }
-        };
-
-        window.currentLang = 'th';
-
-        // 🌟 พจนานุกรมสำหรับแปลข้อมูลที่ดึงมาจาก Firebase
-        var dbTranslations = {
-            // หมวดหมู่บริการ
-            "cat-house_single": { mix: "บ้านเดี่ยว", th: "บ้านเดี่ยว", en: "House", ch: "别墅", ru: "Дом" },
-            "cat-condo": { mix: "คอนโด", th: "คอนโด", en: "Condo", ch: "公寓", ru: "Кондо" },
-            "cat-villa": { mix: "วิลล่า", th: "วิลล่า", en: "Villa", ch: "豪华别墅", ru: "Вилла" },
-            "cat-furniture": { mix: "เฟอร์นิเจอร์", th: "เฟอร์นิเจอร์", en: "Furniture", ch: "家具", ru: "Мебель" },
-            "cat-membership": { mix: "สมัครสมาชิก", th: "สมัครสมาชิก", en: "Membership", ch: "会员", ru: "Членство" },
-            
-            // คำทั่วไปในระบบตะกร้า
-            "จัดแพ็กเกจด้วยตนเอง": { mix: "จัดแพ็กเกจด้วยตนเอง", th: "จัดแพ็กเกจด้วยตนเอง", en: "Custom Package", ch: "自定义套餐", ru: "Свой пакет" },
-            "ระบุจำนวนที่ต้องการ": { mix: "ระบุจำนวนที่ต้องการ", th: "ระบุจำนวนที่ต้องการ", en: "Specify quantity", ch: "指定数量", ru: "Укажите количество" },
-            "เริ่มต้น": { mix: "เริ่มต้น", th: "เริ่มต้น", en: "Starts at", ch: "起步价", ru: "От" },
-            "เพิ่ม": { mix: "เพิ่ม", th: "เพิ่ม", en: "Add", ch: "添加", ru: "Добавить" },
-            "จำนวน": { mix: "จำนวน", th: "จำนวน", en: "Qty", ch: "数量", ru: "Кол-во" },
-
-            "ทำความสะอาดตู้เย็น": { mix: "ทำความสะอาดตู้เย็น", th: "ทำความสะอาดตู้เย็น", en: "Clean Refrigerator", ch: "清洁冰箱", ru: "Мытье холодильника" }
-        };
-
-        // ฟังก์ชันช่วยแปลคำจาก Firebase
-        function getDBText(textKey) {
-            if (!textKey) return '';
-            if (dbTranslations[textKey] && dbTranslations[textKey][window.currentLang]) {
-                return dbTranslations[textKey][window.currentLang];
-            }
-            return textKey; // ถ้าหาคำแปลไม่เจอ ให้คืนค่าคำเดิมจาก Firebase กลับไป
-        }
-
-        window.changeLanguage = function(lang) {
-            window.currentLang = lang;
-            var activeClass = 'lang-btn px-3 py-1.5 rounded-full transition bg-white shadow-sm text-primary';
-            var inactiveClass = 'lang-btn px-3 py-1.5 rounded-full transition text-gray-500 hover:text-primary';
-            
-            // อัปเดตปุ่มภาษาบน Desktop
-            ['mix','th','en','ch','ru'].forEach(function(l) {
-                var btn = document.getElementById('lang-' + l + '-cf');
-                if(btn) btn.className = (lang === l) ? activeClass : inactiveClass;
-            });
-            
-            // อัปเดตปุ่มภาษาบน Mobile
-            var activeMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold bg-primary text-white transition';
-            var inactiveMobClass = 'lang-btn-mobile px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-gray-500 hover:bg-primary hover:text-white transition';
-            ['mix','th','en','ch','ru'].forEach(function(l) {
-                var btnMob = document.getElementById('lang-' + l + '-mobile');
-                if(btnMob) btnMob.className = (lang === l) ? activeMobClass : inactiveMobClass;
-            });
-            
-            // แปลข้อความที่มี attribute data-i18n
-            document.querySelectorAll('[data-i18n]').forEach(function(el) {
-                var key = el.getAttribute('data-i18n');
-                if (translations && translations[lang] && translations[lang][key]) {
-                    el.innerHTML = translations[lang][key];
-                }
-            });
-
-            // เปลี่ยนข้อความ Placeholder ต่างๆ ดึงจาก sysAlerts อัตโนมัติ
-            var keyDetail = document.getElementById('bk-key-detail');
-            var nameFInput = document.getElementById('bk-fname');
-            var addressInput = document.getElementById('bk-houseNo');
-            var promoInput = document.getElementById('promo-code-input');
-            var noteInput = document.getElementById('bk-special-note');
-
-            if(keyDetail) keyDetail.placeholder = sysAlerts[lang].placeKey;
-            if(nameFInput) nameFInput.placeholder = sysAlerts[lang].placeName;
-            if(addressInput) addressInput.placeholder = sysAlerts[lang].placeAddress;
-            if(promoInput) promoInput.placeholder = sysAlerts[lang].placePromo;
-            if(noteInput) noteInput.placeholder = sysAlerts[lang].placeNote;
-            // รีเฟรชส่วนที่ต้องคำนวณและดึงข้อมูลจาก Firebase ใหม่ทั้งหมด
-            if (typeof renderCategories === 'function') renderCategories();
-            if (typeof renderTypes === 'function' && currentStep === 2) renderTypes();
-            if (typeof renderAddons === 'function' && currentStep === 5) renderAddons();
-            if (typeof window.calculatePricing === 'function') window.calculatePricing();
-
-            // รีเฟรชส่วนที่ต้องคำนวณใหม่
-            if (typeof window.calculatePricing === 'function') {
-                window.calculatePricing();
-            }
-        }
-    </script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -2463,6 +2196,7 @@ function googleTranslateElementInit() {
             
             // 3. รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
             setTimeout(() => {
+                initTranslationSystem();
                 loadPublicCoupons(); // โหลดคูปองโชว์ให้ลูกค้าทันที
                 loadDynamicServices();
                 loadSocialProfile();
