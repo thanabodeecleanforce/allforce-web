@@ -201,6 +201,27 @@
     </style>
 </head>
 <body class="bg-background text-text overflow-x-hidden">
+    <style>
+    #google_translate_element { display: none; }
+    .goog-te-banner-frame { display: none !important; }
+    body { top: 0 !important; }
+    .goog-tooltip { display: none !important; }
+    .goog-tooltip:hover { display: none !important; }
+    .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+</style>
+
+<div id="google_translate_element"></div>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+      pageLanguage: 'th', 
+      includedLanguages: 'th,en,zh-CN,ru', // กำหนดภาษาที่รองรับ (ไทย, อังกฤษ, จีน, รัสเซีย)
+      autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <header class="fixed w-full z-50 top-0 header-bg border-b border-gray-100 shadow-sm">
         <div class="w-full px-6 md:px-12 lg:px-20 h-20 flex justify-between items-center relative z-10">
@@ -859,7 +880,7 @@
 <p class="text-xs text-gray-500 mb-2" data-i18n="pc-step1-sub">ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว</p>
                         <textarea id="pc-booking-summary" rows="3" class="w-full text-[10px] p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none resize-none" readonly></textarea>
                         <button onclick="copyBookingSummary()" class="mt-2 w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition flex items-center justify-center gap-2">
-                            <i data-i18n="pc-btn-copy"><i class="fa-regular fa-copy"></i> คัดลอกข้อความ</button>
+                            <i class="fa-regular fa-copy"></i> <span data-i18n="pc-btn-copy">คัดลอกข้อความ</span>
                         </button>
                     </div>
                 </div>
@@ -870,7 +891,7 @@
                         <h4 class="font-bold text-gray-800 text-sm mb-1" data-i18n="pc-step2">ส่งให้แอดมินทาง LINE</h4>
                         <p class="text-xs text-gray-500 mb-3">คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่าง LINE แล้ว "วางข้อความ" ส่งให้แอดมินได้เลยครับ</p>
                         <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="w-full py-3 bg-[#00B900] text-white text-sm font-bold rounded-xl hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-md">
-                            <i data-i18n="pc-btn-line"><i class="fa-brands fa-line text-xl"></i> เปิด LINE เพื่อวางข้อความ</button>
+                          <i class="fa-brands fa-line text-xl"></i> <span data-i18n="pc-btn-line">เปิด LINE เพื่อวางข้อความ</span>
                         </a>
                     </div>
                 </div>
@@ -888,7 +909,7 @@
         <p class="text-gray-400 text-[10px] md:text-xs font-medium" data-i18n="footer-copy">© 2024 Cleanforce Professional Cleaning. All rights reserved.</p>
     </footer>
 
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
+   <div class="fixed bottom-24 right-6 z-[110] flex flex-col gap-4">
         <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="bg-[#00B900] text-white w-14 h-14 rounded-full font-bold shadow-2xl hover:scale-110 transition-transform flex items-center justify-center text-3xl relative group">
             <i class="fa-brands fa-line"></i>
             <span class="absolute right-16 bg-gray-800 text-white text-[10px] px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none" data-i18n="float-line">สอบถามผ่าน LINE</span>
