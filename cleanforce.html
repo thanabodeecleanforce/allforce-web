@@ -778,9 +778,22 @@
 
                 <div id="step-2" class="step-section hidden space-y-6">
                     <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step2-title">2. เลือกแพ็กเกจการทำความสะอาด</h2>
+                    
+                    <div class="system-promo-banner hidden bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-xl p-3 shadow-sm animate-pulse">
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-fire text-orange-500 mt-0.5"></i>
+                            <div>
+                                <p class="text-xs font-bold text-orange-700">🔥 โปรโมชั่นพิเศษตอนนี้!</p>
+                                <p class="system-promo-text text-[10px] md:text-xs text-orange-600 mt-0.5"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="ui-types" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    <button onclick="changeStep(1)" id="btn-next-2" disabled class="w-full bg-primary disabled:bg-gray-300 text-white p-4 rounded-xl font-bold mt-6 shadow-sm transition-all"data-i18n="wiz-btn-next">ดำเนินการต่อ</button>
+                    <button onclick="changeStep(1)" id="btn-next-2" disabled class="w-full bg-primary disabled:bg-gray-300 text-white p-4 rounded-xl font-bold mt-6 shadow-sm transition-all" data-i18n="wiz-btn-next">ดำเนินการต่อ</button>
                 </div>
+
+                    
 
                 <div id="step-3" class="step-section hidden space-y-6">
                     <div class="mb-2">
@@ -817,63 +830,63 @@
                 </div>
 
                 <div id="step-4" class="step-section hidden space-y-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]">4. วันนัดหมาย และ ข้อมูลลูกค้า</h2>
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
-                        <h3 class="font-bold text-gray-800 border-b pb-2 text-sm"><i class="fa-solid fa-calendar-check text-primary mr-1"></i>เวลานัดหมาย</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">วันที่</label><input type="date" id="bk-date" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-bold text-gray-700"></div>
-                            <div><label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">เวลา</label>
-                                <select id="bk-time" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-bold text-gray-700">
-                                    <option value="09:00">09:00 น.</option><option value="10:00">10:00 น.</option><option value="13:00">13:00 น.</option><option value="14:00">14:00 น.</option>
-                                </select>
+                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]">ระบุวันเวลาและสถานที่</h2>
+                    
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 border-b border-gray-100">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">วันที่ต้องการจอง <span class="text-red-500">*</span></label>
+                                <input type="date" id="bk-date" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">เวลาที่สะดวก <span class="text-red-500">*</span></label>
+                                <input type="time" id="bk-time" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
+                                <input type="text" id="bk-fname" placeholder="ชื่อผู้ติดต่อ" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
+                                <input type="tel" id="bk-phone" placeholder="08X-XXX-XXXX" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
-                        <h3 class="font-bold text-gray-800 border-b pb-2 text-sm"><i class="fa-solid fa-circle-user text-primary mr-1"></i>ข้อมูลผู้ติดต่อ</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="bk-fname" placeholder="ชื่อ" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm">
-                            <input type="text" id="bk-lname" placeholder="นามสกุล" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm">
-                            <input type="tel" id="bk-phone" placeholder="เบอร์โทรศัพท์" class="col-span-2 w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm">
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
-                        <h3 class="font-bold text-gray-800 border-b pb-2 text-sm"><i class="fa-solid fa-location-dot text-primary mr-1"></i>ที่อยู่ (เฉพาะภูเก็ต)</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="bk-houseNo" placeholder="บ้านเลขที่ / ชื่อหมู่บ้าน" class="col-span-2 w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm">
-                            <input type="text" id="bk-soi" placeholder="ซอย" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm">
-                            <input type="text" id="bk-road" placeholder="ถนน" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm">
-                            <select id="bk-amphoe" onchange="updateTambon()" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none font-bold text-gray-600 text-sm">
-                                <option value="">-- เลือกอำเภอ --</option>
-                                <option value="เมืองภูเก็ต">เมืองภูเก็ต</option><option value="กะทู้">กะทู้</option><option value="ถลาง">ถลาง</option>
-                            </select>
-                            <select id="bk-tambon" disabled class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none font-bold text-gray-600 text-sm disabled:opacity-50">
-                                <option value="">-- เลือกตำบล --</option>
-                            </select>
-                        </div>
-                        <div class="pt-4 border-t border-gray-100">
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <button onclick="getLocation()" class="flex-1 bg-blue-50 text-primary border border-blue-200 py-2.5 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-primary hover:text-white transition-colors text-xs">
-                                    <i class="fa-solid fa-location-crosshairs"></i> ปักพิกัดปัจจุบัน
-                                </button>
-                                <button onclick="document.getElementById('bk-gps').classList.toggle('hidden')" class="flex-1 bg-gray-50 text-gray-600 border border-gray-200 py-2.5 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-gray-100 transition-colors text-xs">
-                                    <i class="fa-solid fa-map"></i> วางลิงก์ Maps เอง
-                                </button>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">ค้นหาชื่อโครงการ / คอนโด / วิลล่า</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-location-dot absolute left-3.5 top-3.5 text-red-500"></i>
+                                <input type="text" id="bk-smart-search" placeholder="พิมพ์ชื่อสถานที่เพื่อปักหมุดบนแผนที่..." class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:border-primary focus:bg-white transition-colors">
                             </div>
-                            <input type="text" id="bk-gps" placeholder="วางลิงก์ Google Maps ที่นี่" class="hidden w-full mt-3 p-3 bg-white border border-gray-200 rounded-lg outline-none focus:border-primary text-xs">
-                            <p id="location-status" class="text-[10px] font-bold text-green-600 mt-2 hidden"></p>
+                            
+                            <div id="map-container" class="w-full h-48 bg-blue-50 border border-blue-100 rounded-xl mt-3 flex flex-col items-center justify-center text-primary overflow-hidden relative">
+                                <i class="fa-solid fa-map-location-dot text-4xl mb-2"></i>
+                                <span class="text-xs font-bold">กำลังโหลดแผนที่...</span>
+                            </div>
                         </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">บ้านเลขที่ / ห้อง <span class="text-red-500">*</span></label>
+                                <input type="text" id="bk-houseNo" placeholder="เช่น 123/45" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">จุดสังเกตเพิ่มเติม (ถ้ามี)</label>
+                                <input type="text" id="bk-landmark" placeholder="เช่น ซอยหลังโลตัส, บ้านประตูสีฟ้า" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="bk-tambon">
+                        <input type="hidden" id="bk-amphoe">
+                        <input type="hidden" id="bk-province" value="ภูเก็ต">
+                        <input type="hidden" id="bk-lat">
+                        <input type="hidden" id="bk-lng">
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-3 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <input type="checkbox" id="bk-key-drop" class="w-5 h-5 text-primary rounded focus:ring-primary" onchange="document.getElementById('key-detail-wrapper').classList.toggle('hidden', !this.checked)">
-                            <label for="bk-key-drop" class="text-sm font-bold text-gray-600 cursor-pointer" data-i18n="bk-key">ฉันไม่อยู่บ้าน โปรดรับกุญแจที่:</label>
-                        </div>
-                        <div id="key-detail-wrapper" class="hidden pl-8">
-                            <input type="text" id="bk-key-detail" placeholder="ตู้จดหมาย, รปภ., ซ่อนใต้กระถางต้นไม้ ฯลฯ" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs focus:ring-primary focus:border-primary outline-none">
-                        </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="changeStep(-1)" class="w-1/3 bg-gray-100 text-gray-600 p-4 rounded-xl font-bold hover:bg-gray-200 transition">กลับ</button>
+                        <button onclick="changeStep(1)" class="w-2/3 bg-primary text-white p-4 rounded-xl font-bold shadow-sm hover:bg-blue-600 transition">ดำเนินการต่อ</button>
                     </div>
-                    <button onclick="changeStep(1)" class="w-full bg-primary text-white p-4 rounded-xl font-bold shadow-sm mt-6">สรุปคำสั่งซื้อขั้นสุดท้าย</button>
                 </div>
 
                 <div id="step-5" class="step-section hidden space-y-6">
@@ -883,24 +896,28 @@
                        <i class="fa-solid fa-circle-check absolute -right-4 -bottom-4 text-blue-800/40 text-8xl"></i>
                     </div>
 
-                    <div id="system-promo-banner" class="hidden bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-xl p-3 mb-4 shadow-sm animate-pulse">
-    <div class="flex items-start gap-2">
-        <i class="fa-solid fa-fire text-orange-500 mt-0.5"></i>
-        <div>
-            <p class="text-xs font-bold text-orange-700">🔥 โปรโมชั่นพิเศษตอนนี้!</p>
-            <p class="text-[10px] text-orange-600 mt-0.5" id="system-promo-text">ยิ่งสั่งเพิ่ม ยิ่งลดเพิ่ม (ระบบจะคำนวณส่วนลดให้อัตโนมัติด้านล่าง)</p>
-        </div>
-    </div>
-</div>
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-xl p-3 mb-4 shadow-sm relative overflow-hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-orange-100 text-orange-500 w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-fire text-xl animate-bounce"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-orange-700">รับส่วนลด 15% ทันทีเมื่อรีวิวให้เรา | จองเพิ่มหรือจองต่อเนื่อง ลดสูงสุด 30%</p>
+                            </div>
+                            <button onclick="jumpToStep(2)" class="shrink-0 bg-white border border-orange-300 text-orange-600 text-[10px] font-bold px-3 py-2 rounded-lg shadow-sm hover:bg-orange-50 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">ซื้อเพิ่ม</span>
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 text-sm shadow-sm">
                         <div class="flex justify-between border-b border-gray-100 pb-3">
-                            <span class="text-gray-500 font-bold text-xs uppercase">บริการหลัก</span>
+                            <span class="text-gray-500 font-bold text-xs">บริการหลัก</span>
                             <span class="font-bold text-gray-800" id="sum-type-name">-</span>
                         </div>
                         
                         <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-600 space-y-2 mt-3 mb-3 border border-gray-100">
-                            <div class="flex justify-between items-center"><span><i class="fa-solid fa-baby text-primary w-4"></i> เด็กเล็ก (<1ขวบ):</span> <span id="sum-kids" class="font-bold text-gray-800">-</span></div>
+                            <div class="flex justify-between items-center"><span><i class="fa-solid fa-baby text-primary w-4"></i> เด็กเล็ก:</span> <span id="sum-kids" class="font-bold text-gray-800">-</span></div>
                             <div class="flex justify-between items-center"><span><i class="fa-solid fa-paw text-primary w-4"></i> สัตว์เลี้ยง:</span> <span id="sum-pets" class="font-bold text-gray-800">-</span></div>
                             <div class="flex flex-col gap-1 mt-2 pt-2 border-t border-gray-200">
                                 <span class="text-[10px]"><i class="fa-solid fa-comment-dots text-primary w-4"></i> เน้นพิเศษ:</span>
@@ -910,34 +927,44 @@
 
                         <div id="sum-addons-container"></div>
                         <div id="sum-discount-container"></div>
+
+                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 mt-3 flex items-start gap-3 cursor-pointer" onclick="document.getElementById('bk-review-discount').click()">
+                            <input type="checkbox" id="bk-review-discount" checked onchange="calculatePricing()" class="w-5 h-5 mt-0.5 text-green-600 rounded focus:ring-green-500 cursor-pointer pointer-events-none">
+                            <div class="flex-1">
+                                <p class="font-bold text-green-800 text-sm">ฉันยินดีส่งรีวิวการบริการเพื่อรับส่วนลด 15%</p>
+                                <p class="text-[10px] text-green-600">ลดราคาแยกชิ้นทันทีในบิลนี้</p>
+                            </div>
+                        </div>
                         
                         <div id="available-coupons-container" class="mb-2 hidden">
-                            <h4 class="text-[11px] font-bold text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-gift text-pink-500"></i> <span data-i18n="available-coupons">คูปองโปรโมชั่นสำหรับคุณ</span></h4>
-                            <div id="available-coupons-list" class="flex gap-3 overflow-x-auto pb-2 hide-scroll">
-                                </div>
+                            <h4 class="text-[11px] font-bold text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-gift text-pink-500"></i> คูปองโปรโมชั่นสำหรับคุณ</h4>
+                            <div id="available-coupons-list" class="flex gap-3 overflow-x-auto pb-2 hide-scroll"></div>
                         </div>
 
                         <div id="public-coupons-container" class="hidden mb-4">
-    <p class="text-xs font-bold text-[#000080] mb-2"><i class="fa-solid fa-tags text-primary mr-1"></i> โค้ดส่วนลดที่ใช้ได้</p>
-    <div class="flex gap-3 overflow-x-auto pb-2 hide-scroll" id="public-coupons-list">
-        </div>
-</div>
+                            <p class="text-xs font-bold text-[#000080] mb-2"><i class="fa-solid fa-tags text-primary mr-1"></i> โค้ดส่วนลดที่ใช้ได้</p>
+                            <div class="flex gap-3 overflow-x-auto pb-2 hide-scroll" id="public-coupons-list"></div>
+                        </div>
 
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 mt-4 shadow-sm">
-                            <label class="block text-xs font-bold text-[#000080] mb-2" data-i18n="promo-input-label">มีโค้ดส่วนลดหรือไม่? (Promo Code)</label>
+                            <label class="block text-xs font-bold text-[#000080] mb-2">รหัสส่วนลดเพิ่มเติม</label>
                             <div class="flex gap-2">
-                                <input type="text" id="promo-code-input" class="flex-1 bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:border-primary outline-none uppercase font-mono font-bold text-primary" placeholder="กรอกรหัสส่วนลดที่นี่...">
-                                <button type="button" id="btn-apply-promo" onclick="applyPromoCode()" class="bg-[#000080] text-white px-5 rounded-lg text-xs font-bold hover:bg-blue-800 transition shadow-sm whitespace-nowrap min-w-[80px]" data-i18n="promo-input-btn">ใช้โค้ด</button>
+                                <input type="text" id="promo-code-input" class="flex-1 bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:border-primary outline-none uppercase font-bold text-primary" placeholder="กรอกรหัสส่วนลดที่นี่...">
+                                <button type="button" id="btn-apply-promo" onclick="applyPromoCode()" class="bg-[#000080] text-white px-5 rounded-lg text-xs font-bold hover:bg-blue-800 transition shadow-sm whitespace-nowrap min-w-[80px]">ใช้โค้ด</button>
                                 <button onclick="clearCoupon()" id="btn-clear-coupon" class="hidden text-red-500 underline text-sm ml-2">ยกเลิก</button>
                             </div>
-                            
                             <div id="applied-coupons-area" class="space-y-2 mt-3 empty:hidden"></div>
                         </div>
                     </div>
 
-                    <button onclick="submitBooking()" class="w-full bg-[#00B900] text-white p-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-green-600 shadow-xl shadow-green-200 transition-transform hover:-translate-y-1">
-                        <i class="fa-brands fa-line text-2xl"></i> ยืนยันการจองผ่าน LINE
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="submitBooking('line')" class="flex-1 bg-[#00B900] text-white p-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 hover:bg-green-600 shadow-lg shadow-green-200/50 transition-transform hover:-translate-y-1">
+                            <i class="fa-brands fa-line text-2xl"></i> จองและรับส่วนลดผ่าน LINE
+                        </button>
+                        <button onclick="submitBooking('whatsapp')" class="flex-1 bg-[#25D366] text-white p-4 rounded-xl font-bold text-sm md:text-base flex items-center justify-center gap-2 hover:bg-green-600 shadow-lg shadow-green-200/50 transition-transform hover:-translate-y-1">
+                            <i class="fa-brands fa-whatsapp text-2xl"></i> จองและรับส่วนลดผ่าน WhatsApp
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1067,31 +1094,29 @@
                 <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fa-solid fa-desktop text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold font-heading" data-i18n="pc-modal-title">ขั้นตอนสุดท้ายในการจองคิว</h3>
-<p class="text-blue-200 text-xs mt-1" data-i18n="pc-modal-sub">เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ</p>
+                <h3 class="text-xl font-bold">ขั้นตอนสุดท้ายในการจองคิว</h3>
+                <p class="text-blue-200 text-xs mt-1">เนื่องจากคุณใช้งานผ่านคอมพิวเตอร์ โปรดทำตาม 2 ขั้นตอนนี้ครับ</p>
             </div>
             
             <div class="p-6 space-y-6">
                 <div class="flex gap-4 items-start">
                     <div class="w-8 h-8 rounded-full bg-blue-100 text-primary font-bold flex items-center justify-center shrink-0 mt-1">1</div>
                     <div class="flex-1">
-                        <h4 class="font-bold text-gray-800 text-sm mb-1" data-i18n="pc-step1">คัดลอกข้อความสรุปการจอง</h4>
-<p class="text-xs text-gray-500 mb-2" data-i18n="pc-step1-sub">ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว</p>
+                        <h4 class="font-bold text-gray-800 text-sm mb-1">คัดลอกข้อความสรุปการจอง</h4>
+                        <p class="text-xs text-gray-500 mb-2">ระบบได้เตรียมข้อความสรุปยอดทั้งหมดไว้ให้คุณแล้ว</p>
                         <textarea id="pc-booking-summary" rows="3" class="w-full text-[10px] p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none resize-none" readonly></textarea>
                         <button onclick="copyBookingSummary()" class="mt-2 w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition flex items-center justify-center gap-2">
-                            <i class="fa-regular fa-copy"></i> <span data-i18n="pc-btn-copy">คัดลอกข้อความ</span>
+                            <i class="fa-regular fa-copy"></i> คัดลอกข้อความ
                         </button>
                     </div>
                 </div>
 
                 <div class="flex gap-4 items-start">
-                    <div class="w-8 h-8 rounded-full bg-[#00B900]/20 text-[#00B900] font-bold flex items-center justify-center shrink-0">2</div>
+                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 font-bold flex items-center justify-center shrink-0">2</div>
                     <div class="flex-1">
-                        <h4 class="font-bold text-gray-800 text-sm mb-1" data-i18n="pc-step2">ส่งให้แอดมินทาง LINE</h4>
-                        <p class="text-xs text-gray-500 mb-3">คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่าง LINE แล้ว "วางข้อความ" ส่งให้แอดมินได้เลยครับ</p>
-                        <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="w-full py-3 bg-[#00B900] text-white text-sm font-bold rounded-xl hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-md">
-                          <i class="fa-brands fa-line text-xl"></i> <span data-i18n="pc-btn-line">เปิด LINE เพื่อวางข้อความ</span>
-                        </a>
+                        <h4 class="font-bold text-gray-800 text-sm mb-1">ส่งให้แอดมินทางแชท</h4>
+                        <p class="text-xs text-gray-500 mb-3">คลิกปุ่มด้านล่างเพื่อเปิดหน้าต่างแชท แล้ว "วางข้อความ" ส่งให้แอดมินได้เลยครับ</p>
+                        <a href="#" target="_blank" id="pc-btn-social"></a>
                     </div>
                 </div>
             </div>
@@ -1515,26 +1540,26 @@
                     isStepChanging = false; return alert("กรุณาเลือกบริการอย่างน้อย 1 รายการ");
                 }
                 if(currentStep === 4) {
-                    cart.customer.date = document.getElementById('bk-date').value;
-                    cart.customer.time = document.getElementById('bk-time').value;
-                    cart.customer.fname = document.getElementById('bk-fname').value;
-                    cart.customer.phone = document.getElementById('bk-phone').value;
-                    cart.customer.houseNo = document.getElementById('bk-houseNo').value;
-                    cart.customer.amphoe = document.getElementById('bk-amphoe').value;
-                    cart.customer.tambon = document.getElementById('bk-tambon').value;
-                    if(!cart.customer.date || !cart.customer.fname || !cart.customer.phone || !cart.customer.houseNo || !cart.customer.amphoe || !cart.customer.tambon) {
+                    // ดึงข้อมูลตรวจสอบ (ใส่ ? เพื่อป้องกัน Error หากฟอร์มใดยังไม่โหลด)
+                    cart.customer.date = document.getElementById('bk-date') ? document.getElementById('bk-date').value : '';
+                    cart.customer.time = document.getElementById('bk-time') ? document.getElementById('bk-time').value : '';
+                    cart.customer.fname = document.getElementById('bk-fname') ? document.getElementById('bk-fname').value : '';
+                    cart.customer.phone = document.getElementById('bk-phone') ? document.getElementById('bk-phone').value : '';
+                    cart.customer.houseNo = document.getElementById('bk-houseNo') ? document.getElementById('bk-houseNo').value : '';
+                    
+                    if(!cart.customer.date || !cart.customer.time || !cart.customer.fname || !cart.customer.phone || !cart.customer.houseNo) {
                         isStepChanging = false;
-                        return alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
+                        return alert("กรุณากรอก วัน-เวลา, ชื่อ, เบอร์โทร และพิกัดที่อยู่ ให้ครบถ้วนครับ");
                     }
                 }
             }
 
             currentStep += dir;
             
-            // 🌟 ลอจิกพิเศษ: ถ้าซื้อแพ็กเกจสมาชิก ให้ข้าม Step 3 (ถามเรื่องเด็ก/สัตว์เลี้ยง) ไปเลย
+            // 🌟 ลอจิกพิเศษ: ถ้าซื้อแพ็กเกจสมาชิก ให้ข้าม Step 3
             if (cart.category === 'membership') {
-                if (currentStep === 3 && dir === 1) currentStep = 4; // กดเดินหน้า ให้ข้าม 3 ไป 4
-                if (currentStep === 3 && dir === -1) currentStep = 2; // กดถอยหลัง ให้ข้าม 3 ไป 2
+                if (currentStep === 3 && dir === 1) currentStep = 4;
+                if (currentStep === 3 && dir === -1) currentStep = 2;
             }
 
             if(currentStep < 1) currentStep = 1;
@@ -1542,6 +1567,19 @@
 
             document.querySelectorAll('.step-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('step-'+currentStep).classList.remove('hidden');
+
+            // 🌟 ปลุกแผนที่อัจฉริยะ (Smart Map) ให้ทำงานเมื่อมาถึง Step 4
+            if (currentStep === 4 && typeof google !== 'undefined') {
+                setTimeout(() => {
+                    if (!map) {
+                        initSmartMap(); // สร้างแผนที่ครั้งแรก
+                    } else {
+                        // รีเฟรชกรอบแผนที่ป้องกันปัญหาแผนที่สีเทา
+                        google.maps.event.trigger(map, 'resize');
+                        map.setCenter({ lat: 7.9519, lng: 98.3381 }); 
+                    }
+                }, 100);
+            }
 
             let header = document.getElementById('step-header');
             if(currentStep > 1) {
@@ -1557,13 +1595,20 @@
 
             if(currentStep === 2) renderTypes();
             if(currentStep === 5) {
-                renderAddons();
-                document.getElementById('sum-kids').textContent = cart.details.kids === 'yes' ? 'มี' : 'ไม่มี';
-                document.getElementById('sum-pets').textContent = cart.details.pets === 'yes' ? 'มี' : 'ไม่มี';
-                document.getElementById('sum-note').textContent = document.getElementById('bk-special-note').value.trim() || 'ไม่มี';
+                if (typeof renderAddons === 'function') renderAddons();
+                let kidsEl = document.getElementById('sum-kids');
+                if(kidsEl) kidsEl.textContent = cart.details.kids === 'yes' ? 'มี' : 'ไม่มี';
+                let petsEl = document.getElementById('sum-pets');
+                if(petsEl) petsEl.textContent = cart.details.pets === 'yes' ? 'มี' : 'ไม่มี';
+                let noteEl = document.getElementById('sum-note');
+                if(noteEl) {
+                    let noteInput = document.getElementById('bk-special-note');
+                    noteEl.textContent = noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'ไม่มี';
+                }
             }
             
-            document.getElementById('booking-cf').scrollIntoView({ behavior: 'smooth' });
+            let scrollTarget = document.getElementById('booking-cf');
+            if(scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth' });
         }
 
         // 6. เครื่องมือยิบย่อย
@@ -1595,21 +1640,28 @@
         }
 
         // 🌟 ฟังก์ชันตรวจสอบและใช้งานคูปอง (อัปเกรด ล็อคหมวดหมู่)
-        window.applyPromoCode = async function() {
+        window.applyPromoCode = async function(isSilent = false) {
             let inputEl = document.getElementById('promo-code-input');
-            let code = document.getElementById('promo-code-input').value.toUpperCase().trim();
+            let code = inputEl ? inputEl.value.toUpperCase().trim() : '';
             let btn = document.getElementById('btn-apply-promo');
             
-            if(!code) return Swal.fire({ toast: true, position: 'top', icon: 'warning', title: sysAlerts[window.currentLang].errInput || 'กรุณากรอกโค้ดส่วนลด', showConfirmButton: false, timer: 1500 });
+            // ถ้าไม่พบโค้ด และไม่ใช่โหมดเงียบ ให้แจ้งเตือน
+            if(!code) {
+                if(!isSilent) Swal.fire({ toast: true, position: 'top', icon: 'warning', title: sysAlerts[window.currentLang].errInput || 'กรุณากรอกโค้ดส่วนลด', showConfirmButton: false, timer: 1500 });
+                return;
+            }
 
             // 1. เช็คว่าใส่โค้ดซ้ำไหม
             if (appliedCoupons.find(c => c.code === code)) {
-                return Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'คุณใช้งานโค้ดนี้ไปแล้วในตะกร้า!', showConfirmButton: false, timer: 2000 });
+                if(!isSilent) Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'คุณใช้งานโค้ดนี้ไปแล้วในตะกร้า!', showConfirmButton: false, timer: 2000 });
+                return;
             }
 
-            let originalBtnText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
-            btn.disabled = true;
+            let originalBtnText = btn ? btn.innerHTML : '';
+            if(btn) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
+                btn.disabled = true;
+            }
 
             try {
                 // 2. ดึงข้อมูลโค้ดจาก Firebase
@@ -1633,7 +1685,6 @@
                 if (c.category && c.category !== 'all') {
                     let isMatch = cart.addons.some(item => {
                         let a = allServices.find(s => s.id === item.id);
-                        // ถ้าแอดมินล็อกเป็น house ต้องคลุมทั้งคอนโดและวิลล่าด้วย
                         if (c.category === 'house') return a && ['house_single', 'condo', 'villa'].includes(a.type);
                         return a && a.type === c.category; 
                     });
@@ -1648,7 +1699,6 @@
                 let currentSubtotal = cart.addons.reduce((sum, item) => {
                     let a = allServices.find(s => s.id === item.id);
                     if(!a) return sum;
-                    // ยึดราคา originalPrice เป็นหลักในการประเมินขั้นต่ำ
                     let price = a.originalPrice || a.price || 0;
                     if(a.sizes && item.size) {
                         let sz = a.sizes.find(s => s.name === item.size);
@@ -1686,17 +1736,26 @@
 
                 // 🎉 ผ่านทุกด่าน! นำคูปองใส่ตะกร้า
                 appliedCoupons.push(c);
-                inputEl.value = ''; 
+                if(inputEl) inputEl.value = ''; 
                 
-                Swal.fire({ toast: true, position: 'top', icon: 'success', title: sysAlerts[window.currentLang].promoYes || 'ใช้งานโค้ดส่วนลดสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                // 🌟 โชว์แจ้งเตือนเฉพาะตอนที่ลูกค้ากดปุ่มด้วยตัวเองเท่านั้น
+                if(!isSilent) {
+                    Swal.fire({ toast: true, position: 'top', icon: 'success', title: sysAlerts[window.currentLang].promoYes || 'ใช้งานโค้ดส่วนลดสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                }
+                
                 calculatePricing(); // อัปเดตยอดเงินทันที
 
             } catch (error) {
-                Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.message, showConfirmButton: false, timer: 3000 });
+                // 🌟 โชว์ Error เฉพาะตอนที่ลูกค้ากดปุ่มด้วยตัวเองเท่านั้น
+                if(!isSilent) {
+                    Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.message, showConfirmButton: false, timer: 3000 });
+                }
             }
 
-            btn.innerHTML = originalBtnText; 
-            btn.disabled = false;
+            if(btn) {
+                btn.innerHTML = originalBtnText || 'ใช้โค้ด'; 
+                btn.disabled = false;
+            }
         }
 
         // 🌟 ฟังก์ชันลบคูปองออกจากตะกร้า
@@ -1751,7 +1810,7 @@
         }
 
         // =====================================
-        // 1. ฟังก์ชันคำนวณราคา (อัปเกรดระบบ 15%+5%+1% & คูปอง)
+        // 1. ฟังก์ชันคำนวณราคา (อัปเกรดรวมส่วนลดเป็นบรรทัดเดียว + ยอดสุทธิใหญ่พิเศษ)
         // =====================================
         window.calculatePricing = function() {
             let itemCount = 0; 
@@ -1760,42 +1819,50 @@
             let sumTypeNameEl = document.getElementById('sum-type-name');
             if (sumTypeNameEl) sumTypeNameEl.textContent = "จัดแพ็กเกจด้วยตนเอง";
 
-            let addonsTotal = 0; let addonsOrigTotal = 0;
+            let addonsTotalAfterReview = 0; 
+            let addonsOrigTotal = 0;
             let sumAddonsHTML = '';
             
+            // 🌟 ตรวจสอบว่าลูกค้าติ๊กรับส่วนลดรีวิว 15% หรือไม่
+            let isReviewChecked = document.getElementById('bk-review-discount') ? document.getElementById('bk-review-discount').checked : true;
+
             cart.addons.forEach(item => {
                 let a = allServices.find(s => s.id === item.id);
                 if(!a) return;
                 
-                // 🌟 อุดรอยรั่วลดซ้ำซ้อน: ยึด "ราคาเต็มดั้งเดิม (originalPrice)" เป็นหลักเสมอ!
                 let origPrice = a.originalPrice || a.price || 0; 
                 if(a.sizes && item.size) {
                     let sz = a.sizes.find(s => s.name === item.size);
                     if(sz) { origPrice = sz.originalPrice || sz.price || 0; }
                 }
                 
-                // คำนวณยอดรวมของแต่ละรายการโดยใช้ราคาเต็ม
-                let lineTotal = origPrice * item.qty;
+                let lineOrigTotal = origPrice * item.qty;
                 
-                addonsTotal += lineTotal;
-                addonsOrigTotal += lineTotal; // ตอนนี้ 2 ค่านี้คือราคาเต็มก่อนลด
+                // ถ้ายืนยันรีวิว ให้ลด 15% ลงไปในแต่ละบรรทัดสินค้าเลย
+                let lineReviewDiscount = isReviewChecked ? Math.round(lineOrigTotal * 0.15) : 0;
+                let lineTotal = lineOrigTotal - lineReviewDiscount;
+                
+                addonsTotalAfterReview += lineTotal;
+                addonsOrigTotal += lineOrigTotal;
                 itemCount += item.qty;
                 
-                let sizeText = item.size ? `(${item.size})` : '';
+                let sizeText = item.size ? ` ${item.size}` : '';
                 
                 sumAddonsHTML += `
                 <div class="flex justify-between items-center text-gray-700 pl-1 mb-2 text-[11px] md:text-xs">
-                    <span class="flex-1 pr-2"><i class="fa-solid fa-check text-[10px] text-green-500 mr-1"></i> ${a.name} ${sizeText} <span class="text-gray-400 ml-1">x${item.qty}</span></span>
+                    <span class="flex-1 pr-2"><i class="fa-solid fa-check text-[10px] text-green-500 mr-1"></i> ${a.name}${sizeText} <span class="text-gray-400 ml-1">x${item.qty}</span></span>
                     <div class="text-right whitespace-nowrap">
-                        <span class="font-bold text-gray-800">${lineTotal.toLocaleString()} ฿</span>
+                        ${isReviewChecked ? `<span class="text-[9px] text-gray-400 line-through block">${lineOrigTotal.toLocaleString()} บาท</span>` : ''}
+                        <span class="font-bold ${isReviewChecked ? 'text-green-600' : 'text-gray-800'}">${lineTotal.toLocaleString()} บาท</span>
                     </div>
                 </div>`;
                 
                 floatDetailsHTML += `
                 <div class="flex justify-between items-start text-gray-700 pl-2">
-                    <span class="flex-1 pr-2 text-[11px]">- ${a.name} ${sizeText} <span class="text-gray-400">x${item.qty}</span></span>
+                    <span class="flex-1 pr-2 text-[11px]">- ${a.name}${sizeText} <span class="text-gray-400">x${item.qty}</span></span>
                     <div class="text-right whitespace-nowrap">
-                        <span class="font-bold text-gray-800 text-[11px]">${lineTotal.toLocaleString()} ฿</span>
+                        ${isReviewChecked ? `<span class="text-[9px] text-gray-400 line-through block">${lineOrigTotal.toLocaleString()} บาท</span>` : ''}
+                        <span class="font-bold ${isReviewChecked ? 'text-green-600' : 'text-gray-800'} text-[11px]">${lineTotal.toLocaleString()} บาท</span>
                     </div>
                 </div>`;
             });
@@ -1805,27 +1872,26 @@
                 if(cart.addons.length > 0) {
                     addonsContainer.innerHTML = '<div class="mt-2">' + sumAddonsHTML + '</div>';
                 } else {
-                    addonsContainer.innerHTML = '<p class="text-xs text-gray-400 italic mt-2">ยังไม่มีบริการที่เลือก</p>';
+                    addonsContainer.innerHTML = '<p class="text-xs text-gray-400 italic mt-2">ไม่มีบริการที่เลือก</p>';
                 }
             }
 
             let floatCountEl = document.getElementById('float-item-count');
             if (floatCountEl) floatCountEl.textContent = itemCount + ' รายการ';
-            
             let floatListEl = document.getElementById('float-details-list');
             if (floatListEl) floatListEl.innerHTML = floatDetailsHTML;
 
             let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
             
-            // 🌟 1. คำนวณส่วนลดระบบอัตโนมัติ (15% + 5% + 1%) จากยอด "ราคาเต็มรวม (addonsTotal)"
-            let baseDiscountAmount = 0;
-            let percentDiscount = 0;
+            // 🌟 1. คำนวณส่วนลดจองเพิ่ม (Extra % On-top) หักจากราคาเต็มป้องกันการเพี้ยน
+            let extraDiscountAmount = 0;
+            let extraPercent = 0;
             let hasAddon = cart.addons.some(item => {
                 let srv = allServices.find(s => s.id === item.id);
                 return srv && srv.type === 'addon';
             });
 
-            if (window.globalDiscountRules && addonsTotal > 0) {
+            if (window.globalDiscountRules && addonsOrigTotal > 0) {
                 let rules = window.globalDiscountRules;
                 let conditionMet = false;
 
@@ -1834,39 +1900,39 @@
                 if (!rules.whenMulti && !rules.whenAddon) conditionMet = true;
 
                 if (conditionMet) {
-                    percentDiscount = rules.base || 0; 
-                    if (totalItems >= 2) percentDiscount += (rules.firstAdd || 0); 
+                    if (totalItems >= 2) extraPercent += (rules.firstAdd || 0); 
                     if (totalItems >= 3) {
                         let extraItems = totalItems - 2;
-                        percentDiscount += ((rules.nextAdd || 0) * extraItems); 
+                        extraPercent += ((rules.nextAdd || 0) * extraItems); 
                     }
-                    if (rules.maxLimit > 0 && percentDiscount > rules.maxLimit) {
-                        percentDiscount = rules.maxLimit;
+                    
+                    // ป้องกันการลดเกินลิมิต 30% หรือตามที่แอดมินตั้งไว้
+                    let totalPercentApplied = (isReviewChecked ? 15 : 0) + extraPercent;
+                    if (rules.maxLimit > 0 && totalPercentApplied > rules.maxLimit) {
+                        extraPercent = rules.maxLimit - (isReviewChecked ? 15 : 0);
+                        if(extraPercent < 0) extraPercent = 0;
                     }
-                    baseDiscountAmount = Math.round(addonsTotal * (percentDiscount / 100));
+                    
+                    extraDiscountAmount = Math.round(addonsOrigTotal * (extraPercent / 100));
                 }
             }
 
             // 🌟 2. คำนวณคูปองส่วนลดในตะกร้า
             let couponDiscountAmount = 0;
             let couponHtml = '';
-            let currentNetForCoupon = addonsTotal - baseDiscountAmount; 
+            let currentNetForCoupon = addonsTotalAfterReview - extraDiscountAmount; 
             
             if (typeof appliedCoupons !== 'undefined') {
                 appliedCoupons.forEach(c => {
                     let disc = 0;
                     if (c.discountType === 'percent') {
                         disc = Math.round(currentNetForCoupon * (c.discountValue / 100));
-                        if (c.maxDiscount && disc > c.maxDiscount) {
-                            disc = c.maxDiscount;
-                        }
+                        if (c.maxDiscount && disc > c.maxDiscount) disc = c.maxDiscount;
                     } else {
                         disc = c.discountValue;
                     }
                     
-                    if (couponDiscountAmount + disc > currentNetForCoupon) {
-                        disc = currentNetForCoupon - couponDiscountAmount; 
-                    }
+                    if (couponDiscountAmount + disc > currentNetForCoupon) disc = currentNetForCoupon - couponDiscountAmount; 
                     couponDiscountAmount += disc;
 
                     couponHtml += `
@@ -1875,11 +1941,11 @@
                             <i class="fa-solid fa-circle-check text-green-500 text-lg"></i>
                             <div>
                                 <p class="text-xs font-bold text-green-700">${c.code}</p>
-                                <p class="text-[10px] text-green-600">${c.name || 'ส่วนลดพิเศษ'}</p>
+                                <p class="text-[10px] text-green-600">${c.name || 'ส่วนลด'}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-sm font-bold text-green-700">-${disc.toLocaleString()} ฿</span>
+                            <span class="text-sm font-bold text-green-700">-${disc.toLocaleString()} บาท</span>
                             <button type="button" onclick="clearCoupon()" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                     </div>`;
@@ -1889,56 +1955,38 @@
             let couponAreaEl = document.getElementById('applied-coupons-area');
             if (couponAreaEl) couponAreaEl.innerHTML = couponHtml;
 
-            // ยอดสุทธิขั้นสุดท้าย
-            let finalPrice = addonsTotal - baseDiscountAmount - couponDiscountAmount;
+            // ===============================================
+            // 🌟 จุดเปลี่ยนสำคัญ (Step 2 UX Rules): 
+            // รวบยอดส่วนลดทั้งหมดให้เป็นบรรทัดเดียว และทำยอดสุทธิให้ใหญ่
+            // ===============================================
+            let finalPrice = addonsTotalAfterReview - extraDiscountAmount - couponDiscountAmount;
             if (finalPrice < 0) finalPrice = 0;
+            
+            let totalSaved = addonsOrigTotal - finalPrice;
 
             let discHTML = '';
             let floatDiscHTML = '';
             
-            // 🌟 อัปเดตการแสดงผลหน้าสรุปยอด (โชว์ราคาขีดทิ้ง & เปอร์เซ็นต์)
-            if(baseDiscountAmount > 0 || couponDiscountAmount > 0) {
-                discHTML = '<div class="border-t border-gray-100 mt-3 pt-3 space-y-2">';
-                
-                // บรรทัดโชว์ราคาเต็มก่อนลด
-                discHTML += `<div class="flex justify-between text-gray-400 text-xs px-1">
-                    <span>ราคาเต็มก่อนหักส่วนลด:</span>
-                    <span class="line-through">${addonsTotal.toLocaleString()} ฿</span>
+            if(totalSaved > 0) {
+                discHTML = `<div class="border-t border-gray-100 mt-4 pt-4">
+                    <div class="flex justify-between items-center text-green-600 font-bold text-sm bg-green-50 p-3 rounded-xl border border-green-100">
+                        <span><i class="fa-solid fa-tags mr-1"></i>ส่วนลดพิเศษจากการจอง</span>
+                        <span class="text-base">-${totalSaved.toLocaleString()} บาท</span>
+                    </div>
                 </div>`;
                 
-                // บรรทัดโชว์ส่วนลดระบบอัตโนมัติ (แสดง %)
-                if(baseDiscountAmount > 0) {
-                    discHTML += `<div class="flex justify-between items-center text-green-600 font-bold text-xs bg-green-50 p-2 rounded-lg">
-                        <span><i class="fa-solid fa-tag mr-1"></i>ส่วนลดแพ็กเกจ (${percentDiscount}%)</span>
-                        <span>-${baseDiscountAmount.toLocaleString()} ฿</span>
-                    </div>`;
-                    floatDiscHTML += `<div class="flex justify-between text-green-600 font-bold text-[10px]"><span>ส่วนลด (${percentDiscount}%)</span><span>-${baseDiscountAmount.toLocaleString()} ฿</span></div>`;
-                }
-                
-                // บรรทัดโชว์คูปองส่วนลด
-                if(couponDiscountAmount > 0) {
-                    discHTML += `<div class="flex justify-between items-center text-[#000080] font-bold text-xs bg-blue-50 p-2 rounded-lg">
-                        <span><i class="fa-solid fa-ticket mr-1"></i>คูปองส่วนลด</span>
-                        <span>-${couponDiscountAmount.toLocaleString()} ฿</span>
-                    </div>`;
-                    floatDiscHTML += `<div class="flex justify-between text-[#000080] font-bold text-[10px]"><span>คูปอง</span><span>-${couponDiscountAmount.toLocaleString()} ฿</span></div>`;
-                }
-                discHTML += '</div>';
+                floatDiscHTML = `<div class="flex justify-between text-green-600 font-bold text-[10px]"><span>ประหยัดไป</span><span>-${totalSaved.toLocaleString()} บาท</span></div>`;
             }
 
             let sumDiscContainer = document.getElementById('sum-discount-container');
             if (sumDiscContainer) sumDiscContainer.innerHTML = discHTML;
-            
             let floatDiscContainer = document.getElementById('float-details-discount');
             if (floatDiscContainer) floatDiscContainer.innerHTML = floatDiscHTML;
 
+            // ทำให้ยอด Grand Total ใหญ่และหนาที่สุด (ตามหลักอคติสายตา Status Quo)
             let sumNetTotalEl = document.getElementById('sum-net-total');
             if(sumNetTotalEl) {
-                if(baseDiscountAmount > 0 || couponDiscountAmount > 0) {
-                    sumNetTotalEl.innerHTML = `<span class="text-sm text-gray-400 line-through mr-2 font-normal">${addonsTotal.toLocaleString()} ฿</span>${finalPrice.toLocaleString()} ฿`;
-                } else {
-                    sumNetTotalEl.innerHTML = `${finalPrice.toLocaleString()} ฿`;
-                }
+                sumNetTotalEl.innerHTML = `<span class="text-2xl md:text-3xl text-[#000080] font-black">${finalPrice.toLocaleString()} บาท</span>`;
             }
 
             let floatNetEl = document.getElementById('float-net-price');
@@ -1947,40 +1995,22 @@
             
             if (floatNetEl) floatNetEl.textContent = finalPrice.toLocaleString();
             if (floatOrigContainer && floatOrigEl) {
-                if(addonsTotal > finalPrice) {
+                if(addonsOrigTotal > finalPrice) {
                     floatOrigContainer.classList.remove('hidden');
-                    floatOrigEl.textContent = addonsTotal.toLocaleString();
+                    floatOrigEl.textContent = addonsOrigTotal.toLocaleString();
                 } else {
                     floatOrigContainer.classList.add('hidden');
-                }
-            }
-
-            let totalOrig = addonsOrigTotal; 
-            let sumPriceEl = document.getElementById('sum-price');
-            let sumOrigEl = document.getElementById('sum-original-price');
-            if (sumPriceEl) sumPriceEl.textContent = finalPrice.toLocaleString();
-            if (sumOrigEl) {
-                if(totalOrig > finalPrice) {
-                    sumOrigEl.textContent = totalOrig.toLocaleString();
-                    sumOrigEl.classList.remove('hidden');
-                } else {
-                    sumOrigEl.classList.add('hidden');
                 }
             }
         }
     
 
         // =====================================
-        // 2. ฟังก์ชันยืนยันการจอง (ประกอบร่างบิล LINE ตามเทมเพลต)
+        // 2. ฟังก์ชันยืนยันการจอง (ประกอบร่างบิล LINE/WhatsApp ตามเทมเพลต)
         // =====================================
-        window.submitBooking = async function() {
-            const submitBtn = document.querySelector('button[onclick="submitBooking()"]');
-            const originalBtnText = submitBtn ? submitBtn.innerHTML : 'ยืนยันการจองผ่าน LINE';
-            
-            if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังประมวลผล...';
-                submitBtn.disabled = true;
-            }
+        window.submitBooking = async function(platform = 'line') {
+            const isWhatsApp = platform === 'whatsapp';
+            Swal.fire({ title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
 
             try {
                 const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() : '';
@@ -1990,38 +2020,29 @@
                 let time = getVal('bk-time');
                 let note = getVal('bk-special-note') || '-';
                 let extraCare = `เด็กเล็ก: ${cart.details.kids === 'yes' ? 'มี' : 'ไม่มี'} | สัตว์เลี้ยง: ${cart.details.pets === 'yes' ? 'มี' : 'ไม่มี'}`;
+                
                 let fname = getVal('bk-fname');
                 let lname = getVal('bk-lname');
                 let name = (fname + " " + lname).trim();
                 let phone = getVal('bk-phone');
 
+                // 🌟 ดึงข้อมูลจากฟอร์มที่อยู่แบบใหม่ (Smart Address)
                 let houseNo = getVal('bk-houseNo');
-                let soi = getVal('bk-soi');
-                let road = getVal('bk-road');
+                let landmark = getVal('bk-landmark');
                 let tambon = getVal('bk-tambon');
                 let amphoe = getVal('bk-amphoe');
+                let province = getVal('bk-province') || 'ภูเก็ต';
                 
-                let address = (houseNo && tambon) ? `บ้านเลขที่: ${houseNo} ` + (soi ? `ซอย: ${soi} ` : '') + (road ? `ถนน: ${road} ` : '') + `ต.${tambon} อ.${amphoe} จ.ภูเก็ต` : (getVal('bk-address-input') || "-");
-
-                let gpsLink = getVal('bk-gps');
-                let isKeyDrop = getCheck('bk-key-drop');
-                let keyDetail = getVal('bk-key-detail');
-                let isReview = getCheck('bk-review-discount');
+                let address = houseNo ? `บ้านเลขที่/ห้อง: ${houseNo} ` + (landmark ? `(จุดสังเกต: ${landmark}) ` : '') + (tambon ? `ต.${tambon} อ.${amphoe} จ.${province}` : '') : "-";
+                let isReviewChecked = getCheck('bk-review-discount');
+                let lat = getVal('bk-lat');
+                let lng = getVal('bk-lng');
+                let smartMapLink = (lat && lng) ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` : "-";
 
                 if(!date || !fname || !phone || !houseNo) { 
+                    Swal.close();
                     alert("กรุณากรอก วันที่, ชื่อ, เบอร์โทร และ ที่อยู่ ให้ครบถ้วนก่อนยืนยันครับ"); 
-                    if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
                     return; 
-                }
-
-                let keyInfo = "อยู่บ้าน (รอรับทีมงาน)";
-                if (isKeyDrop) {
-                    if(!keyDetail) { 
-                        alert("โปรดระบุสถานที่ซ่อนกุญแจครับ"); 
-                        if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
-                        return; 
-                    }
-                    keyInfo = "รับกุญแจที่: " + keyDetail;
                 }
 
                 let modeName = (cart.category === 'furniture') ? 'บริการทำความสะอาดเฟอร์นิเจอร์' : 'บริการทำความสะอาดบ้าน';
@@ -2029,21 +2050,27 @@
                 
                 let addonsText = "";
                 let grossPrice = 0;
+                let reviewDiscountAmount = 0;
 
                 if (cart.addons.length > 0) {
                     cart.addons.forEach(item => {
                         let srvData = allServices.find(s => s.id === item.id);
                         if(srvData) {
-                            // 🌟 อุดรอยรั่วลดซ้ำซ้อน: ยึดราคา originalPrice เป็นหลักเสมอ
                             let itemPrice = srvData.originalPrice || srvData.price || 0;
                             if(srvData.sizes && item.size) {
                                 let szData = srvData.sizes.find(sz => sz.name === item.size);
                                 if(szData) itemPrice = szData.originalPrice || szData.price || 0;
                             }
-                            let lineTotal = itemPrice * item.qty;
-                            grossPrice += lineTotal; 
-                            let sizeTxt = item.size ? `(${item.size})` : "";
-                            addonsText += `   - ${srvData.name} ${sizeTxt} x${item.qty} (+${lineTotal.toLocaleString()} ฿)\n`;
+                            
+                            let lineOrigTotal = itemPrice * item.qty;
+                            let lineReviewDisc = isReviewChecked ? Math.round(lineOrigTotal * 0.15) : 0;
+                            let lineTotal = lineOrigTotal - lineReviewDisc;
+                            
+                            grossPrice += lineOrigTotal;
+                            reviewDiscountAmount += lineReviewDisc;
+                            
+                            let sizeTxt = item.size ? ` ${item.size}` : "";
+                            addonsText += `   - ${srvData.name}${sizeTxt} x${item.qty} (${lineTotal.toLocaleString()} บาท)\n`;
                         }
                     });
                 } else { 
@@ -2051,7 +2078,7 @@
                 }
 
                 let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
-                let percentDiscount = 0;
+                let extraPercent = 0;
                 let hasAddon = cart.addons.some(item => {
                     let srv = allServices.find(s => s.id === item.id);
                     return srv && srv.type === 'addon';
@@ -2065,16 +2092,20 @@
                     if (!rules.whenMulti && !rules.whenAddon) conditionMet = true;
 
                     if (conditionMet) {
-                        percentDiscount = rules.base || 0;
-                        if (totalItems >= 2) percentDiscount += (rules.firstAdd || 0);
-                        if (totalItems >= 3) percentDiscount += ((rules.nextAdd || 0) * (totalItems - 2));
-                        if (rules.maxLimit > 0 && percentDiscount > rules.maxLimit) percentDiscount = rules.maxLimit;
+                        if (totalItems >= 2) extraPercent += (rules.firstAdd || 0);
+                        if (totalItems >= 3) extraPercent += ((rules.nextAdd || 0) * (totalItems - 2));
+                        
+                        let totalPercentApplied = (isReviewChecked ? 15 : 0) + extraPercent;
+                        if (rules.maxLimit > 0 && totalPercentApplied > rules.maxLimit) {
+                            extraPercent = rules.maxLimit - (isReviewChecked ? 15 : 0);
+                            if(extraPercent < 0) extraPercent = 0;
+                        }
                     }
                 }
                 
-                let baseDiscountAmount = Math.round(grossPrice * (percentDiscount / 100));
+                let extraDiscountAmount = Math.round(grossPrice * (extraPercent / 100));
                 let couponDiscountAmount = 0;
-                let currentNetForCoupon = grossPrice - baseDiscountAmount;
+                let currentNetForCoupon = grossPrice - reviewDiscountAmount - extraDiscountAmount;
 
                 if (typeof appliedCoupons !== 'undefined') {
                     appliedCoupons.forEach(c => {
@@ -2085,13 +2116,12 @@
                     });
                 }
 
-                let reviewDiscount = isReview ? 200 : 0;
-                let netPriceNumber = grossPrice - baseDiscountAmount - couponDiscountAmount - reviewDiscount;
+                let netPriceNumber = grossPrice - reviewDiscountAmount - extraDiscountAmount - couponDiscountAmount;
                 if(netPriceNumber < 0) netPriceNumber = 0;
 
                 let orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
 
-                // บันทึกลง Firebase 
+                // บันทึกลง Firebase (ส่งข้อมูลที่อยู่แบบใหม่เข้า CRM)
                 if (typeof window.cf_db !== 'undefined') {
                     try {
                         let currentUser = window.cf_auth ? window.cf_auth.currentUser : null;
@@ -2107,12 +2137,10 @@
                             phone: phone,
                             bookingDate: date,
                             bookingTime: time,
-                            address: address,
-                            gpsLink: gpsLink,
-                            keyDrop: keyInfo,
+                            address: address, // ถูกแปลงให้เข้ากับ Smart Address แล้ว
                             promoCodes: appliedCoupons.length > 0 ? appliedCoupons.map(c => c.code).join(', ') : "-",
                             totalPrice: netPriceNumber,
-                            isReviewDiscount: isReview,
+                            isReviewDiscount: isReviewChecked,
                             status: "รอยืนยัน", 
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
@@ -2129,15 +2157,11 @@
                     } catch(e) { console.warn("Firestore Skip:", e); }
                 }
 
-                // 🌟 ระบบประกอบร่างบิล LINE (ตามรูปแบบที่แอดมินตั้งไว้)
+                // 🌟 ระบบประกอบร่างบิล (ตัดการแสดงผล GPS กับกุญแจทิ้งเพื่อความสะอาด)
                 let templateData = window.globalLineTemplate || {};
                 let layout = templateData.template || [
-                    { id: 'orderId', active: true },
-                    { id: 'service', active: true },
-                    { id: 'datetime', active: true },
-                    { id: 'customer', active: true },
-                    { id: 'note', active: true },
-                    { id: 'price', active: true }
+                    { id: 'orderId', active: true }, { id: 'service', active: true }, { id: 'datetime', active: true },
+                    { id: 'customer', active: true }, { id: 'note', active: true }, { id: 'price', active: true }
                 ];
                 
                 let headerText = templateData.headerText || '==== 📝 ใบจองบริการ ====';
@@ -2150,39 +2174,58 @@
 
                 layout.forEach(item => {
                     if (!item.active) return;
-                    
                     if (item.id === 'orderId') summary += `\n🔸 รหัสการจอง: ${orderId}`;
                     if (item.id === 'service') summary += `\n🔸 ประเภท: ${modeName}\n🔸 บริการหลัก: ${baseServiceText}\n🔸 รายการที่เลือก:\n${addonsText.trimEnd()}`;
                     if (item.id === 'datetime') summary += `\n🔸 นัดหมาย: ${date} เวลา ${time} น.`;
                     if (item.id === 'customer') summary += `\n🔸 ลูกค้า: ${name}\n🔸 โทร: ${phone}\n🔸 ที่อยู่: ${address}`;
-                    if (item.id === 'note') summary += `\n🔸 การดูแล: ${extraCare}\n🔸 เน้นพิเศษ: ${note}\n🔸 พิกัด GPS: ${gpsLink ? gpsLink : "-"}\n🔸 กุญแจ: ${keyInfo}`;
+                    if (item.id === 'note') summary += `\n🔸 การดูแล: ${extraCare}\n🔸 เน้นพิเศษ: ${note}\n📍 พิกัดแผนที่: ${smartMapLink}`;
+                    if (item.id === 'note') summary += `\n🔸 การดูแล: ${extraCare}\n🔸 เน้นพิเศษ: ${note}`;
                     if (item.id === 'price') {
                         summary += `\n\n💰 ราคาสุทธิ: ${netPriceNumber.toLocaleString()} บาท\n   (ราคาเต็ม ${grossPrice.toLocaleString()} บาท)`;
-                        if (baseDiscountAmount > 0) summary += `\n   (ส่วนลดแพ็กเกจ -${baseDiscountAmount.toLocaleString()} ฿)`;
-                        if (couponDiscountAmount > 0) summary += `\n   (คูปองส่วนลด -${couponDiscountAmount.toLocaleString()} ฿)`;
+                        if (reviewDiscountAmount > 0) summary += `\n   (ส่วนลดรีวิว 15% -${reviewDiscountAmount.toLocaleString()} บาท)`;
+                        if (extraDiscountAmount > 0) summary += `\n   (ส่วนลดจองเพิ่ม ${extraPercent}% -${extraDiscountAmount.toLocaleString()} บาท)`;
+                        if (couponDiscountAmount > 0) summary += `\n   (คูปองส่วนลด -${couponDiscountAmount.toLocaleString()} บาท)`;
                     }
                 });
 
                 summary += "\n\n🚨 (หมายเหตุ: โปรดตรวจสอบความถูกต้องของราคาและส่วนลดอีกครั้ง)\n==============================";
 
                 let encodedMessage = encodeURIComponent(summary);
-                let lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage;
+                
+                let redirectUrl = "";
+                if (isWhatsApp) {
+                    redirectUrl = "https://wa.me/66622292940?text=" + encodedMessage; 
+                } else {
+                    redirectUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage;
+                }
                 
                 let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                Swal.close();
 
                 if (isMobile) {
-                    window.location.href = lineUrl;
+                    window.location.href = redirectUrl;
                 } else {
                     document.getElementById('pc-booking-summary').value = summary;
+                    
+                    let pcBtn = document.getElementById('pc-btn-social');
+                    if (pcBtn) {
+                        pcBtn.href = redirectUrl;
+                        if (isWhatsApp) {
+                            pcBtn.innerHTML = `<i class="fa-brands fa-whatsapp text-xl"></i> เปิด WhatsApp เพื่อวางข้อความ`;
+                            pcBtn.className = "w-full py-3 bg-[#25D366] text-white text-sm font-bold rounded-xl hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-md";
+                        } else {
+                            pcBtn.innerHTML = `<i class="fa-brands fa-line text-xl"></i> เปิด LINE เพื่อวางข้อความ`;
+                            pcBtn.className = "w-full py-3 bg-[#00B900] text-white text-sm font-bold rounded-xl hover:bg-green-600 transition flex items-center justify-center gap-2 shadow-md";
+                        }
+                    }
+                    
                     document.getElementById('pc-line-modal').classList.remove('hidden');
                     document.getElementById('pc-line-modal').classList.add('flex');
-                    if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
                 }
 
             } catch (error) {
                 console.error("Booking Error: ", error); 
-                alert("เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้งครับ (" + error.message + ")");
-                if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
+                Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้งครับ', 'error');
             }
         }
 
@@ -2302,19 +2345,31 @@
         
         async function loadDiscountRules() {
             try {
-                // 🌟 แก้ไขจาก db เป็น window.cf_db
                 let doc = await window.cf_db.collection('settings').doc('discount_rules').get();
                 if (doc.exists) {
                     window.globalDiscountRules = doc.data();
-                    // สั่งโชว์ป้ายประกาศ
-                    let banner = document.getElementById('system-promo-banner');
-                    let text = document.getElementById('system-promo-text');
-                    if (banner && text) {
-                        banner.classList.remove('hidden');
-                        text.innerText = `ลดทันที ${window.globalDiscountRules.base}% และรับส่วนลดเพิ่มอีกชิ้นละ ${window.globalDiscountRules.firstAdd}% เมื่อสั่งบริการเสริม!`;
+                    let rules = window.globalDiscountRules;
+                    
+                    // 🌟 สร้างข้อความแบบไดนามิก ตามที่แอดมินตั้งค่าเป๊ะๆ
+                    let promoMsg = "";
+                    if(rules.base > 0) promoMsg += `ลดทันที ${rules.base}%! `;
+                    if(rules.firstAdd > 0) promoMsg += `ซื้อชิ้นที่ 2 ลดเพิ่ม ${rules.firstAdd}% `;
+                    if(rules.nextAdd > 0) promoMsg += `และชิ้นต่อไปลดเพิ่มอีกชิ้นละ ${rules.nextAdd}% `;
+                    if(rules.maxLimit > 0) promoMsg += `(ลดสูงสุดรวม ${rules.maxLimit}%)`;
+
+                    // แสดงผลในทุกแบนเนอร์ที่มีคลาส .system-promo-banner
+                    if(promoMsg !== "") {
+                        document.querySelectorAll('.system-promo-banner').forEach(el => el.classList.remove('hidden'));
+                        document.querySelectorAll('.system-promo-text').forEach(el => el.innerText = promoMsg);
                     }
                 }
             } catch(e) { console.log('ยังไม่มีการตั้งกฎราคาจากแอดมิน', e); }
+        }
+
+        // 🌟 ฟังก์ชันสำหรับกระโดดข้าม Step (ใช้กับปุ่มซื้อเพิ่ม)
+        window.jumpToStep = function(targetStep) {
+            let dir = targetStep - currentStep;
+            changeStep(dir);
         }
 
         // ✨ โหลดรูปแบบบิล LINE จากฐานข้อมูล
@@ -2350,6 +2405,31 @@
                 });
             });
             
+            // 🌟 Silent Onboarding: ดักจับเบอร์โทรศัพท์เพื่อตรวจสอบประวัติลูกค้า CRM
+            let phoneInput = document.getElementById('bk-phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('blur', async function() {
+                    let phoneStr = this.value.trim();
+                    if(phoneStr.length >= 9) { // ถ้ากรอกเบอร์ครบ
+                        try {
+                            // จำลองการวิ่งไปค้นหาในฐานข้อมูล Bookings / Users
+                            let snap = await window.cf_db.collection("bookings").where("phone", "==", phoneStr).limit(1).get();
+                            if(!snap.empty && appliedCoupons.length === 0) {
+                                // ถ้าเคยจองแล้ว = ลูกค้าเก่า Auto-apply ส่วนลดลูกค้าประจำทันที (สมมติโค้ด VIP10)
+                                console.log("พบประวัติลูกค้าเก่า Auto-Apply โค้ดส่วนลด");
+                                let vipCode = "VIP10"; 
+                                let inputEl = document.getElementById('promo-code-input');
+                                if(inputEl) inputEl.value = vipCode;
+                                
+                                // สั่งทำงานแบบเงียบๆ
+                                await applyPromoCode(true); // เพิ่ม Parameter (true) เพื่อไม่ให้แสดง Swal รบกวน
+                                Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'ยินดีต้อนรับกลับครับ! ระบบเพิ่มส่วนลดลูกค้าเก่าให้เรียบร้อย', showConfirmButton: false, timer: 3000 });
+                            }
+                        } catch(e) { console.warn("CRM Check error:", e); }
+                    }
+                });
+            }
+
             // 3. รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
             setTimeout(() => {
                 initTranslationSystem();
@@ -3140,5 +3220,105 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<script>
+        let map, marker, autocomplete, geocoder;
+
+        function initSmartMap() {
+            // ตั้งค่าเริ่มต้นที่ "ภูเก็ต" (ลูกค้าไม่ต้องเลื่อนหาเองจากแผนที่โลก)
+            const defaultLocation = { lat: 7.9519, lng: 98.3381 }; 
+            
+            const mapContainer = document.getElementById('map-container');
+            if (!mapContainer) return;
+
+            // ลบข้อความ "คลิกเพื่อระบุตำแหน่ง" ออกเพื่อโชว์แผนที่
+            mapContainer.innerHTML = '';
+            mapContainer.classList.remove('flex', 'items-center', 'justify-center', 'cursor-pointer');
+
+            // สร้างแผนที่
+            map = new google.maps.Map(mapContainer, {
+                center: defaultLocation,
+                zoom: 11,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false
+            });
+
+            // สร้างหมุด (ลากได้)
+            marker = new google.maps.Marker({
+                map: map,
+                position: defaultLocation,
+                draggable: true,
+                animation: google.maps.Animation.DROP
+            });
+
+            geocoder = new google.maps.Geocoder();
+
+            // เปิดระบบค้นหาอัจฉริยะ (Autocomplete)
+            const searchInput = document.getElementById('bk-smart-search');
+            autocomplete = new google.maps.places.Autocomplete(searchInput, {
+                componentRestrictions: { country: 'th' }, // ล็อกให้ค้นหาเฉพาะในไทย
+                fields: ['geometry', 'name', 'address_components', 'formatted_address']
+            });
+
+            // เมื่อลูกค้าพิมพ์ค้นหาแล้วกดเลือกสถานที่
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+
+                // ให้แผนที่บินไปหาและซูมเข้าทันที
+                map.setCenter(place.geometry.location);
+                map.setZoom(16);
+                marker.setPosition(place.geometry.location);
+
+                extractAddressData(place.geometry.location, place.address_components);
+            });
+
+            // เมื่อลูกค้าลากหมุดเปลี่ยนตำแหน่ง
+            marker.addListener('dragend', () => {
+                reverseGeocode(marker.getPosition());
+            });
+
+            // เมื่อลูกค้าจิ้มบนแผนที่
+            map.addListener('click', (event) => {
+                marker.setPosition(event.latLng);
+                reverseGeocode(event.latLng);
+            });
+        }
+
+        // ฟังก์ชันแปลพิกัดกลับมาเป็น ตำบล/อำเภอ
+        function reverseGeocode(pos) {
+            geocoder.geocode({ location: pos }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    extractAddressData(pos, results[0].address_components);
+                    document.getElementById('bk-smart-search').value = results[0].formatted_address; // อัปเดตช่องค้นหา
+                }
+            });
+        }
+
+        // ฟังก์ชันดึง ตำบล อำเภอ ไปซ่อนไว้ในฟอร์มหลังบ้าน (Silent Logic)
+        function extractAddressData(latLng, address_components) {
+            document.getElementById('bk-lat').value = latLng.lat();
+            document.getElementById('bk-lng').value = latLng.lng();
+
+            let tambon = '', amphoe = '', province = 'ภูเก็ต';
+
+            if(address_components) {
+                address_components.forEach(comp => {
+                    if (comp.types.includes('sublocality_level_2') || comp.types.includes('sublocality')) tambon = comp.long_name;
+                    if (comp.types.includes('locality') || comp.types.includes('administrative_area_level_2')) amphoe = comp.long_name;
+                    if (comp.types.includes('administrative_area_level_1')) province = comp.long_name;
+                });
+            }
+
+            // ตัดคำว่า "ตำบล/อำเภอ" ออกให้เหลือแต่ชื่อ
+            document.getElementById('bk-tambon').value = tambon.replace('ตำบล', '').replace('ต.', '').trim();
+            document.getElementById('bk-amphoe').value = amphoe.replace('อำเภอ', '').replace('อ.', '').trim();
+            document.getElementById('bk-province').value = province.replace('จังหวัด', '').replace('จ.', '').trim();
+            
+            console.log("📍 Location Synced:", {tambon, amphoe, province});
+        }
+    </script>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDse9ZYd5v_NXDXJiyT5xKdjCADAiBO1qA&libraries=places" async defer></script>
   </body>
 </html>
