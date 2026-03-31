@@ -14,7 +14,7 @@
     <meta property="og:title" content="Cleanforce | บริการทำความสะอาดภูเก็ต ซักโซฟา ซักพรม">
     <meta property="og:description" content="บริการทำความสะอาดพรีเมียม ซักโซฟา ซักที่นอน ขจัดคราบฝังลึกและไรฝุ่น จองคิวออนไลน์ประเมินราคาทันที">
     <meta property="og:image" content="https://www.all-force.com/logo-cleanforce.png">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -1726,13 +1726,14 @@
         }
 
         // =====================================
-        // 1. ฟังก์ชันคำนวณราคา (แก้ไขบั๊กตัวแปร & อัปเดต DOM ที่ถูกต้อง)
+        // 1. ฟังก์ชันคำนวณราคา (อัปเกรดระบบ 15%+5%+1% & คูปอง)
         // =====================================
         window.calculatePricing = function() {
             let itemCount = 0; 
             let floatDetailsHTML = ''; 
             
-            document.getElementById('sum-type-name').textContent = "จัดแพ็กเกจด้วยตนเอง";
+            let sumTypeNameEl = document.getElementById('sum-type-name');
+            if (sumTypeNameEl) sumTypeNameEl.textContent = "จัดแพ็กเกจด้วยตนเอง";
 
             let addonsTotal = 0; let addonsOrigTotal = 0;
             let sumAddonsHTML = '';
@@ -1775,61 +1776,99 @@
                 </div>`;
             });
             
-            if(cart.addons.length > 0) {
-                document.getElementById('sum-addons-container').innerHTML = '<div class="mt-2">' + sumAddonsHTML + '</div>';
-            } else {
-                document.getElementById('sum-addons-container').innerHTML = '<p class="text-xs text-gray-400 italic mt-2">ยังไม่มีบริการที่เลือก</p>';
+            let addonsContainer = document.getElementById('sum-addons-container');
+            if (addonsContainer) {
+                if(cart.addons.length > 0) {
+                    addonsContainer.innerHTML = '<div class="mt-2">' + sumAddonsHTML + '</div>';
+                } else {
+                    addonsContainer.innerHTML = '<p class="text-xs text-gray-400 italic mt-2">ยังไม่มีบริการที่เลือก</p>';
+                }
             }
 
-            document.getElementById('float-item-count').textContent = itemCount + ' รายการ';
-            document.getElementById('float-details-list').innerHTML = floatDetailsHTML;
+            let floatCountEl = document.getElementById('float-item-count');
+            if (floatCountEl) floatCountEl.textContent = itemCount + ' รายการ';
+            
+            let floatListEl = document.getElementById('float-details-list');
+            if (floatListEl) floatListEl.innerHTML = floatDetailsHTML;
 
             let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
-            let percentDiscount = totalItems > 0 ? (4 + totalItems) : 0;
             
-            // 🌟 1. ส่วนลดพื้นฐาน (ส่วนลดตามจำนวนชิ้น)
-            let baseDiscountAmount = Math.round(addonsTotal * (percentDiscount / 100));
-            
+            // 🌟 1. คำนวณส่วนลดระบบอัตโนมัติ (15% + 5% + 1%) ตามกฎของแอดมิน
+            let baseDiscountAmount = 0;
+            let percentDiscount = 0;
+            let hasAddon = cart.addons.some(item => {
+                let srv = allServices.find(s => s.id === item.id);
+                return srv && srv.type === 'addon';
+            });
+
+            if (window.globalDiscountRules && addonsTotal > 0) {
+                let rules = window.globalDiscountRules;
+                let conditionMet = false;
+
+                if (rules.whenMulti && totalItems > 1) conditionMet = true;
+                if (rules.whenAddon && hasAddon) conditionMet = true;
+                if (!rules.whenMulti && !rules.whenAddon) conditionMet = true;
+
+                if (conditionMet) {
+                    percentDiscount = rules.base || 0; 
+                    if (totalItems >= 2) percentDiscount += (rules.firstAdd || 0); 
+                    if (totalItems >= 3) {
+                        let extraItems = totalItems - 2;
+                        percentDiscount += ((rules.nextAdd || 0) * extraItems); 
+                    }
+                    if (rules.maxLimit > 0 && percentDiscount > rules.maxLimit) {
+                        percentDiscount = rules.maxLimit;
+                    }
+                    baseDiscountAmount = Math.round(addonsTotal * (percentDiscount / 100));
+                }
+            }
+
             // 🌟 2. คำนวณคูปองส่วนลดในตะกร้า
             let couponDiscountAmount = 0;
             let couponHtml = '';
-            let currentNetForCoupon = addonsTotal - baseDiscountAmount; // หักจากยอดหลังหักส่วนลดแรกแล้ว
+            let currentNetForCoupon = addonsTotal - baseDiscountAmount; 
             
-            appliedCoupons.forEach(c => {
-                let disc = 0;
-                if (c.discountType === 'percent') {
-                    disc = Math.round(currentNetForCoupon * (c.discountValue / 100));
-                } else {
-                    disc = c.discountValue;
-                }
-                
-                // กันไม่ให้ลดจนยอดติดลบ
-                if (couponDiscountAmount + disc > currentNetForCoupon) {
-                    disc = currentNetForCoupon - couponDiscountAmount; 
-                }
-                couponDiscountAmount += disc;
+            if (typeof appliedCoupons !== 'undefined') {
+                appliedCoupons.forEach(c => {
+                    let disc = 0;
+                    if (c.discountType === 'percent') {
+                        disc = Math.round(currentNetForCoupon * (c.discountValue / 100));
+                        // ✨ ฟีเจอร์ใหม่: ลิมิตลดสูงสุดจากคูปอง (Max Discount)
+                        if (c.maxDiscount && disc > c.maxDiscount) {
+                            disc = c.maxDiscount;
+                        }
+                    } else {
+                        disc = c.discountValue;
+                    }
+                    
+                    if (couponDiscountAmount + disc > currentNetForCoupon) {
+                        disc = currentNetForCoupon - couponDiscountAmount; 
+                    }
+                    couponDiscountAmount += disc;
 
-                couponHtml += `
-                <div class="flex justify-between items-center bg-green-50 p-2.5 rounded-lg border border-green-200">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check text-green-500 text-lg"></i>
-                        <div>
-                            <p class="text-xs font-bold text-green-700">${c.code}</p>
-                            <p class="text-[10px] text-green-600">${c.name || 'ส่วนลดพิเศษ'}</p>
+                    couponHtml += `
+                    <div class="flex justify-between items-center bg-green-50 p-2.5 rounded-lg border border-green-200">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-green-500 text-lg"></i>
+                            <div>
+                                <p class="text-xs font-bold text-green-700">${c.code}</p>
+                                <p class="text-[10px] text-green-600">${c.name || 'ส่วนลดพิเศษ'}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm font-bold text-green-700">-${disc.toLocaleString()} ฿</span>
-                        <button type="button" onclick="removeAppliedCoupon('${c.code}')" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                </div>`;
-            });
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-bold text-green-700">-${disc.toLocaleString()} ฿</span>
+                            <button type="button" onclick="removeAppliedCoupon('${c.code}')" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>`;
+                });
+            }
 
-            document.getElementById('applied-coupons-area').innerHTML = couponHtml;
+            let couponAreaEl = document.getElementById('applied-coupons-area');
+            if (couponAreaEl) couponAreaEl.innerHTML = couponHtml;
 
-            // ยอดสุทธิขั้นสุดท้าย
             // ยอดสุทธิขั้นสุดท้าย
             let finalPrice = addonsTotal - baseDiscountAmount - couponDiscountAmount;
+            if (finalPrice < 0) finalPrice = 0;
 
             let discHTML = '';
             let floatDiscHTML = '';
@@ -1838,13 +1877,13 @@
             if(baseDiscountAmount > 0 || couponDiscountAmount > 0) {
                 discHTML = '<div class="border-t border-gray-100 mt-3 pt-3 space-y-2">';
                 
-                // 1. บรรทัดโชว์ราคาเต็มก่อนลด (สีเทา ขีดทิ้ง)
+                // บรรทัดโชว์ราคาเต็มก่อนลด
                 discHTML += `<div class="flex justify-between text-gray-400 text-xs px-1">
                     <span>ราคาเต็มก่อนหักส่วนลด:</span>
                     <span class="line-through">${addonsTotal.toLocaleString()} ฿</span>
                 </div>`;
                 
-                // 2. บรรทัดโชว์ส่วนลดบริการเสริม (แสดง %)
+                // บรรทัดโชว์ส่วนลดระบบอัตโนมัติ (แสดง %)
                 if(baseDiscountAmount > 0) {
                     discHTML += `<div class="flex justify-between items-center text-green-600 font-bold text-xs bg-green-50 p-2 rounded-lg">
                         <span><i class="fa-solid fa-tag mr-1"></i>ส่วนลดแพ็กเกจ (${percentDiscount}%)</span>
@@ -1853,7 +1892,7 @@
                     floatDiscHTML += `<div class="flex justify-between text-green-600 font-bold text-[10px]"><span>ส่วนลด (${percentDiscount}%)</span><span>-${baseDiscountAmount.toLocaleString()} ฿</span></div>`;
                 }
                 
-                // 3. บรรทัดโชว์คูปองส่วนลด
+                // บรรทัดโชว์คูปองส่วนลด
                 if(couponDiscountAmount > 0) {
                     discHTML += `<div class="flex justify-between items-center text-[#000080] font-bold text-xs bg-blue-50 p-2 rounded-lg">
                         <span><i class="fa-solid fa-ticket mr-1"></i>คูปองส่วนลด</span>
@@ -1864,21 +1903,21 @@
                 discHTML += '</div>';
             }
 
-            document.getElementById('sum-discount-container').innerHTML = discHTML;
-            document.getElementById('float-details-discount').innerHTML = floatDiscHTML;
+            let sumDiscContainer = document.getElementById('sum-discount-container');
+            if (sumDiscContainer) sumDiscContainer.innerHTML = discHTML;
+            
+            let floatDiscContainer = document.getElementById('float-details-discount');
+            if (floatDiscContainer) floatDiscContainer.innerHTML = floatDiscHTML;
 
-            // 🌟 อัปเดตยอดชำระสุทธิตัวใหญ่ (โชว์ราคาขีดทิ้งคู่กับราคาลดแล้ว)
             let sumNetTotalEl = document.getElementById('sum-net-total');
             if(sumNetTotalEl) {
                 if(baseDiscountAmount > 0 || couponDiscountAmount > 0) {
-                    // ถัามีส่วนลด ให้โชว์: [ราคาเดิมขีดทิ้ง] [ราคาใหม่]
                     sumNetTotalEl.innerHTML = `<span class="text-sm text-gray-400 line-through mr-2 font-normal">${addonsTotal.toLocaleString()} ฿</span>${finalPrice.toLocaleString()} ฿`;
                 } else {
                     sumNetTotalEl.innerHTML = `${finalPrice.toLocaleString()} ฿`;
                 }
             }
 
-            // อัปเดตยอดสุทธิแถบลอยด้านล่าง (Mobile Float Bar)
             let floatNetEl = document.getElementById('float-net-price');
             let floatOrigEl = document.getElementById('float-orig-price');
             let floatOrigContainer = document.getElementById('float-orig-price-container');
@@ -1893,15 +1932,7 @@
                 }
             }
 
-
-
-           // 🛠️ อัปเดต DOM ให้ถูกจุด (ไม่สร้าง HTML ทับของเดิม)
-            document.getElementById('sum-discount-container').innerHTML = discHTML;
-            document.getElementById('float-details-discount').innerHTML = floatDiscHTML;
-
-            // 🛠️ อัปเดตตัวเลขยอดรวมในหน้า Step 5
-            let totalOrig = addonsOrigTotal; // 🌟 เติมบรรทัดนี้เข้าไปครับ (สำคัญมาก!)
-            
+            let totalOrig = addonsOrigTotal; 
             let sumPriceEl = document.getElementById('sum-price');
             let sumOrigEl = document.getElementById('sum-original-price');
             if (sumPriceEl) sumPriceEl.textContent = finalPrice.toLocaleString();
@@ -1917,20 +1948,18 @@
     
 
         // =====================================
-        // 2. ฟังก์ชันยืนยันการจอง (แก้ Validation & LINE URL)
+        // 2. ฟังก์ชันยืนยันการจอง (ประกอบร่างบิล LINE ตามเทมเพลต)
         // =====================================
         window.submitBooking = async function() {
             const submitBtn = document.querySelector('button[onclick="submitBooking()"]');
             const originalBtnText = submitBtn ? submitBtn.innerHTML : 'ยืนยันการจองผ่าน LINE';
             
-            // ล็อคปุ่มกันกดซ้ำ
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังประมวลผล...';
                 submitBtn.disabled = true;
             }
 
             try {
-                // ฟังก์ชันช่วยดึงค่าแบบปลอดภัย
                 const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value.trim() : '';
                 const getCheck = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
 
@@ -1949,19 +1978,13 @@
                 let tambon = getVal('bk-tambon');
                 let amphoe = getVal('bk-amphoe');
                 
-                let address = "";
-                if (houseNo && tambon) {
-                    address = `บ้านเลขที่: ${houseNo} ` + (soi ? `ซอย: ${soi} ` : '') + (road ? `ถนน: ${road} ` : '') + `ต.${tambon} อ.${amphoe} จ.ภูเก็ต`;
-                } else {
-                    address = getVal('bk-address-input') || "-"; 
-                }
+                let address = (houseNo && tambon) ? `บ้านเลขที่: ${houseNo} ` + (soi ? `ซอย: ${soi} ` : '') + (road ? `ถนน: ${road} ` : '') + `ต.${tambon} อ.${amphoe} จ.ภูเก็ต` : (getVal('bk-address-input') || "-");
 
                 let gpsLink = getVal('bk-gps');
                 let isKeyDrop = getCheck('bk-key-drop');
                 let keyDetail = getVal('bk-key-detail');
                 let isReview = getCheck('bk-review-discount');
 
-                // 🛠️ ตรวจสอบข้อมูลบังคับ
                 if(!date || !fname || !phone || !houseNo) { 
                     alert("กรุณากรอก วันที่, ชื่อ, เบอร์โทร และ ที่อยู่ ให้ครบถ้วนก่อนยืนยันครับ"); 
                     if(submitBtn) { submitBtn.innerHTML = originalBtnText; submitBtn.disabled = false; }
@@ -1981,59 +2004,70 @@
                 let modeName = (cart.category === 'furniture') ? 'บริการทำความสะอาดเฟอร์นิเจอร์' : 'บริการทำความสะอาดบ้าน';
                 let baseServiceText = document.getElementById('sum-type-name') ? document.getElementById('sum-type-name').textContent : "จัดแพ็กเกจด้วยตนเอง";
                 
-                // 🌟 ส่วนสำคัญ: คำนวณราคาและสรุปรายการบริการใหม่ตรงนี้เลย! 🌟
                 let addonsText = "";
                 let grossPrice = 0;
 
                 if (cart.addons.length > 0) {
                     cart.addons.forEach(item => {
-                        // ค้นหาข้อมูลบริการจากฐานข้อมูลที่โหลดมาแล้ว (allServices)
                         let srvData = allServices.find(s => s.id === item.id);
                         if(srvData) {
                             let itemPrice = srvData.price || 0;
-                            // ถ้าระบุไซส์ ให้ไปดึงราคาของไซส์นั้น
                             if(srvData.sizes && item.size) {
                                 let szData = srvData.sizes.find(sz => sz.name === item.size);
                                 if(szData) itemPrice = szData.price || 0;
                             }
-                            
                             let lineTotal = itemPrice * item.qty;
-                            grossPrice += lineTotal; // บวกเข้ายอดรวม
-                            
+                            grossPrice += lineTotal; 
                             let sizeTxt = item.size ? `(${item.size})` : "";
-                            addonsText += `- ${srvData.name} ${sizeTxt} x${item.qty} (+${lineTotal.toLocaleString()} ฿)\n`;
+                            addonsText += `   - ${srvData.name} ${sizeTxt} x${item.qty} (+${lineTotal.toLocaleString()} ฿)\n`;
                         }
                     });
                 } else { 
-                    addonsText = "- ไม่มี\n"; 
+                    addonsText = "   - ไม่มี\n"; 
                 }
 
-                // 🌟 คำนวณส่วนลดฝั่ง Submit 🌟
                 let totalItems = cart.addons.reduce((sum, item) => sum + item.qty, 0);
-                let percentDiscount = totalItems > 0 ? (4 + totalItems) : 0;
-                let baseDiscountAmount = Math.round(grossPrice * (percentDiscount / 100));
+                let percentDiscount = 0;
+                let hasAddon = cart.addons.some(item => {
+                    let srv = allServices.find(s => s.id === item.id);
+                    return srv && srv.type === 'addon';
+                });
+
+                if (window.globalDiscountRules && grossPrice > 0) {
+                    let rules = window.globalDiscountRules;
+                    let conditionMet = false;
+                    if (rules.whenMulti && totalItems > 1) conditionMet = true;
+                    if (rules.whenAddon && hasAddon) conditionMet = true;
+                    if (!rules.whenMulti && !rules.whenAddon) conditionMet = true;
+
+                    if (conditionMet) {
+                        percentDiscount = rules.base || 0;
+                        if (totalItems >= 2) percentDiscount += (rules.firstAdd || 0);
+                        if (totalItems >= 3) percentDiscount += ((rules.nextAdd || 0) * (totalItems - 2));
+                        if (rules.maxLimit > 0 && percentDiscount > rules.maxLimit) percentDiscount = rules.maxLimit;
+                    }
+                }
                 
+                let baseDiscountAmount = Math.round(grossPrice * (percentDiscount / 100));
                 let couponDiscountAmount = 0;
                 let currentNetForCoupon = grossPrice - baseDiscountAmount;
-                let appliedCouponsText = appliedCoupons.length > 0 ? "" : "ไม่ได้ใช้\n";
 
-                appliedCoupons.forEach(c => {
-                    let disc = c.discountType === 'percent' ? Math.round(currentNetForCoupon * (c.discountValue / 100)) : c.discountValue;
-                    if (couponDiscountAmount + disc > currentNetForCoupon) disc = currentNetForCoupon - couponDiscountAmount;
-                    couponDiscountAmount += disc;
-                    appliedCouponsText += `- ${c.code} (-${disc.toLocaleString()} ฿)\n`;
-                });
+                if (typeof appliedCoupons !== 'undefined') {
+                    appliedCoupons.forEach(c => {
+                        let disc = c.discountType === 'percent' ? Math.round(currentNetForCoupon * (c.discountValue / 100)) : c.discountValue;
+                        if (c.discountType === 'percent' && c.maxDiscount && disc > c.maxDiscount) disc = c.maxDiscount;
+                        if (couponDiscountAmount + disc > currentNetForCoupon) disc = currentNetForCoupon - couponDiscountAmount;
+                        couponDiscountAmount += disc;
+                    });
+                }
 
                 let reviewDiscount = isReview ? 200 : 0;
                 let netPriceNumber = grossPrice - baseDiscountAmount - couponDiscountAmount - reviewDiscount;
                 if(netPriceNumber < 0) netPriceNumber = 0;
 
-                // 🛠️ แก้ไขซากตัวแปรเก่า ให้ใช้ข้อมูลจากตะกร้าคูปองใหม่
-                let promoText = appliedCoupons.length > 0 ? "\n" + appliedCouponsText : "ไม่ได้ใช้";
-                let reviewText = isReview ? "ยินดีรีวิว (รับส่วนลดแล้ว)" : "ไม่ได้ร่วมรายการ";
                 let orderId = Math.random().toString(36).substring(2, 8).toUpperCase(); 
 
-                // 🛠️ บันทึกลง Firebase 
+                // บันทึกลง Firebase 
                 if (typeof window.cf_db !== 'undefined') {
                     try {
                         let currentUser = window.cf_auth ? window.cf_auth.currentUser : null;
@@ -2052,7 +2086,7 @@
                             address: address,
                             gpsLink: gpsLink,
                             keyDrop: keyInfo,
-                            promoCodes: appliedCoupons.length > 0 ? appliedCoupons.map(c => c.code).join(', ') : "-", // อัปเดตรองรับหลายโค้ด
+                            promoCodes: appliedCoupons.length > 0 ? appliedCoupons.map(c => c.code).join(', ') : "-",
                             totalPrice: netPriceNumber,
                             isReviewDiscount: isReview,
                             status: "รอยืนยัน", 
@@ -2060,7 +2094,6 @@
                         });
                         orderId = docRef.id.slice(0, 6).toUpperCase(); 
 
-                        // 🌟 เพิ่มโค้ดตัดโควต้าคูปอง (ที่ขาดไป)
                         if (appliedCoupons.length > 0) {
                             let batch = window.cf_db.batch();
                             appliedCoupons.forEach(c => {
@@ -2072,58 +2105,50 @@
                     } catch(e) { console.warn("Firestore Skip:", e); }
                 }
 
-                // สร้างข้อความสรุปยอดเข้า LINE
-                let summary = "==== 📝 ใบจองบริการ (รอแอดมินยืนยัน) ====\n" +
-                              "รหัสการจอง: " + orderId + "\n" +
-                              "ประเภท: " + modeName + "\n" +
-                              "บริการหลัก: " + baseServiceText + "\n" +
-                              "รายการที่เลือก:\n" + addonsText + 
-                              "นัดหมาย: " + date + " เวลา " + time + " น.\n" +
-                              "------------------------------\n" +
-                              "ชื่อลูกค้า: " + name + "\n" +
-                              "เบอร์โทร: " + phone + "\n" +
-                              "ที่อยู่: " + address + "\n" +
-                              "การดูแล: " + extraCare + "\n" +
-                              "เน้นพิเศษ: " + note + "\n" +
-                              "พิกัด GPS: " + (gpsLink ? gpsLink : "-") + "\n" +
-                              "กุญแจ: " + keyInfo + "\n" +
-                              "------------------------------\n" +
-                              "ราคาสุทธิที่ระบบคำนวณ: " + netPriceNumber.toLocaleString() + " บาท (ราคาเต็ม " + grossPrice.toLocaleString() + " บาท)\n" +
-                              "ส่วนลดแพ็กเกจ: " + (baseDiscountAmount > 0 ? `ลด ${percentDiscount}% (-${baseDiscountAmount.toLocaleString()} ฿)` : 'ไม่มี') + "\n" +
-                              "การรีวิว: " + reviewText + "\n" +
-                              "โค้ดส่วนลด: " + promoText +
-                              "🚨 (หมายเหตุ: แอดมินโปรดตรวจสอบความถูกต้องของราคาและส่วนลดอีกครั้งก่อนคอนเฟิร์มลูกค้า)\n" +
-                              "==============================";
+                // 🌟 ระบบประกอบร่างบิล LINE (ตามรูปแบบที่แอดมินตั้งไว้)
+                let templateData = window.globalLineTemplate || {};
+                let layout = templateData.template || [
+                    { id: 'orderId', active: true },
+                    { id: 'service', active: true },
+                    { id: 'datetime', active: true },
+                    { id: 'customer', active: true },
+                    { id: 'note', active: true },
+                    { id: 'price', active: true }
+                ];
+                
+                let headerText = templateData.headerText || '==== 📝 ใบจองบริการ ====';
+                let summary = headerText + "\n";
+                
+                if (templateData.showTimestamp !== false) {
+                    let now = new Date();
+                    summary += `(กดจองเมื่อ: ${now.toLocaleDateString('th-TH')} ${now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})} น.)\n`;
+                }
+
+                layout.forEach(item => {
+                    if (!item.active) return;
+                    
+                    if (item.id === 'orderId') summary += `\n🔸 รหัสการจอง: ${orderId}`;
+                    if (item.id === 'service') summary += `\n🔸 ประเภท: ${modeName}\n🔸 บริการหลัก: ${baseServiceText}\n🔸 รายการที่เลือก:\n${addonsText.trimEnd()}`;
+                    if (item.id === 'datetime') summary += `\n🔸 นัดหมาย: ${date} เวลา ${time} น.`;
+                    if (item.id === 'customer') summary += `\n🔸 ลูกค้า: ${name}\n🔸 โทร: ${phone}\n🔸 ที่อยู่: ${address}`;
+                    if (item.id === 'note') summary += `\n🔸 การดูแล: ${extraCare}\n🔸 เน้นพิเศษ: ${note}\n🔸 พิกัด GPS: ${gpsLink ? gpsLink : "-"}\n🔸 กุญแจ: ${keyInfo}`;
+                    if (item.id === 'price') {
+                        summary += `\n\n💰 ราคาสุทธิ: ${netPriceNumber.toLocaleString()} บาท\n   (ราคาเต็ม ${grossPrice.toLocaleString()} บาท)`;
+                        if (baseDiscountAmount > 0) summary += `\n   (ส่วนลดแพ็กเกจ -${baseDiscountAmount.toLocaleString()} ฿)`;
+                        if (couponDiscountAmount > 0) summary += `\n   (คูปองส่วนลด -${couponDiscountAmount.toLocaleString()} ฿)`;
+                    }
+                });
+
+                summary += "\n\n🚨 (หมายเหตุ: โปรดตรวจสอบความถูกต้องของราคาและส่วนลดอีกครั้ง)\n==============================";
 
                 let encodedMessage = encodeURIComponent(summary);
-                // 🌟 อัปเดตยอดการใช้คูปองในฐานข้อมูล (ถ้ามีการใช้คูปอง)
-        let appliedCode = document.getElementById('promo-code-input').value.toUpperCase().trim();
-        if (appliedCode && netPriceNumber < grossPrice) { // เช็คว่าใส่โค้ดจริงและได้ลดราคาจริง
-            try {
-                // ค้นหาคูปองไอดีนั้น
-                const snapshot = await window.cf_db.collection('coupons').where('code', '==', appliedCode).get();
-                if (!snapshot.empty) {
-                    let docId = snapshot.docs[0].id;
-                    // สั่งบวกยอด usedCount ขึ้น 1
-                    await window.cf_db.collection('coupons').doc(docId).update({
-                        usedCount: firebase.firestore.FieldValue.increment(1)
-                    });
-                }
-            } catch (error) {
-                console.error("อัปเดตยอดคูปองไม่สำเร็จ: ", error);
-            }
-        }
                 let lineUrl = "https://line.me/R/oaMessage/@cleanforce/?" + encodedMessage;
                 
-                
-                // 🌟 ระบบตรวจจับมือถือ หรือ PC
                 let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
                 if (isMobile) {
-                    // ถ้าเป็นมือถือ ให้เด้งเปิดแอป LINE ได้เลย
                     window.location.href = lineUrl;
                 } else {
-                    // ถ้าเป็นคอมพิวเตอร์ (PC) ให้โชว์ป๊อปอัปให้คัดลอกข้อความ
                     document.getElementById('pc-booking-summary').value = summary;
                     document.getElementById('pc-line-modal').classList.remove('hidden');
                     document.getElementById('pc-line-modal').classList.add('flex');
@@ -2251,6 +2276,24 @@
             }
         }
         
+        // ✨ สร้างตัวแปรและฟังก์ชันสำหรับโหลดกฎราคาอัตโนมัติ (15% + 5% + 1%)
+        window.globalDiscountRules = null; 
+        async function loadDiscountRules() {
+            try {
+                let doc = await db.collection('settings').doc('discount_rules').get();
+                if (doc.exists) window.globalDiscountRules = doc.data();
+            } catch(e) { console.log('ยังไม่มีการตั้งกฎราคาจากแอดมิน'); }
+        }
+
+        // ✨ โหลดรูปแบบบิล LINE จากฐานข้อมูล
+        window.globalLineTemplate = null; 
+        async function loadLineTemplateWeb() {
+            try {
+                let doc = await window.cf_db.collection('settings').doc('line_template').get();
+                if (doc.exists) window.globalLineTemplate = doc.data();
+            } catch(e) { console.log('ยังไม่มีการตั้งค่าเทมเพลต LINE'); }
+        }
+
         // เริ่มโหลดข้อมูลเมื่อโครงสร้างหน้าเว็บ (DOM) โหลดเสร็จเท่านั้น
         document.addEventListener('DOMContentLoaded', () => {
             // 1. ตั้งค่าวันที่ขั้นต่ำ (ให้จองล่วงหน้า 1 วัน)
@@ -2278,6 +2321,8 @@
             // 3. รอจนกว่า Firebase จะ Initialization เสร็จ แล้วค่อยโหลดข้อมูล
             setTimeout(() => {
                 initTranslationSystem();
+                loadDiscountRules();
+                loadLineTemplateWeb(); // ✨ โหลดกฎโปรโมชั่นของระบบมาเตรียมไว้ให้พร้อม
                 loadPublicCoupons(); // โหลดคูปองโชว์ให้ลูกค้าทันที
                 loadDynamicServices();
                 loadSocialProfile();
@@ -2546,25 +2591,27 @@
             });
         };
 
-        // ปรับให้พอกดคูปองแล้ว ให้เลื่อนจอไปที่แบบฟอร์มการจองอัตโนมัติ
-        window.autoApplyCouponAndScroll = function(code) {
+        // ฟังก์ชันเวลากดรับคูปองจากหน้าเว็บ (เลื่อนลงมาที่หน้าจองพร้อมกรอกโค้ด)
+        window.autoApplyCouponAndScroll = async function(code) {
             let inputEl = document.getElementById('promo-code-input');
             if(inputEl) {
                 inputEl.value = code;
-                applyPromoCode(); 
                 document.getElementById('booking-cf').scrollIntoView({ behavior: 'smooth' });
                 
-                // แจ้งเตือนให้ลูกค้ารู้ว่าใส่โค้ดให้แล้ว
-                Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'เก็บโค้ดแล้ว! ระบบจะคำนวณส่วนลดให้ในขั้นตอนสรุปยอดครับ', showConfirmButton: false, timer: 3000 });
+                // สั่งให้เช็คคูปองจากระบบใหม่ที่เราเพิ่งทำไป
+                await applyPromoCode(); 
             }
         };
 
-        // 🌟 ฟังก์ชันกดรับคูปองอัตโนมัติ
-        window.autoApplyCoupon = function(code) {
+        // ฟังก์ชันกรอกโค้ดอัตโนมัติแบบไม่เลื่อนหน้าจอ
+        window.autoApplyCoupon = async function(code) {
             let inputEl = document.getElementById('promo-code-input');
-            inputEl.value = code;
-            applyPromoCode(); // สั่งให้ระบบเช็คเงื่อนไขและหักเงินทันที
+            if(inputEl) {
+                inputEl.value = code;
+                await applyPromoCode(); 
+            }
         };
+
         // 🌟 ฟังก์ชันยกเลิกการใช้คูปอง
         function clearCoupon() {
             document.getElementById('btn-clear-coupon').classList.remove('hidden');

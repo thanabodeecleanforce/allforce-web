@@ -1519,6 +1519,9 @@
             } else if (type === 'services') {
                 document.getElementById('table-container').classList.remove('hidden');
                 renderTable(); 
+            } else if (type === 'line') {
+                document.getElementById('line-container').classList.remove('hidden');
+                if (typeof loadLineTemplate === 'function') loadLineTemplate();
             }
         };
 
@@ -2830,6 +2833,126 @@
             }
         }
 
+        // ==========================================
+        // 📱 4. ระบบตั้งค่าบิล LINE (LINE Template)
+        // ==========================================
+        
+        // โครงสร้างมาตรฐานตั้งต้น
+        let currentLineTemplate = [
+            { id: 'orderId', label: 'รหัสการจอง', active: true },
+            { id: 'service', label: 'แพ็กเกจ และ บริการเสริม', active: true },
+            { id: 'datetime', label: 'วัน-เวลานัดหมาย', active: true },
+            { id: 'customer', label: 'ข้อมูลลูกค้า (ชื่อ, เบอร์, ที่อยู่)', active: true },
+            { id: 'note', label: 'จุดเน้นพิเศษ / ฝากกุญแจ', active: true },
+            { id: 'price', label: 'สรุปยอดเงิน / ส่วนลด', active: true }
+        ];
+
+        window.loadLineTemplate = async function() {
+            try {
+                let doc = await db.collection('settings').doc('line_template').get();
+                if (doc.exists) {
+                    let d = doc.data();
+                    if (d.template && d.template.length > 0) currentLineTemplate = d.template;
+                    if (document.getElementById('line-header-text')) document.getElementById('line-header-text').value = d.headerText || '🔥 มีลูกค้ารอคอนเฟิร์มคิวใหม่!';
+                    if (document.getElementById('line-show-timestamp')) document.getElementById('line-show-timestamp').checked = d.showTimestamp !== false;
+                } else {
+                    document.getElementById('line-header-text').value = '==== 📝 ใบจองบริการ (รอแอดมินยืนยัน) ====';
+                }
+                renderLineTemplate();
+            } catch(e) { 
+                console.log("ยังไม่มีการตั้งค่า LINE Template"); 
+                renderLineTemplate();
+            }
+        }
+
+        window.renderLineTemplate = function() {
+            let container = document.getElementById('line-template-list');
+            if(!container) return;
+
+            let html = '';
+            currentLineTemplate.forEach((item, idx) => {
+                let activeClass = item.active ? 'bg-white border-green-200' : 'bg-gray-100 border-gray-200 opacity-60';
+                let switchColor = item.active ? 'bg-green-500' : 'bg-gray-300';
+                
+                html += `
+                <div class="flex items-center gap-3 p-3 rounded-xl border shadow-sm transition-all ${activeClass}">
+                    <div class="flex flex-col gap-1">
+                        <button onclick="moveLineItem(${idx}, -1)" class="text-gray-400 hover:text-primary transition" ${idx===0?'disabled opacity-30':''}><i class="fa-solid fa-chevron-up text-xs"></i></button>
+                        <button onclick="moveLineItem(${idx}, 1)" class="text-gray-400 hover:text-primary transition" ${idx===currentLineTemplate.length-1?'disabled opacity-30':''}><i class="fa-solid fa-chevron-down text-xs"></i></button>
+                    </div>
+                    <div class="flex-1 font-bold text-sm text-gray-700">${item.label}</div>
+                    <button onclick="toggleLineItem(${idx})" class="w-10 h-6 rounded-full relative transition-colors ${switchColor}">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${item.active ? 'right-1' : 'left-1'}"></div>
+                    </button>
+                </div>`;
+            });
+            container.innerHTML = html;
+            updateLinePreview(); // อัปเดตหน้าจอมือถือจำลอง
+        }
+
+        window.moveLineItem = function(index, direction) {
+            let newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= currentLineTemplate.length) return;
+            let temp = currentLineTemplate[index];
+            currentLineTemplate[index] = currentLineTemplate[newIndex];
+            currentLineTemplate[newIndex] = temp;
+            renderLineTemplate();
+        }
+
+        window.toggleLineItem = function(index) {
+            currentLineTemplate[index].active = !currentLineTemplate[index].active;
+            renderLineTemplate();
+        }
+
+        // อัปเดตกล่องจำลองแชท LINE (Preview)
+        window.updateLinePreview = function() {
+            let headerText = document.getElementById('line-header-text') ? document.getElementById('line-header-text').value : '';
+            let showTime = document.getElementById('line-show-timestamp') ? document.getElementById('line-show-timestamp').checked : true;
+            
+            let previewHTML = `<strong class="text-[#000080] text-sm">${headerText || '==== 📝 ใบจองบริการ ===='}</strong>\n`;
+            if (showTime) previewHTML += `<span class="text-gray-400 text-[10px]">(กดจองเมื่อ: วันนี้ 14:30 น.)</span>\n`;
+            
+            currentLineTemplate.forEach(item => {
+                if (!item.active) return; // ถ้าปิดไว้ ไม่ต้องโชว์
+                
+                if (item.id === 'orderId') previewHTML += `\n🔸 รหัสการจอง: CF-123456`;
+                if (item.id === 'service') previewHTML += `\n🔸 ประเภท: ทำความสะอาดบ้าน\n   - ซักโซฟา (2 ที่นั่ง) x1\n   - อบโอโซนฆ่าเชื้อ x1`;
+                if (item.id === 'datetime') previewHTML += `\n🔸 นัดหมาย: 25 เม.ย. 2567 เวลา 09:00 น.`;
+                if (item.id === 'customer') previewHTML += `\n🔸 ลูกค้า: คุณสมชาย ใจดี\n🔸 โทร: 081-234-5678\n🔸 ที่อยู่: 123/45 หมู่บ้านสุขสันต์ ต.วิชิต...`;
+                if (item.id === 'note') previewHTML += `\n🔸 เน้นพิเศษ: มีฝุ่นใต้เตียงเยอะมาก\n🔸 กุญแจ: ฝากไว้ที่ป้อม รปภ.`;
+                if (item.id === 'price') previewHTML += `\n\n💰 ราคาสุทธิ: 1,850 บาท\n   (ราคาเต็ม 2,500 บาท)\n   (ส่วนลดแพ็กเกจ -500 ฿)\n   (คูปอง SUMMER -150 ฿)`;
+            });
+
+            let box = document.getElementById('line-preview-box');
+            if (box) box.innerHTML = previewHTML.replace(/\n/g, '<br>');
+        }
+
+        // เพิ่ม Event ให้กล่องข้อความพาดหัว (พิมพ์ปุ๊บ พรีวิวเปลี่ยนปั๊บ)
+        let headerInput = document.getElementById('line-header-text');
+        if (headerInput) {
+            headerInput.addEventListener('input', updateLinePreview);
+        }
+        let timeCheck = document.getElementById('line-show-timestamp');
+        if (timeCheck) {
+            timeCheck.addEventListener('change', updateLinePreview);
+        }
+
+        window.saveLineTemplate = async function() {
+            let data = {
+                template: currentLineTemplate,
+                headerText: document.getElementById('line-header-text').value.trim(),
+                showTimestamp: document.getElementById('line-show-timestamp').checked,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+            try {
+                await db.collection('settings').doc('line_template').set(data);
+                Swal.fire({ icon: 'success', title: 'บันทึกรูปแบบบิลสำเร็จ!', showConfirmButton: false, timer: 1500 });
+            } catch (e) {
+                Swal.fire('Error', e.message, 'error');
+            }
+        }
     </script>
     
 </body>
