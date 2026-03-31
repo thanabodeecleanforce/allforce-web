@@ -594,6 +594,7 @@
     
     <div id="coupon-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+        
         <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
             <h3 class="font-bold text-lg text-[#000080]" id="coupon-modal-title"><i class="fa-solid fa-ticket text-primary mr-2"></i>สร้างคูปองใหม่</h3>
             <button onclick="closeCouponModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
@@ -607,15 +608,22 @@
                 <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-bold text-gray-600 mb-1">รหัสโค้ด (ลูกค้ากรอก) <span class="text-red-500">*</span></label><input type="text" id="cpn-code" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary uppercase font-bold text-primary" placeholder="เช่น SONGKRAN26"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div class="col-span-2 sm:col-span-1">
                     <label class="block text-xs font-bold text-gray-600 mb-1">ประเภทส่วนลด</label>
                     <select id="cpn-type" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white">
                         <option value="fixed">ลดเป็นบาท (฿)</option>
                         <option value="percent">ลดเป็นเปอร์เซ็นต์ (%)</option>
                     </select>
                 </div>
-                <div><label class="block text-xs font-bold text-gray-600 mb-1">มูลค่าที่ลด <span class="text-red-500">*</span></label><input type="number" id="cpn-value" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary font-bold text-green-600" placeholder="เช่น 100 หรือ 10"></div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">มูลค่าที่ลด <span class="text-red-500">*</span></label>
+                    <input type="number" id="cpn-value" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary font-bold text-green-600" placeholder="เช่น 100 หรือ 10">
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">ลดสูงสุดไม่เกิน (บาท)</label>
+                    <input type="number" id="cpn-max-discount" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-red-500 text-red-600 font-bold" placeholder="เว้นว่าง = ไม่จำกัด">
+                </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -624,8 +632,18 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-xs font-bold text-gray-600 mb-1">วันเริ่มต้น</label><input type="date" id="cpn-start" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
-                <div><label class="block text-xs font-bold text-gray-600 mb-1">วันหมดอายุ</label><input type="date" id="cpn-end" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
+                <div><label class="block text-xs font-bold text-gray-600 mb-1">วัน/เวลา เริ่มต้น</label><input type="datetime-local" id="cpn-start" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
+                <div><label class="block text-xs font-bold text-gray-600 mb-1">วัน/เวลา หมดอายุ</label><input type="datetime-local" id="cpn-end" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:border-primary"></div>
+                
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">🎯 หมวดหมู่ที่ใช้โค้ดได้</label>
+                    <select id="cpn-category" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-primary bg-white font-bold text-[#000080]">
+                        <option value="all">✅ ทุกหมวดหมู่ (ใช้ได้หมด)</option>
+                        <option value="house">🏠 เฉพาะ แพ็กเกจทำความสะอาดบ้าน/คอนโด</option>
+                        <option value="furniture">🛋️ เฉพาะ แพ็กเกจซักเฟอร์นิเจอร์</option>
+                        <option value="addon">✨ เฉพาะ บริการเสริม (Add-on)</option>
+                    </select>
+                </div>
             </div>
 
             <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
@@ -674,6 +692,7 @@
             </button>
         </div>
     </div>
+</div>
 </div>
 
     <div id="user-pkg-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
@@ -2418,11 +2437,13 @@
         }
 
         // ==========================================
-        // 🌟 ระบบคูปองส่วนลด (Promo Codes)
+        // 🎟️ 1. ระบบคูปองส่วนลด (อัปเกรดฟีเจอร์)
         // ==========================================
-        let allCoupons = [];
+        let allCoupons = []; // ตัวแปรเก็บข้อมูลคูปองทั้งหมด
 
-        function loadCouponsAdmin() {
+        window.loadCouponsAdmin = function() {
+            if (typeof loadGlobalDiscountRules === 'function') loadGlobalDiscountRules(); // โหลดกฎราคาอัตโนมัติมาแสดง
+
             db.collection("coupons").orderBy("createdAt", "desc").onSnapshot(snapshot => {
                 allCoupons = [];
                 let html = '';
@@ -2436,18 +2457,23 @@
                         let badge = c.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600';
                         let limitText = c.usageLimit ? `${c.usedCount || 0} / ${c.usageLimit}` : 'ไม่จำกัด';
                         let discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue} ฿`;
-                        let targetText = c.targetEmails ? '<br><span class="text-[9px] bg-blue-50 text-blue-600 px-1 rounded">เฉพาะบุคคล</span>' : '';
+                        
+                        // ✨ แสดงลิมิตลดสูงสุด และ หมวดหมู่ ในตาราง
+                        if (c.maxDiscount) discountText += `<br><span class="text-[9px] text-red-500 font-medium">ลดสูงสุดไม่เกิน ${c.maxDiscount} ฿</span>`;
+                        let catText = (c.category && c.category !== 'all') ? `<br><span class="text-[9px] bg-yellow-50 text-yellow-700 border border-yellow-200 px-1.5 py-0.5 rounded mt-1 inline-block">เฉพาะหมวด: ${c.category}</span>` : '';
+                        
+                        let targetText = c.targetEmails ? '<br><span class="text-[9px] bg-blue-50 text-blue-600 px-1 rounded inline-block mt-1">เฉพาะบุคคล</span>' : '';
                         let stackText = c.isStackable ? '<span class="text-[9px] bg-purple-50 text-purple-600 px-1 rounded ml-1">ลด 2 ต่อ</span>' : '';
                         
                         html += `
                         <tr class="hover:bg-gray-50 border-b border-gray-50">
                             <td class="p-4">
-                                <button onclick="toggleCouponStatus('${c.id}', ${c.isActive})" class="text-[10px] font-bold px-2 py-1 rounded mb-1 ${badge}">${c.isActive ? 'เปิดใช้' : 'ปิด'}</button><br>
+                                <button onclick="toggleCouponStatus('${c.id}', ${c.isActive})" class="text-[10px] font-bold px-2 py-1 rounded mb-1 transition hover:brightness-95 ${badge}">${c.isActive ? 'เปิดใช้' : 'ปิด'}</button><br>
                                 <span class="font-bold text-primary bg-blue-50 px-2 py-0.5 rounded border border-blue-100">${c.code}</span>
                             </td>
-                            <td class="p-4"><p class="font-bold text-gray-800">${discountText}</p><p class="text-[10px] text-gray-500">${c.name || '-'}</p></td>
+                            <td class="p-4"><p class="font-bold text-gray-800">${discountText}</p><p class="text-[10px] text-gray-500">${c.name || '-'}</p>${catText}</td>
                             <td class="p-4"><p class="text-xs font-bold text-gray-700"><i class="fa-solid fa-users text-gray-400 text-[10px]"></i> ใช้ไป: ${limitText}</p><p class="text-[10px] text-gray-500">ขั้นต่ำ: ${c.minSpend ? c.minSpend+'฿' : 'ไม่มี'}</p>${targetText}${stackText}</td>
-                            <td class="p-4 text-xs text-gray-500">${c.startDate || '-'} <br>ถึง ${c.endDate || 'ไม่มีวันหมดอายุ'}</td>
+                            <td class="p-4 text-xs text-gray-500">${c.startDate ? c.startDate.replace('T', ' ') : '-'} <br>ถึง ${c.endDate ? c.endDate.replace('T', ' ') : 'ไม่มีวันหมดอายุ'}</td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-1">
                                     <button onclick="openCouponModal('${c.id}')" class="w-7 h-7 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition"><i class="fa-solid fa-pen text-[10px]"></i></button>
@@ -2461,7 +2487,7 @@
             });
         }
 
-        function openCouponModal(id = null) {
+        window.openCouponModal = function(id = null) {
             document.getElementById('coupon-modal').classList.remove('hidden');
             if (id) {
                 document.getElementById('coupon-modal-title').innerHTML = '<i class="fa-solid fa-pen text-primary mr-2"></i>แก้ไขคูปอง';
@@ -2471,6 +2497,8 @@
                 document.getElementById('cpn-code').value = c.code || '';
                 document.getElementById('cpn-type').value = c.discountType || 'fixed';
                 document.getElementById('cpn-value').value = c.discountValue || '';
+                document.getElementById('cpn-max-discount').value = c.maxDiscount || ''; // ✨ ฟิลด์ใหม่
+                document.getElementById('cpn-category').value = c.category || 'all'; // ✨ ฟิลด์ใหม่
                 document.getElementById('cpn-limit').value = c.usageLimit || '';
                 document.getElementById('cpn-min-spend').value = c.minSpend || '';
                 document.getElementById('cpn-start').value = c.startDate || '';
@@ -2486,14 +2514,17 @@
                 document.getElementById('cpn-id').value = '';
                 document.querySelectorAll('#coupon-modal input').forEach(el => el.value = '');
                 document.getElementById('cpn-type').value = 'fixed';
+                document.getElementById('cpn-category').value = 'all'; // ✨ ฟิลด์ใหม่
                 document.getElementById('cpn-stackable').value = 'false';
                 document.getElementById('cpn-active').value = 'true';
+                document.getElementById('cpn-public').value = 'true';
+                document.getElementById('cpn-popup').value = 'false';
             }
         }
 
-        function closeCouponModal() { document.getElementById('coupon-modal').classList.add('hidden'); }
+        window.closeCouponModal = function() { document.getElementById('coupon-modal').classList.add('hidden'); }
 
-        async function saveCoupon() {
+        window.saveCoupon = async function() {
             let id = document.getElementById('cpn-id').value;
             let code = document.getElementById('cpn-code').value.trim().toUpperCase();
             let value = document.getElementById('cpn-value').value;
@@ -2505,6 +2536,8 @@
                 code: document.getElementById('cpn-code').value.toUpperCase(),
                 discountType: document.getElementById('cpn-type').value,
                 discountValue: Number(value),
+                maxDiscount: document.getElementById('cpn-max-discount').value ? Number(document.getElementById('cpn-max-discount').value) : null, // ✨ ฟิลด์ใหม่
+                category: document.getElementById('cpn-category').value, // ✨ ฟิลด์ใหม่
                 usageLimit: document.getElementById('cpn-limit').value ? Number(document.getElementById('cpn-limit').value) : null,
                 minSpend: document.getElementById('cpn-min-spend').value ? Number(document.getElementById('cpn-min-spend').value) : 0,
                 startDate: document.getElementById('cpn-start').value,
@@ -2514,23 +2547,19 @@
                 prerequisiteCode: document.getElementById('cpn-require').value.trim().toUpperCase(),
                 isActive: document.getElementById('cpn-active').value === 'true',
                 isPublic: document.getElementById('cpn-public').value === 'true',
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                isPopup: document.getElementById('cpn-popup').value === 'true'
+                isPopup: document.getElementById('cpn-popup').value === 'true',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
             try {
                 if(id) { 
-                    // อัปเดตข้อมูลเดิม
                     await db.collection("coupons").doc(id).update(payload); 
                 } else { 
-                    // 🌟 เพิ่มระบบเช็ครหัสซ้ำก่อนบันทึกใหม่
                     const checkExist = await db.collection("coupons").where("code", "==", payload.code).get();
                     if (!checkExist.empty) {
-                        Swal.fire('ข้อผิดพลาด', 'รหัสคูปองนี้มีอยู่ในระบบแล้ว! โปรดเปลี่ยนรหัสใหม่', 'error');
-                        return; // สั่งหยุดทำงานทันที ไม่ให้บันทึกลงฐานข้อมูล
+                        return Swal.fire('ข้อผิดพลาด', 'รหัสคูปองนี้มีอยู่ในระบบแล้ว! โปรดเปลี่ยนรหัสใหม่', 'error');
                     }
-
                     payload.usedCount = 0;
                     payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                     await db.collection("coupons").add(payload); 
@@ -2542,12 +2571,12 @@
             }
         }
 
-        async function toggleCouponStatus(id, currentStatus) {
+        window.toggleCouponStatus = async function(id, currentStatus) {
             try { await db.collection("coupons").doc(id).update({ isActive: !currentStatus }); } 
             catch(e) { console.error(e); }
         }
 
-        function deleteCoupon(id) {
+        window.deleteCoupon = function(id) {
             Swal.fire({ title: 'ลบคูปองนี้?', text: "ลบแล้วกู้คืนไม่ได้ ลูกค้าจะใช้โค้ดนี้ไม่ได้อีก", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444' })
             .then(async (result) => {
                 if (result.isConfirmed) {
@@ -2557,6 +2586,93 @@
             });
         }
 
+        // ==========================================
+        // ⚙️ 2. ระบบกฎลดราคาอัตโนมัติ (Multi-Item Rules)
+        // ==========================================
+        window.loadGlobalDiscountRules = async function() {
+            try {
+                let doc = await db.collection('settings').doc('discount_rules').get();
+                if (doc.exists) {
+                    let d = doc.data();
+                    document.getElementById('rule-base').value = d.base || 0;
+                    document.getElementById('rule-first-add').value = d.firstAdd || 0;
+                    document.getElementById('rule-next-add').value = d.nextAdd || 0;
+                    document.getElementById('rule-max-limit').value = d.maxLimit || 0;
+                    document.getElementById('cond-addon').checked = d.whenAddon || false;
+                    document.getElementById('cond-multi').checked = d.whenMulti || false;
+                }
+            } catch (e) { console.log("ยังไม่มีการตั้งกฎระบบ"); }
+        }
+
+        window.saveGlobalDiscountRules = async function() {
+            let data = {
+                base: parseFloat(document.getElementById('rule-base').value) || 0,
+                firstAdd: parseFloat(document.getElementById('rule-first-add').value) || 0,
+                nextAdd: parseFloat(document.getElementById('rule-next-add').value) || 0,
+                maxLimit: parseFloat(document.getElementById('rule-max-limit').value) || 0,
+                whenAddon: document.getElementById('cond-addon').checked,
+                whenMulti: document.getElementById('cond-multi').checked,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            try {
+                await db.collection('settings').doc('discount_rules').set(data);
+                Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'บันทึกกฎระบบแล้ว', showConfirmButton: false, timer: 1500});
+            } catch (e) { Swal.fire('Error', e.message, 'error'); }
+        }
+
+        // ==========================================
+        // 🧪 3. ระบบจำลองคำนวณคูปอง (Simulator)
+        // ==========================================
+        window.testCouponCalculation = async function() {
+            let subtotal = parseFloat(document.getElementById('test-subtotal').value);
+            let code = document.getElementById('test-code').value.trim().toUpperCase();
+            let resultBox = document.getElementById('test-result-box');
+
+            if (!subtotal || !code) {
+                resultBox.innerHTML = '<span class="text-red-500">กรุณากรอกยอดตั้งต้น และ โค้ดคูปอง ให้ครบถ้วน</span>';
+                resultBox.className = "mt-3 p-3 rounded-lg border text-sm font-bold bg-red-50 border-red-200 block";
+                return;
+            }
+
+            try {
+                resultBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-blue-500"></i> กำลังคำนวณ...';
+                resultBox.className = "mt-3 p-3 rounded-lg border text-sm font-bold bg-white border-gray-200 block";
+
+                let snapshot = await db.collection('coupons').where('code', '==', code).get();
+                if (snapshot.empty) {
+                    resultBox.innerHTML = '❌ ไม่พบคูปองนี้ในระบบ หรือพิมพ์ผิด';
+                    return;
+                }
+
+                let cpn = snapshot.docs[0].data();
+                
+                if (!cpn.isActive) return resultBox.innerHTML = '❌ คูปองนี้ถูก ปิดใช้งาน ชั่วคราว';
+                if (cpn.minSpend && subtotal < cpn.minSpend) return resultBox.innerHTML = `❌ ยอดไม่ถึงขั้นต่ำ (ต้องมียอดอย่างน้อย ฿${cpn.minSpend})`;
+
+                let discountAmount = 0;
+                if (cpn.discountType === 'percent') {
+                    discountAmount = subtotal * (cpn.discountValue / 100);
+                    if (cpn.maxDiscount && discountAmount > cpn.maxDiscount) discountAmount = cpn.maxDiscount;
+                } else {
+                    discountAmount = cpn.discountValue;
+                }
+
+                if (discountAmount > subtotal) discountAmount = subtotal; // กันส่วนลดเกินค่าของ
+                let netPrice = subtotal - discountAmount;
+
+                let catWarning = (cpn.category && cpn.category !== 'all') ? `<div class="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-1 rounded mb-2 border border-yellow-200">⚠️ คูปองนี้ตั้งค่าให้ใช้ได้เฉพาะหมวด: ${cpn.category}</div>` : '';
+
+                resultBox.innerHTML = `
+                    <div class="text-green-600 mb-2">✅ โค้ดใช้งานได้! (${cpn.name || 'ไม่มีชื่อแคมเปญ'})</div>
+                    ${catWarning}
+                    <div class="flex justify-between text-gray-600"><span>ยอดตั้งต้น:</span> <span>฿${subtotal.toLocaleString()}</span></div>
+                    <div class="flex justify-between text-red-500"><span>ส่วนลดที่ได้:</span> <span>- ฿${discountAmount.toLocaleString()}</span></div>
+                    <div class="flex justify-between text-[#000080] text-lg mt-1 pt-1 border-t border-gray-200"><span>ยอดสุทธิ:</span> <span>฿${netPrice.toLocaleString()}</span></div>
+                `;
+            } catch(e) {
+                resultBox.innerHTML = 'เกิดข้อผิดพลาดในการดึงข้อมูล';
+            }
+        }
         // ============================================================
         // 📰 NEWS & PROMOTION MANAGEMENT
         // ============================================================
