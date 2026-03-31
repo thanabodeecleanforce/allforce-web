@@ -80,6 +80,7 @@
                 <button onclick="switchMainTab('services')" id="nav-services" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold bg-blue-50 text-primary transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-box-open w-5 text-center"></i> <span class="whitespace-nowrap">จัดการบริการ</span></button>
                 <button onclick="switchMainTab('booking')" id="nav-booking" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-calendar-check w-5 text-center"></i> <span class="whitespace-nowrap">รายการจอง</span></button>
                 <button onclick="switchMainTab('coupons')" id="nav-coupons" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-ticket w-5 text-center"></i> <span class="whitespace-nowrap">ส่วนลด & คูปอง</span></button>
+                <button onclick="switchMainTab('line')" id="nav-line" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-brands fa-line text-green-500 w-5 text-center text-lg"></i> <span class="whitespace-nowrap">ตั้งค่าบิล & LINE</span></button>
                 <button onclick="switchMainTab('clients')" id="nav-clients" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-handshake w-5 text-center"></i> <span class="whitespace-nowrap">ลูกค้าของเรา</span></button>
                 <button onclick="switchMainTab('portfolio')" id="nav-portfolio" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-images w-5 text-center"></i> <span class="whitespace-nowrap">ผลงานของเรา</span></button>
                 
@@ -464,6 +465,43 @@
                 </table>
             </div>
         </div>
+        <div id="line-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in">
+            <div class="p-4 md:p-6 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg md:text-xl font-bold text-[#000080]"><i class="fa-brands fa-line mr-2 text-green-500"></i>ตั้งค่าบิล & ข้อความ LINE</h2>
+                <p class="text-xs text-gray-500 mt-1">เปิด/ปิด และจัดเรียงลำดับหัวข้อที่จะส่งสรุปยอดให้ลูกค้าทาง LINE</p>
+            </div>
+
+            <div class="p-4 md:p-6 flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-1/2 space-y-2" id="line-template-list">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">ลำดับข้อความ (เลื่อนขึ้น/ลง)</p>
+                    <div class="p-8 text-center text-gray-400 border-2 border-dashed rounded-xl">กำลังโหลดเทมเพลต...</div>
+                </div>
+
+                <div class="w-full md:w-1/2 bg-[#8baccc] p-4 rounded-2xl shadow-inner flex flex-col h-auto">
+                    <p class="text-xs font-bold text-white uppercase tracking-widest mb-3 drop-shadow-md text-center"><i class="fa-solid fa-mobile-screen mr-1"></i> ตัวอย่างข้อความ (Preview)</p>
+                    <div class="bg-white rounded-xl p-3 text-[12px] whitespace-pre-line shadow-sm border border-gray-100 font-body" id="line-preview-box">
+                        (พรีวิวข้อความจะแสดงที่นี่)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 md:p-6 space-y-4 border-b border-gray-100 border-t">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-2">🔥 ข้อความพาดหัวบิล (Header Line 1)</label>
+                    <input type="text" id="line-header-text" class="w-full border border-gray-200 rounded-xl p-3 outline-none focus:border-primary font-bold text-[#000080]" placeholder="เช่น 🔥 มีลูกค้ารอคอนเฟิร์มคิวใหม่!">
+                </div>
+                <div class="flex items-center gap-2 p-3 bg-green-50 rounded-xl border border-green-100">
+                    <input type="checkbox" id="line-show-timestamp" class="w-4 h-4">
+                    <span class="text-xs font-bold text-green-800">แสดงเวลาที่ลูกค้ากดจองอัตโนมัติ</span>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-100 text-right bg-gray-50">
+                <button onclick="saveLineTemplate()" class="bg-green-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-600 transition shadow-sm">
+                    <i class="fa-solid fa-save mr-1"></i> บันทึกเทมเพลต
+                </button>
+            </div>
+        </div>
     </div> </div> </main>
 
     <div id="service-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
@@ -798,8 +836,8 @@
 
         // สิทธิ์แต่ละ tab ตาม role
         const ROLE_PERMISSIONS = {
-            superadmin: ['services','booking','coupons','clients','portfolio','social','contact','users','news'],
-            manager:    ['services','booking','coupons','clients','portfolio','news'],
+            superadmin: ['services','booking','coupons','line','clients','portfolio','social','contact','users','news'],
+            manager:    ['services','booking','coupons','line','clients','portfolio','news'],
             staff:      ['booking']
         };
 
@@ -1485,7 +1523,7 @@
             if(activeNav) activeNav.className = 'nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold bg-blue-50 text-primary transition shrink-0 flex items-center gap-3 shadow-sm';
 
             // 2. ซ่อนหน้าต่างทั้งหมดก่อน
-            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container','coupons-container','news-container'].forEach(id => {
+            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container','coupons-container','news-container','line-container'].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });

@@ -883,11 +883,15 @@
                        <i class="fa-solid fa-circle-check absolute -right-4 -bottom-4 text-blue-800/40 text-8xl"></i>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl border-2 border-dashed border-primary bg-blue-50/30">
-                        <h3 class="font-bold text-[#000080] mb-2 flex items-center gap-2"><i class="fa-solid fa-plus text-primary"></i> เพิ่มบริการเสริม รับส่วนลดพิเศษ!</h3>
-                        <p class="text-[10px] text-gray-500 mb-4">เพิ่ม 1 ชิ้น รับส่วนลดรวม 5% ยิ่งเพิ่มยิ่งคุ้ม (ลดเพิ่ม 1% ทุกชิ้น)</p>
-                        <div id="ui-addons" class="grid grid-cols-1 gap-4"></div>
-                    </div>
+                    <div id="system-promo-banner" class="hidden bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-xl p-3 mb-4 shadow-sm animate-pulse">
+    <div class="flex items-start gap-2">
+        <i class="fa-solid fa-fire text-orange-500 mt-0.5"></i>
+        <div>
+            <p class="text-xs font-bold text-orange-700">🔥 โปรโมชั่นพิเศษตอนนี้!</p>
+            <p class="text-[10px] text-orange-600 mt-0.5" id="system-promo-text">ยิ่งสั่งเพิ่ม ยิ่งลดเพิ่ม (ระบบจะคำนวณส่วนลดให้อัตโนมัติด้านล่าง)</p>
+        </div>
+    </div>
+</div>
 
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 text-sm shadow-sm">
                         <div class="flex justify-between border-b border-gray-100 pb-3">
@@ -912,6 +916,12 @@
                             <div id="available-coupons-list" class="flex gap-3 overflow-x-auto pb-2 hide-scroll">
                                 </div>
                         </div>
+
+                        <div id="public-coupons-container" class="hidden mb-4">
+    <p class="text-xs font-bold text-[#000080] mb-2"><i class="fa-solid fa-tags text-primary mr-1"></i> โค้ดส่วนลดที่ใช้ได้</p>
+    <div class="flex gap-3 overflow-x-auto pb-2 hide-scroll" id="public-coupons-list">
+        </div>
+</div>
 
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 mt-4 shadow-sm">
                             <label class="block text-xs font-bold text-[#000080] mb-2" data-i18n="promo-input-label">มีโค้ดส่วนลดหรือไม่? (Promo Code)</label>
@@ -2276,12 +2286,19 @@
             }
         }
         
-        // ✨ สร้างตัวแปรและฟังก์ชันสำหรับโหลดกฎราคาอัตโนมัติ (15% + 5% + 1%)
-        window.globalDiscountRules = null; 
         async function loadDiscountRules() {
             try {
                 let doc = await db.collection('settings').doc('discount_rules').get();
-                if (doc.exists) window.globalDiscountRules = doc.data();
+                if (doc.exists) {
+                    window.globalDiscountRules = doc.data();
+                    // สั่งโชว์ป้ายประกาศ
+                    let banner = document.getElementById('system-promo-banner');
+                    let text = document.getElementById('system-promo-text');
+                    if (banner && text) {
+                        banner.classList.remove('hidden');
+                        text.innerText = `ลดทันที ${window.globalDiscountRules.base}% และรับส่วนลดเพิ่มอีกชิ้นละ ${window.globalDiscountRules.firstAdd}% เมื่อสั่งบริการเสริม!`;
+                    }
+                }
             } catch(e) { console.log('ยังไม่มีการตั้งกฎราคาจากแอดมิน'); }
         }
 
@@ -2998,6 +3015,55 @@ document.addEventListener('DOMContentLoaded', function() {
         // ให้ดึงข้อมูลทันทีที่โหลดหน้าเว็บ
         loadAvailableCouponsSafely();
     });
+
+    window.loadPublicCoupons = async function() {
+            try {
+                let snapshot = await db.collection('coupons')
+                    .where('active', '==', true)
+                    .where('isPublic', '==', true)
+                    .orderBy('createdAt', 'desc').get();
+                
+                let container = document.getElementById('public-coupons-container');
+                let list = document.getElementById('public-coupons-list');
+                
+                if (snapshot.empty) {
+                    if (container) container.classList.add('hidden');
+                    return;
+                }
+
+                let html = '';
+                let now = new Date();
+
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    
+                    // ข้ามคูปองที่หมดอายุแล้ว หรือยังไม่ถึงเวลา
+                    if (c.endDate && new Date(c.endDate) < now) return;
+                    if (c.startDate && new Date(c.startDate) > now) return;
+
+                    let discText = c.type === 'percent' ? `ลด ${c.value}%` : `ลด ฿${c.value}`;
+                    let minText = c.minSpend ? `ขั้นต่ำ ฿${c.minSpend}` : 'ไม่มีขั้นต่ำ';
+                    
+                    html += `
+                    <div onclick="autoApplyCouponAndScroll('${c.code}')" class="shrink-0 w-[160px] bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition group relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-blue-100 opacity-50 group-hover:scale-110 transition"><i class="fa-solid fa-ticket text-5xl"></i></div>
+                        <p class="text-[10px] text-gray-500 mb-1 relative z-10">${c.name || 'คูปองพิเศษ'}</p>
+                        <p class="font-bold text-lg text-[#000080] relative z-10">${discText}</p>
+                        <div class="mt-2 pt-2 border-t border-blue-100/50 flex justify-between items-center relative z-10">
+                            <span class="text-[9px] text-gray-400">${minText}</span>
+                            <span class="text-[10px] font-bold text-primary bg-white px-1.5 py-0.5 rounded shadow-sm">เก็บโค้ด</span>
+                        </div>
+                    </div>`;
+                });
+
+                if (html !== '') {
+                    list.innerHTML = html;
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            } catch (e) { console.log('Error loading public coupons:', e); }
+        }
     </script>
 
     <div id="slide-notification" class="fixed top-24 -right-full z-50 transition-all duration-500 ease-in-out cursor-pointer shadow-lg rounded-xl bg-white border border-gray-100 w-72 overflow-hidden" onclick="openAndLoadCoupons()">
