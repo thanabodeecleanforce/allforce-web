@@ -59,57 +59,63 @@
         </div>
     </header>
 
-    <main id="admin-main-content" class="max-w-6xl mx-auto p-4 md:p-6 mt-4 hidden">
+    <main id="admin-main-content" class="max-w-7xl mx-auto p-4 md:p-6 mt-4 hidden">
         
-        <div class="flex justify-between items-end mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-[#000080]">จัดการบริการและแพ็กเกจ</h2>
-                <p class="text-sm text-gray-500">เพิ่ม ลบ หรือแก้ไขข้อมูลบริการที่จะแสดงบนหน้าเว็บลูกค้า</p>
-            </div>
+        <div class="flex flex-col md:flex-row gap-6 items-start">
             
-            <div class="flex gap-2">
-                <button id="btn-vat-toggle" onclick="toggleVat()" class="bg-gray-400 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-sm flex items-center gap-2 text-xs md:text-sm">
-                    <i class="fa-solid fa-spinner fa-spin"></i> <span class="hidden sm:inline">กำลังเช็คสถานะ...</span>
-                </button>
-                <button onclick="openModal()" class="bg-primary text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm flex items-center gap-2 text-xs md:text-sm">
-                    <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">เพิ่มบริการใหม่</span>
-                </button>
+            <div class="w-full md:w-64 shrink-0 flex md:flex-col gap-2 overflow-x-auto md:overflow-visible hide-scroll pb-2 md:pb-0 bg-white p-3 rounded-2xl shadow-sm border border-gray-200 md:sticky md:top-24 z-30">
+                <p class="hidden md:block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 mb-2 mt-2">เมนูหลัก</p>
+                
+                <button onclick="switchMainTab('services')" id="nav-services" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold bg-blue-50 text-primary transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-box-open w-5 text-center"></i> <span class="whitespace-nowrap">จัดการบริการ</span></button>
+                <button onclick="switchMainTab('booking')" id="nav-booking" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-calendar-check w-5 text-center"></i> <span class="whitespace-nowrap">รายการจอง</span></button>
+                <button onclick="switchMainTab('coupons')" id="nav-coupons" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-ticket w-5 text-center"></i> <span class="whitespace-nowrap">ส่วนลด & คูปอง</span></button>
+                <button onclick="switchMainTab('clients')" id="nav-clients" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-handshake w-5 text-center"></i> <span class="whitespace-nowrap">ลูกค้าของเรา</span></button>
+                <button onclick="switchMainTab('portfolio')" id="nav-portfolio" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-images w-5 text-center"></i> <span class="whitespace-nowrap">ผลงานของเรา</span></button>
+                
+                <p class="hidden md:block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 mb-2 mt-4 border-t pt-4">ระบบ & โซเชียล</p>
+                
+                <button onclick="switchMainTab('social')" id="nav-social" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-brands fa-instagram w-5 text-center"></i> <span class="whitespace-nowrap">โปรไฟล์ IG</span></button>
+                <button onclick="switchMainTab('contact')" id="nav-contact" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-address-book w-5 text-center"></i> <span class="whitespace-nowrap">ติดต่อ & โซเชียล</span></button>
+                <button onclick="switchMainTab('users')" id="nav-users" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-users w-5 text-center"></i> <span class="whitespace-nowrap">ผู้ใช้งาน</span></button>
+                <button onclick="switchMainTab('news')" id="nav-news" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-newspaper w-5 text-center"></i> <span class="whitespace-nowrap">ข่าวสาร</span></button>
             </div>
-        </div>
 
-        <div class="flex gap-2 overflow-x-auto pb-2 mb-6 border-b border-gray-200">
-            <button onclick="filterData('all')" data-tab="all" id="tab-all" class="tab-btn px-5 py-2 rounded-t-lg font-bold bg-white text-primary border-t border-l border-r border-gray-200">ทั้งหมด</button>
-            <button onclick="filterData('house')" data-tab="house" id="tab-house" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">แพ็กเกจบ้าน/คอนโด</button>
-            <button onclick="filterData('furniture')" data-tab="furniture" id="tab-furniture" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">เฟอร์นิเจอร์</button>
-            <button onclick="filterData('addon')" data-tab="addon" id="tab-addon" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">บริการเสริม</button>
-            <button onclick="filterData('social')" data-tab="social" id="tab-social" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ตั้งค่าโปรไฟล์ IG</button>
-            <button onclick="filterData('booking')" data-tab="booking" id="tab-booking" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">รายการจองจากลูกค้า</button>
-            <button onclick="filterData('clients')" data-tab="clients" id="tab-clients" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ลูกค้าของเรา</button>
-            <button onclick="filterData('portfolio')" data-tab="portfolio" id="tab-portfolio" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ผลงานของเรา</button>
-            <button onclick="filterData('news')" data-tab="news" id="tab-news" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary hidden">ข่าว & โปรโมชั่น</button>
-            <button onclick="filterData('users')" data-tab="users" id="tab-users" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">ผู้ใช้งานระบบ</button>
-            <button onclick="filterData('contact')" data-tab="contact" id="tab-contact" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">สมาร์ทคอนแท็ค (Contact)</button>
-            <button onclick="filterData('coupons')" data-tab="coupons" id="tab-coupons" class="tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary">คูปองส่วนลด</button>
-        </div>
+            <div class="flex-1 w-full min-w-0 space-y-6 pb-12">
+                
+                <div id="table-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in">
+                    <div class="p-4 md:p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50">
+                        <div>
+                            <h2 class="text-lg md:text-xl font-bold text-[#000080]"><i class="fa-solid fa-box-open mr-2 text-primary"></i>จัดการบริการและแพ็กเกจ</h2>
+                            <p class="text-xs text-gray-500 mt-1">เพิ่ม ลบ หรือแก้ไขข้อมูลบริการที่จะแสดงบนหน้าเว็บลูกค้า</p>
+                        </div>
+                        <div class="flex gap-2 shrink-0">
+                            <button id="btn-vat-toggle" onclick="toggleVat()" class="bg-gray-400 text-white px-3 py-2 rounded-lg font-bold transition shadow-sm flex items-center gap-2 text-xs">
+                                <i class="fa-solid fa-spinner fa-spin"></i> <span class="hidden sm:inline">กำลังเช็ค...</span>
+                            </button>
+                            <button onclick="openModal()" class="bg-primary text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition shadow-sm flex items-center gap-2 text-xs">
+                                <i class="fa-solid fa-plus"></i> เพิ่มบริการ
+                            </button>
+                        </div>
+                    </div>
 
-        <div id="table-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-200">
-                        <tr>
-                            <th class="p-4">สถานะ</th>
-                            <th class="p-4">ชื่อบริการ</th>
-                            <th class="p-4">หมวดหมู่</th>
-                            <th class="p-4 text-right">ราคาขาย</th>
-                            <th class="p-4 text-center">จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="services-list" class="divide-y divide-gray-100">
-                        <tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><br>กำลังโหลดข้อมูล...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                    <div class="px-4 md:px-6 pt-4 pb-2 flex gap-2 overflow-x-auto hide-scroll border-b border-gray-100">
+                        <button onclick="setServiceFilter('all')" id="sub-all" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-primary text-white shadow-sm shrink-0 transition">ทั้งหมด</button>
+                        <button onclick="setServiceFilter('house')" id="sub-house" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">แพ็กเกจบ้าน/คอนโด</button>
+                        <button onclick="setServiceFilter('furniture')" id="sub-furniture" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">เฟอร์นิเจอร์</button>
+                        <button onclick="setServiceFilter('addon')" id="sub-addon" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">บริการเสริม</button>
+                    </div>
+
+                    <div class="p-4 md:p-6 overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-200">
+                                <tr><th class="p-3 md:p-4">สถานะ</th><th class="p-3 md:p-4">ชื่อบริการ</th><th class="p-3 md:p-4">หมวดหมู่</th><th class="p-3 md:p-4 text-right">ราคาขาย</th><th class="p-3 md:p-4 text-center">จัดการ</th></tr>
+                            </thead>
+                            <tbody id="services-list" class="divide-y divide-gray-100">
+                                <tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><br>กำลังโหลดข้อมูล...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
         <div id="users-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-[#000080]">ข้อมูลผู้ใช้งาน / สมาชิก</h3>
@@ -447,7 +453,7 @@
                 </table>
             </div>
         </div>
-    </main>
+    </div> </div> </main>
 
     <div id="service-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
@@ -762,22 +768,26 @@
 
         // สิทธิ์แต่ละ tab ตาม role
         const ROLE_PERMISSIONS = {
-            superadmin: ['all','house','furniture','addon','social','booking','clients','portfolio','users','contact','coupons','news'],
-            manager:    ['all','house','furniture','addon','booking','clients','portfolio','coupons','news'],
+            superadmin: ['services','booking','coupons','clients','portfolio','social','contact','users','news'],
+            manager:    ['services','booking','coupons','clients','portfolio','news'],
             staff:      ['booking']
         };
 
-        // ซ่อนทุก tab ก่อน แล้วค่อยโชว์ตาม role
         function applyRoleUI(role) {
             const allowed = ROLE_PERMISSIONS[role] || [];
-            document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
-                const tab = btn.getAttribute('data-tab');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const tab = btn.id.replace('nav-', '');
                 if (allowed.includes(tab)) {
                     btn.classList.remove('hidden');
                 } else {
                     btn.classList.add('hidden');
                 }
             });
+
+            // Badge แสดง role... (คงโค้ดส่วน Badge และ สวิตช์ภาษาของคุณไว้เหมือนเดิม)
+
+            const firstTab = allowed[0];
+            if (firstTab) switchMainTab(firstTab); // เปลี่ยนจาก filterData เป็น switchMainTab
 
             // Badge แสดง role บน header
             const badge = document.getElementById('role-badge');
@@ -947,39 +957,7 @@
             tbody.innerHTML = html;
         }
 
-        // 5. ตัวกรอง Tabs (สลับหน้าจอ)
-        function filterData(type) {
-            currentFilter = type;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary';
-            });
-            let activeTab = document.getElementById('tab-' + type);
-            if(activeTab) activeTab.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold bg-white text-primary border-t border-l border-r border-gray-200';
-
-            // ซ่อนทุกกล่องก่อน
-            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container'].forEach(id => {
-                
-                let el = document.getElementById(id);
-                if(el) el.classList.add('hidden');
-            });
-
-            // เลือกโชว์ตามแท็บที่กด
-            if (type === 'social') {
-                document.getElementById('social-container').classList.remove('hidden');
-                if (typeof setupSocialForm === 'function') setupSocialForm();
-                if (typeof loadSocialSettings === 'function') loadSocialSettings();
-            } else if (type === 'contact') {
-                document.getElementById('contact-container').classList.remove('hidden');
-                loadContactAdmin();
-            } else if (type === 'booking') {
-                document.getElementById('booking-container').classList.remove('hidden');
-                loadBookings(); // ดึงข้อมูลรายการจอง
-            } else {
-                document.getElementById('table-container').classList.remove('hidden');
-                renderTable(); 
-            }
-            
-        }
+    
 
         // 🌟 ดึงข้อมูลและแสดงผลรายการจอง
         function loadBookings() {
@@ -1476,22 +1454,24 @@
         // ==========================================
         let currentClients = [];
 
-        // อัปเดตฟังก์ชัน filterData ให้รองรับแท็บทั้งหมดแบบสมบูรณ์
-        window.filterData = function(type) {
-            currentFilter = type;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold text-gray-500 hover:text-primary';
+        // ==========================================
+        // 🌟 ระบบเมนูใหม่ (Sidebar Menu)
+        // ==========================================
+        window.switchMainTab = function(type) {
+            // 1. รีเซ็ตสีปุ่ม Sidebar
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3';
             });
-            let activeTab = document.getElementById('tab-' + type);
-            if(activeTab) activeTab.className = 'tab-btn px-5 py-2 rounded-t-lg font-bold bg-white text-primary border-t border-l border-r border-gray-200';
+            let activeNav = document.getElementById('nav-' + type);
+            if(activeNav) activeNav.className = 'nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold bg-blue-50 text-primary transition shrink-0 flex items-center gap-3 shadow-sm';
 
-            // ซ่อนทุกกล่อง
+            // 2. ซ่อนหน้าต่างทั้งหมดก่อน
             ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container','coupons-container','news-container'].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
 
-            // เลือกโชว์ตามแท็บที่กด
+            // 3. เปิดแสดงหน้าต่างที่เลือก
             if (type === 'social') {
                 document.getElementById('social-container').classList.remove('hidden');
                 if (typeof setupSocialForm === 'function') setupSocialForm();
@@ -1517,10 +1497,24 @@
             } else if (type === 'users') {
                 document.getElementById('users-container').classList.remove('hidden');
                 loadUsersAdmin();
-            } else {
+            } else if (type === 'services') {
                 document.getElementById('table-container').classList.remove('hidden');
                 renderTable(); 
             }
+        };
+
+        // ==========================================
+        // 🌟 ตัวกรองย่อยสำหรับจัดการบริการ (Sub-filters)
+        // ==========================================
+        window.setServiceFilter = function(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.className = 'sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition';
+            });
+            let activeSub = document.getElementById('sub-' + filter);
+            if(activeSub) activeSub.className = 'sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-primary text-white shadow-sm shrink-0 transition';
+            
+            renderTable();
         };
 
         function loadUsersAdmin() {
