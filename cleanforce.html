@@ -2302,7 +2302,8 @@
         
         async function loadDiscountRules() {
             try {
-                let doc = await db.collection('settings').doc('discount_rules').get();
+                // 🌟 แก้ไขจาก db เป็น window.cf_db
+                let doc = await window.cf_db.collection('settings').doc('discount_rules').get();
                 if (doc.exists) {
                     window.globalDiscountRules = doc.data();
                     // สั่งโชว์ป้ายประกาศ
@@ -2313,7 +2314,7 @@
                         text.innerText = `ลดทันที ${window.globalDiscountRules.base}% และรับส่วนลดเพิ่มอีกชิ้นละ ${window.globalDiscountRules.firstAdd}% เมื่อสั่งบริการเสริม!`;
                     }
                 }
-            } catch(e) { console.log('ยังไม่มีการตั้งกฎราคาจากแอดมิน'); }
+            } catch(e) { console.log('ยังไม่มีการตั้งกฎราคาจากแอดมิน', e); }
         }
 
         // ✨ โหลดรูปแบบบิล LINE จากฐานข้อมูล
@@ -2493,76 +2494,54 @@
         // ==========================================
         window.loadPublicCoupons = async function() {
             try {
-                const snapshot = await window.cf_db.collection("coupons")
-                    .where("isActive", "==", true)
-                    .where("isPublic", "==", true)
-                    .get();
+                // 🌟 1. แก้ไข db เป็น window.cf_db และเช็คคำว่า isActive
+                let snapshot = await window.cf_db.collection('coupons')
+                    .where('isActive', '==', true)
+                    .where('isPublic', '==', true)
+                    .orderBy('createdAt', 'desc').get();
                 
+                let container = document.getElementById('public-coupons-container');
+                let list = document.getElementById('public-coupons-list');
+                
+                if (snapshot.empty) {
+                    if (container) container.classList.add('hidden');
+                    return;
+                }
+
                 let html = '';
-                let today = new Date().toISOString().split('T')[0];
-                let popupCoupons = []; // เก็บคูปองที่จะเด้ง Popup
+                let now = new Date();
 
                 snapshot.forEach(doc => {
                     let c = doc.data();
-                    c.id = doc.id;
                     
-                    if (c.startDate && today < c.startDate) return;
-                    if (c.endDate && today > c.endDate) return;
-                    if (c.usageLimit && (c.usedCount || 0) >= c.usageLimit) return; 
+                    // ข้ามคูปองที่หมดอายุแล้ว หรือยังไม่ถึงเวลา
+                    if (c.endDate && new Date(c.endDate) < now) return;
+                    if (c.startDate && new Date(c.startDate) > now) return;
 
-                    let discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue.toLocaleString()} ฿`;
-                    let minSpendText = c.minSpend ? `ขั้นต่ำ ${c.minSpend.toLocaleString()} ฿` : 'ไม่มีขั้นต่ำ';
+                    // 🌟 2. ดึงค่า discountType และ discountValue ให้ถูกตัวแปร
+                    let discText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ฿${c.discountValue}`;
+                    let minText = c.minSpend ? `ขั้นต่ำ ฿${c.minSpend}` : 'ไม่มีขั้นต่ำ';
                     
-                    let badgeHtml = '';
-                    if (c.endDate) {
-                        let end = new Date(c.endDate);
-                        let now = new Date();
-                        let diffDays = Math.ceil(Math.abs(end - now) / (1000 * 60 * 60 * 24));
-                        if (diffDays <= 3) badgeHtml = `<span class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">หมดเขตใน ${diffDays} วัน!</span>`;
-                    }
-
-                    // สร้างการ์ดแสดงบนหน้าเว็บ (ใต้ เกี่ยวกับเรา)
                     html += `
-                    <div class="relative w-full md:w-64 bg-white border-2 border-blue-100 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-primary transition-all flex flex-col">
-                        ${badgeHtml}
-                        <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-3">
-                            <div>
-                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">${c.code}</p>
-                                <span class="font-bold text-primary text-xl">${discountText}</span>
-                            </div>
-                            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-primary"><i class="fa-solid fa-ticket text-lg"></i></div>
+                    <div onclick="autoApplyCouponAndScroll('${c.code}')" class="shrink-0 w-[160px] bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition group relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-blue-100 opacity-50 group-hover:scale-110 transition"><i class="fa-solid fa-ticket text-5xl"></i></div>
+                        <p class="text-[10px] text-gray-500 mb-1 relative z-10">${c.name || 'คูปองพิเศษ'}</p>
+                        <p class="font-bold text-lg text-[#000080] relative z-10">${discText}</p>
+                        <div class="mt-2 pt-2 border-t border-blue-100/50 flex justify-between items-center relative z-10">
+                            <span class="text-[9px] text-gray-400">${minText}</span>
+                            <span class="text-[10px] font-bold text-primary bg-white px-1.5 py-0.5 rounded shadow-sm">เก็บโค้ด</span>
                         </div>
-                        <div class="mb-4 flex-1">
-                            <p class="text-sm font-bold text-gray-800 leading-tight">${c.name || 'โปรโมชั่นพิเศษ'}</p>
-                            <p class="text-[10px] text-gray-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-circle-check text-green-500"></i> ${minSpendText}</p>
-                        </div>
-                        <button type="button" onclick="autoApplyCouponAndScroll('${c.code}')" class="w-full bg-blue-50 text-primary border border-blue-200 text-xs font-bold py-2.5 rounded-xl hover:bg-primary hover:text-white transition shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ด & จองเลย
-                        </button>
                     </div>`;
-
-                    // ถ้าแอดมินติ๊กให้เป็น Popup เก็บไว้ก่อน
-                    if (c.isPopup) popupCoupons.push(c);
                 });
 
-                // นำไปแสดงที่โซนใต้ เกี่ยวกับเรา
-                let section = document.getElementById('public-coupons-section');
-                let list = document.getElementById('main-coupons-list');
-                
-                if (html) {
+                if (html !== '') {
                     list.innerHTML = html;
-                    section.classList.remove('hidden');
+                    container.classList.remove('hidden');
                 } else {
-                    section.classList.add('hidden');
+                    container.classList.add('hidden');
                 }
-
-                // 🌟 ระบบ Popup เด้งเตือนมุมขวาบน (หน่วงเวลาสักนิดให้เว็บโหลดเสร็จก่อน)
-                if (popupCoupons.length > 0) {
-                    setTimeout(() => showCouponPopups(popupCoupons), 1500);
-                }
-
-            } catch(e) { console.error("Error loading coupons:", e); }
-        };
+            } catch (e) { console.log('Error loading public coupons:', e); }
+        }
 
         // 🌟 สร้างฟังก์ชันโชว์ Popup
         window.showCouponPopups = function(coupons) {
