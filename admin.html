@@ -26,36 +26,47 @@
 <body class="text-gray-800 pb-24">
 
     <header class="bg-[#000080] text-white p-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 z-50">
             <div class="bg-white p-1.5 rounded-lg shadow-sm">
                 <img src="logo-cleanforce.png" alt="Logo" class="h-6 w-auto object-contain" onerror="this.src='https://placehold.co/100x40?text=CF'">
             </div>
             <div class="flex flex-col">
-                <h1 class="font-bold text-lg hidden sm:inline">ระบบจัดการหลังบ้าน (Admin Panel)</h1>
-                <div class="flex items-center gap-1.5 text-[10px] text-blue-200 mt-0.5">
-                    <i class="fa-regular fa-clock"></i> อัปเดตเว็บล่าสุด: <span id="last-updated-time" class="font-bold text-yellow-300">กำลังโหลด...</span>
+                <h1 class="font-bold text-sm md:text-lg">ระบบจัดการหลังบ้าน</h1>
+                <div class="flex items-center gap-1.5 text-[9px] md:text-[10px] text-blue-200 mt-0.5">
+                    <i class="fa-regular fa-clock"></i> <span class="hidden sm:inline">อัปเดตเว็บล่าสุด:</span> <span id="last-updated-time" class="font-bold text-yellow-300">กำลังโหลด...</span>
                 </div>
             </div>
         </div>
 
-        <div id="admin-lang-setting" class="hidden md:flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 mr-2">
-    <i class="fa-solid fa-language text-primary text-xs"></i>
-    <select id="admin-translate-mode" onchange="saveTranslateMode()" class="bg-transparent text-[10px] font-bold text-gray-600 outline-none cursor-pointer hover:text-primary transition">
-        <option value="google">Google AI</option>
-        <option value="custom">Custom (lang.js)</option>
-    </select>
-</div>
+        <button onclick="document.getElementById('admin-top-menu').classList.toggle('hidden')" class="md:hidden text-2xl text-white focus:outline-none z-50">
+            <i class="fa-solid fa-bars"></i>
+        </button>
 
-        <div class="flex items-center gap-3">
-            <div id="admin-user-info" class="flex items-center gap-2 text-white">
+        <div id="admin-top-menu" class="hidden md:flex absolute md:relative top-full left-0 w-full md:w-auto bg-[#000080] md:bg-transparent flex-col md:flex-row items-center gap-4 md:gap-3 p-4 md:p-0 shadow-xl md:shadow-none z-40 border-t border-blue-800 md:border-none">
+            
+            <div id="admin-lang-setting" class="hidden md:flex items-center justify-between md:justify-start w-full md:w-auto gap-2 bg-white/10 md:bg-gray-50 px-4 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-full border border-white/20 md:border-gray-100 transition">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-language text-white md:text-primary text-xs"></i>
+                    <span class="text-xs font-bold text-white md:hidden">แปลภาษา:</span>
+                </div>
+                <select id="admin-translate-mode" onchange="saveTranslateMode()" class="bg-transparent text-xs md:text-[10px] font-bold text-white md:text-gray-600 outline-none cursor-pointer hover:text-blue-200 md:hover:text-primary transition [&>option]:text-gray-800">
+                    <option value="google">Google AI</option>
+                    <option value="custom">Custom (lang.js)</option>
+                </select>
+            </div>
+
+            <div id="admin-user-info" class="flex items-center justify-center md:justify-start gap-2 text-white w-full md:w-auto border-b border-blue-800 md:border-none pb-4 md:pb-0">
                 <i class="fa-solid fa-spinner fa-spin text-blue-200"></i>
             </div>
-            <button onclick="auth.signOut().then(()=>window.location.href='login.html')" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-bold transition" title="ออกจากระบบ">
-                <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
-            <a href="cleanforce.html" class="bg-white/20 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition shrink-0">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="hidden sm:inline">กลับหน้าเว็บ</span>
-            </a>
+            
+            <div class="flex w-full md:w-auto gap-2">
+                <button onclick="auth.signOut().then(()=>window.location.href='login.html')" class="flex-1 md:flex-none bg-red-500/80 md:bg-white/10 hover:bg-red-600 md:hover:bg-white/20 px-3 py-2.5 md:py-1.5 rounded-lg text-xs font-bold transition flex justify-center items-center gap-2 shadow-sm md:shadow-none" title="ออกจากระบบ">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span class="md:hidden">ออกจากระบบ</span>
+                </button>
+                <a href="cleanforce.html" class="flex-1 md:flex-none bg-blue-500 md:bg-white/20 px-4 py-2.5 md:py-1.5 rounded-lg text-xs md:text-sm font-bold flex items-center justify-center gap-2 hover:bg-blue-600 md:hover:bg-white/30 transition shrink-0 shadow-sm md:shadow-none">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>กลับหน้าเว็บ</span>
+                </a>
+            </div>
         </div>
     </header>
 
