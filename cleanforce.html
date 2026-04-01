@@ -754,138 +754,130 @@
                     <span id="step-text">ขั้นตอนที่ 1 / 5</span>
                 </div>
 
-                <div id="step-1" class="step-section space-y-6">
-                    <div id="user-custom-packages" class="mb-4 empty:hidden"></div>
-
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step1-title">1. เลือกสถานที่ / หมวดหมู่บริการ</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="ui-categories">
-                    </div>
-                </div>
-
-                <div id="step-2" class="step-section hidden space-y-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step2-title">2. เลือกแพ็กเกจการทำความสะอาด</h2>
-                    
-                    <div class="system-promo-banner hidden bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-xl p-3 shadow-sm animate-pulse">
-                        <div class="flex items-start gap-2">
-                            <i class="fa-solid fa-fire text-orange-500 mt-0.5"></i>
-                            <div>
-                                <p class="text-xs font-bold text-orange-700">🔥 โปรโมชั่นพิเศษตอนนี้!</p>
-                                <p class="system-promo-text text-[10px] md:text-xs text-orange-600 mt-0.5"></p>
-                            </div>
+                <div id="step1" class="step-content active fade-in">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 text-center" data-i18n="step1_title">เลือกบริการที่คุณต้องการ</h2>
+                
+                <div class="grid grid-cols-2 gap-4" id="category-container">
+                    <button id="cat-furniture" onclick="selectCategory('furniture')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border border-gray-200 rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white relative overflow-hidden group">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-couch text-2xl"></i>
                         </div>
-                    </div>
-
-                    <div id="ui-types" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                    <button onclick="changeStep(1)" id="btn-next-2" disabled class="w-full bg-primary disabled:bg-gray-300 text-white p-4 rounded-xl font-bold mt-6 shadow-sm transition-all" data-i18n="wiz-btn-next">ดำเนินการต่อ</button>
+                        <span class="font-bold text-gray-700 text-sm md:text-base text-center" data-i18n="cat_furniture">ซักโซฟา / ที่นอน</span>
+                    </button>
+                    <button id="cat-house" onclick="selectCategory('house')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border border-gray-200 rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white relative overflow-hidden group">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-house-chimney-broom text-2xl"></i>
+                        </div>
+                        <span class="font-bold text-gray-700 text-sm md:text-base text-center" data-i18n="cat_house">ทำความสะอาดบ้าน</span>
+                    </button>
                 </div>
 
+                <div id="service-selection-area" class="mt-8 hidden border-t pt-8 border-gray-100 fade-in">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 text-center" id="step2-title">...</h2>
+                    <div id="services-container" class="space-y-3">
+                        </div>
+
+                    <div class="flex gap-4 mt-8">
+                        <button onclick="nextStep()" class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md text-lg"><span data-i18n="btn_next">ถัดไป (ข้อมูลนัดหมาย)</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+
                     
 
-                <div id="step-3" class="step-section hidden space-y-6">
-                    <div class="mb-2">
-                        <h2 class="text-xl md:text-2xl font-bold text-[#000080]" data-i18n="wiz-step3-title">3. ข้อมูลเพื่อความปลอดภัยและใส่ใจเป็นพิเศษ</h2>
-<p class="text-xs text-gray-500 mt-1" data-i18n="wiz-step3-sub">เพื่อให้ทีมงานเตรียมความพร้อมและน้ำยาที่เหมาะสมที่สุดสำหรับบ้านคุณ</p>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-6 shadow-sm">
+                <div id="step2" class="step-content hidden fade-in">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 text-center" data-i18n="step4_title">ข้อมูลการนัดหมาย</h2>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-baby text-primary mr-2"></i><span data-i18n="wiz-q1">มีเด็กอายุต่ำกว่า 1 ขวบหรือไม่?</span></p>
-<p class="text-[10px] text-gray-500 mb-3" data-i18n="wiz-q1-sub">เพื่อการคัดเลือกน้ำยาทำความสะอาดที่อ่อนโยนและปลอดภัยที่สุด</p>
-                            <div class="flex gap-2 max-w-sm">
-                                <button onclick="setBtnToggle('kids', 'yes')" id="btn-kids-yes" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-gray-50 text-gray-500 border-gray-100"data-i18n="btn-yes">มี</button>
-                                <button onclick="setBtnToggle('kids', 'no')" id="btn-kids-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-primary text-white border-primary"data-i18n="btn-no">ไม่มี</button>
-                            </div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_date">วันที่ต้องการ <span class="text-red-500">*</span></label>
+                            <input type="date" id="bk-date" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none" required>
                         </div>
-
-                        <div class="pt-4 border-t border-gray-100">
-                            <p class="font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-paw text-primary mr-2"></i>มีสัตว์เลี้ยงในบ้านหรือไม่?</p>
-                            <p class="text-[10px] text-gray-500 mb-3">เพื่อเตรียมอุปกรณ์เก็บขนสัตว์ และระมัดระวังการเปิด-ปิดประตู</p>
-                            <div class="flex gap-2 max-w-sm">
-                                <button onclick="setBtnToggle('pets', 'yes')" id="btn-pets-yes" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-gray-50 text-gray-500 border-gray-100">มี</button>
-                                <button onclick="setBtnToggle('pets', 'no')" id="btn-pets-no" class="flex-1 py-2 rounded-lg font-bold text-sm border-2 transition-colors bg-primary text-white border-primary">ไม่มี</button>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-gray-100">
-                            <label class="block font-bold text-gray-800 mb-1 text-sm"><i class="fa-solid fa-star text-primary mr-2"></i>จุดที่ต้องการให้เน้นเป็นพิเศษ (ถ้ามี)</label>
-                            <p class="text-[10px] text-gray-500 mb-3">เช่น "เน้นขัดคราบกระจกห้องน้ำ" หรือ "มีฝุ่นเยอะใต้เตียง"</p>
-                            <textarea id="bk-special-note" rows="2" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:border-primary placeholder-gray-300" placeholder="พิมพ์ข้อความที่นี่... (ไม่บังคับ)"></textarea>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_time">เวลาที่สะดวก <span class="text-red-500">*</span></label>
+                            <select id="bk-time" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none bg-white cursor-pointer" disabled>
+                                <option value="">-- เลือกวันที่ก่อน --</option>
+                            </select>
                         </div>
                     </div>
-                    <button onclick="changeStep(1)" class="w-full bg-primary text-white p-4 rounded-xl font-bold shadow-sm mt-6">ถัดไป</button>
-                </div>
 
-                <div id="step-4" class="step-section hidden space-y-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-[#000080]">ระบุวันเวลาและสถานที่</h2>
-                    
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-5">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 border-b border-gray-100">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">วันที่ต้องการจอง <span class="text-red-500">*</span></label>
-                                <input type="date" id="bk-date" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">เวลาที่สะดวก <span class="text-red-500">*</span></label>
-                                <input type="time" id="bk-time" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
-                                <input type="text" id="bk-fname" placeholder="ชื่อผู้ติดต่อ" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
-                                <input type="tel" id="bk-phone" placeholder="08X-XXX-XXXX" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                            </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_fname">ชื่อจริง <span class="text-red-500">*</span></label>
+                            <input type="text" id="bk-fname" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none" placeholder="เช่น สมชาย" required>
                         </div>
-
-                        <div class="pt-2">
-                            <label class="block text-sm font-bold text-gray-700 mb-3">รูปแบบการระบุตำแหน่ง <span class="text-red-500">*</span></label>
-                            <div class="flex bg-gray-100 p-1 rounded-xl mb-4">
-                                <button type="button" id="mode-search" onclick="toggleLocationMode('search')" class="flex-1 py-2 text-sm font-bold rounded-lg bg-white text-primary shadow-sm transition-all">
-                                    <i class="fa-solid fa-magnifying-glass"></i> พิมพ์ค้นหา
-                                </button>
-                                <button type="button" id="mode-gps" onclick="toggleLocationMode('gps')" class="flex-1 py-2 text-sm font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all">
-                                    <i class="fa-solid fa-location-crosshairs"></i> อยู่ที่บ้านตอนนี้
-                                </button>
-                            </div>
-
-                            <div id="search-bar-container" class="relative mb-3">
-                                <i class="fa-solid fa-location-dot absolute left-3.5 top-3.5 text-red-500"></i>
-                                <input type="text" id="bk-smart-search" placeholder="พิมพ์ชื่อหมู่บ้าน / คอนโด..." class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:border-primary focus:bg-white transition-colors">
-                            </div>
-                            
-                            <div id="map-container" class="w-full h-48 bg-blue-50 border border-blue-100 rounded-xl flex flex-col items-center justify-center text-primary overflow-hidden relative">
-                                <i class="fa-solid fa-map-location-dot text-4xl mb-2"></i>
-                                <span class="text-xs font-bold">กำลังโหลดแผนที่...</span>
-                            </div>
-                            <p id="map-note" class="text-[10px] text-gray-400 mt-1 text-center">คุณสามารถเลื่อนหมุดบนแผนที่ เพื่อความแม่นยำสูงสุดได้</p>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_lname">นามสกุล</label>
+                            <input type="text" id="bk-lname" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none" placeholder="(ไม่บังคับ)">
                         </div>
+                    </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 border-t border-gray-100 pt-4">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">บ้านเลขที่ / ห้อง <span class="text-red-500">*</span></label>
-                                <input type="text" id="bk-houseNo" placeholder="เช่น 123/45" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">จุดสังเกตเพิ่มเติม</label>
-                                <input type="text" id="bk-landmark" placeholder="เช่น ซอยหลังโลตัส" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none">
-                            </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_phone">เบอร์ติดต่อ <span class="text-red-500">*</span></label>
+                        <input type="tel" id="bk-phone" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none" placeholder="เช่น 0812345678" maxlength="10" required>
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_location">ปักหมุดที่อยู่ <span class="text-gray-400 font-normal text-xs">(กรุณากดอนุญาตการเข้าถึงตำแหน่ง)</span></label>
+                        <div class="relative mb-3">
+                            <input type="text" id="bk-map-search" class="w-full border border-gray-200 rounded-xl p-3 pl-10 text-sm focus:border-primary outline-none shadow-sm" placeholder="พิมพ์ค้นหาสถานที่ หรือชื่อหมู่บ้าน...">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <div id="map-container" class="w-full h-48 bg-gray-100 rounded-xl overflow-hidden border border-gray-200 relative mb-3"></div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <input type="text" id="bk-houseNo" class="border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none w-full" placeholder="บ้านเลขที่ / ชื่ออาคาร *" required>
+                            <input type="text" id="bk-landmark" class="border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none w-full" placeholder="จุดสังเกต (ไม่บังคับ)">
                         </div>
 
                         <input type="hidden" id="bk-tambon">
                         <input type="hidden" id="bk-amphoe">
-                        <input type="hidden" id="bk-province" value="ภูเก็ต">
+                        <input type="hidden" id="bk-province">
                         <input type="hidden" id="bk-lat">
                         <input type="hidden" id="bk-lng">
                     </div>
 
-                    <div class="flex gap-4">
-                        <button onclick="changeStep(-1)" class="w-1/3 bg-gray-100 text-gray-600 p-4 rounded-xl font-bold">กลับ</button>
-                        <button onclick="changeStep(1)" class="w-2/3 bg-primary text-white p-4 rounded-xl font-bold shadow-sm">ดำเนินการต่อ</button>
-                    </div>
-                </div>
+                    <div class="mt-8 pt-6 border-t border-gray-100">
+                        <h3 class="text-lg font-bold text-[#000080] mb-4"><i class="fa-solid fa-shield-cat mr-2"></i>ข้อมูลเพื่อการเตรียมน้ำยาที่ปลอดภัย</h3>
+                        
+                        <label class="block text-sm font-bold text-gray-700 mb-3" data-i18n="q_kids">1. มีเด็กเล็กในบริเวณที่รับบริการหรือไม่? <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-3 mb-5">
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition" onclick="selectDetail('kids', 'yes', this)">
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center radio-box"><div class="w-2.5 h-2.5 rounded-full bg-primary hidden"></div></div>
+                                <span class="text-sm font-bold" data-i18n="ans_yes">มีเด็กเล็ก</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition" onclick="selectDetail('kids', 'no', this)">
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center radio-box"><div class="w-2.5 h-2.5 rounded-full bg-primary hidden"></div></div>
+                                <span class="text-sm font-bold" data-i18n="ans_no">ไม่มีเด็กเล็ก</span>
+                            </label>
+                        </div>
 
-                <div id="step-5" class="step-section hidden space-y-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-3" data-i18n="q_pets">2. มีสัตว์เลี้ยงในบริเวณที่รับบริการหรือไม่? <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-3 mb-5">
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition" onclick="selectDetail('pets', 'yes', this)">
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center radio-box"><div class="w-2.5 h-2.5 rounded-full bg-primary hidden"></div></div>
+                                <span class="text-sm font-bold" data-i18n="ans_yes">มีสัตว์เลี้ยง</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition" onclick="selectDetail('pets', 'no', this)">
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center radio-box"><div class="w-2.5 h-2.5 rounded-full bg-primary hidden"></div></div>
+                                <span class="text-sm font-bold" data-i18n="ans_no">ไม่มีสัตว์เลี้ยง</span>
+                            </label>
+                        </div>
+
+                        <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="q_note">3. มีจุดไหนที่อยากให้เน้นเป็นพิเศษไหมครับ? (ไม่บังคับ)</label>
+                        <textarea id="bk-special-note" rows="2" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none resize-none" placeholder="เช่น คราบฉี่น้องหมาบนโซฟา, รอยฝุ่นฝังลึกที่ผ้าม่าน..."></textarea>
+                    </div>
+
+                </div>
+                
+                <div class="flex gap-4 mt-8">
+                    <button onclick="prevStep()" class="w-1/3 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition" data-i18n="btn_back">กลับ</button>
+                    <button onclick="nextStep()" class="w-2/3 py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md"><span data-i18n="btn_next_summary">ตรวจสอบสรุปยอด</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+
+                <div id="step3" class="step-content hidden fade-in">
                     <div class="bg-[#000080] text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
                        <h2 class="text-2xl font-bold mb-1 relative z-10">สรุปคำสั่งซื้อ</h2>
                        <p class="text-blue-200 text-xs relative z-10">ตรวจสอบความถูกต้องก่อนยืนยัน</p>
@@ -949,6 +941,11 @@
                                 <button type="button" id="btn-apply-promo" onclick="applyPromoCode()" class="bg-[#000080] text-white px-5 rounded-lg text-xs font-bold hover:bg-blue-800 transition shadow-sm whitespace-nowrap min-w-[80px]">ใช้โค้ด</button>
                                 <button onclick="clearCoupon()" id="btn-clear-coupon" class="hidden text-red-500 underline text-sm ml-2">ยกเลิก</button>
                             </div>
+                            <div class="mt-3">
+    <p class="text-sm text-gray-600 mb-2 font-medium">🎟️ คูปองที่คุณเก็บไว้ (คลิกเพื่อใช้):</p>
+    <div id="savedCouponsContainer" class="flex flex-wrap gap-2">
+        </div>
+</div>
                             <div id="applied-coupons-area" class="space-y-2 mt-3 empty:hidden"></div>
                         </div>
                     </div>
@@ -1277,22 +1274,27 @@
        window.useCustomPackage = function(pkgId, pkgName) {
             cart.category = 'custom_package';
             cart.type = 'custom_package';
-            // บันทึกใส่ตะกร้า พร้อมติดป้ายว่านี่คือแพ็กพิเศษ
             cart.addons = [{ id: pkgId, size: '', qty: 1, name: pkgName, isCustomPkg: true, price: 0 }];
             
-            // ข้าม Step 1, 2, 3 ไปที่หน้า 4 (กรอกข้อมูลนัดหมาย) เลย
-            currentStep = 4;
+            // 🌟 เปลี่ยนให้ข้ามมาที่ Step 2 (ข้อมูลนัดหมาย) ตามระบบ 3 ขั้นตอนใหม่
+            currentStep = 2;
             
-            document.querySelectorAll('.step-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('step-4').classList.remove('hidden');
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden', 'opacity-0'));
+            let targetStep = document.getElementById('step2');
+            if(targetStep) {
+                targetStep.classList.remove('hidden');
+                setTimeout(() => targetStep.classList.replace('opacity-0', 'opacity-100'), 50);
+            }
             
             let header = document.getElementById('step-header');
-            header.classList.remove('hidden'); header.classList.add('flex');
-            document.getElementById('step-text').textContent =`ข้ามมาขั้นตอนที่ 4 / 5`;
+            if(header) { header.classList.remove('hidden'); header.classList.add('flex'); }
             
-            document.getElementById('floating-cart').classList.remove('hidden');
+            let stepText = document.getElementById('step-text');
+            if(stepText) stepText.textContent = `ขั้นตอนที่ 2 / 3`;
             
-            // 🌟 ให้ระบบกลางคำนวณราคาให้ (ลบโค้ดแปลกปลอมทิ้ง ใช้บรรทัดนี้แทน)
+            let floatCart = document.getElementById('floating-cart');
+            if(floatCart) floatCart.classList.remove('hidden');
+            
             calculatePricing(); 
         };
 
@@ -1300,9 +1302,9 @@
         // ระบบ WIZARD ควบคุมการจอง 5 ขั้นตอน
         // ==========================================
         
-        let allServices = [];
         let currentStep = 1;
-        let appliedCoupons = []; // 🌟 เก็บตะกร้าคูปอง (แทนที่ activePromoCode อันเก่า)
+        let totalSteps = 3; // 🌟 1. ลดจำนวน Step จาก 5 เหลือ 3
+        let appliedCoupons = [];
         let isStepChanging = false;
         
         let cart = {
@@ -1310,300 +1312,148 @@
             type: null,
             details: { pets: 'no', kids: 'no' },
             customer: {},
-            addons: [] // เก็บ id, size, qty
+            addons: []
         };
 
-        const phuketTambons = {
-            "เมืองภูเก็ต": ["ตลาดใหญ่", "ตลาดเหนือ", "เกาะแก้ว", "รัษฎา", "วิชิต", "ฉลอง", "ราไวย์", "กะรน"],
-            "กะทู้": ["กะทู้", "ป่าตอง", "กมลา"],
-            "ถลาง": ["เทพกระษัตรี", "ศรีสุนทร", "เชิงทะเล", "ป่าคลอก", "ไม้ขาว", "สาคู"]
-        };
+        // ... (ตัวแปร phuketTambons และ categoryList ของเดิมอยู่ตรงนี้ ไม่ต้องแก้) ...
 
-        const categoryList = [
-            { id: 'house_single', name: 'บ้านเดี่ยว', icon: '<i class="fa-solid fa-house"></i>' },
-            { id: 'condo', name: 'คอนโด', icon: '<i class="fa-solid fa-building"></i>' },
-            { id: 'villa', name: 'วิลล่า', icon: '<i class="fa-solid fa-house-flag"></i>' },
-            { id: 'furniture', name: 'เฟอร์นิเจอร์', icon: '<i class="fa-solid fa-couch"></i>' },
-            { id: 'membership', name: 'สมัครสมาชิก', icon: '<i class="fa-solid fa-crown text-[#FFD700]"></i>' }
-        ];
+        // ... (ฟังก์ชัน loadDynamicServices, renderCategories, renderTypes, renderAddons ยังคงเหมือนเดิม) ...
 
-        // 1. ดึงข้อมูลจาก Firebase
-        async function loadDynamicServices() {
-            try {
-                if(!window.cf_db) return;
-                const snapshot = await window.cf_db.collection("services").where("isActive", "==", true).get();
-                allServices = [];
-                
-                snapshot.forEach(doc => {
-                    let data = { id: doc.id, ...doc.data() };
-                    
-                    // --- 🛠 โค้ดแปลงข้อมูลเก่าใน Database ให้เข้ากับระบบใหม่ ---
-                    // 1. กรณีข้อมูลเก่าบันทึกมาเป็นคำว่า 'house' กว้างๆ
-                    if (data.type === 'house') {
-                        if (data.name && data.name.includes('คอนโด')) data.type = 'condo';
-                        else if (data.name && data.name.includes('วิลล่า')) data.type = 'villa';
-                        else data.type = 'house_single';
-                    }
-                    
-                    // 2. กรณีข้อมูลหลงมาจากระบบ React (ที่บันทึกเป็น docType)
-                    if (data.docType === 'addon') data.type = 'addon';
-                    if (data.docType === 'type') {
-                         if (data.name && data.name.includes('คอนโด')) data.type = 'condo';
-                         else data.type = 'house_single';
-                    }
-
-                    allServices.push(data);
-                });
-                
-                renderCategories();
-            } catch (error) {
-                console.error("Error fetching services: ", error);
-            }
-        }
-
-        // 2. จัดการ Step 1
-        function renderCategories() {
-            let html = '';
-            categoryList.forEach(cat => {
-                let isSelected = cart.category === cat.id;
-                let activeClass = isSelected ? 'border-primary bg-blue-50 text-primary shadow-md scale-[1.02]' : 'border-gray-100 text-gray-500 hover:text-primary';
-                
-                // 🌟 แก้ไขบั๊ก: ให้ใช้ชื่อภาษาไทย (cat.name) เป็นหลักโดยตรง 
-                // ไม่ต้องวิ่งไปหาโค้ดแปลภาษาแล้ว (สอดคล้องกับกฎ Clean UI)
-                let translatedName = cat.name;
-
-                html += `
-                    <button type="button" onclick="selectCategory('${cat.id}')" class="aspect-square rounded-[2rem] border-2 transition-all duration-300 flex flex-col items-center justify-center gap-3 md:gap-4 bg-white hover:border-primary hover:bg-blue-50/50 hover:shadow-lg hover:-translate-y-1 group ${activeClass}">
-                        <span class="text-4xl md:text-5xl transition-transform duration-300 group-hover:scale-110">${cat.icon}</span>
-                        <span class="font-bold text-sm md:text-base">${translatedName}</span>
-                    </button>
-                `;
-            });
-            document.getElementById('ui-categories').innerHTML = html;
-        }
-
+        // 🌟 2. แก้ไขฟังก์ชัน selectCategory ไม่ให้กระโดดข้ามหน้าอัตโนมัติ
         window.selectCategory = function(id) {
             cart.category = id;
-            cart.type = 'custom'; // บังคับให้เป็นโหมดจัดตะกร้า
+            cart.type = 'custom';
             cart.addons = []; // ล้างตะกร้าเมื่อเปลี่ยนหมวดหมู่
-            changeStep(1); 
-            renderCategories();
-        }
-
-        // 3. จัดการ Step 2 (เปลี่ยนเป็นระบบเพิ่มลงตะกร้าทั้งหมด)
-        function renderTypes() {
-            let types = allServices.filter(s => s.type === cart.category);
-            types.sort((a,b) => (a.order||99) - (b.order||99));
             
-            let html = '';
-            
-            if(types.length === 0) {
-                html = '<div class="col-span-full text-center p-8 bg-white rounded-2xl text-gray-400 border border-gray-100">ยังไม่มีบริการในหมวดหมู่นี้<br><span class="text-xs mt-2 block text-primary">แอดมินสามารถเพิ่มบริการ (เช่น ห้องนอน, ล้างระเบียง) ในหน้าแอดมินได้เลยครับ</span></div>';
-            } else {
-                types.forEach(addon => {
-                    let cartItems = cart.addons.filter(a => a.id === addon.id);
-                    let isSelected = cartItems.length > 0;
-                    let hasSizes = addon.sizes && addon.sizes.length > 0;
-                    
-                    let displayPrice = hasSizes ? Math.min(...addon.sizes.map(s => Number(s.price))) : (addon.price || 0);
-                    let origPrice = addon.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${addon.originalPrice.toLocaleString()} ฿</span>` : '';
-
-                    let sizeOptions = hasSizes ? addon.sizes.map((sz, i) => `<option value="${sz.name}">${sz.name} (+${sz.price.toLocaleString()}฿)</option>`).join('') : '';
-                    let selectHtml = hasSizes ? `<select id="dd_type_${addon.id}" class="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold outline-none">${sizeOptions}</select>` : '';
-
-                    html += `
-                    <div class="p-4 rounded-xl border transition-colors ${isSelected ? 'bg-white border-primary shadow-sm' : 'bg-white border-gray-200'}">
-                        <div>
-                            <p class="font-bold text-sm text-gray-800">${addon.name}</p>
-                            <div class="flex items-center mt-1">
-                                ${origPrice}
-                                <p class="text-[11px] text-primary font-bold">${hasSizes?'เริ่มต้น ':'+'}${displayPrice.toLocaleString()} ฿</p>
-                            </div>
-                            <p class="text-[10px] text-gray-500 mt-1 line-clamp-2">${addon.details || addon.desc || 'ระบุจำนวนที่ต้องการ'}</p>
-                        </div>
-                        <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-3">
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                ${selectHtml}
-                                <button type="button" onclick="addTypeAddon('${addon.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
-                            </div>
-                            ${isSelected ? `
-                            <div class="flex flex-col gap-2 mt-1">
-                                ${cartItems.map(item => {
-                                    let szPrice = hasSizes ? addon.sizes.find(s=>s.name === item.size)?.price : addon.price;
-                                    return `
-                                    <div class="flex justify-between items-center bg-blue-50/50 p-2.5 rounded-lg border border-blue-100">
-                                        <div class="flex flex-col"><span class="text-xs font-bold text-gray-700">${item.size || 'จำนวน'}</span><span class="text-[10px] text-primary font-bold">+${(szPrice || 0).toLocaleString()} ฿</span></div>
-                                        <div class="flex items-center gap-2">
-                                            <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', -1)" class="w-6 h-6 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                                            <span class="font-bold text-xs w-4 text-center">${item.qty}</span>
-                                            <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', 1)" class="w-6 h-6 rounded bg-primary text-white hover:bg-blue-600 flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
-                                        </div>
-                                    </div>`;
-                                }).join('')}
-                            </div>` : ''}
-                        </div>
-                    </div>`;
-                });
-            }
-            document.getElementById('ui-types').innerHTML = html;
-            document.getElementById('btn-next-2').disabled = (cart.addons.length === 0);
-        }
-
-        window.addTypeAddon = function(id, hasSizes) {
-            let size = hasSizes ? document.getElementById('dd_type_'+id).value : '';
-            updateAddonQty(id, size, 1);
-        }
-
-        // 4. จัดการ Step 5 (Addons)
-        function renderAddons() {
-            let addons = allServices.filter(s => s.type === 'addon');
-            addons.sort((a,b) => (a.order||99) - (b.order||99));
-            
-            let html = '';
-            addons.forEach(addon => {
-                let cartItems = cart.addons.filter(a => a.id === addon.id);
-                let isSelected = cartItems.length > 0;
-                let hasSizes = addon.sizes && addon.sizes.length > 0;
-                let displayPrice = hasSizes ? Math.min(...addon.sizes.map(s => Number(s.price))) : (addon.price || 0);
-                let origPrice = addon.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${addon.originalPrice.toLocaleString()} ฿</span>` : '';
-                
-                let sizeOptions = hasSizes ? addon.sizes.map((sz, i) => `<option value="${sz.name}">${sz.name} (+${sz.price.toLocaleString()}฿)</option>`).join('') : '';
-                let selectHtml = hasSizes ? `<select id="dd_${addon.id}" class="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold outline-none">${sizeOptions}</select>` : '';
-
-                html += `
-                <div class="p-4 rounded-xl border transition-colors ${isSelected ? 'bg-white border-primary shadow-sm' : 'bg-white border-gray-200'}">
-                    <div>
-                        <p class="font-bold text-sm text-gray-800">${addon.name}</p>
-                        <div class="flex items-center mt-1">
-                            ${origPrice}
-                            <p class="text-[11px] text-primary font-bold">${hasSizes?'เริ่มต้น ':'+'}${displayPrice.toLocaleString()} ฿</p>
-                        </div>
-                    </div>
-                    <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-3">
-                         <div class="flex flex-col sm:flex-row gap-2">
-                            ${selectHtml}
-                            <button type="button" onclick="addAddon('${addon.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
-                        </div>
-                        ${isSelected ? `
-                        <div class="flex flex-col gap-2 mt-1">
-                            ${cartItems.map(item => {
-                                let szPrice = hasSizes ? addon.sizes.find(s=>s.name === item.size)?.price : addon.price;
-                                return `
-                                <div class="flex justify-between items-center bg-blue-50/50 p-2.5 rounded-lg border border-blue-100">
-                                    <div class="flex flex-col"><span class="text-xs font-bold text-gray-700">${item.size || 'จำนวน'}</span><span class="text-[10px] text-primary font-bold">+${(szPrice || 0).toLocaleString()} ฿</span></div>
-                                    <div class="flex items-center gap-2">
-                                        <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', -1)" class="w-6 h-6 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                                        <span class="font-bold text-xs w-4 text-center">${item.qty}</span>
-                                        <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', 1)" class="w-6 h-6 rounded bg-primary text-white hover:bg-blue-600 flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
-                                    </div>
-                                </div>`;
-                            }).join('')}
-                        </div>` : ''}
-                    </div>
-                </div>`;
+            // รีเซ็ตปุ่มที่ถูกเลือก
+            document.querySelectorAll('#ui-categories button').forEach(btn => {
+                btn.classList.remove('border-primary', 'bg-blue-50', 'text-primary', 'shadow-md', 'scale-[1.02]');
+                btn.classList.add('border-gray-100', 'text-gray-500');
             });
-            document.getElementById('ui-addons').innerHTML = html;
-            calculatePricing();
-        }
-
-        window.addAddon = function(id, hasSizes) {
-            let size = hasSizes ? document.getElementById('dd_'+id).value : '';
-            updateAddonQty(id, size, 1);
-        }
-
-        window.updateAddonQty = function(id, size, diff) {
-            let idx = cart.addons.findIndex(a => a.id === id && a.size === size);
-            if(idx >= 0) {
-                cart.addons[idx].qty += diff;
-                if(cart.addons[idx].qty <= 0) cart.addons.splice(idx, 1);
-            } else if(diff > 0) {
-                cart.addons.push({ id: id, size: size, qty: 1 });
+            
+            // ไฮไลต์ปุ่มที่ถูกเลือก
+            let selectedBtn = event.currentTarget; 
+            if(selectedBtn) {
+                selectedBtn.classList.remove('border-gray-100', 'text-gray-500');
+                selectedBtn.classList.add('border-primary', 'bg-blue-50', 'text-primary', 'shadow-md', 'scale-[1.02]');
             }
             
-            if (currentStep === 2) renderTypes();
-            if (currentStep === 5) renderAddons();
-            calculatePricing();
+            // เปลี่ยนหัวข้อ Step 2 เดิม ให้เข้ากับหมวดหมู่ที่เลือก
+            let titleEl = document.getElementById('step2-title');
+            if (titleEl) {
+                let catData = categoryList.find(c => c.id === id);
+                titleEl.textContent = catData ? `เลือกบริการสำหรับ ${catData.name}` : 'เลือกแพ็กเกจบริการ';
+            }
+
+            renderTypes(); // วาดกล่องบริการ
+            
+            // 🌟 เปิดเผยพื้นที่เลือกแพ็กเกจ (ที่ซ่อนไว้ใน Step 1)
+            let serviceArea = document.getElementById('service-selection-area');
+            if (serviceArea) {
+                serviceArea.classList.remove('hidden');
+                setTimeout(() => {
+                    serviceArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
         }
 
-        // 5. การเปลี่ยนหน้า (Next/Back)
+        // 🌟 สร้างสะพานเชื่อมฟังก์ชันให้ปุ่มกด Next/Prev ทำงานได้
+        window.nextStep = function() { changeStep(1); };
+        window.prevStep = function() { changeStep(-1); };
+
+        // 🌟 3. อัปเดตฟังก์ชันเปลี่ยนหน้า (Next/Back) ให้รองรับ 3 Step
         window.changeStep = function(dir) {
             if (isStepChanging) return;
             isStepChanging = true;
             setTimeout(() => { isStepChanging = false; }, 400);
 
+            // 🛑 ด่านตรวจ (Validation) ตอนกด Next
             if (dir === 1) {
-                if(currentStep === 1 && !cart.category) { isStepChanging = false; return alert("กรุณาเลือกหมวดหมู่"); }
-                if(currentStep === 2 && cart.addons.length === 0) {
-                    isStepChanging = false; return alert("กรุณาเลือกบริการอย่างน้อย 1 รายการ");
+                // Validate Step 1 (เลือกบริการ)
+                if(currentStep === 1) {
+                    if(!cart.category) { isStepChanging = false; return alert("กรุณาเลือกหมวดหมู่บริการก่อนครับ"); }
+                    if(cart.addons.length === 0) { isStepChanging = false; return alert("กรุณาเลือกแพ็กเกจอย่างน้อย 1 รายการครับ"); }
                 }
-                if(currentStep === 4) {
-                    // ดึงข้อมูลตรวจสอบ (ใส่ ? เพื่อป้องกัน Error หากฟอร์มใดยังไม่โหลด)
-                    cart.customer.date = document.getElementById('bk-date') ? document.getElementById('bk-date').value : '';
-                    cart.customer.time = document.getElementById('bk-time') ? document.getElementById('bk-time').value : '';
-                    cart.customer.fname = document.getElementById('bk-fname') ? document.getElementById('bk-fname').value : '';
-                    cart.customer.phone = document.getElementById('bk-phone') ? document.getElementById('bk-phone').value : '';
-                    cart.customer.houseNo = document.getElementById('bk-houseNo') ? document.getElementById('bk-houseNo').value : '';
+                
+                // Validate Step 2 (ข้อมูลนัดหมาย + คำถามเพิ่มเติม)
+                if(currentStep === 2) {
+                    let date = document.getElementById('bk-date') ? document.getElementById('bk-date').value : '';
+                    let time = document.getElementById('bk-time') ? document.getElementById('bk-time').value : '';
+                    let fname = document.getElementById('bk-fname') ? document.getElementById('bk-fname').value : '';
+                    let phone = document.getElementById('bk-phone') ? document.getElementById('bk-phone').value : '';
+                    let houseNo = document.getElementById('bk-houseNo') ? document.getElementById('bk-houseNo').value : '';
                     
-                    if(!cart.customer.date || !cart.customer.time || !cart.customer.fname || !cart.customer.phone || !cart.customer.houseNo) {
+                    if(!date || !time || !fname || !phone || !houseNo) {
                         isStepChanging = false;
                         return alert("กรุณากรอก วัน-เวลา, ชื่อ, เบอร์โทร และพิกัดที่อยู่ ให้ครบถ้วนครับ");
+                    }
+
+                    if(!cart.details.kids || !cart.details.pets) {
+                        isStepChanging = false;
+                        return alert("กรุณาตอบคำถามเรื่องเด็กและสัตว์เลี้ยงให้ครบถ้วนครับ");
                     }
                 }
             }
 
             currentStep += dir;
+
+            // ป้องกัน Step ทะลุ
+            if(currentStep < 1) currentStep = 1;
+            if(currentStep > totalSteps) currentStep = totalSteps;
+
+            // 🌟 จัดการ UI เปลี่ยนหน้า
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden', 'opacity-0'));
             
-            // 🌟 ลอจิกพิเศษ: ถ้าซื้อแพ็กเกจสมาชิก ให้ข้าม Step 3
-            if (cart.category === 'membership') {
-                if (currentStep === 3 && dir === 1) currentStep = 4;
-                if (currentStep === 3 && dir === -1) currentStep = 2;
+            let targetStep = document.getElementById('step' + currentStep); // ใน HTML ใหม่ ID ต้องเป็น step1, step2, step3
+            if(targetStep) {
+                targetStep.classList.remove('hidden');
+                setTimeout(() => {
+                    targetStep.classList.remove('opacity-0');
+                    targetStep.classList.add('opacity-100');
+                }, 50);
             }
 
-            if(currentStep < 1) currentStep = 1;
-            if(currentStep > 5) currentStep = 5;
+            // 🌟 อัปเดต Progress Bar
+            document.querySelectorAll('.step-circle').forEach(el => {
+                let stepNum = parseInt(el.getAttribute('data-step'));
+                if (stepNum < currentStep) {
+                    el.className = "step-circle w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-primary text-white border-4 border-white shadow-sm transition-colors duration-300";
+                    el.innerHTML = '<i class="fa-solid fa-check"></i>';
+                } else if (stepNum === currentStep) {
+                    el.className = "step-circle active w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-primary text-white border-4 border-white shadow-sm transition-colors duration-300 ring-4 ring-blue-100";
+                    el.innerHTML = stepNum;
+                } else {
+                    el.className = "step-circle w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-gray-200 text-gray-500 border-4 border-white shadow-sm transition-colors duration-300";
+                    el.innerHTML = stepNum;
+                }
+            });
 
-            document.querySelectorAll('.step-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('step-'+currentStep).classList.remove('hidden');
+            // อัปเดตแถบสี Progress
+            let fillWidth = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            let barFill = document.getElementById('progress-bar-fill');
+            if(barFill) barFill.style.width = fillWidth + '%';
 
-            // 🌟 ปลุกแผนที่อัจฉริยะ (Smart Map) ให้ทำงานเมื่อมาถึง Step 4
-            if (currentStep === 4 && typeof google !== 'undefined') {
+            // 🌟 โหลดปลั๊กอินต่างๆ ตามหน้า
+            if (currentStep === 2 && typeof google !== 'undefined') {
                 setTimeout(() => {
-                    if (!map) {
-                        initSmartMap(); // สร้างแผนที่ครั้งแรก
-                    } else {
-                        // รีเฟรชกรอบแผนที่ป้องกันปัญหาแผนที่สีเทา
+                    if (!map) initSmartMap();
+                    else {
                         google.maps.event.trigger(map, 'resize');
                         map.setCenter({ lat: 7.9519, lng: 98.3381 }); 
                     }
                 }, 100);
             }
 
-            let header = document.getElementById('step-header');
-            if(currentStep > 1) {
-                header.classList.remove('hidden'); header.classList.add('flex');
-                document.getElementById('step-text').textContent = `ขั้นตอนที่ ${currentStep} / 5`;
-            } else {
-                header.classList.add('hidden'); header.classList.remove('flex');
-            }
-
-            let floatCart = document.getElementById('floating-cart');
-            if(currentStep >= 1 && currentStep < 5) floatCart.classList.remove('hidden');
-            else floatCart.classList.add('hidden');
-
-            if(currentStep === 2) renderTypes();
-            if(currentStep === 5) {
-                if (typeof renderAddons === 'function') renderAddons();
+            if(currentStep === 3) {
+                if(typeof renderSummary === 'function') renderSummary();
+                // นำข้อมูลสรุปมาใส่ตัวแปรเดิม (เผื่อระบบประกอบบิลเรียกใช้)
                 let kidsEl = document.getElementById('sum-kids');
                 if(kidsEl) kidsEl.textContent = cart.details.kids === 'yes' ? 'มี' : 'ไม่มี';
                 let petsEl = document.getElementById('sum-pets');
                 if(petsEl) petsEl.textContent = cart.details.pets === 'yes' ? 'มี' : 'ไม่มี';
-                let noteEl = document.getElementById('sum-note');
-                if(noteEl) {
-                    let noteInput = document.getElementById('bk-special-note');
-                    noteEl.textContent = noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'ไม่มี';
-                }
             }
             
+            // เลื่อนจอกลับขึ้นบนสุดอย่างนุ่มนวล
             let scrollTarget = document.getElementById('booking-cf');
             if(scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth' });
         }
@@ -2134,14 +1984,46 @@
                             phone: phone,
                             bookingDate: date,
                             bookingTime: time,
-                            address: address, // ถูกแปลงให้เข้ากับ Smart Address แล้ว
+                            date: date,
+                            time: time,
+                            address: address,
                             promoCodes: appliedCoupons.length > 0 ? appliedCoupons.map(c => c.code).join(', ') : "-",
                             totalPrice: netPriceNumber,
                             isReviewDiscount: isReviewChecked,
                             status: "รอยืนยัน", 
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
-                        orderId = docRef.id.slice(0, 6).toUpperCase(); 
+
+                        // ==========================================
+// ส่งข้อมูลเข้า Google Sheets ผ่าน Web App URL ใหม่
+// ==========================================
+try {
+    // URL Web App ของคุณ
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOV5mmG3tZ67-KodMUkZisGvKYu7F4GTgI7qZ9pLUNi_oNVdFI44jg91roteEcHxoY/exec";
+    
+    const sheetData = {
+        date: date || "-",
+        time: time || "-",
+        name: name || "-",
+        phone: phone || "-",
+        service: modeName + " (" + baseServiceText + ")",
+        totalPrice: netPriceNumber, // ดึงราคาสุทธิที่ถูกต้อง
+        status: "รอยืนยัน"
+    };
+
+    // ยิงข้อมูลแบบ Fire and Forget พร้อมข้ามการตรวจ CORS ของ Browser
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // <--- จุดสำคัญที่แก้ปัญหาเบราว์เซอร์บล็อกข้อมูล
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+        },
+        body: JSON.stringify(sheetData)
+    }).catch(err => console.log("Sheet Sync Warning:", err));
+} catch(err) {
+    console.error("Sheet Prep Error:", err);
+}
+// ==========================================
 
                         if (appliedCoupons.length > 0) {
                             let batch = window.cf_db.batch();
@@ -2154,36 +2036,17 @@
                     } catch(e) { console.warn("Firestore Skip:", e); }
                 }
 
-                // 🌟 ระบบประกอบร่างบิล (ตัดการแสดงผล GPS กับกุญแจทิ้งเพื่อความสะอาด)
-                let templateData = window.globalLineTemplate || {};
-                let layout = templateData.template || [
-                    { id: 'orderId', active: true }, { id: 'service', active: true }, { id: 'datetime', active: true },
-                    { id: 'customer', active: true }, { id: 'note', active: true }, { id: 'price', active: true }
-                ];
-                
-                let headerText = templateData.headerText || '==== 📝 ใบจองบริการ ====';
-                let summary = headerText + "\n";
-                
-                if (templateData.showTimestamp !== false) {
-                    let now = new Date();
-                    summary += `(กดจองเมื่อ: ${now.toLocaleDateString('th-TH')} ${now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})} น.)\n`;
-                }
-
-                layout.forEach(item => {
-                    if (!item.active) return;
-                    if (item.id === 'orderId') summary += `\n🔸 รหัสการจอง: ${orderId}`;
-                    if (item.id === 'service') summary += `\n🔸 ประเภท: ${modeName}\n🔸 บริการหลัก: ${baseServiceText}\n🔸 รายการที่เลือก:\n${addonsText.trimEnd()}`;
-                    if (item.id === 'datetime') summary += `\n🔸 นัดหมาย: ${date} เวลา ${time} น.`;
-                    if (item.id === 'customer') summary += `\n🔸 ลูกค้า: ${name}\n🔸 โทร: ${phone}\n🔸 ที่อยู่: ${address}`;
-                    if (item.id === 'note') summary += `\n🔸 การดูแล: ${extraCare}\n🔸 เน้นพิเศษ: ${note}\n📍 พิกัดแผนที่: ${smartMapLink}`;
-                    if (item.id === 'note') summary += `\n🔸 การดูแล: ${extraCare}\n🔸 เน้นพิเศษ: ${note}`;
-                    if (item.id === 'price') {
-                        summary += `\n\n💰 ราคาสุทธิ: ${netPriceNumber.toLocaleString()} บาท\n   (ราคาเต็ม ${grossPrice.toLocaleString()} บาท)`;
-                        if (reviewDiscountAmount > 0) summary += `\n   (ส่วนลดรีวิว 15% -${reviewDiscountAmount.toLocaleString()} บาท)`;
-                        if (extraDiscountAmount > 0) summary += `\n   (ส่วนลดจองเพิ่ม ${extraPercent}% -${extraDiscountAmount.toLocaleString()} บาท)`;
-                        if (couponDiscountAmount > 0) summary += `\n   (คูปองส่วนลด -${couponDiscountAmount.toLocaleString()} บาท)`;
-                    }
-                });
+                // ==========================================
+                // สร้างข้อความสรุปบิล
+                // ==========================================
+                let summary = `==== 📝 ใบจองบริการ ====\n`;
+                summary += ` บริการ: ${modeName} (${baseServiceText})\n`;
+                summary += ` รายการ:\n${addonsText}`;
+                summary += ` วันนัดหมาย: ${date} เวลา ${time} น.\n`;
+                summary += ` ลูกค้า: ${name} โทร: ${phone}\n`;
+                summary += ` ที่อยู่: ${address}\n`;
+                if (smartMapLink !== "-") summary += ` พิกัด GPS: ${smartMapLink}\n`;
+                summary += ` ยอดสุทธิ: ${netPriceNumber.toLocaleString()} บาท\n`;
 
                 summary += "\n\n🚨 (หมายเหตุ: โปรดตรวจสอบความถูกต้องของราคาและส่วนลดอีกครั้ง)\n==============================";
 
@@ -2224,7 +2087,7 @@
                 console.error("Booking Error: ", error); 
                 Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้งครับ', 'error');
             }
-        }
+        };
 
         // ฟังก์ชันกดคัดลอกข้อความ
         window.copyBookingSummary = function() {
@@ -3252,10 +3115,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="p-6 text-center max-h-[60vh] overflow-y-auto" id="coupon-list-container">
             </div>
     </div>
-</div>
+ </div>
 
 
-<div id="lang-modal" class="fixed inset-0 bg-black/60 z-[999] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+ <div id="lang-modal" class="fixed inset-0 bg-black/60 z-[999] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
         <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
             <h3 class="font-bold text-[#000080] text-lg"><i class="fa-solid fa-globe text-primary mr-2"></i>เลือกภาษา (Language)</h3>
@@ -3275,9 +3138,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <div id="other-lang-list" class="space-y-2 px-1 pb-4"></div>
         </div>
     </div>
-</div>
+ </div>
 
-<script>
+ <script>
         let map, marker, autocomplete, geocoder;
 
         function initSmartMap() {
@@ -3375,6 +3238,113 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("📍 Location Synced:", {tambon, amphoe, province});
         }
 
+        // ==========================================
+        // 🌟 ระบบดึงคิวว่างแบบเรียลไทม์ (ฝั่งลูกค้า - Default to Open Model)
+        // ==========================================
+        const allTimeSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let today = new Date().toISOString().split('T')[0];
+            let dateInput = document.getElementById('bk-date');
+            if (dateInput) dateInput.setAttribute('min', today);
+        });
+
+        document.getElementById('bk-date').addEventListener('change', async function() {
+            let selectedDate = this.value;
+            let timeSelect = document.getElementById('bk-time');
+            
+            if (!selectedDate) return;
+
+            timeSelect.innerHTML = '<option value="">กำลังเช็คคิวว่าง...</option>';
+            timeSelect.disabled = true;
+
+            try {
+                // 1. ดึงคิวที่ลูกค้ารายอื่นจองไปแล้ว (bookings)
+                let bookingsSnap = await window.cf_db.collection('bookings').where('date', '==', selectedDate).get();
+                let bookedTimes = bookingsSnap.docs.map(doc => doc.data().time);
+
+                // 2. ดึงคิวที่แอดมินสั่งปิด / ออฟไลน์ (blocked_slots)
+                let blockedSnap = await window.cf_db.collection('blocked_slots').where('date', '==', selectedDate).get();
+                let blockedTimes = blockedSnap.docs.map(doc => doc.data().time);
+
+                // 3. คำนวณเวลาที่ว่างจริงๆ (เวลาทั้งหมด - เวลาที่โดนจอง - เวลาที่โดนปิด)
+                let availableSlots = allTimeSlots.filter(time => !bookedTimes.includes(time) && !blockedTimes.includes(time));
+
+                if (availableSlots.length > 0) {
+                    let html = '<option value="">-- เลือกเวลา --</option>';
+                    availableSlots.forEach(slot => {
+                        html += `<option value="${slot}">${slot} น.</option>`;
+                    });
+                    timeSelect.innerHTML = html;
+                    timeSelect.disabled = false;
+                } else {
+                    timeSelect.innerHTML = '<option value="">❌ คิวเต็มทุกช่วงเวลา</option>';
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'คิวเต็ม',
+                        text: 'ขออภัยครับ วันที่ท่านเลือกคิวเต็มแล้ว กรุณาเลือกวันอื่นครับ',
+                        confirmButtonColor: '#1EA7E1'
+                    });
+                    this.value = ''; 
+                }
+            } catch (error) {
+                console.error("Error fetching availability: ", error);
+                timeSelect.innerHTML = '<option value="">เกิดข้อผิดพลาดในการเชื่อมต่อ</option>';
+            }
+        });
+
+        // ==========================================
+        // ระบบจัดการคูปองที่ลูกค้าเก็บไว้ (Coupon Wallet)
+// ==========================================
+
+// จำลองข้อมูลคูปองที่ลูกค้ามี (ในอนาคตคุณสามารถดึงจาก Firebase ตาม UID ของลูกค้าได้)
+const userSavedCoupons = [
+    { code: "NEWUSER50", description: "ลด 50 บาท สำหรับลูกค้าใหม่" },
+    { code: "SOFA10", description: "ลด 10% ซักโซฟา" }
+];
+
+// ฟังก์ชันแสดงปุ่มคูปองบนหน้าเว็บ
+function renderSavedCoupons() {
+    const container = document.getElementById('savedCouponsContainer');
+    if (!container) return;
+
+    if (userSavedCoupons.length === 0) {
+        container.innerHTML = '<span class="text-sm text-gray-400">ยังไม่มีคูปองที่เก็บไว้</span>';
+        return;
+    }
+
+    let html = '';
+    userSavedCoupons.forEach(coupon => {
+        html += `
+            <button type="button" onclick="applySavedCoupon('${coupon.code}')" 
+                    class="px-3 py-1.5 bg-blue-50 text-primary border border-blue-200 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-all flex flex-col items-start text-left">
+                <span>${coupon.code}</span>
+                <span class="text-xs font-normal text-gray-500">${coupon.description}</span>
+            </button>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// ฟังก์ชันเมื่อลูกค้ากดปุ่มคูปอง
+window.applySavedCoupon = function(code) {
+    // 1. นำโค้ดไปใส่ในช่อง Input
+    const inputField = document.getElementById('promo-code-input'); // 🌟 แก้ ID ให้ตรง
+    if(inputField) {
+        inputField.value = code;
+    }
+
+    // 2. จำลองการกดปุ่ม "ใช้โค้ด"
+    const applyBtn = document.getElementById('btn-apply-promo'); // 🌟 แก้ ID ให้ตรง
+    if(applyBtn) {
+        applyBtn.click(); 
+    }
+}
+
+// เรียกใช้งานตอนโหลดหน้าเว็บเสร็จ
+document.addEventListener('DOMContentLoaded', () => {
+    renderSavedCoupons();
+});
     </script>
     
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDse9ZYd5v_NXDXJiyT5xKdjCADAiBO1qA&libraries=places" async defer></script>

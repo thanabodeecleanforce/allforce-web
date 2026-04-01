@@ -11,7 +11,7 @@
     <meta property="og:title" content="Cleanforce | ช่องทางการติดต่อ">
     <meta property="og:description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม ขจัดคราบฝังลึกและไรฝุ่น">
     <meta id="meta-og-img" property="og:image" content="https://all-force.com/logo-cleanforce.png?v=3"> 
-    <meta property="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://all-force.com/contact.html">
     <meta property="twitter:title" content="Cleanforce | ช่องทางการติดต่อ">
     <meta property="twitter:description" content="รวมช่องทางการติดต่อและติดตามผลงานของ Cleanforce บริการทำความสะอาดพรีเมียม">
@@ -91,17 +91,19 @@
 </head>
 <body class="min-h-screen flex flex-col items-center py-10 px-6 font-body relative overflow-x-hidden">
 
+    
     <div id="dynamic-bg" class="fixed inset-0 z-0 opacity-40 bg-[url('hero-bg.jpg')] bg-cover bg-center bg-no-repeat pointer-events-none transition-all duration-1000"></div>
     <div class="fixed inset-0 z-0 bg-gradient-to-b from-white/60 to-[#F3F7FB] pointer-events-none"></div>
 
     <div class="relative z-10 w-full max-w-md flex flex-col items-center">
         <div class="w-full text-center mb-10 animate-in slide-in-from-top-4 duration-500">
             <div class="w-28 h-28 mx-auto bg-white rounded-full p-2 shadow-[0_0_20px_rgba(30,167,225,0.2)] mb-4 border-2 border-primary/20 relative">
-                <img src="logo-cleanforce.png" alt="Cleanforce" class="w-full h-full object-contain rounded-full" onerror="this.src='https://placehold.co/100x100?text=CF'">
+                <img id="page-logo" src="logo-cleanforce.png" alt="Cleanforce" class="w-full h-full object-contain rounded-full" onerror="this.src='https://placehold.co/100x100?text=CF'">
                 <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
             </div>
-            <h1 class="text-3xl font-bold text-[#000080] font-heading">Cleanforce</h1>
-            <p class="text-sm text-gray-500 mt-1 font-medium bg-white/60 inline-block px-4 py-1 rounded-full shadow-sm border border-white">บริการทำความสะอาดพรีเมียม</p>
+            
+<h1 id="page-title" class="text-3xl font-bold text-[#000080] font-heading">Cleanforce</h1>
+<p id="page-subtitle" class="text-sm text-gray-500 mt-1 font-medium bg-white/60 inline-block px-4 py-1 rounded-full shadow-sm border border-white">บริการทำความสะอาดพรีเมียม</p>
         </div>
 
         <div id="links-container" class="w-full space-y-4 mb-8">
@@ -165,12 +167,24 @@
                 let data = doc.data();
                 
                 if(data.bgImage) document.getElementById('dynamic-bg').style.backgroundImage = `url('${data.bgImage}')`;
-                if(data.ogImage) {
-                    let ogMeta = document.getElementById('meta-og-img');
-                    let twMeta = document.getElementById('meta-tw-img');
-                    if(ogMeta) ogMeta.setAttribute('content', data.ogImage);
-                    if(twMeta) twMeta.setAttribute('content', data.ogImage);
-                }
+// === วางโค้ดชุดใหม่นี้ต่อท้าย ===
+if(data.logoImg) document.getElementById('page-logo').src = data.logoImg;
+if(data.mainTitle) {
+    document.getElementById('page-title').innerText = data.mainTitle;
+    document.title = data.mainTitle + " | ช่องทางการติดต่อ"; // เปลี่ยนชื่อแท็บเว็บเบราว์เซอร์
+}
+if(data.subTitle) document.getElementById('page-subtitle').innerText = data.subTitle;
+
+if(data.ogImage) {
+    let ogMeta = document.getElementById('meta-og-img');
+    let twMeta = document.getElementById('meta-tw-img');
+    if(ogMeta) ogMeta.setAttribute('content', data.ogImage);
+    if(twMeta) twMeta.setAttribute('content', data.ogImage);
+}
+if(data.cardSize) {
+    let cardMeta = document.querySelector('meta[name="twitter:card"]');
+    if(cardMeta) cardMeta.setAttribute('content', data.cardSize);
+}
                 
                 let allLinks = data.allLinks || []; 
                 if(allLinks.length === 0 && data.mainLinks) {
@@ -263,21 +277,30 @@
             setTimeout(() => { window.open(finalUrl, '_blank'); }, 150);
         }
 
-// 🌟 ฟังก์ชันควบคุมแสงวิ่งเมื่อเลื่อนจอ (เล่นว้าบเดียว)
-let isScrolling;
-window.addEventListener('scroll', function (event) {
-    // เลือกปุ่มทั้งหมดที่มีคลาส link-card
-    const buttons = document.querySelectorAll('.link-card');
-    
-    // ใส่คลาสกระตุ้นให้แสงวิ่ง
-    buttons.forEach(btn => btn.classList.add('scrolling-shine'));
+// ==========================================
+// 🌟 อัปเกรด Performance: ใช้ IntersectionObserver ป้องกันเว็บกระตุก (Scroll Jank)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // กำหนดให้แสงเล่นเฉพาะตอนที่ปุ่มเลื่อนเข้ามาในจอภาพ (Viewport)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('scrolling-shine');
+                // ถอดแสงออกเมื่อเล่นจบ เพื่อให้พร้อมเล่นใหม่ถ้าลูกค้าเลื่อนกลับมาดูอีก
+                setTimeout(() => { entry.target.classList.remove('scrolling-shine'); }, 700);
+            }
+        });
+    }, { threshold: 0.5 }); // ทำงานเมื่อปุ่มโผล่มาให้เห็น 50% ของขนาดปุ่ม
 
-    window.clearTimeout(isScrolling);
-    isScrolling = setTimeout(function() {
-        // ถอดคลาสออกเมื่อแสงวิ่งจบ (0.7 วิ) เพื่อให้พร้อมแสดงผลรอบใหม่เมื่อมีการเลื่อนจอครั้งถัดไป
-        buttons.forEach(btn => btn.classList.remove('scrolling-shine'));
-    }, 700); 
-}, false);
+    // ตรวจจับว่าปุ่มถูกโหลดจาก Firebase เสร็จหรือยัง แล้วค่อยสั่ง Observe
+    const checkExist = setInterval(() => {
+        const buttons = document.querySelectorAll('.link-card');
+        if (buttons.length > 0) {
+            buttons.forEach(btn => observer.observe(btn));
+            clearInterval(checkExist);
+        }
+    }, 500);
+});
     </script>
 </body>
 </html>

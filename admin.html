@@ -153,6 +153,24 @@
         </div>
 
 <div id="booking-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in">
+        <div class="bg-blue-50/50 p-6 rounded-2xl shadow-sm border border-blue-100 mb-8 mt-4">
+                <h2 class="text-xl font-bold text-[#000080] mb-4"><i class="fa-regular fa-calendar-check mr-2"></i>จัดการคิวงาน (ปิดคิว / ออฟไลน์)</h2>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">1. เลือกวันที่ต้องการจัดการ:</label>
+                    <input type="date" id="admin-date-select" class="w-full md:w-1/3 border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none" onchange="loadAvailability()">
+                </div>
+
+                <div id="time-slots-container" class="hidden">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">2. สถานะคิวงาน (คลิกเพื่อ ปิด/เปิด คิว):</label>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5" id="slots-grid">
+                        </div>
+                    <p class="text-xs text-gray-500 mt-2">* ระบบตั้งค่าให้ทุกเวลา "ว่าง" (สีเขียว) เสมอ แอดมินกดปิด (สีแดง) เฉพาะเวลาที่รับงานออฟไลน์หรือติดธุระครับ</p>
+                </div>
+                <a href="https://docs.google.com/spreadsheets/d/128OaDZqmQ8ij0v24fvzuC9B1hkMvKdBJDAplUcyLRs4/edit" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:bg-green-50 hover:text-green-600 px-4 py-3 rounded-xl font-bold transition-all">
+    <i class="fa-solid fa-file-excel w-6 text-green-500"></i> เปิดตารางงาน
+</a>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-200">
@@ -170,6 +188,8 @@
                 </table>
             </div>
         </div>
+
+
 
         <div id="social-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
             <h3 class="text-lg font-bold text-[#000080] mb-4 border-b pb-2">ตั้งค่าโปรไฟล์จำลอง (หน้าเว็บ)</h3>
@@ -286,27 +306,60 @@
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                         <h3 class="text-sm font-bold text-[#000080] mb-3"><i class="fa-solid fa-image mr-1"></i> ภาพพื้นหลัง & รูปพรีวิวลิงก์ (Link Preview)</h3>
                         <div class="space-y-3">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500">1. ภาพพื้นหลังหน้าเว็บ (Background)</label>
-                                <div class="flex gap-2 mt-1">
-                                    <input type="text" id="cnt-bg-img" class="w-full p-2 border rounded text-xs outline-none focus:border-primary bg-white" placeholder="อัปโหลดภาพพื้นหลัง...">
-                                    <label class="bg-blue-100 text-blue-600 px-3 py-1.5 rounded cursor-pointer transition flex items-center justify-center shrink-0" title="อัปโหลด">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                                        <input type="file" class="hidden" accept="image/*" onchange="handleSingleUpload(event, 'cnt-bg-img')">
-                                    </label>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500">2. รูปภาพพรีวิวเมื่อแชร์ลิงก์ (1200x630px)</label>
-                                <div class="flex gap-2 mt-1">
-                                    <input type="text" id="cnt-og-img" class="w-full p-2 border rounded text-xs outline-none focus:border-primary bg-white" placeholder="อัปโหลดรูปลิงก์พรีวิว...">
-                                    <label class="bg-blue-100 text-blue-600 px-3 py-1.5 rounded cursor-pointer transition flex items-center justify-center shrink-0" title="อัปโหลด">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                                        <input type="file" class="hidden" accept="image/*" onchange="handleSingleUpload(event, 'cnt-og-img')">
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+            <label class="text-[10px] font-bold text-gray-500">โลโก้หลัก (Logo)</label>
+            <div class="flex gap-2 mt-1">
+                <input type="text" id="cnt-logo-img" class="w-full p-2 border rounded text-xs outline-none focus:border-primary bg-white" placeholder="อัปโหลดโลโก้...">
+                <label class="bg-blue-100 text-blue-600 px-3 py-1.5 rounded cursor-pointer transition flex items-center justify-center shrink-0" title="อัปโหลด">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <input type="file" class="hidden" accept="image/*" onchange="handleSingleUpload(event, 'cnt-logo-img')">
+                </label>
+            </div>
+        </div>
+        <div>
+            <label class="text-[10px] font-bold text-gray-500">ภาพพื้นหลังหน้าเว็บ (Background)</label>
+            <div class="flex gap-2 mt-1">
+                <input type="text" id="cnt-bg-img" class="w-full p-2 border rounded text-xs outline-none focus:border-primary bg-white" placeholder="อัปโหลดภาพพื้นหลัง...">
+                <label class="bg-blue-100 text-blue-600 px-3 py-1.5 rounded cursor-pointer transition flex items-center justify-center shrink-0" title="อัปโหลด">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <input type="file" class="hidden" accept="image/*" onchange="handleSingleUpload(event, 'cnt-bg-img')">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+            <label class="text-[10px] font-bold text-gray-500">ข้อความหลัก (Main Title)</label>
+            <input type="text" id="cnt-main-title" class="w-full p-2 border rounded text-xs outline-none focus:border-primary mt-1" placeholder="เช่น Cleanforce">
+        </div>
+        <div>
+            <label class="text-[10px] font-bold text-gray-500">ข้อความรอง (Sub Title)</label>
+            <input type="text" id="cnt-sub-title" class="w-full p-2 border rounded text-xs outline-none focus:border-primary mt-1" placeholder="เช่น บริการทำความสะอาดพรีเมียม">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t pt-2 mt-2">
+        <div>
+            <label class="text-[10px] font-bold text-gray-500">รูปพรีวิวลิงก์ (OG Image) *มีผลแค่หน้าเว็บ</label>
+            <div class="flex gap-2 mt-1">
+                <input type="text" id="cnt-og-img" class="w-full p-2 border rounded text-xs outline-none focus:border-primary bg-white" placeholder="อัปโหลดรูปลิงก์พรีวิว...">
+                <label class="bg-blue-100 text-blue-600 px-3 py-1.5 rounded cursor-pointer transition flex items-center justify-center shrink-0" title="อัปโหลด">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <input type="file" class="hidden" accept="image/*" onchange="handleSingleUpload(event, 'cnt-og-img')">
+                </label>
+            </div>
+        </div>
+        <div>
+            <label class="text-[10px] font-bold text-gray-500">ขนาดรูปพรีวิว (Card Size)</label>
+            <select id="cnt-card-size" class="w-full p-2 border rounded text-xs outline-none focus:border-primary mt-1 bg-white">
+                <option value="summary_large_image">ภาพขนาดใหญ่ (1200x630px)</option>
+                <option value="summary">ภาพจัตุรัสเล็ก (1:1)</option>
+            </select>
+        </div>
+    </div>
+</div>
                     </div>
 
                     <div class="flex justify-between items-end border-b pb-2">
@@ -524,6 +577,8 @@
                 </table>
             </div>
         </div>
+
+        
 
         <div id="line-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in">
             <div class="p-4 md:p-6 border-b border-gray-100 bg-gray-50">
@@ -2128,6 +2183,10 @@
 
                 if(doc.exists) {
                     let data = doc.data();
+                    document.getElementById('cnt-logo-img').value = data.logoImg || '';
+document.getElementById('cnt-main-title').value = data.mainTitle || '';
+document.getElementById('cnt-sub-title').value = data.subTitle || '';
+document.getElementById('cnt-card-size').value = data.cardSize || 'summary_large_image';
                     document.getElementById('cnt-bg-img').value = data.bgImage || '';
                     document.getElementById('cnt-og-img').value = data.ogImage || '';
 
@@ -2161,28 +2220,28 @@
             } catch(e) { console.error("Error loading contact:", e); }
         }
 
-        // 🆕 ฟังก์ชันคำนวณหาวันจันทร์-อาทิตย์ ย้อนหลัง
-        function getWeekDates(weeksAgo) {
-            let today = new Date();
-            let day = today.getDay();
-            let diff = today.getDate() - day + (day === 0 ? -6 : 1); // หาวันจันทร์
-            let monday = new Date(today.setDate(diff));
-            monday.setHours(0,0,0,0);
-            monday.setDate(monday.getDate() - (weeksAgo * 7)); // ย้อนหลังตามสัปดาห์
+        // 🆕 ฟังก์ชันคำนวณหาวันจันทร์-อาทิตย์ ย้อนหลัง (แก้บั๊กวันที่เพี้ยน)
+function getWeekDates(weeksAgo) {
+    let today = new Date();
+    let day = today.getDay() || 7; // ให้วันอาทิตย์เป็น 7
+    let monday = new Date(today);
+    // คำนวณหาวันจันทร์ของสัปดาห์นั้นๆ โดยไม่กระทบตัวแปร today
+    monday.setDate(today.getDate() - day + 1 - (weeksAgo * 7));
+    monday.setHours(0,0,0,0);
 
-            let dates = [];
-            let displayDates = [];
-            let thDays = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+    let dates = [];
+    let displayDates = [];
+    let thDays = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
 
-            for(let i=0; i<7; i++) {
-                let d = new Date(monday);
-                d.setDate(d.getDate() + i);
-                let yyyy_mm_dd = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
-                dates.push(yyyy_mm_dd);
-                displayDates.push(`${thDays[i]} (${d.getDate()})`);
-            }
-            return { dates, displayDates };
-        }
+    for(let i=0; i<7; i++) {
+        let d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        let yyyy_mm_dd = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+        dates.push(yyyy_mm_dd);
+        displayDates.push(`${thDays[i]} (${d.getDate()})`);
+    }
+    return { dates, displayDates };
+}
 
         // 🆕 ตั้งค่าตัวเลือก Dropdown
         function setupWeekSelector() {
@@ -2415,8 +2474,13 @@
                 await db.collection('settings').doc('contact_page').set({ 
                     allLinks: cleanLinks,
                     bgImage: document.getElementById('cnt-bg-img').value.trim(),
-                    ogImage: document.getElementById('cnt-og-img').value.trim()
-                }, { merge: true });
+                    ogImage: document.getElementById('cnt-og-img').value.trim(),
+                    logoImg: document.getElementById('cnt-logo-img').value.trim(),
+    mainTitle: document.getElementById('cnt-main-title').value.trim(),
+    subTitle: document.getElementById('cnt-sub-title').value.trim(),
+    cardSize: document.getElementById('cnt-card-size').value
+}, { merge: true });
+                
                 
                 Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500 });
                 if(typeof markSystemUpdated === 'function') markSystemUpdated();
@@ -3069,6 +3133,131 @@
                 Swal.fire({ icon: 'success', title: 'บันทึกรูปแบบบิลสำเร็จ!', showConfirmButton: false, timer: 1500 });
             } catch (e) {
                 Swal.fire('Error', e.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // 🌟 ระบบจัดการคิวว่าง (Admin - Exception Model)
+        // ==========================================
+        const allTimeSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+
+        window.loadAvailability = async function() {
+            let selectedDate = document.getElementById('admin-date-select').value;
+            let container = document.getElementById('time-slots-container');
+            let grid = document.getElementById('slots-grid');
+
+            if (!selectedDate) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            grid.innerHTML = '<p class="text-sm text-gray-500"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูลคิว...</p>';
+
+            try {
+                // 1. ดึงคิวที่ถูกจองจากลูกค้า (bookings)
+                let bookingsSnap = await db.collection('bookings').where('date', '==', selectedDate).get();
+                let bookedTimes = {};
+                bookingsSnap.forEach(doc => { bookedTimes[doc.data().time] = doc.data(); });
+
+                // 2. ดึงคิวที่แอดมินปิดไว้ (blocked_slots)
+                let blockedSnap = await db.collection('blocked_slots').where('date', '==', selectedDate).get();
+                let blockedTimes = {};
+                blockedSnap.forEach(doc => { blockedTimes[doc.data().time] = { id: doc.id, ...doc.data() }; });
+
+                // 3. วาดตารางเวลา
+                let html = '';
+                allTimeSlots.forEach(timeStr => {
+                    let status = 'Available';
+                    let data = null;
+                    let bgClass = 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100 cursor-pointer';
+                    let icon = '<i class="fa-solid fa-circle-check"></i>';
+                    let label = 'ว่าง (คลิกเพื่อปิด)';
+
+                    if (bookedTimes[timeStr]) {
+                        status = 'Booked';
+                        data = bookedTimes[timeStr];
+                        bgClass = 'bg-blue-100 border-blue-400 text-blue-800 cursor-not-allowed';
+                        icon = '<i class="fa-solid fa-user"></i>';
+                        label = 'ลูกค้าจองแล้ว';
+                    } else if (blockedTimes[timeStr]) {
+                        status = 'Blocked';
+                        data = blockedTimes[timeStr];
+                        bgClass = 'bg-red-100 border-red-400 text-red-800 hover:bg-red-200 cursor-pointer';
+                        icon = '<i class="fa-solid fa-lock"></i>';
+                        label = 'ปิดคิวแล้ว';
+                    }
+
+                    let dataString = data ? encodeURIComponent(JSON.stringify(data)) : '';
+                    html += `
+                        <div onclick="toggleSlotStatus('${timeStr}', '${status}', '${dataString}')" class="p-3 border rounded-xl flex flex-col items-center justify-center transition shadow-sm ${bgClass}">
+                            <span class="font-bold text-lg">${timeStr}</span>
+                            <span class="text-[10px] font-bold mt-1">${icon} ${label}</span>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+
+            } catch (error) {
+                console.error(error);
+                grid.innerHTML = '<p class="text-sm text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+            }
+        }
+
+        window.toggleSlotStatus = async function(timeStr, status, dataString) {
+            let selectedDate = document.getElementById('admin-date-select').value;
+            let data = dataString ? JSON.parse(decodeURIComponent(dataString)) : null;
+
+            if (status === 'Booked') {
+                Swal.fire('คิวถูกจองแล้ว', `ลูกค้าระบบหน้าบ้านจองคิวเวลานี้ไปแล้วครับ (${data.name || 'ไม่ระบุชื่อ'})`, 'info');
+                return;
+            }
+
+            if (status === 'Blocked') {
+                Swal.fire({
+                    title: `เปิดคิว ${timeStr} น. ?`,
+                    text: `เหตุผลที่ปิดไว้: ${data.reason}`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'ยืนยันเปิดคิว',
+                    cancelButtonText: 'ยกเลิก'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({ title: 'กำลังเปิดคิว...', didOpen: () => Swal.showLoading() });
+                        await db.collection('blocked_slots').doc(data.id).delete();
+                        Swal.fire({ icon: 'success', title: 'เปิดคิวสำเร็จ', showConfirmButton: false, timer: 1500 });
+                        loadAvailability(); 
+                    }
+                });
+                return;
+            }
+
+            if (status === 'Available') {
+                const { value: reason } = await Swal.fire({
+                    title: `ปิดคิวเวลา ${timeStr} น.`,
+                    input: 'select',
+                    inputOptions: {
+                        'รับงานออฟไลน์': 'รับงานออฟไลน์ (โทร/LINE)',
+                        'ลางาน/ทีมป่วย': 'ลางาน/ทีมป่วย',
+                        'วันหยุดร้าน': 'วันหยุดร้าน',
+                        'อื่นๆ': 'อื่นๆ'
+                    },
+                    inputPlaceholder: 'เลือกเหตุผลการปิดคิว',
+                    showCancelButton: true,
+                    confirmButtonText: 'ยืนยันปิดคิว'
+                });
+
+                if (reason) {
+                    Swal.fire({ title: 'กำลังปิดคิว...', didOpen: () => Swal.showLoading() });
+                    await db.collection('blocked_slots').add({
+                        date: selectedDate,
+                        time: timeStr,
+                        reason: reason,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    Swal.fire({ icon: 'success', title: 'ปิดคิวสำเร็จ', showConfirmButton: false, timer: 1500 });
+                    loadAvailability(); 
+                }
             }
         }
     </script>
