@@ -666,6 +666,15 @@
                     </div>
 
                     <div>
+    <label class="block text-xs font-bold text-gray-500 mb-1">ชื่อหมวดหมู่ (ภาษาไทย) - แสดงบนปุ่ม</label>
+    <input type="text" id="form-cat-name" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none" placeholder="เช่น ทำความสะอาดบ้าน">
+</div>
+<div>
+    <label class="block text-xs font-bold text-gray-500 mb-1">ไอคอน (FontAwesome Class)</label>
+    <input type="text" id="form-cat-icon" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm outline-none" placeholder="เช่น fa-solid fa-house">
+</div>
+
+                    <div>
                         <label class="block text-xs font-bold text-gray-500 mb-1">สถานะการแสดงผล</label>
                         <select id="form-active" class="w-full p-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm bg-white font-bold text-green-600">
                             <option value="true">✅ เปิดใช้งาน (แสดงบนเว็บ)</option>
@@ -1330,6 +1339,8 @@
                 document.getElementById('form-staff').value = srv.staffCount || '';
                 document.getElementById('form-hours').value = srv.durationHours || '';
                 document.getElementById('form-unit').value = srv.unit || '';
+                document.getElementById('form-cat-name').value = srv.categoryName || '';
+                document.getElementById('form-cat-icon').value = srv.categoryIcon || '';
 
                 // 🌟 โหลดข้อมูลแพ็กเกจสมาชิก
                 document.getElementById('form-mem-sessions').value = srv.memSessions || '';
@@ -1401,6 +1412,8 @@
                 memSessions: Number(document.getElementById('form-mem-sessions').value || 0),
                 memDuration: document.getElementById('form-mem-duration').value.trim(),
                 memTerms: document.getElementById('form-mem-terms').value.trim(),
+                categoryName: document.getElementById('form-cat-name').value.trim(),
+                categoryIcon: document.getElementById('form-cat-icon').value.trim(),
 
                 sizes: cleanSizes
             };

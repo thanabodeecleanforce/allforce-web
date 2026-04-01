@@ -731,6 +731,13 @@
                     </div>
                 </div>
 
+                <div id="service-selection-area" class="hidden mt-6 border-t border-gray-200 pt-6">
+    <h3 id="step2-title" class="font-bold text-gray-800 mb-4 text-lg">
+        <i class="fa-solid fa-clipboard-list text-primary mr-2"></i>เลือกรายการบริการ
+    </h3>
+    <div class="grid grid-cols-1 gap-4" id="services-container">
+        </div>
+</div>
                     <div class="flex gap-4 mt-8">
                         <button onclick="nextStep()" class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md text-lg"><span data-i18n="btn_next">ถัดไป (ข้อมูลนัดหมาย)</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
                     </div>
@@ -1403,36 +1410,37 @@
         };
 
         window.renderCategories = function() {
-            let container = document.getElementById('category-container');
-            if (!container) return;
+    let container = document.getElementById('category-container');
+    if (!container) return;
 
-            // ดึงหมวดหมู่ที่ไม่ซ้ำกันจากบริการทั้งหมดใน Firebase (ตัดบริการเสริมออก)
-            let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon');
-            
-            if (uniqueCategories.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center py-4 border-2 border-dashed rounded-xl">ยังไม่มีบริการเปิดใช้งานในขณะนี้</p>';
-                return;
-            }
+    // ดึง Unique Categories จากฐานข้อมูล
+    let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon');
+    
+    if (uniqueCategories.length === 0) {
+        container.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center">ยังไม่มีบริการ</p>';
+        return;
+    }
 
-            let html = '';
-            uniqueCategories.forEach(catId => {
-                let meta = catMeta[catId] || { name: catId, icon: '<i class="fa-solid fa-broom text-2xl"></i>' };
-                let isSelected = cart.category === catId;
-                
-                // สลับสีปุ่มถ้าถูกเลือก
-                let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
-                let iconClass = isSelected ? 'scale-110' : '';
+    let html = '';
+    uniqueCategories.forEach(catId => {
+        // ค้นหาข้อมูลหมวดหมู่จาก Service ตัวแรกที่มีหมวดหมู่นี้
+        let serviceInfo = allServices.find(s => s.category === catId);
+        let catName = serviceInfo.categoryName || catId; // ถ้าไม่มีชื่อให้ใช้ ID แทน
+        let iconClass = serviceInfo.categoryIcon || 'fa-solid fa-broom'; // ถ้าไม่มีไอคอนให้ใช้ไม้กวาด
 
-                html += `
-                <button id="cat-${catId}" type="button" onclick="selectCategory('${catId}', '${meta.name}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white relative overflow-hidden group ${activeClass}">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform ${iconClass}">
-                        ${meta.icon}
-                    </div>
-                    <span class="font-bold text-sm md:text-base text-center">${meta.name}</span>
-                </button>`;
-            });
-            container.innerHTML = html;
-        }
+        let isSelected = cart.category === catId;
+        let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
+
+        html += `
+        <button type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white group ${activeClass}">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary text-2xl">
+                <i class="${iconClass}"></i>
+            </div>
+            <span class="font-bold text-sm md:text-base text-center">${catName}</span>
+        </button>`;
+    });
+    container.innerHTML = html;
+}
 
         // 🌟 ฟังก์ชันเมื่อคลิกเลือกหมวดหมู่
         window.selectCategory = function(id, nameText = 'แพ็กเกจ') {
