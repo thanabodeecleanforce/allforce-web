@@ -3415,7 +3415,6 @@ function getWeekDates(weeksAgo) {
         // โหลดข้อมูลตอนเข้าแอดมิน
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(loadSocialLinksAdmin, 1500);
-            // ❌ ไม่ต้องใส่ loadServices() ตรงนี้แล้ว เพราะระบบมีฟังก์ชัน loadData() คอยดึงข้อมูลแบบ Real-time อยู่แล้ว
         });
 
         // ========================================================
@@ -3431,7 +3430,7 @@ function getWeekDates(weeksAgo) {
                 return;
             }
 
-            // ✅ ซ่อมบั๊ก: จัดกลุ่มหมวดหมู่ให้ตรงกับ Database (house_single, condo ให้รวมอยู่ในกลุ่ม house)
+            // จัดกลุ่มหมวดหมู่ให้ตรงกับ Database
             let uniqueCategories = [...new Set(allServices.map(s => {
                 return s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
             }))].filter(c => c && c !== 'addon');
@@ -3497,7 +3496,7 @@ function getWeekDates(weeksAgo) {
                     batch.update(ref, {
                         categoryName: newName,
                         categoryIcon: newIcon,
-                        category: catId // บังคับเซฟ category ลงไปด้วย
+                        category: catId
                     });
                 });
                 
@@ -3510,7 +3509,6 @@ function getWeekDates(weeksAgo) {
                     srv.category = catId;
                 });
                 
-                // ✅ ซ่อมบั๊ก: แก้ชื่อฟังก์ชันให้ถูก (จาก renderServices เป็น renderTable)
                 if(typeof renderTable === 'function') renderTable();
 
                 Swal.fire({ icon: 'success', title: 'เปลี่ยนโลโก้สำเร็จ!', text: `อัปเดตข้อมูลให้ ${servicesToUpdate.length} รายการย่อยแล้ว`, showConfirmButton: false, timer: 2000 });
@@ -3519,6 +3517,6 @@ function getWeekDates(weeksAgo) {
                 Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
             }
         }
-</script>
+    </script>
 </body>
 </html>
