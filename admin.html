@@ -83,10 +83,11 @@
                 <button onclick="switchMainTab('line')" id="nav-line" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-brands fa-line text-green-500 w-5 text-center text-lg"></i> <span class="whitespace-nowrap">ตั้งค่าบิล & LINE</span></button>
                 <button onclick="switchMainTab('clients')" id="nav-clients" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-handshake w-5 text-center"></i> <span class="whitespace-nowrap">ลูกค้าของเรา</span></button>
                 <button onclick="switchMainTab('portfolio')" id="nav-portfolio" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-images w-5 text-center"></i> <span class="whitespace-nowrap">ผลงานของเรา</span></button>
-                
-                <p class="hidden md:block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 mb-2 mt-4 border-t pt-4">ระบบ & โซเชียล</p>
-                
-                <button onclick="switchMainTab('social')" id="nav-social" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-brands fa-instagram w-5 text-center"></i> <span class="whitespace-nowrap">โปรไฟล์ IG</span></button>
+                <button onclick="switchMainTab('sociallinks')" id="nav-sociallinks" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-hashtag w-5 text-center text-lg text-blue-500"></i> <span class="whitespace-nowrap">จัดการปุ่มโซเชียล</span></button>
+
+<p class="hidden md:block text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 mb-2 mt-4 border-t pt-4">ระบบ & โซเชียล</p>
+
+<button onclick="switchMainTab('social')" id="nav-social" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-brands fa-instagram w-5 text-center"></i> <span class="whitespace-nowrap">โปรไฟล์ IG</span></button>
                 <button onclick="switchMainTab('contact')" id="nav-contact" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-address-book w-5 text-center"></i> <span class="whitespace-nowrap">ติดต่อ & โซเชียล</span></button>
                 <button onclick="switchMainTab('users')" id="nav-users" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-users w-5 text-center"></i> <span class="whitespace-nowrap">ผู้ใช้งาน</span></button>
                 <button onclick="switchMainTab('news')" id="nav-news" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-newspaper w-5 text-center"></i> <span class="whitespace-nowrap">ข่าวสาร</span></button>
@@ -190,6 +191,22 @@
         </div>
 
 
+        <div id="sociallinks-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-[#000080]">จัดการโซเชียลมีเดีย</h1>
+                    <button onclick="openAddSocialModal()" class="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-blue-600 transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> เพิ่มช่องทาง
+                    </button>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-sm text-gray-500 mb-6 bg-blue-50 p-3 rounded-lg border border-blue-100"><i class="fa-solid fa-circle-info text-primary mr-2"></i>ช่องทางเหล่านี้จะไปแสดงที่หน้าเว็บลูกค้า (cleanforce.html) ในส่วน "ติดตามเราบนโซเชียลมีเดีย" อัตโนมัติครับ</p>
+                    
+                    <div id="admin-social-list" class="space-y-3">
+                        <p class="text-sm text-gray-500 text-center py-4"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</p>
+                    </div>
+                </div>
+            </div>
 
         <div id="social-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
             <h3 class="text-lg font-bold text-[#000080] mb-4 border-b pb-2">ตั้งค่าโปรไฟล์จำลอง (หน้าเว็บ)</h3>
@@ -951,8 +968,8 @@
 
         // สิทธิ์แต่ละ tab ตาม role
         const ROLE_PERMISSIONS = {
-            superadmin: ['services','booking','coupons','line','clients','portfolio','social','contact','users','news'],
-            manager:    ['services','booking','coupons','line','clients','portfolio','news'],
+            superadmin: ['services','booking','coupons','line','clients','portfolio','social','sociallinks','contact','users','news'],
+            manager:    ['services','booking','coupons','line','clients','portfolio','news','sociallinks'],
             staff:      ['booking']
         };
 
@@ -3260,6 +3277,114 @@ function getWeekDates(weeksAgo) {
                 }
             }
         }
+        // ==========================================
+        // 🌟 ระบบจัดการโซเชียลมีเดีย (Admin)
+        // ==========================================
+        let adminSocialLinks = [];
+
+        window.loadSocialLinksAdmin = async function() {
+            try {
+                let doc = await db.collection('settings').doc('social_links').get();
+                if (doc.exists) {
+                    adminSocialLinks = doc.data().links || [];
+                } else {
+                    adminSocialLinks = [];
+                }
+                renderSocialLinksAdmin();
+            } catch (error) {
+                console.error("Error loading social links:", error);
+            }
+        }
+
+        window.renderSocialLinksAdmin = function() {
+            let container = document.getElementById('admin-social-list');
+            if (adminSocialLinks.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-6 border-2 border-dashed border-gray-200 rounded-xl">ยังไม่มีช่องทางโซเชียล กดปุ่ม "เพิ่มช่องทาง" ด้านบนได้เลยครับ</p>';
+                return;
+            }
+
+            let html = '';
+            adminSocialLinks.forEach((link, index) => {
+                html += `
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:shadow-sm transition bg-gray-50">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl text-white shadow-sm" style="background-color: ${link.color};">
+                            <i class="${link.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-md">${link.name}</h4>
+                            <p class="text-[11px] text-gray-500 mb-1">${link.desc}</p>
+                            <a href="${link.url}" target="_blank" class="text-xs text-blue-500 hover:underline line-clamp-1">${link.url}</a>
+                        </div>
+                    </div>
+                    <button onclick="deleteSocialLink(${index})" class="text-red-400 hover:text-red-600 w-10 h-10 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-100 transition"><i class="fa-solid fa-trash-can"></i></button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.openAddSocialModal = async function() {
+            const { value: formValues } = await Swal.fire({
+                title: 'เพิ่มช่องทางโซเชียล',
+                html: `
+                    <div class="space-y-3 text-left">
+                        <div><label class="text-xs font-bold text-gray-700">1. ชื่อแพลตฟอร์ม</label><input id="swal-soc-name" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น Facebook, TikTok, LINE"></div>
+                        <div><label class="text-xs font-bold text-gray-700">2. คำอธิบายสั้นๆ</label><input id="swal-soc-desc" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น กดติดตามข่าวสารและโปรโมชั่น"></div>
+                        <div><label class="text-xs font-bold text-gray-700">3. ลิงก์ (URL)</label><input id="swal-soc-url" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น https://www.facebook.com/..."></div>
+                        <div><label class="text-xs font-bold text-gray-700">4. ไอคอน (FontAwesome Class)</label><input id="swal-soc-icon" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น fa-brands fa-facebook" value="fa-brands fa-"></div>
+                        <div><label class="text-xs font-bold text-gray-700">5. สีหลัก (HEX Code)</label><input type="color" id="swal-soc-color" class="w-full h-12 border p-1 rounded-xl cursor-pointer" value="#1877F2"></div>
+                        <p class="text-[10px] text-gray-500 mt-2">* <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" class="text-blue-500 underline">คลิกที่นี่</a> เพื่อค้นหารหัสไอคอนฟรีจาก FontAwesome</p>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'บันทึกข้อมูล',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#1EA7E1',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-soc-name').value,
+                        desc: document.getElementById('swal-soc-desc').value,
+                        url: document.getElementById('swal-soc-url').value,
+                        icon: document.getElementById('swal-soc-icon').value,
+                        color: document.getElementById('swal-soc-color').value
+                    }
+                }
+            });
+
+            if (formValues && formValues.name && formValues.url) {
+                Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+                adminSocialLinks.push(formValues);
+                await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
+                Swal.fire({ icon: 'success', title: 'เพิ่มสำเร็จ', showConfirmButton: false, timer: 1500 });
+                renderSocialLinksAdmin();
+            }
+        }
+
+        window.deleteSocialLink = async function(index) {
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "ปุ่มนี้จะหายไปจากหน้าเว็บลูกค้าทันทีนะครับ",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่, ลบเลย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#ef4444'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังลบ...', didOpen: () => Swal.showLoading() });
+                    adminSocialLinks.splice(index, 1);
+                    await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
+                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
+                    renderSocialLinksAdmin();
+                }
+            });
+        }
+
+        // โหลดข้อมูลตอนเข้าแอดมิน
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadSocialLinksAdmin, 1500);
+        });
     </script>
     
 </body>
