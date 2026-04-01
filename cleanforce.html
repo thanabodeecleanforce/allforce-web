@@ -746,9 +746,9 @@
 
                 <div id="step2" class="step-content hidden fade-in">
                 <h2 class="text-xl font-bold text-gray-800 mb-6 text-center" data-i18n="step4_title">ข้อมูลการนัดหมาย</h2>
-                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4"></div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                 
-                <div class="space-y-4">
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_date">วันที่ต้องการ <span class="text-red-500">*</span></label>
@@ -837,8 +837,7 @@
                     </div>
 
                 </div>
-                
-                <div class="flex gap-4 mt-8">
+                </div><div class="flex gap-4 mt-8">
                     <button onclick="prevStep()" class="w-1/3 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition" data-i18n="btn_back">กลับ</button>
                     <button onclick="nextStep()" class="w-2/3 py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md"><span data-i18n="btn_next_summary">ตรวจสอบสรุปยอด</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
                 </div>
@@ -879,12 +878,6 @@
                                 <span id="sum-note" class="font-bold text-gray-800 text-[10px] pl-5">-</span>
                             </div>
                         </div>
-
-                        
-            </div>
-
-                    
-
                 <div id="sum-addons-container"></div>
                         <div id="sum-discount-container"></div>
 
