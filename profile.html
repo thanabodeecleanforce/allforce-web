@@ -80,6 +80,9 @@
                 document.getElementById('prof-img').src = user.photoURL;
                 document.getElementById('prof-name').textContent = user.displayName;
                 document.getElementById('prof-email').textContent = user.email;
+                
+                // 🌟 สั่งให้โหลดคูปองทันทีที่รู้ว่าใครล็อกอิน (จุดที่เติมเข้าไป!)
+                loadUserCoupons(user);
 
                 // 🌟 ดึงข้อมูลแพ็กเกจ VIP ของตัวเอง
                 db.collection("users").doc(user.uid).onSnapshot(doc => {
@@ -187,58 +190,72 @@
                 window.location.href = "cleanforce.html";
             });
         }
-        // 🌟 ฟังก์ชันดึงคูปองมาแสดงผล ดีไซน์ใหม่ โชว์ครบ!
-        async function loadMyCoupons() {
-            let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
-            let container = document.getElementById('my-coupons-list');
-            
-            if (myCoupons.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-400 py-6"><i class="fa-solid fa-box-open text-3xl mb-2 text-gray-300"></i><br><span class="text-sm">คุณยังไม่มีคูปองที่เก็บไว้</span></div>';
-                return;
-            }
+        // ==========================================
+        // 🌟 ฟังก์ชันโหลดคูปองของผู้ใช้ (แก้ไขให้ตรงกับ profile.html)
+        // ==========================================
+        async function loadUserCoupons(user) {
+            const container = document.getElementById('my-coupons-list'); // 🌟 แก้ ID ให้ตรงกับ HTML ของหน้านี้
+            if (!container) return;
+
+            container.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-primary"></i> กำลังโหลดคูปอง...</div>';
 
             try {
-                // ดึงเฉพาะคูปองที่แอดมินเปิดใช้งาน
-                const snapshot = await db.collection('coupons').where('isActive', '==', true).get();
+                // 1. ดึงคูปองที่เก็บไว้ในเครื่อง (localStorage)
+                let localCoupons = JSON.parse(localStorage.getItem('collectedCoupons') || '[]');
+                
+                // 2. ดึงคูปองที่เก็บไว้ในบัญชี Firebase
+                let accountCoupons = [];
+                const userDoc = await db.collection('users').doc(user.uid).get(); // 🌟 ใช้ตัวแปร db ของหน้านี้
+                if (userDoc.exists && userDoc.data().savedCoupons) {
+                    accountCoupons = userDoc.data().savedCoupons;
+                }
+
+                // รวมคูปองจากทั้งสองแหล่งเข้าด้วยกัน (ไม่เอาตัวซ้ำ)
+                const allSavedCodes = [...new Set([...localCoupons, ...accountCoupons])];
+
+                if (allSavedCodes.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-8"><i class="fa-solid fa-ticket text-3xl mb-2 block"></i> ยังไม่มีคูปองที่เก็บไว้</div>';
+                    return;
+                }
+
+                // 3. ดึงรายละเอียดคูปองจาก Firebase มาแสดง
+                const snapshot = await db.collection('coupons').where('isActive', '==', true).get(); // 🌟 ใช้ตัวแปร db ของหน้านี้
+                
                 let html = '';
-                let hasValidCoupon = false;
+                let hasVisibleCoupon = false;
 
                 snapshot.forEach(doc => {
-                    let c = doc.data();
-                    if (myCoupons.includes(c.code)) {
-                        hasValidCoupon = true;
-                        // 🔧 BUG FIX: endDate ถูกบันทึกเป็น string (YYYY-MM-DD) ไม่ใช่ Timestamp
-                        let expiryStr = c.endDate
-                            ? new Date(c.endDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })
-                            : 'ไม่มีกำหนด';
-
+                    const c = doc.data();
+                    if (allSavedCodes.includes(c.code)) {
+                        hasVisibleCoupon = true;
+                        const expiryStr = c.endDate ? new Date(c.endDate).toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'2-digit'}) : 'ไม่มีวันหมดอายุ';
+                        
                         html += `
-                        <div class="border border-primary border-dashed bg-blue-50 rounded-lg p-3 flex justify-between items-center gap-3 relative overflow-hidden">
-                            <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border-r-2 border-dashed border-primary"></div>
-                            <div class="absolute -right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border-l-2 border-dashed border-primary"></div>
-                            
+                        <div class="bg-white p-4 rounded-2xl border border-blue-100 flex justify-between items-center shadow-sm mb-3">
                             <div class="flex-1">
-                                <span class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold inline-block mb-1">พร้อมใช้</span>
-                                <p class="font-bold text-gray-800 text-xl tracking-wider">${c.code}</p>
-                                <p class="text-sm font-bold text-gray-700">${c.discountType === 'percent' ? 'ลด '+c.discountValue+'%' : 'ลด '+c.discountValue+' บาท'}</p>
-                                <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${expiryStr}</p>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="bg-blue-100 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">${c.code}</span>
+                                    ${c.isStackable ? '<span class="text-[9px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">ลดเพิ่มได้</span>' : ''}
+                                </div>
+                                <p class="font-bold text-gray-800 text-sm">${c.discountType === 'percent' ? 'ส่วนลด ' + c.discountValue + '%' : 'ส่วนลด ' + c.discountValue + ' บาท'}</p>
+                                <p class="text-[10px] text-gray-500 mt-1">ใช้ได้ถึง: ${expiryStr}</p>
                             </div>
-                            <button onclick="copyCoupon('${c.code}')" class="text-primary flex flex-col items-center flex-shrink-0 hover:scale-110 transition">
-                                <i class="fa-regular fa-copy text-xl"></i>
-                                <span class="text-[10px] font-bold mt-1">คัดลอกโค้ด</span>
+                            <button onclick="copyCoupon('${c.code}')" class="w-10 h-10 rounded-full bg-blue-50 text-primary hover:bg-primary hover:text-white transition flex items-center justify-center">
+                                <i class="fa-regular fa-copy"></i>
                             </button>
                         </div>`;
                     }
                 });
 
-                if (!hasValidCoupon) {
-                    container.innerHTML = '<div class="text-center text-gray-400 py-4 text-sm">คูปองที่คุณเก็บไว้หมดอายุแล้ว หรือถูกปิดการใช้งาน</div>';
+                if (!hasVisibleCoupon) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-4">คูปองที่คุณเก็บไว้อาจจะหมดอายุหรือถูกปิดใช้งานแล้ว</div>';
                 } else {
                     container.innerHTML = html;
                 }
-            } catch(e) {
-                console.error(e);
-                container.innerHTML = '<p class="text-sm text-red-500 text-center">โหลดข้อมูลคูปองไม่สำเร็จ</p>';
+
+            } catch (error) {
+                console.error("Error loading coupons:", error);
+                container.innerHTML = '<p class="text-xs text-red-500 text-center">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
             }
         }
 
