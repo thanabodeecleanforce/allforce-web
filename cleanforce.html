@@ -732,22 +732,21 @@
                 </div>
 
                 <div id="service-selection-area" class="hidden mt-6 border-t border-gray-200 pt-6">
-    <h3 id="step2-title" class="font-bold text-gray-800 mb-4 text-lg">
-        <i class="fa-solid fa-clipboard-list text-primary mr-2"></i>เลือกรายการบริการ
-    </h3>
-    <div class="grid grid-cols-1 gap-4" id="services-container">
-        </div>
-</div>
+                        <h3 id="step2-title" class="font-bold text-gray-800 mb-4 text-lg">
+                             <i class="fa-solid fa-clipboard-list text-primary mr-2"></i>เลือกรายการบริการ
+                        </h3>
+                        <div class="grid grid-cols-1 gap-4" id="services-container">
+                    </div>
+                    </div>
                     <div class="flex gap-4 mt-8">
                         <button onclick="nextStep()" class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md text-lg"><span data-i18n="btn_next">ถัดไป (ข้อมูลนัดหมาย)</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
                     </div>
                 </div>
-            </div>
 
-                    
 
                 <div id="step2" class="step-content hidden fade-in">
                 <h2 class="text-xl font-bold text-gray-800 mb-6 text-center" data-i18n="step4_title">ข้อมูลการนัดหมาย</h2>
+                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4"></div>
                 
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
@@ -780,12 +779,19 @@
                     </div>
 
                     <div class="mt-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="label_location">ปักหมุดที่อยู่ <span class="text-gray-400 font-normal text-xs">(กรุณากดอนุญาตการเข้าถึงตำแหน่ง)</span></label>
-                        <div class="relative mb-3">
-                            <input type="text" id="bk-map-search" class="w-full border border-gray-200 rounded-xl p-3 pl-10 text-sm focus:border-primary outline-none shadow-sm" placeholder="พิมพ์ค้นหาสถานที่ หรือชื่อหมู่บ้าน...">
-                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        </div>
-                        <div id="map-container" class="w-full h-48 bg-gray-100 rounded-xl overflow-hidden border border-gray-200 relative mb-3"></div>
+    <label class="block text-sm font-bold text-gray-700 mb-2">ปักหมุดที่อยู่ <span class="text-gray-400 font-normal text-xs">(กรุณากดอนุญาตตำแหน่ง)</span></label>
+    
+    <div class="relative mb-3 flex gap-2">
+        <div class="relative flex-1">
+            <input type="text" id="bk-smart-search" class="w-full border border-gray-200 rounded-xl p-3 pl-10 text-sm focus:border-primary outline-none shadow-sm" placeholder="พิมพ์ค้นหาสถานที่ หรือชื่อหมู่บ้าน...">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        </div>
+        <button type="button" onclick="useCurrentLocation(this)" class="bg-blue-50 border border-blue-200 text-primary px-4 rounded-xl hover:bg-blue-100 transition shrink-0 flex items-center justify-center shadow-sm" title="ใช้ตำแหน่งปัจจุบัน">
+            <i class="fa-solid fa-location-crosshairs text-lg"></i>
+        </button>
+    </div>
+    
+    <div id="map-container" class="w-full h-48 bg-gray-100 rounded-xl overflow-hidden border border-gray-200 relative mb-3"></div>
                         
                         <div class="grid grid-cols-2 gap-3 mb-3">
                             <input type="text" id="bk-houseNo" class="border border-gray-200 rounded-xl p-3 text-sm focus:border-primary outline-none w-full" placeholder="บ้านเลขที่ / ชื่ออาคาร *" required>
@@ -874,7 +880,12 @@
                             </div>
                         </div>
 
-                        <div id="sum-addons-container"></div>
+                        
+            </div>
+
+                    
+
+                <div id="sum-addons-container"></div>
                         <div id="sum-discount-container"></div>
 
                         <div class="bg-green-50 p-3 rounded-xl border border-green-100 mt-3 flex items-start gap-3 cursor-pointer" onclick="document.getElementById('bk-review-discount').click()">
@@ -1299,7 +1310,7 @@
                     
                     // จัดหมวดหมู่ให้ตรงกับปุ่มกดใน Step 1
                     if(['house_single', 'condo', 'villa'].includes(data.type) || data.type === 'house') {
-                        data.category = 'house'; 
+                        data.category = data.category || data.type; // ใช้ค่า category ถ้าไม่มีค่อยถอยไปใช้ type
                     } else if (data.type === 'furniture') {
                         data.category = 'furniture';
                     } else {
@@ -1396,18 +1407,6 @@
             renderTypes(); 
             calculatePricing(); 
         }
-
-        // ==========================================
-        // 🌟 สร้างปุ่มหมวดหมู่จาก Firebase อัตโนมัติ
-        // ==========================================
-        
-        // ข้อมูลตกแต่งปุ่ม (ไอคอนและชื่อภาษาไทย)
-        const catMeta = {
-            'house': { name: 'ทำความสะอาดบ้าน', icon: '<i class="fa-solid fa-house-chimney-broom text-2xl"></i>' },
-            'furniture': { name: 'ซักโซฟา / ที่นอน', icon: '<i class="fa-solid fa-couch text-2xl"></i>' },
-            'condo': { name: 'ทำความสะอาดคอนโด', icon: '<i class="fa-solid fa-building text-2xl"></i>' },
-            'villa': { name: 'ทำความสะอาดวิลล่า', icon: '<i class="fa-solid fa-house-flag text-2xl"></i>' }
-        };
 
         window.renderCategories = function() {
     let container = document.getElementById('category-container');
@@ -1581,6 +1580,24 @@
             }
         }
 
+        // 🟢 [เพิ่มฟังก์ชันนี้] เพื่อให้ปุ่ม เด็ก/สัตว์เลี้ยง กดติดและสลับสีได้
+window.selectDetail = function(field, val, element) {
+    // 1. บันทึกค่าลงตะกร้า
+    cart.details[field] = val;
+    
+    // 2. ล้างสีปุ่มทั้งหมดในกลุ่มคำถามเดียวกัน
+    let group = element.parentElement.querySelectorAll('label');
+    group.forEach(lbl => {
+        lbl.classList.remove('border-primary', 'bg-blue-50');
+        lbl.classList.add('border-gray-200');
+        lbl.querySelector('.radio-box div').classList.add('hidden'); // ซ่อนจุดตรงกลาง
+    });
+    
+    // 3. ไฮไลท์ปุ่มที่ถูกกด
+    element.classList.remove('border-gray-200');
+    element.classList.add('border-primary', 'bg-blue-50');
+    element.querySelector('.radio-box div').classList.remove('hidden'); // โชว์จุดตรงกลาง
+}
         window.updateTambon = function() {
             let amp = document.getElementById('bk-amphoe').value;
             let tamSel = document.getElementById('bk-tambon');
@@ -1958,7 +1975,17 @@
                     floatOrigContainer.classList.add('hidden');
                 }
             }
+    
+    // 🟢 [เพิ่มโค้ดนี้] สั่งให้ Floating Cart เด้งขึ้นมาเมื่อมีของในตะกร้า
+    let floatCart = document.getElementById('floating-cart');
+    if (floatCart) {
+        if (cart.addons.length > 0 && currentStep === 1) {
+            floatCart.classList.remove('hidden');
+        } else {
+            floatCart.classList.add('hidden');
         }
+    }
+}
     
 
         // =====================================
@@ -3157,35 +3184,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 🌟 2. ฟังก์ชันดึง GPS และเลื่อนแผนที่ไปจุดนั้น
-        window.useCurrentLocation = function() {
-            let btnGps = document.getElementById('mode-gps');
-            if (navigator.geolocation) {
-                btnGps.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังระบุตำแหน่ง...';
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        let pos = { lat: position.coords.latitude, lng: position.coords.longitude };
-                        if(map && marker) {
-                            map.setCenter(pos); // เลื่อนศูนย์กลางแผนที่ไปหาลูกค้า
-                            map.setZoom(17);    // ซูมเข้าไปให้เห็นบ้านชัดๆ
-                            marker.setPosition(pos); // ย้ายหมุดไปปักตรงหน้าบ้าน
-                            
-                            // ส่งพิกัดไปให้ Google แปลงเป็น ตำบล/อำเภอ ทันที
-                            let latLngObj = new google.maps.LatLng(pos.lat, pos.lng);
-                            if (typeof reverseGeocode === 'function') reverseGeocode(latLngObj);
-                        }
-                        btnGps.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> อยู่ที่บ้านตอนนี้';
-                    },
-                    (error) => {
-                        Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'โปรดอนุญาตการเข้าถึงตำแหน่ง (GPS) ในมือถือครับ' });
-                        toggleLocationMode('search'); // ถ้าดึงพิกัดไม่ได้ ให้เด้งกลับไปหน้าพิมพ์ค้นหา
-                        btnGps.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> อยู่ที่บ้านตอนนี้';
-                    },
-                    { enableHighAccuracy: true }
-                );
-            }
-        };
+        // 🟢 [แก้ไข] ฟังก์ชันขอตำแหน่ง GPS ให้เสถียรขึ้น
+window.useCurrentLocation = function(btnEl) {
+    if (navigator.geolocation) {
+        let oldHTML = btnEl.innerHTML;
+        btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg"></i>'; // โชว์โหลด
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                let pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+                if(map && marker) {
+                    map.setCenter(pos);
+                    map.setZoom(17);
+                    marker.setPosition(pos);
+                    let latLngObj = new google.maps.LatLng(pos.lat, pos.lng);
+                    if (typeof reverseGeocode === 'function') reverseGeocode(latLngObj);
+                }
+                btnEl.innerHTML = oldHTML; // คืนค่าปุ่มเดิม
+            },
+            (error) => {
+                Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'โปรดอนุญาตการเข้าถึงตำแหน่ง (GPS) ในเบราว์เซอร์ครับ' });
+                btnEl.innerHTML = oldHTML;
+            },
+            { enableHighAccuracy: true }
+        );
+    }
+};
     </script>
 
     <div id="slide-notification" class="fixed top-24 -right-full z-50 transition-all duration-500 ease-in-out cursor-pointer shadow-lg rounded-xl bg-white border border-gray-100 w-72 overflow-hidden" onclick="openAndLoadCoupons()">

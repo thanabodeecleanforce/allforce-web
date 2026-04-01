@@ -1112,13 +1112,12 @@
                 let statusText = srv.isActive ? 'เปิดใช้งาน' : 'ปิดซ่อน';
                 
                 // 🌟 แก้ปัญหาที่ 1: แยกชื่อหมวดหมู่ให้ชัดเจน
-                let typeName = '';
                 if (srv.type === 'addon') typeName = 'บริการเสริม';
                 else if (srv.type === 'furniture') typeName = 'เฟอร์นิเจอร์';
                 else if (srv.type === 'condo') typeName = 'คอนโด';
                 else if (srv.type === 'house_single') typeName = 'บ้านเดี่ยว/ทาวน์โฮม';
                 else if (srv.type === 'villa') typeName = 'วิลล่า';
-                else typeName = 'แพ็กเกจบ้าน';
+                let typeName = srv.categoryName || srv.type;
                 
                 let sizesTags = '';
                 if(srv.sizes && srv.sizes.length > 0) {
