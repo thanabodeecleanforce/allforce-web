@@ -946,7 +946,21 @@
             </div>
         </div>
 
-        
+        <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-layer-group text-primary mr-2"></i>จัดการโลโก้และชื่อหมวดหมู่</h3>
+            <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto hide-scroll flex-1 bg-gray-50/50">
+            <p class="text-xs text-gray-500 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <i class="fa-solid fa-circle-info text-primary mr-2"></i> การเปลี่ยนโลโก้/ชื่อที่นี่ ระบบจะอัปเดตให้กับ <b>ทุกบริการย่อย</b> ในหมวดหมู่นั้นพร้อมกันทันที
+            </p>
+            <div id="category-list-area" class="space-y-3">
+                </div>
+        </div>
+    </div>
+</div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
@@ -3484,21 +3498,19 @@ function getWeekDates(weeksAgo) {
             setTimeout(loadSocialLinksAdmin, 1500);
             loadServices();
         });
+
+        async function loadServices() {
+    try {
+        const snapshot = await db.collection("services").get();
+        allServices = [];
+        snapshot.forEach(doc => {
+            allServices.push({ id: doc.id, ...doc.data() });
+        });
+        renderServices(); // สั่งวาดตารางหลังจากได้ข้อมูลแล้ว
+    } catch (error) {
+        console.error("Error loading services:", error);
+    }
+}
     </script>
-    <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-layer-group text-primary mr-2"></i>จัดการโลโก้และชื่อหมวดหมู่</h3>
-            <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="p-6 overflow-y-auto hide-scroll flex-1 bg-gray-50/50">
-            <p class="text-xs text-gray-500 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
-                <i class="fa-solid fa-circle-info text-primary mr-2"></i> การเปลี่ยนโลโก้/ชื่อที่นี่ ระบบจะอัปเดตให้กับ <b>ทุกบริการย่อย</b> ในหมวดหมู่นั้นพร้อมกันทันที
-            </p>
-            <div id="category-list-area" class="space-y-3">
-                </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>
