@@ -1000,35 +1000,48 @@
         };
 
         function applyRoleUI(role) {
-            const allowed = ROLE_PERMISSIONS[role] || [];
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                const tab = btn.id.replace('nav-', '');
-                if (allowed.includes(tab)) {
-                    btn.classList.remove('hidden');
-                } else {
-                    btn.classList.add('hidden');
-                }
-            });
+    const allowed = ROLE_PERMISSIONS[role] || [];
 
-            const badge = document.getElementById('role-badge');
-            const colors = { superadmin: 'bg-yellow-400 text-yellow-900', manager: 'bg-blue-200 text-blue-900', staff: 'bg-gray-200 text-gray-700' };
-            const labels = { superadmin: '👑 Superadmin', manager: '🔧 Manager', staff: '📋 Staff' };
-            if (badge) {
-                badge.textContent = labels[role] || role;
-                badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full ${colors[role] || 'bg-gray-200 text-gray-700'}`;
-            }
-
-            const firstTab = allowed[0];
-            if (firstTab) switchMainTab(firstTab); // 👈 ตรงนี้แหละครับที่สั่งให้เปิดแท็บแรกอย่างถูกต้อง
-
-            const langSetting = document.getElementById('admin-lang-setting');
-            if (role === 'staff' || role === 'manager') {
-                if(langSetting) langSetting.classList.add('hidden');
-            } else if (role === 'superadmin') {
-                if(langSetting) langSetting.classList.remove('hidden');
-                langSetting.classList.add('flex');
-            }
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        const tab = btn.id.replace('nav-', '');
+        if (allowed.includes(tab)) {
+            btn.classList.remove('hidden');
+        } else {
+            btn.classList.add('hidden');
         }
+    });
+
+    const badge = document.getElementById('role-badge');
+    const colors = {
+        superadmin: 'bg-yellow-400 text-yellow-900',
+        manager: 'bg-blue-200 text-blue-900',
+        staff: 'bg-gray-200 text-gray-700'
+    };
+    const labels = {
+        superadmin: '👑 Superadmin',
+        manager: '🔧 Manager',
+        staff: '📋 Staff'
+    };
+
+    if (badge) {
+        badge.textContent = labels[role] || role;
+        badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-full ${colors[role] || 'bg-gray-200 text-gray-700'}`;
+    }
+
+    const firstTab = allowed[0];
+    if (firstTab) switchMainTab(firstTab);
+
+    const langSetting = document.getElementById('admin-lang-setting');
+
+    if (role === 'staff' || role === 'manager') {
+        if (langSetting) langSetting.classList.add('hidden');
+    } else if (role === 'superadmin') {
+        if (langSetting) {
+            langSetting.classList.remove('hidden');
+            langSetting.classList.add('flex');
+        }
+    }
+}
         
 
         // 🔒 Auth Guard — ตรวจ role จาก Firestore
