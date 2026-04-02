@@ -1897,20 +1897,24 @@ window.selectDetail = function(field, val, element) {
                 itemCount += item.qty;
                 
                 let sizeText = item.size ? ` ${item.size}` : '';
-                
                 sumAddonsHTML += `
-                <div class="flex justify-between items-center text-gray-700 pl-1 mb-2 text-[11px] md:text-xs">
-                    <span class="flex-1 pr-2"><i class="fa-solid fa-check text-[10px] text-green-500 mr-1"></i> ${a.name}${sizeText} <span class="text-gray-400 ml-1">x${item.qty}</span></span>
-                    <div class="text-right whitespace-nowrap">
+                <div class="flex justify-between items-start text-gray-700 pl-1 mb-3 text-[11px] md:text-xs gap-2">
+                    <div class="flex-1 min-w-0 break-words leading-tight">
+                        <i class="fa-solid fa-check text-[10px] text-green-500 mr-1 mt-0.5 float-left"></i> 
+                        <span class="block ml-4">${a.name}${sizeText} <span class="text-gray-400 ml-1 whitespace-nowrap">x${item.qty}</span></span>
+                    </div>
+                    <div class="text-right whitespace-nowrap shrink-0">
                         ${isReviewChecked ? `<span class="text-[9px] text-gray-400 line-through block">${lineOrigTotal.toLocaleString()} บาท</span>` : ''}
                         <span class="font-bold ${isReviewChecked ? 'text-green-600' : 'text-gray-800'}">${lineTotal.toLocaleString()} บาท</span>
                     </div>
                 </div>`;
                 
                 floatDetailsHTML += `
-                <div class="flex justify-between items-start text-gray-700 pl-2">
-                    <span class="flex-1 pr-2 text-[11px]">- ${a.name}${sizeText} <span class="text-gray-400">x${item.qty}</span></span>
-                    <div class="text-right whitespace-nowrap">
+                <div class="flex justify-between items-start text-gray-700 pl-2 gap-2 mb-2">
+                    <div class="flex-1 min-w-0 break-words leading-tight text-[11px]">
+                        - ${a.name}${sizeText} <span class="text-gray-400 whitespace-nowrap">x${item.qty}</span>
+                    </div>
+                    <div class="text-right whitespace-nowrap shrink-0">
                         ${isReviewChecked ? `<span class="text-[9px] text-gray-400 line-through block">${lineOrigTotal.toLocaleString()} บาท</span>` : ''}
                         <span class="font-bold ${isReviewChecked ? 'text-green-600' : 'text-gray-800'} text-[11px]">${lineTotal.toLocaleString()} บาท</span>
                     </div>
