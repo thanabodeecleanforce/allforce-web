@@ -3435,105 +3435,98 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
         // ========================================================
-        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (Batch Update) - ฉบับสมบูรณ์
+        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (Batch Update)
         // ========================================================
         window.openCategoryModal = function() {
             let container = document.getElementById('category-list-area');
-            
             if (!allServices || allServices.length === 0) {
                 container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการในระบบ</p>';
-                document.getElementById('category-modal').classList.remove('hidden');
-                document.getElementById('category-modal').classList.add('flex');
-                return;
-            }
-
-            // จัดกลุ่มหมวดหมู่ให้ตรงกับ Database
-            let uniqueCategories = [...new Set(allServices.map(s => {
-                return s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
-            }))].filter(c => c && c !== 'addon');
-            
-            if (uniqueCategories.length === 0) {
-                container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีหมวดหมู่บริการ</p>';
             } else {
-                let html = '';
-                uniqueCategories.forEach(catId => {
-                    let sampleSrv = allServices.find(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
-                    let catName = sampleSrv.categoryName || catId;
-                    let catIcon = sampleSrv.categoryIcon || 'fa-solid fa-broom';
-                    
-                    html += `
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
-                        <div class="w-full md:w-1/4">
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
-                            <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none cursor-not-allowed">
-                        </div>
-                        <div class="w-full md:w-1/4">
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
-                            <input type="text" id="cat-name-${catId}" value="${catName}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
-                        </div>
-                        <div class="w-full md:w-2/4 flex gap-2">
-                            <div class="flex-1">
-                                <label class="block text-[10px] font-bold text-gray-500 mb-1">ไอคอน (FontAwesome)</label>
-                                <input type="text" id="cat-icon-${catId}" value="${catIcon}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                let uniqueCategories = [...new Set(allServices.map(s => {
+                    return s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
+                }))].filter(c => c && c !== 'addon');
+                
+                if (uniqueCategories.length === 0) {
+                    container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีหมวดหมู่บริการ</p>';
+                } else {
+                    let html = '';
+                    uniqueCategories.forEach(catId => {
+                        let sampleSrv = allServices.find(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
+                        let catName = sampleSrv.categoryName || catId;
+                        let catIcon = sampleSrv.categoryIcon || 'fa-solid fa-broom';
+                        html += `
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
+                            <div class="w-full md:w-1/4">
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
+                                <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none">
                             </div>
-                            <button type="button" onclick="saveCategoryMeta('${catId}')" class="bg-indigo-500 text-white px-3 py-2 rounded font-bold hover:bg-indigo-600 transition shadow-sm text-xs h-[34px] self-end shrink-0">
-                                บันทึก
-                            </button>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
+                            <div class="w-full md:w-1/4">
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
+                                <input type="text" id="cat-name-${catId}" value="${catName}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                            </div>
+                            <div class="w-full md:w-2/4 flex gap-2">
+                                <div class="flex-1">
+                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">ไอคอน (FontAwesome)</label>
+                                    <input type="text" id="cat-icon-${catId}" value="${catIcon}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                                </div>
+                                <button type="button" onclick="saveCategoryMeta('${catId}')" class="bg-indigo-500 text-white px-3 py-2 rounded font-bold hover:bg-indigo-600 transition shadow-sm text-xs h-[34px] self-end shrink-0">บันทึก</button>
+                            </div>
+                        </div>`;
+                    });
+                    container.innerHTML = html;
+                }
             }
-            
-            let modal = document.getElementById('category-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('category-modal').classList.replace('hidden', 'flex');
         }
 
         window.closeCategoryModal = function() {
-            let modal = document.getElementById('category-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('category-modal').classList.replace('flex', 'hidden');
         }
 
         window.saveCategoryMeta = async function(catId) {
             let newName = document.getElementById(`cat-name-${catId}`).value.trim();
             let newIcon = document.getElementById(`cat-icon-${catId}`).value.trim();
-            
             if (!newName || !newIcon) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อและไอคอนให้ครบ', 'warning');
 
-            Swal.fire({ title: 'กำลังอัปเดตทุกบริการ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
-            
+            Swal.fire({ title: 'กำลังอัปเดต...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
                 let batch = db.batch();
                 let servicesToUpdate = allServices.filter(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
-                
                 servicesToUpdate.forEach(srv => {
                     let ref = db.collection("services").doc(srv.id);
-                    batch.update(ref, {
-                        categoryName: newName,
-                        categoryIcon: newIcon,
-                        category: catId
-                    });
+                    batch.update(ref, { categoryName: newName, categoryIcon: newIcon, category: catId });
                 });
-                
                 await batch.commit();
-                
-                // อัปเดตข้อมูลหน้าจอแอดมินโดยไม่ต้องรีเฟรช
-                servicesToUpdate.forEach(srv => {
-                    srv.categoryName = newName;
-                    srv.categoryIcon = newIcon;
-                    srv.category = catId;
-                });
-                
                 if(typeof renderTable === 'function') renderTable();
-
-                Swal.fire({ icon: 'success', title: 'เปลี่ยนโลโก้สำเร็จ!', text: `อัปเดตข้อมูลให้ ${servicesToUpdate.length} รายการย่อยแล้ว`, showConfirmButton: false, timer: 2000 });
-                
+                Swal.fire({ icon: 'success', title: 'เปลี่ยนโลโก้สำเร็จ!', showConfirmButton: false, timer: 1500 });
             } catch(e) {
                 Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
             }
         }
+
+        window.deleteSocialLink = async function(index) {
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "ปุ่มนี้จะหายไปจากหน้าเว็บลูกค้าทันที",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่, ลบเลย',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#ef4444'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังลบ...', didOpen: () => Swal.showLoading() });
+                    adminSocialLinks.splice(index, 1);
+                    await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
+                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
+                    renderSocialLinksAdmin();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadSocialLinksAdmin, 1500);
+        });
     </script>
 </body>
 </html>
