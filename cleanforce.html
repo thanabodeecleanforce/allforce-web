@@ -877,14 +877,16 @@
                         </div>
                         
                         <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-600 space-y-2 mt-3 mb-3 border border-gray-100">
+                            
+                            <div id="sum-addons-container" class="border-b border-gray-200 pb-2 mb-2"></div>
+                            
                             <div class="flex justify-between items-center"><span><i class="fa-solid fa-baby text-primary w-4"></i> เด็กเล็ก:</span> <span id="sum-kids" class="font-bold text-gray-800">-</span></div>
                             <div class="flex justify-between items-center"><span><i class="fa-solid fa-paw text-primary w-4"></i> สัตว์เลี้ยง:</span> <span id="sum-pets" class="font-bold text-gray-800">-</span></div>
                             <div class="flex flex-col gap-1 mt-2 pt-2 border-t border-gray-200">
                                 <span class="text-[10px]"><i class="fa-solid fa-comment-dots text-primary w-4"></i> เน้นพิเศษ:</span>
-                                <span id="sum-note" class="font-bold text-gray-800 text-[10px] pl-5">-</span>
+                                <span id="sum-note" class="font-bold text-gray-800 text-[10px] pl-5 break-words whitespace-pre-wrap overflow-hidden w-full">-</span>
                             </div>
                         </div>
-                <div id="sum-addons-container"></div>
                         <div id="sum-discount-container"></div>
 
                         <div class="bg-green-50 p-3 rounded-xl border border-green-100 mt-3 flex items-start gap-3 cursor-pointer" onclick="document.getElementById('bk-review-discount').click()">
@@ -1638,6 +1640,9 @@
                 if(kidsEl) kidsEl.textContent = cart.details.kids === 'yes' ? 'มี' : 'ไม่มี';
                 let petsEl = document.getElementById('sum-pets');
                 if(petsEl) petsEl.textContent = cart.details.pets === 'yes' ? 'มี' : 'ไม่มี';
+                let noteEl = document.getElementById('sum-note');
+                let inputNote = document.getElementById('bk-special-note');
+                if(noteEl && inputNote) noteEl.textContent = inputNote.value.trim() || '-';
             }
             
             let scrollTarget = document.getElementById('booking-cf');
@@ -1898,23 +1903,24 @@ window.selectDetail = function(field, val, element) {
                 
                 let sizeText = item.size ? ` ${item.size}` : '';
                 sumAddonsHTML += `
-                <div class="flex justify-between items-start text-gray-700 pl-1 mb-3 text-[11px] md:text-xs gap-2">
-                    <div class="flex-1 min-w-0 break-words leading-tight">
-                        <i class="fa-solid fa-check text-[10px] text-green-500 mr-1 mt-0.5 float-left"></i> 
-                        <span class="block ml-4">${a.name}${sizeText} <span class="text-gray-400 ml-1 whitespace-nowrap">x${item.qty}</span></span>
+                <div class="flex justify-between items-start text-gray-700 pl-1 mb-3 text-[11px] md:text-xs w-full gap-2">
+                    <div class="flex flex-1 items-start gap-1.5 min-w-0">
+                        <i class="fa-solid fa-check text-[10px] text-green-500 mt-0.5 shrink-0"></i> 
+                        <span class="break-words leading-tight flex-1">${a.name}${sizeText} <span class="text-gray-400 ml-1 whitespace-nowrap">x${item.qty}</span></span>
                     </div>
-                    <div class="text-right whitespace-nowrap shrink-0">
+                    <div class="text-right shrink-0 flex flex-col items-end">
                         ${isReviewChecked ? `<span class="text-[9px] text-gray-400 line-through block">${lineOrigTotal.toLocaleString()} บาท</span>` : ''}
                         <span class="font-bold ${isReviewChecked ? 'text-green-600' : 'text-gray-800'}">${lineTotal.toLocaleString()} บาท</span>
                     </div>
                 </div>`;
                 
                 floatDetailsHTML += `
-                <div class="flex justify-between items-start text-gray-700 pl-2 gap-2 mb-2">
-                    <div class="flex-1 min-w-0 break-words leading-tight text-[11px]">
-                        - ${a.name}${sizeText} <span class="text-gray-400 whitespace-nowrap">x${item.qty}</span>
+                <div class="flex justify-between items-start text-gray-700 pl-2 mb-2 w-full gap-2">
+                    <div class="flex flex-1 items-start gap-1.5 min-w-0">
+                        <span class="shrink-0 text-gray-400">-</span>
+                        <span class="break-words leading-tight flex-1 text-[11px]">${a.name}${sizeText} <span class="text-gray-400 ml-1 whitespace-nowrap">x${item.qty}</span></span>
                     </div>
-                    <div class="text-right whitespace-nowrap shrink-0">
+                    <div class="text-right shrink-0 flex flex-col items-end">
                         ${isReviewChecked ? `<span class="text-[9px] text-gray-400 line-through block">${lineOrigTotal.toLocaleString()} บาท</span>` : ''}
                         <span class="font-bold ${isReviewChecked ? 'text-green-600' : 'text-gray-800'} text-[11px]">${lineTotal.toLocaleString()} บาท</span>
                     </div>
