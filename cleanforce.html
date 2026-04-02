@@ -1301,81 +1301,76 @@
                 snapshot.forEach(doc => {
                     let data = { id: doc.id, ...doc.data() };
                     
-                    // ถ้า service ยังไม่มี category field ให้แปลงจาก type
-                    if (!data.category || data.category === '') {
-                        if (data.type === 'house_single') data.category = 'house';
-                        else data.category = data.type;
+                    // 🌟 แก้ไขแล้ว: ถ้าระบบยังไม่มี category ให้ดึง type เดิมมาใช้ตรงๆ เลย (ไม่จับมัดรวมกันแล้ว)
+                    if (!data.category) {
+                        if (data.type === 'house_single' || data.type === 'house') {
+                            data.category = 'house'; 
+                        } else {
+                            data.category = data.type; // ให้ condo เป็น condo, villa เป็น villa ตามเดิมเป๊ะๆ
+                        }
                     }
 
                     allServices.push(data);
                 });
                 
-                renderCategories();
-
+                renderCategories(); // สั่งวาดปุ่มทันที
             } catch (error) {
                 console.error("Error fetching services: ", error);
             }
         }
 
-        // 2. ฟังก์ชันวาดกล่องแพ็กเกจ
-        function renderTypes() {
-            let types = allServices.filter(s => s.category === cart.category || s.type === cart.category);
-            types.sort((a,b) => (a.order||99) - (b.order||99));
-            
-            let html = '';
-            
-            if(types.length === 0) {
-                html = '<div class="col-span-full text-center p-8 bg-white rounded-2xl text-gray-400 border border-gray-100">กรุณาเลือกหมวดหมู่ที่ต้องการครับ</div>';
-            } else {
-                types.forEach(addon => {
-                    let cartItems = cart.addons.filter(a => a.id === addon.id);
-                    let isSelected = cartItems.length > 0;
-                    let hasSizes = addon.sizes && addon.sizes.length > 0;
-                    
-                    let displayPrice = hasSizes ? Math.min(...addon.sizes.map(s => Number(s.price))) : (addon.price || 0);
-                    let origPrice = addon.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${addon.originalPrice.toLocaleString()} ฿</span>` : '';
+        // ข้อมูลตกแต่งปุ่ม (สำรองไว้กรณีแอดมินยังไม่ได้ตั้งค่า)
+        const catMeta = {
+            'house': { name: 'ทำความสะอาดบ้าน', icon: '<i class="fa-solid fa-house-chimney-broom text-2xl"></i>' },
+            'furniture': { name: 'ซักโซฟา / ที่นอน', icon: '<i class="fa-solid fa-couch text-2xl"></i>' },
+            'condo': { name: 'ทำความสะอาดคอนโด', icon: '<i class="fa-solid fa-building text-2xl"></i>' },
+            'villa': { name: 'ทำความสะอาดวิลล่า', icon: '<i class="fa-solid fa-house-flag text-2xl"></i>' }
+        };
 
-                    let sizeOptions = hasSizes ? addon.sizes.map((sz, i) => `<option value="${sz.name}">${sz.name} (+${sz.price.toLocaleString()}฿)</option>`).join('') : '';
-                    let selectHtml = hasSizes ? `<select id="dd_type_${addon.id}" class="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold outline-none">${sizeOptions}</select>` : '';
+        // 🌟 2. ฟังก์ชันวาดปุ่มหมวดหมู่ (ดึงโลโก้และชื่อจาก Admin 100%)
+        window.renderCategories = function() {
+            let container = document.getElementById('category-container');
+            if (!container) return;
 
-                    html += `
-                    <div class="p-4 rounded-xl border transition-colors ${isSelected ? 'bg-white border-primary shadow-sm' : 'bg-white border-gray-200'}">
-                        <div>
-                            <p class="font-bold text-sm text-gray-800">${addon.name}</p>
-                            <div class="flex items-center mt-1">
-                                ${origPrice}
-                                <p class="text-[11px] text-primary font-bold">${hasSizes?'เริ่มต้น ':'+'}${displayPrice.toLocaleString()} ฿</p>
-                            </div>
-                            <p class="text-[10px] text-gray-500 mt-1 line-clamp-2">${addon.details || addon.desc || 'ระบุจำนวนที่ต้องการ'}</p>
-                        </div>
-                        <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-3">
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                ${selectHtml}
-                                <button type="button" onclick="addTypeAddon('${addon.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
-                            </div>
-                            ${isSelected ? `
-                            <div class="flex flex-col gap-2 mt-1">
-                                ${cartItems.map(item => {
-                                    let szPrice = hasSizes ? addon.sizes.find(s=>s.name === item.size)?.price : addon.price;
-                                    return `
-                                    <div class="flex justify-between items-center bg-blue-50/50 p-2.5 rounded-lg border border-blue-100">
-                                        <div class="flex flex-col"><span class="text-xs font-bold text-gray-700">${item.size || 'จำนวน'}</span><span class="text-[10px] text-primary font-bold">+${(szPrice || 0).toLocaleString()} ฿</span></div>
-                                        <div class="flex items-center gap-2">
-                                            <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', -1)" class="w-6 h-6 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                                            <span class="font-bold text-xs w-4 text-center">${item.qty}</span>
-                                            <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', 1)" class="w-6 h-6 rounded bg-primary text-white hover:bg-blue-600 flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
-                                        </div>
-                                    </div>`;
-                                }).join('')}
-                            </div>` : ''}
-                        </div>
-                    </div>`;
-                });
+            // ดึงหมวดหมู่ที่ไม่ซ้ำกันจากบริการทั้งหมด (ตัดบริการเสริมและแพ็กเกจสมาชิกออก)
+            let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
+            
+            if (uniqueCategories.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center py-4 border-2 border-dashed rounded-xl">ยังไม่มีบริการเปิดใช้งานในขณะนี้</p>';
+                return;
             }
-            
-            // นำกล่องแพ็กเกจไปแสดงใน HTML
-            let container = document.getElementById('services-container');
-            if(container) container.innerHTML = html;
+
+            let html = '';
+            uniqueCategories.forEach(catId => {
+                // ค้นหาบริการสัก 1 ตัวในหมวดหมู่นี้ เพื่อดึงชื่อและไอคอนที่แอดมินตั้งไว้มาใช้
+                let sampleService = allServices.find(s => s.category === catId) || {};
+                
+                // ใช้ชื่อจากระบบ Admin เป็นหลัก ถ้าไม่มีให้ใช้ชื่อสำรอง
+                let catName = sampleService.categoryName || (catMeta[catId] ? catMeta[catId].name : catId);
+                let iconHtml = '';
+
+                // 🌟 ระบบดึงไอคอนอัจฉริยะ (เรียงลำดับความสำคัญ รูปโลโก้ -> FontAwesome -> ไอคอนสำรอง)
+                if (sampleService.categoryLogo && sampleService.categoryLogo.startsWith('http')) {
+                    iconHtml = `<img src="${sampleService.categoryLogo}" class="w-full h-full object-cover">`;
+                } else if (sampleService.categoryIcon) {
+                    iconHtml = `<i class="${sampleService.categoryIcon} text-2xl"></i>`;
+                } else {
+                    iconHtml = catMeta[catId] ? catMeta[catId].icon : '<i class="fa-solid fa-broom text-2xl"></i>';
+                }
+
+                let isSelected = cart.category === catId;
+                let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
+                let iconClass = isSelected ? 'scale-110' : '';
+
+                html += `
+                <button id="cat-${catId}" type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white relative overflow-hidden group ${activeClass}">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary overflow-hidden group-hover:scale-110 transition-transform ${iconClass}">
+                        ${iconHtml}
+                    </div>
+                    <span class="font-bold text-sm md:text-base text-center">${catName}</span>
+                </button>`;
+            });
+            container.innerHTML = html;
         }
 
         // 3. ฟังก์ชันเพิ่ม/ลด จำนวนสินค้า
