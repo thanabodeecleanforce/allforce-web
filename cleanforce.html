@@ -712,7 +712,7 @@
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="text-4xl md:text-5xl font-bold font-heading mb-4 text-[#000080]" data-i18n="bk-main-title">จองบริการทำความสะอาด</h2>
-        <p class="text-gray-500 font-body" data-i18n="bk-main-sub">ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน</p>
+                <p class="text-gray-500 font-body" data-i18n="bk-main-sub">ประเมินราคาและจองคิวออนไลน์ได้ทันทีแบบ 5 ขั้นตอน</p>
             </div>
 
             <div class="bg-[#F3F7FB] rounded-[2.5rem] p-4 md:p-8 border border-gray-100 shadow-inner relative min-h-[400px]">
@@ -743,6 +743,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="step2" class="step-content hidden fade-in">
                     <h2 class="text-xl font-bold text-gray-800 mb-6 text-center" data-i18n="step4_title">ข้อมูลการนัดหมาย</h2>
                     <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4">
@@ -840,6 +841,7 @@
                         <button onclick="nextStep()" class="w-2/3 py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md"><span data-i18n="btn_next_summary">ตรวจสอบสรุปยอด</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
                     </div>
                 </div>
+
                 <div id="step3" class="step-content hidden fade-in">
                     <div class="bg-[#000080] text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
                        <h2 class="text-2xl font-bold mb-1 relative z-10">สรุปคำสั่งซื้อ</h2>
@@ -939,31 +941,45 @@
                     </div>
 
                 </div>
-        </div> </div><div id="floating-cart" class="fixed bottom-0 left-0 w-full z-[100] bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.15)] rounded-t-3xl border-t border-gray-200 animate-in slide-in-from-bottom-10 transition-all hidden">
+            </div>
+        </div>
+
+        <div id="floating-cart" class="fixed bottom-0 left-0 w-full z-[100] bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.1)] rounded-t-3xl border-t border-gray-200 animate-in slide-in-from-bottom-10 transition-all hidden">
              
              <div class="w-full flex justify-center pt-3 pb-1 cursor-pointer" onclick="toggleCartDetails()">
                  <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
              </div>
 
-             <div onclick="toggleCartDetails()" class="px-6 pb-4 pt-1 bg-white cursor-pointer transition-colors z-10 relative">
-                 <div class="flex items-center justify-between text-[#000080] font-bold mb-2 pb-2 border-b border-gray-100 text-xs md:text-sm">
+             <div class="px-5 pb-5 pt-1 bg-white z-10 relative">
+                 <div class="flex items-center justify-between text-[#000080] font-bold mb-3 pb-3 border-b border-gray-100 text-xs cursor-pointer" onclick="toggleCartDetails()">
                      <div class="flex items-center gap-2"><i class="fa-solid fa-cart-shopping"></i> <span id="float-item-count">0 รายการ</span></div>
-                     <i id="float-cart-chevron" class="fa-solid fa-chevron-up text-gray-400 transition-transform"></i>
-                 </div>
-                 <div class="flex items-end justify-between">
-                     <span class="text-xs font-bold text-gray-500 uppercase" data-i18n="cart-net">ยอดชำระสุทธิ</span>
-                     <div id="float-orig-price-container" class="text-[10px] text-gray-400 mb-0.5 font-bold hidden">
-        <span data-i18n="cart-orig">ราคาเดิม</span> <span class="line-through decoration-red-500 decoration-2 text-red-500 ml-1" id="float-orig-price">0</span>
-        </div>
-                         <span class="text-2xl font-extrabold text-primary" id="float-net-price">0</span><span class="text-[10px] font-bold text-gray-500 ml-1">THB</span>
+                     <div class="flex items-center gap-1 text-gray-400">
+                         <span class="text-[10px]">แตะดูรายละเอียด</span>
+                         <i id="float-cart-chevron" class="fa-solid fa-chevron-up transition-transform"></i>
                      </div>
                  </div>
+                 
+                 <div class="flex items-center justify-between gap-4">
+                     <div class="flex flex-col flex-1 cursor-pointer" onclick="toggleCartDetails()">
+                         <span class="text-[10px] font-bold text-gray-500 uppercase" data-i18n="cart-net">ยอดชำระสุทธิ</span>
+                         <div id="float-orig-price-container" class="text-[10px] text-gray-400 font-bold hidden">
+                             <span class="line-through decoration-red-500 decoration-2 text-red-500" id="float-orig-price">0</span>
+                         </div>
+                         <div class="flex items-baseline gap-1 mt-0.5">
+                             <span class="text-2xl md:text-3xl font-black text-[#000080]" id="float-net-price">0</span>
+                             <span class="text-[10px] font-bold text-gray-500">THB</span>
+                         </div>
+                     </div>
+                     
+                     <button type="button" onclick="nextStep()" class="bg-primary hover:bg-blue-600 text-white px-6 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-200/50 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shrink-0 animate-pulse">
+                         ดำเนินการต่อ <i class="fa-solid fa-arrow-right"></i>
+                     </button>
+                 </div>
+             </div>
 
              <div id="floating-cart-details" class="hidden overflow-y-auto bg-gray-50 p-6 border-t border-gray-200 text-xs space-y-2 pb-8 max-h-[50vh]">
                  <div id="float-details-list" class="space-y-3"></div>
                  <div id="float-details-discount" class="mt-3 border-t border-gray-200 pt-3 space-y-1"></div>
-                 
-                 <button onclick="changeStep(1)" class="w-full bg-primary text-white p-3 rounded-xl font-bold mt-4 shadow-sm">ดำเนินการต่อ <i class="fa-solid fa-arrow-right ml-1"></i></button>
              </div>
         </div>
     </section>
@@ -1102,6 +1118,8 @@
         </div>
         <p class="text-gray-400 text-[10px] md:text-xs font-medium" data-i18n="footer-copy">© 2024 Cleanforce Professional Cleaning. All rights reserved.</p>
     </footer>
+
+    
 
    <div class="fixed bottom-24 right-6 z-[110] flex flex-col gap-4">
         <a href="https://line.me/R/ti/p/@cleanforce" target="_blank" class="bg-[#00B900] text-white w-14 h-14 rounded-full font-bold shadow-2xl hover:scale-110 transition-transform flex items-center justify-center text-3xl relative group">
@@ -1638,7 +1656,12 @@
                 let inputNote = document.getElementById('bk-special-note');
                 if(noteEl && inputNote) noteEl.textContent = inputNote.value.trim() || '-';
             }
-            
+            // 🌟 ซ่อน/โชว์ปุ่มลอยให้สัมพันธ์กับ Step ปัจจุบัน
+            let floatNextBtn = document.getElementById('floating-next-btn');
+            if (floatNextBtn) {
+                if (currentStep === 1 && cart.addons.length > 0) floatNextBtn.classList.remove('hidden');
+                else floatNextBtn.classList.add('hidden');
+            }
             let scrollTarget = document.getElementById('booking-cf');
             if(scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth' });
         }
@@ -2057,16 +2080,19 @@ window.selectDetail = function(field, val, element) {
                 }
             }
     
-    // 🟢 [เพิ่มโค้ดนี้] สั่งให้ Floating Cart เด้งขึ้นมาเมื่อมีของในตะกร้า
+    // 🟢 สั่งให้ Floating Cart และ "ปุ่มดำเนินการต่อ" เด้งขึ้นมาพร้อมกัน
     let floatCart = document.getElementById('floating-cart');
-    if (floatCart) {
-        if (cart.addons.length > 0 && currentStep === 1) {
-            floatCart.classList.remove('hidden');
-        } else {
-            floatCart.classList.add('hidden');
-        }
+    let floatNextBtn = document.getElementById('floating-next-btn');
+
+    if (cart.addons.length > 0 && currentStep === 1) {
+        if (floatCart) floatCart.classList.remove('hidden');
+        if (floatNextBtn) floatNextBtn.classList.remove('hidden'); // โชว์ปุ่มลอยซ้าย
+    } else {
+        if (floatCart) floatCart.classList.add('hidden');
+        if (floatNextBtn) floatNextBtn.classList.add('hidden'); // ซ่อนปุ่มลอยซ้าย
     }
 }
+
     
 
         // =====================================
@@ -3028,21 +3054,50 @@ try {
             }
         };
 
+        // 🌟 ฟังก์ชันเก็บคูปอง (บังคับล็อกอิน 100%)
         window.claimSpecificCoupon = function(code) {
+            // เช็คว่าล็อกอินหรือยัง
+            let currentUser = window.cf_auth ? window.cf_auth.currentUser : null;
+            if (!currentUser) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'สงวนสิทธิ์เฉพาะสมาชิก',
+                    text: 'กรุณาเข้าสู่ระบบก่อนทำการเก็บคูปองส่วนลดครับ',
+                    confirmButtonText: 'เข้าสู่ระบบ',
+                    confirmButtonColor: '#1EA7E1',
+                    showCancelButton: true,
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return;
+            }
+
+            // ถ้าระบบอนุญาต (ล็อกอินแล้ว)
             let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
             if (!myCoupons.includes(code)) {
                 myCoupons.push(code);
                 localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
+                
+                // 🌟 บันทึกลง Firebase ด้วย เพื่อให้คูปองตามติดไปทุกอุปกรณ์
+                if (window.cf_db && currentUser.uid) {
+                    window.cf_db.collection('users').doc(currentUser.uid).set({
+                        myCoupons: firebase.firestore.FieldValue.arrayUnion(code)
+                    }, { merge: true }).catch(err => console.warn("Sync coupon error:", err));
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'เก็บโค้ดสำเร็จ!',
+                    text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์ครับ`,
+                    showConfirmButton: false,
+                    timer: 2500
+                });
+            } else {
+                Swal.fire({ toast: true, position: 'top', icon: 'info', title: 'คุณเก็บคูปองนี้ไปแล้วครับ', showConfirmButton: false, timer: 2000 });
             }
-            navigator.clipboard.writeText(code).catch(() => {});
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'เก็บโค้ดสำเร็จ!',
-                text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์`,
-                showConfirmButton: false,
-                timer: 2500
-            });
             
             window.closeCouponModal();
             if (typeof loadBookingCoupons === 'function') loadBookingCoupons();

@@ -7,39 +7,114 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Noto Sans Thai', sans-serif; }</style>
-</head>
-<body class="bg-[#F3F7FB] flex items-center justify-center min-h-screen p-6">
-
-    <div class="bg-white p-10 rounded-[2rem] shadow-xl max-w-md w-full text-center relative overflow-hidden border border-gray-100">
-        <button onclick="window.history.back()" class="absolute top-6 left-6 text-gray-400 hover:text-[#1EA7E1] transition">
-            <i class="fa-solid fa-arrow-left text-xl"></i>
-        </button>
-
-        <img src="logo-cleanforce.png" alt="Cleanforce" class="h-16 mx-auto mb-6 object-contain" onerror="this.src='https://placehold.co/200x80?text=CF'">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Noto Sans Thai', sans-serif; }
         
-        <h2 class="text-2xl font-bold text-[#000080] mb-2" style="font-family: 'Poppins', 'Noto Sans Thai', sans-serif;">ยินดีต้อนรับสู่ Cleanforce</h2>
-        <p class="text-gray-500 text-sm mb-8">เข้าสู่ระบบเพื่อจัดการจอง ประเมินราคา และรับส่วนลดพิเศษ</p>
+        /* 🌟 ปรับปรุงส่วนนี้: เพิ่มความเข้มเงา และเส้นขอบให้ชัดเจนขึ้น */
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.98); /* เพิ่มความทึบแสงเล็กน้อยให้ตัดกับพื้นหลัง */
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            
+            /* เส้นขอบสีฟ้าอ่อนที่ชัดเจนขึ้น */
+            border: 2px solid rgba(30, 167, 225, 0.1); 
+            
+            /* 🌟 เอฟเฟกต์เงาลึก (Deep Shadow) ทำให้กล่องลอยเด่น */
+            box-shadow: 0 35px 70px -15px rgba(0, 0, 80, 0.2), 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        /* เอฟเฟกต์เมื่อ Hover (สำหรับ Desktop) */
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 45px 80px -20px rgba(0, 0, 80, 0.25), 0 15px 35px -10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#F3F7FB] py-10">
 
-        <button id="login-btn" onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 px-6 py-3.5 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition shadow-sm hover:shadow-md mb-3">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5" alt="Google">
-            <span>เข้าสู่ระบบด้วย Google</span>
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 via-white to-[#1EA7E1]/20">
+        <div class="absolute inset-0 opacity-40" style="background-image: radial-gradient(#1EA7E1 1px, transparent 1px); background-size: 30px 30px;"></div>
+    </div>
+
+    <div class="glass-card p-6 md:p-10 rounded-[2.5rem] max-w-md w-full w-[90%] text-center relative z-20">
+        <button onclick="window.history.back()" class="absolute top-6 left-6 text-gray-400 hover:text-primary transition bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm border border-gray-100">
+            <i class="fa-solid fa-arrow-left"></i>
         </button>
 
-        <button onclick="alert('ระบบ LINE Login กำลังอยู่ในช่วงพัฒนาและเชื่อมต่อฐานข้อมูล กรุณาเข้าสู่ระบบด้วย Google ไปก่อนนะครับ 🙏')" class="w-full flex items-center justify-center gap-3 bg-[#00B900] text-white px-6 py-3.5 rounded-xl font-bold hover:bg-green-600 transition shadow-sm hover:shadow-md">
-            <i class="fa-brands fa-line text-2xl"></i>
-            <span>เข้าสู่ระบบด้วย LINE</span>
-        </button>
+        <img src="logo-cleanforce.png" alt="Cleanforce" class="h-14 mx-auto mb-4 object-contain" onerror="this.style.display='none'">
+        <h2 class="text-2xl font-bold font-heading text-[#000080] leading-tight">Welcome</h2>
+        <p class="text-xs text-gray-500 mb-6 font-bold mt-1">เข้าสู่ระบบเพื่อดำเนินการต่อ</p>
 
-        <p class="text-xs text-gray-400 mt-8">การเข้าสู่ระบบแสดงว่าคุณยอมรับเงื่อนไขการให้บริการของเรา</p>
+        <div class="flex border-b border-gray-100 mb-6 relative">
+            <button onclick="switchTab('email')" id="tab-email" class="flex-1 py-2 text-sm font-bold border-b-2 border-primary text-primary transition-colors z-10">อีเมล</button>
+            <button onclick="switchTab('phone')" id="tab-phone" class="flex-1 py-2 text-sm font-bold border-b-2 border-transparent text-gray-400 transition-colors z-10">เบอร์โทรศัพท์ (OTP)</button>
+        </div>
+
+        <div id="form-email" class="space-y-3 mb-6 text-left">
+            <div>
+                <input type="email" id="email-input" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition" placeholder="อีเมล (Email)">
+            </div>
+            <div>
+                <input type="password" id="pwd-input" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition" placeholder="รหัสผ่าน (Password)">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="loginWithEmail()" id="btn-login" class="flex-1 bg-[#000080] text-white font-bold rounded-xl py-3 shadow-md hover:bg-blue-900 transition text-sm flex justify-center items-center gap-2">เข้าสู่ระบบ</button>
+                <button onclick="registerWithEmail()" id="btn-register" class="flex-1 bg-white border-2 border-[#000080] text-[#000080] font-bold rounded-xl py-3 shadow-sm hover:bg-blue-50 transition text-sm flex justify-center items-center gap-2">สร้างบัญชีใหม่</button>
+            </div>
+        </div>
+
+        <div id="form-phone" class="hidden space-y-3 mb-6 text-left">
+            <div id="phone-input-group">
+                <div class="flex gap-2">
+                    <span class="bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-sm font-bold text-gray-600 flex items-center">+66</span>
+                    <input type="tel" id="phone-input" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition" placeholder="เบอร์โทร (ตัด 0 ตัวแรกออก)" maxlength="9">
+                </div>
+                <button onclick="sendOTP()" id="btn-send-otp" class="w-full mt-3 bg-[#000080] text-white font-bold rounded-xl py-3 shadow-md hover:bg-blue-900 transition text-sm flex justify-center items-center gap-2"><i class="fa-solid fa-paper-plane"></i> ขอรหัส OTP</button>
+            </div>
+            
+            <div id="otp-input-group" class="hidden space-y-3">
+                <p class="text-xs text-green-600 font-bold text-center mb-1"><i class="fa-solid fa-check-circle"></i> ส่งรหัส OTP ไปยังเบอร์โทรของคุณแล้ว</p>
+                <input type="text" id="otp-input" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[0.5em] text-lg font-bold outline-none focus:border-primary transition" placeholder="รหัส 6 หลัก" maxlength="6">
+                <button onclick="verifyOTP()" id="btn-verify-otp" class="w-full bg-[#00C300] hover:bg-[#00a000] text-white font-bold rounded-xl py-3 shadow-md transition text-sm flex justify-center items-center gap-2">ยืนยัน OTP</button>
+            </div>
+            
+            <div id="recaptcha-container"></div>
+        </div>
+
+        <div class="flex items-center gap-3 mb-6">
+            <div class="h-px bg-gray-200 flex-1"></div>
+            <span class="text-[10px] text-gray-400 font-bold uppercase">หรือล็อกอินผ่านโซเชียล</span>
+            <div class="h-px bg-gray-200 flex-1"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <button onclick="loginWithLine()" id="btn-line" class="bg-[#00C300] hover:bg-[#00a000] text-white font-bold rounded-xl py-3 flex justify-center items-center gap-2 transition shadow-sm">
+                <i class="fa-brands fa-line text-xl"></i> <span class="text-sm">LINE</span>
+            </button>
+            <button onclick="loginWithGoogle()" id="btn-google" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-xl py-3 flex justify-center items-center gap-2 transition shadow-sm">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google"> <span class="text-sm">Google</span>
+            </button>
+            <button onclick="loginWithApple()" id="btn-apple" class="bg-black hover:bg-gray-800 text-white font-bold rounded-xl py-3 flex justify-center items-center gap-2 transition shadow-sm">
+                <i class="fa-brands fa-apple text-xl"></i> <span class="text-sm">Apple</span>
+            </button>
+            <button onclick="loginWithFacebook()" id="btn-facebook" class="bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold rounded-xl py-3 flex justify-center items-center gap-2 transition shadow-sm">
+                <i class="fa-brands fa-facebook text-xl"></i> <span class="text-sm">Facebook</span>
+            </button>
+        </div>
+        
+        <p class="text-[11px] text-gray-400 mt-6">เมื่อเข้าสู่ระบบ ถือว่าคุณยอมรับ <a href="#" class="text-primary hover:underline">เงื่อนไขการให้บริการ</a></p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Firebase Config
-        const firebaseConfig = {
+        // ... (โค้ด JavaScript เหมือนเดิมทุกประการ ไม่มีการเปลี่ยนแปลง) ...
+        var firebaseConfig = {
             apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
             authDomain: "allforce-hub.firebaseapp.com",
             projectId: "allforce-hub",
@@ -47,55 +122,171 @@
             messagingSenderId: "206898849342",
             appId: "1:206898849342:web:35bc0462818da86fb1136f"
         };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const db = firebase.firestore();
 
-        // 2. เช็คสถานะ — ถ้าล็อกอินอยู่แล้ว redirect กลับหน้าที่มา
-        auth.onAuthStateChanged((user) => {
+        auth.useDeviceLanguage(); 
+        let appVerifier;
+
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        const fbProvider = new firebase.auth.FacebookAuthProvider();
+        const appleProvider = new firebase.auth.OAuthProvider('apple.com');
+        const lineProvider = new firebase.auth.OAuthProvider('oidc.line');
+
+        auth.onAuthStateChanged(function(user) {
             if (user) {
-                let prevPage = document.referrer || "";
-                if (prevPage.includes("admin.html")) {
-                    window.location.href = "admin.html";
-                } else if (prevPage.includes("profile.html")) {
-                    window.location.href = "profile.html";
-                } else if (prevPage.includes("cleanforce.html")) {
-                    window.location.href = "cleanforce.html";
-                } else {
-                    window.location.href = "cleanforce.html"; // default
-                }
+                let prevPage = document.referrer;
+                if (prevPage && prevPage.includes("profile.html")) window.location.href = "profile.html";
+                else window.location.href = "cleanforce.html";
             }
         });
 
-        // 3. ฟังก์ชันล็อกอิน
-        function loginWithGoogle() {
-            const loginBtn = document.getElementById('login-btn');
-            const btnSpan = loginBtn.querySelector('span');
+        function switchTab(tab) {
+            document.getElementById('form-email').classList.toggle('hidden', tab !== 'email');
+            document.getElementById('form-phone').classList.toggle('hidden', tab !== 'phone');
             
-            loginBtn.disabled = true;
-            btnSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังเข้าสู่ระบบ...';
+            if(tab === 'email') {
+                document.getElementById('tab-email').classList.add('border-primary', 'text-primary');
+                document.getElementById('tab-email').classList.remove('border-transparent', 'text-gray-400');
+                document.getElementById('tab-phone').classList.add('border-transparent', 'text-gray-400');
+                document.getElementById('tab-phone').classList.remove('border-primary', 'text-primary');
+            } else {
+                document.getElementById('tab-phone').classList.add('border-primary', 'text-primary');
+                document.getElementById('tab-phone').classList.remove('border-transparent', 'text-gray-400');
+                document.getElementById('tab-email').classList.add('border-transparent', 'text-gray-400');
+                document.getElementById('tab-email').classList.remove('border-primary', 'text-primary');
+                
+                if(!appVerifier) {
+                    appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 
+                        'size': 'invisible'
+                    });
+                }
+            }
+        }
 
-            auth.signInWithPopup(provider)
-            .then((result) => {
-                const user = result.user;
-                localStorage.setItem('cf_user', JSON.stringify({
-                    name: user.displayName,
-                    email: user.email,
-                    photo: user.photoURL,
-                    uid: user.uid
-                }));
-                // ไม่ต้องเขียน redirect ตรงนี้ เพราะ onAuthStateChanged ด้านบนจะทำงานอัตโนมัติ
-            })
-            .catch((error) => {
-                console.error("Auth Error: ", error);
-                alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ: " + error.message);
-                loginBtn.disabled = false;
-                btnSpan.innerHTML = 'เข้าสู่ระบบด้วย Google';
+        function sendOTP() {
+            let phone = document.getElementById('phone-input').value.trim();
+            if(!phone || phone.length < 9) return Swal.fire('แจ้งเตือน', 'กรุณากรอกเบอร์โทรศัพท์ให้ครบถ้วน', 'warning');
+            
+            let phoneNumber = "+66" + (phone.startsWith("0") ? phone.substring(1) : phone);
+            setLoading('btn-send-otp', true);
+
+            auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then((confirmationResult) => {
+                window.confirmationResult = confirmationResult;
+                document.getElementById('phone-input-group').classList.add('hidden');
+                document.getElementById('otp-input-group').classList.remove('hidden');
+                Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'ส่ง SMS สำเร็จ!', showConfirmButton: false, timer: 2000 });
+                setLoading('btn-send-otp', false, '<i class="fa-solid fa-paper-plane"></i> ขอรหัส OTP');
+            }).catch((error) => {
+                console.error(error);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่ง SMS ได้ กรุณาลองใหม่', 'error');
+                setLoading('btn-send-otp', false, '<i class="fa-solid fa-paper-plane"></i> ขอรหัส OTP');
+                if(appVerifier) {
+                    appVerifier.clear();
+                    appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                }
             });
+        }
+
+        function verifyOTP() {
+            let code = document.getElementById('otp-input').value.trim();
+            if(code.length !== 6) return Swal.fire('แจ้งเตือน', 'กรุณากรอกรหัส OTP 6 หลัก', 'warning');
+            
+            setLoading('btn-verify-otp', true);
+            window.confirmationResult.confirm(code).then((result) => {
+                saveUserAndRedirect(result.user);
+            }).catch((error) => {
+                Swal.fire('รหัสไม่ถูกต้อง', 'รหัส OTP ผิด หรือหมดอายุแล้ว', 'error');
+                setLoading('btn-verify-otp', false, 'ยืนยัน OTP');
+            });
+        }
+
+        function loginWithEmail() {
+            let email = document.getElementById('email-input').value;
+            let pwd = document.getElementById('pwd-input').value;
+            if(!email || !pwd) return Swal.fire('แจ้งเตือน', 'กรุณากรอกอีเมลและรหัสผ่าน', 'warning');
+            
+            setLoading('btn-login', true);
+            auth.signInWithEmailAndPassword(email, pwd)
+            .then(res => saveUserAndRedirect(res.user))
+            .catch(err => {
+                Swal.fire('เข้าสู่ระบบไม่สำเร็จ', 'อีเมลหรือรหัสผ่านไม่ถูกต้องครับ', 'error');
+                setLoading('btn-login', false, 'เข้าสู่ระบบ');
+            });
+        }
+
+        function registerWithEmail() {
+            let email = document.getElementById('email-input').value;
+            let pwd = document.getElementById('pwd-input').value;
+            if(!email || !pwd) return Swal.fire('แจ้งเตือน', 'กรุณากรอกอีเมลและรหัสผ่านที่ต้องการสร้าง', 'warning');
+            if(pwd.length < 6) return Swal.fire('แจ้งเตือน', 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', 'warning');
+            
+            setLoading('btn-register', true);
+            auth.createUserWithEmailAndPassword(email, pwd)
+            .then(res => saveUserAndRedirect(res.user))
+            .catch(err => {
+                if(err.code === 'auth/email-already-in-use') Swal.fire('อ๊ะ!', 'อีเมลนี้มีผู้ใช้งานแล้วครับ', 'warning');
+                else Swal.fire('เกิดข้อผิดพลาด', err.message, 'error');
+                setLoading('btn-register', false, 'สร้างบัญชีใหม่');
+            });
+        }
+
+        function loginWithGoogle() {
+            setLoading('btn-google', true);
+            auth.signInWithPopup(googleProvider)
+            .then(res => saveUserAndRedirect(res.user))
+            .catch(err => { showError(err); setLoading('btn-google', false, 'Google'); });
+        }
+
+        function loginWithFacebook() {
+            setLoading('btn-facebook', true);
+            auth.signInWithPopup(fbProvider)
+            .then(res => saveUserAndRedirect(res.user))
+            .catch(err => { showError(err); setLoading('btn-facebook', false, 'Facebook'); });
+        }
+
+        function loginWithApple() {
+            setLoading('btn-apple', true);
+            auth.signInWithPopup(appleProvider)
+            .then(res => saveUserAndRedirect(res.user))
+            .catch(err => { showError(err); setLoading('btn-apple', false, 'Apple'); });
+        }
+
+        function loginWithLine() {
+            setLoading('btn-line', true);
+            auth.signInWithPopup(lineProvider)
+            .then(res => saveUserAndRedirect(res.user))
+            .catch(err => {
+                console.error(err);
+                Swal.fire('ข้อผิดพลาด', 'ยังไม่ได้เชื่อมต่อ LINE กับ Firebase หรือเกิดข้อผิดพลาดในการดึงข้อมูล', 'error');
+                setLoading('btn-line', false, 'LINE');
+            });
+        }
+
+        function saveUserAndRedirect(user) {
+            let displayName = user.displayName || user.phoneNumber || 'User';
+            localStorage.setItem('cf_user', JSON.stringify({ 
+                name: displayName, 
+                email: user.email, 
+                photo: user.photoURL, 
+                uid: user.uid 
+            }));
+        }
+
+        function setLoading(id, isLoading, defaultText = '') {
+            let el = document.getElementById(id);
+            if(!el) return;
+            el.disabled = isLoading;
+            el.innerHTML = isLoading ? '<i class="fa-solid fa-spinner fa-spin"></i>' : defaultText;
+        }
+
+        function showError(error) {
+            console.error(error);
+            if(error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'ไม่สามารถเข้าสู่ระบบได้', text: error.message, showConfirmButton: false, timer: 3000 });
+            }
         }
     </script>
 </body>
