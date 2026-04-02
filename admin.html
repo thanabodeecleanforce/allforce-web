@@ -3422,12 +3422,12 @@ function getWeekDates(weeksAgo) {
         // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (พร้อมระบบ Self-Healing ซ่อมแซมตัวเอง)
         // ========================================================
         window.openCategoryModal = function() {
+            // ── Step 1: หา modal ก่อน ถ้าไม่มีค่อยสร้าง ──
             let modal = document.getElementById('category-modal');
             let container = document.getElementById('category-list-area');
-            
-            // 🛠️ ถ้าระบบหาหน้าต่างไม่เจอ (เผลอลบ HTML ไป) ให้สร้างขึ้นมาใหม่ฝังลงเว็บทันที
+
             if (!modal || !container) {
-                const modalHTML = `
+                document.body.insertAdjacentHTML('beforeend', `
                 <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
                     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
                         <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -3441,54 +3441,83 @@ function getWeekDates(weeksAgo) {
                             <div id="category-list-area" class="space-y-3"></div>
                         </div>
                     </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                </div>`);
                 modal = document.getElementById('category-modal');
                 container = document.getElementById('category-list-area');
             }
 
-            if (typeof allServices === 'undefined' || allServices.length === 0) {
-                container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการ หรือข้อมูลกำลังโหลด...</p>';
-            } else {
-                let uniqueCategories = [...new Set(allServices.map(s => {
-                    return s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
-                }))].filter(c => c && c !== 'addon');
-                
-                if (uniqueCategories.length === 0) {
-                    container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีหมวดหมู่บริการ</p>';
-                } else {
-                    let html = '';
-                    uniqueCategories.forEach(catId => {
-                        let sampleSrv = allServices.find(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
-                        let catName = sampleSrv.categoryName || catId;
-                        let catIcon = sampleSrv.categoryIcon || 'fa-solid fa-broom';
-                        
-                        html += `
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
-                            <div class="w-full md:w-1/4">
-                                <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
-                                <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none cursor-not-allowed">
-                            </div>
-                            <div class="w-full md:w-1/4">
-                                <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
-                                <input type="text" id="cat-name-${catId}" value="${catName}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
-                            </div>
-                            <div class="w-full md:w-2/4 flex gap-2">
-                                <div class="flex-1">
-                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">ไอคอน (FontAwesome)</label>
-                                    <input type="text" id="cat-icon-${catId}" value="${catIcon}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
-                                </div>
-                                <button type="button" onclick="saveCategoryMeta('${catId}')" class="bg-indigo-500 text-white px-3 py-2 rounded font-bold hover:bg-indigo-600 transition shadow-sm text-xs h-[34px] self-end shrink-0">
-                                    บันทึก
-                                </button>
-                            </div>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                }
-            }
+            // ── Step 2: เปิด modal ก่อนทำอะไรเลย (crash ก็ยังเห็น modal) ──
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+
+            // ── Step 3: render เนื้อหา (ครอบ try-catch ป้องกัน crash เงียบ) ──
+            try {
+                const EXCLUDED_TYPES = ['addon', 'membership'];
+                const HOUSE_TYPES = ['house_single', 'condo', 'villa'];
+
+                const getCatId = s => s.category || (HOUSE_TYPES.includes(s.type) ? 'house' : s.type);
+
+                if (typeof allServices === 'undefined' || !Array.isArray(allServices) || allServices.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-6">
+                            <p class="text-sm text-gray-400 mb-3">ยังไม่มีข้อมูลบริการ หรือข้อมูลกำลังโหลด...</p>
+                            <button onclick="openCategoryModal()" class="text-xs bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-200 transition">
+                                <i class="fa-solid fa-rotate-right mr-1"></i> โหลดใหม่
+                            </button>
+                        </div>`;
+                    return;
+                }
+
+                const uniqueCategories = [...new Set(
+                    allServices.map(s => getCatId(s))
+                )].filter(c => c && !EXCLUDED_TYPES.includes(c));
+
+                if (uniqueCategories.length === 0) {
+                    container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีหมวดหมู่บริการ</p>';
+                    return;
+                }
+
+                let html = '';
+                uniqueCategories.forEach(catId => {
+                    // ✅ ใช้ optional chaining ป้องกัน crash ถ้า sampleSrv เป็น undefined
+                    const sampleSrv = allServices.find(s => getCatId(s) === catId) || {};
+                    const catName = sampleSrv.categoryName || catId;
+                    const catIcon = sampleSrv.categoryIcon || 'fa-solid fa-broom';
+
+                    html += `
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
+                            <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none cursor-not-allowed">
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
+                            <input type="text" id="cat-name-${catId}" value="${catName}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                        </div>
+                        <div class="w-full md:w-2/4 flex gap-2">
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">ไอคอน (FontAwesome class)</label>
+                                <input type="text" id="cat-icon-${catId}" value="${catIcon}" placeholder="fa-solid fa-broom" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                            </div>
+                            <button type="button" onclick="saveCategoryMeta('${catId}')" class="bg-indigo-500 text-white px-3 py-2 rounded font-bold hover:bg-indigo-600 transition shadow-sm text-xs h-[34px] self-end shrink-0">
+                                บันทึก
+                            </button>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+
+            } catch(err) {
+                // แสดง error ใน modal แทนที่จะ crash เงียบๆ
+                console.error('[openCategoryModal] error:', err);
+                container.innerHTML = `
+                    <div class="text-center py-6 text-red-500">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+                        <p class="text-sm font-bold">เกิดข้อผิดพลาดในการโหลดหมวดหมู่</p>
+                        <p class="text-xs text-gray-400 mt-1">${err.message}</p>
+                        <button onclick="closeCategoryModal()" class="mt-3 text-xs bg-gray-100 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 transition">ปิด</button>
+                    </div>`;
+            }
         }
 
         window.saveCategoryMeta = async function(catId) {
