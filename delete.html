@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คำแนะนำในการขอลบข้อมูล (Data Deletion) | Cleanforce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Noto Sans Thai', sans-serif; background-color: #F3F7FB; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                    <i class="fa-solid fa-trash-can"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-[#000080]">Cleanforce</h1>
+                    <p class="text-xs text-gray-500">Data Deletion Instructions</p>
+                </div>
+            </div>
+            <a href="cleanforce.html" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition"><i class="fa-solid fa-arrow-left mr-1"></i> กลับหน้าหลัก</a>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-6 py-10">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">คำแนะนำในการขอลบข้อมูลส่วนบุคคล</h2>
+            
+            <p class="text-gray-600 mb-8">ตามข้อกำหนดด้านความเป็นส่วนตัว คุณสามารถยกเลิกการเชื่อมต่อบัญชี Facebook และลบข้อมูลของคุณออกจากระบบของ Cleanforce ได้ตามวิธีการดังต่อไปนี้:</p>
+
+            <div class="space-y-8">
+                <section class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3"><i class="fa-brands fa-facebook text-blue-600 mr-2"></i> วิธีที่ 1: ยกเลิกผ่านแอป Facebook (อัตโนมัติ)</h3>
+                    <ol class="list-decimal list-inside ml-2 space-y-2 text-gray-600 text-sm">
+                        <li>ไปที่บัญชี Facebook ของคุณ แล้วคลิกเมนู <strong>"การตั้งค่าและความเป็นส่วนตัว"</strong> > <strong>"การตั้งค่า"</strong></li>
+                        <li>เลื่อนลงไปที่ส่วน "สิทธิ์การอนุญาต" แล้วคลิก <strong>"แอพและเว็บไซต์"</strong></li>
+                        <li>ค้นหาแอป <strong>"Cleanforce"</strong> ในรายการ</li>
+                        <li>คลิกปุ่ม <strong>"ลบออก"</strong></li>
+                        <li>ระบบของ Facebook จะส่งคำสั่งลบข้อมูลมายังเซิร์ฟเวอร์ของเราเพื่อเคลียร์ข้อมูลของคุณทันที</li>
+                    </ol>
+                </section>
+
+                <section class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                    <h3 class="text-lg font-bold text-[#000080] mb-3"><i class="fa-solid fa-envelope text-blue-500 mr-2"></i> วิธีที่ 2: ติดต่อทีมงาน (Manual)</h3>
+                    <p class="text-sm text-gray-600 mb-3">หากคุณต้องการให้เราลบข้อมูลประวัติการจองและข้อมูลส่วนตัวทั้งหมดออกจากฐานข้อมูล (Firebase) อย่างถาวร กรุณาแจ้งความประสงค์มาที่:</p>
+                    <ul class="space-y-2 text-sm text-gray-800 font-medium bg-white p-4 rounded-lg border border-gray-200">
+                        <li><i class="fa-solid fa-at text-gray-400 w-5"></i> อีเมล: support@all-force.com</li>
+                        <li><i class="fa-brands fa-line text-green-500 w-5"></i> LINE Official: @cleanforce</li>
+                    </ul>
+                    <p class="text-xs text-red-500 mt-3 font-semibold">* ทีมงานจะดำเนินการลบข้อมูลของคุณออกจากระบบอย่างถาวรและส่งอีเมลยืนยันกลับภายใน 3 วันทำการ</p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-6 text-center text-xs">
+        <p>&copy; 2026 Cleanforce. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
