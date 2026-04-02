@@ -3527,33 +3527,7 @@ function getWeekDates(weeksAgo) {
             }
         }
 
-        // ==========================================
-        // 🌟 ฟังก์ชันควบคุมหน้าต่าง (Modal) จัดการโลโก้หมวดหมู่
-        // ==========================================
-        window.openCategoryModal = function() {
-            const modal = document.getElementById('category-modal');
-            if (modal) {
-                // ต้องเพิ่ม flex เข้าไปเพื่อให้หน้าต่างเด้งขึ้นมากลางจอ
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                
-                // สั่งให้โหลดข้อมูลหมวดหมู่ล่าสุดมาโชว์ใน Modal (ถ้ามีฟังก์ชันนี้)
-                if (typeof renderCategorySettings === 'function') {
-                    renderCategorySettings();
-                }
-            } else {
-                console.error("Error: ไม่พบกล่อง id='category-modal' ใน HTML ครับ");
-            }
-        };
-
-        window.closeCategoryModal = function() {
-            const modal = document.getElementById('category-modal');
-            if (modal) {
-                // ซ่อนหน้าต่างและเอา flex ออก
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        };
+        
 
         // โหลดข้อมูลโซเชียลตอนเปิดหน้าเว็บ
         document.addEventListener('DOMContentLoaded', () => {
