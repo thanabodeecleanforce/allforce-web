@@ -456,7 +456,7 @@
         </div>
 
         <!-- News Modal -->
-        <div id="news-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div id="news-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                 <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
                     <h3 class="font-bold text-lg text-[#000080]" id="news-modal-title"><i class="fa-solid fa-newspaper text-primary mr-2"></i>เพิ่มข่าวใหม่</h3>
@@ -1709,7 +1709,7 @@
             if(activeNav) activeNav.className = 'nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold bg-blue-50 text-primary transition shrink-0 flex items-center gap-3 shadow-sm';
 
             // 2. ซ่อนหน้าต่างทั้งหมดก่อน
-            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container','coupons-container','news-container','line-container'].forEach(id => {
+            ['table-container', 'social-container', 'booking-container', 'clients-container', 'portfolio-container', 'users-container', 'contact-container','coupons-container','news-container','line-container','sociallinks'].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
@@ -1746,6 +1746,9 @@
             } else if (type === 'line') {
                 document.getElementById('line-container').classList.remove('hidden');
                 if (typeof loadLineTemplate === 'function') loadLineTemplate();
+            } else if (type === 'sociallinks') {
+                document.getElementById('sociallinks').classList.remove('hidden');
+                if (typeof loadSocialLinksAdmin === 'function') loadSocialLinksAdmin();
             }
         };
 
@@ -3488,14 +3491,6 @@ function getWeekDates(weeksAgo) {
             modal.classList.add('flex');
         }
 
-        window.closeCategoryModal = function() {
-            let modal = document.getElementById('category-modal');
-            if(modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
         window.saveCategoryMeta = async function(catId) {
             let newName = document.getElementById(`cat-name-${catId}`).value.trim();
             let newIcon = document.getElementById(`cat-icon-${catId}`).value.trim();
@@ -3527,7 +3522,14 @@ function getWeekDates(weeksAgo) {
             }
         }
 
-        
+        window.closeCategoryModal = function() {
+            const modal = document.getElementById('category-modal');
+            if (modal) {
+                // ซ่อนหน้าต่างและเอา flex ออก
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
 
         // โหลดข้อมูลโซเชียลตอนเปิดหน้าเว็บ
         document.addEventListener('DOMContentLoaded', () => {
