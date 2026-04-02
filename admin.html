@@ -3399,7 +3399,7 @@ function getWeekDates(weeksAgo) {
             }
         }
         // ==========================================
-        // 🌟 ระบบจัดการโซเชียลมีเดีย (Admin)
+        // 🌟 ระบบจัดการโซเชียลมีเดีย (Admin - อัปเกรด แก้ไข/ลบ/เพิ่ม)
         // ==========================================
         let adminSocialLinks = [];
 
@@ -3419,8 +3419,10 @@ function getWeekDates(weeksAgo) {
 
         window.renderSocialLinksAdmin = function() {
             let container = document.getElementById('admin-social-list');
+            if (!container) return;
+
             if (adminSocialLinks.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-6 border-2 border-dashed border-gray-200 rounded-xl">ยังไม่มีช่องทางโซเชียล กดปุ่ม "เพิ่มช่องทาง" ด้านบนได้เลยครับ</p>';
+                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-6 border-2 border-dashed border-gray-200 rounded-xl">ยังไม่มีช่องทางโซเชียล กดปุ่ม "เพิ่มช่องทาง" ได้เลยครับ</p>';
                 return;
             }
 
@@ -3438,23 +3440,29 @@ function getWeekDates(weeksAgo) {
                             <a href="${link.url}" target="_blank" class="text-xs text-blue-500 hover:underline line-clamp-1">${link.url}</a>
                         </div>
                     </div>
-                    <button onclick="deleteSocialLink(${index})" class="text-red-400 hover:text-red-600 w-10 h-10 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-100 transition"><i class="fa-solid fa-trash-can"></i></button>
+                    <div class="flex gap-2">
+                        <button onclick="openSocialLinkModal(${index})" class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteSocialLink(${index})" class="w-9 h-9 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
-        window.openAddSocialModal = async function() {
+        // ฟังก์ชันเดียวจัดการทั้ง เพิ่ม และ แก้ไข (ส่ง index มาถ้าจะแก้ไข)
+        window.openSocialLinkModal = async function(index = null) {
+            const isEdit = index !== null;
+            const data = isEdit ? adminSocialLinks[index] : { name: '', desc: '', url: '', icon: 'fa-brands fa-', color: '#1EA7E1' };
+
             const { value: formValues } = await Swal.fire({
-                title: 'เพิ่มช่องทางโซเชียล',
+                title: isEdit ? 'แก้ไขช่องทางโซเชียล' : 'เพิ่มช่องทางโซเชียล',
                 html: `
                     <div class="space-y-3 text-left">
-                        <div><label class="text-xs font-bold text-gray-700">1. ชื่อแพลตฟอร์ม</label><input id="swal-soc-name" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น Facebook, TikTok, LINE"></div>
-                        <div><label class="text-xs font-bold text-gray-700">2. คำอธิบายสั้นๆ</label><input id="swal-soc-desc" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น กดติดตามข่าวสารและโปรโมชั่น"></div>
-                        <div><label class="text-xs font-bold text-gray-700">3. ลิงก์ (URL)</label><input id="swal-soc-url" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น https://www.facebook.com/..."></div>
-                        <div><label class="text-xs font-bold text-gray-700">4. ไอคอน (FontAwesome Class)</label><input id="swal-soc-icon" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น fa-brands fa-facebook" value="fa-brands fa-"></div>
-                        <div><label class="text-xs font-bold text-gray-700">5. สีหลัก (HEX Code)</label><input type="color" id="swal-soc-color" class="w-full h-12 border p-1 rounded-xl cursor-pointer" value="#1877F2"></div>
-                        <p class="text-[10px] text-gray-500 mt-2">* <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" class="text-blue-500 underline">คลิกที่นี่</a> เพื่อค้นหารหัสไอคอนฟรีจาก FontAwesome</p>
+                        <div><label class="text-xs font-bold text-gray-700">1. ชื่อแพลตฟอร์ม</label><input id="swal-soc-name" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="เช่น Facebook, TikTok" value="${data.name}"></div>
+                        <div><label class="text-xs font-bold text-gray-700">2. คำอธิบายสั้นๆ</label><input id="swal-soc-desc" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="กดติดตามข่าวสารล่าสุด" value="${data.desc}"></div>
+                        <div><label class="text-xs font-bold text-gray-700">3. ลิงก์ (URL)</label><input id="swal-soc-url" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" placeholder="https://..." value="${data.url}"></div>
+                        <div><label class="text-xs font-bold text-gray-700">4. โลโก้แอป (FontAwesome Class)</label><input id="swal-soc-icon" class="w-full border p-3 rounded-xl text-sm outline-none focus:border-primary" value="${data.icon}"></div>
+                        <div><label class="text-xs font-bold text-gray-700">5. สีธีมแอป (HEX Code)</label><input type="color" id="swal-soc-color" class="w-full h-12 border p-1 rounded-xl cursor-pointer" value="${data.color}"></div>
                     </div>
                 `,
                 focusConfirm: false,
@@ -3464,28 +3472,42 @@ function getWeekDates(weeksAgo) {
                 confirmButtonColor: '#1EA7E1',
                 preConfirm: () => {
                     return {
-                        name: document.getElementById('swal-soc-name').value,
-                        desc: document.getElementById('swal-soc-desc').value,
-                        url: document.getElementById('swal-soc-url').value,
-                        icon: document.getElementById('swal-soc-icon').value,
+                        name: document.getElementById('swal-soc-name').value.trim(),
+                        desc: document.getElementById('swal-soc-desc').value.trim(),
+                        url: document.getElementById('swal-soc-url').value.trim(),
+                        icon: document.getElementById('swal-soc-icon').value.trim(),
                         color: document.getElementById('swal-soc-color').value
                     }
                 }
             });
 
             if (formValues && formValues.name && formValues.url) {
-                Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
-                adminSocialLinks.push(formValues);
-                await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
-                Swal.fire({ icon: 'success', title: 'เพิ่มสำเร็จ', showConfirmButton: false, timer: 1500 });
-                renderSocialLinksAdmin();
+                Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                
+                if (isEdit) {
+                    adminSocialLinks[index] = formValues;
+                } else {
+                    adminSocialLinks.push(formValues);
+                }
+                
+                try {
+                    await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
+                    markSystemUpdated();
+                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500 });
+                    renderSocialLinksAdmin();
+                } catch(e) {
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกได้', 'error');
+                }
             }
         }
+
+        // แก้ไขปุ่ม "เพิ่มช่องทาง" ให้เรียกใช้ฟังก์ชันใหม่
+        window.openAddSocialModal = () => openSocialLinkModal();
 
         window.deleteSocialLink = async function(index) {
             Swal.fire({
                 title: 'ยืนยันการลบ?',
-                text: "ปุ่มนี้จะหายไปจากหน้าเว็บลูกค้าทันทีนะครับ",
+                text: "ปุ่มนี้จะหายไปจากหน้าเว็บลูกค้าทันที",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ใช่, ลบเลย',
@@ -3496,6 +3518,7 @@ function getWeekDates(weeksAgo) {
                     Swal.fire({ title: 'กำลังลบ...', didOpen: () => Swal.showLoading() });
                     adminSocialLinks.splice(index, 1);
                     await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
+                    markSystemUpdated();
                     Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
                     renderSocialLinksAdmin();
                 }
