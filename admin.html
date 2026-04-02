@@ -3429,177 +3429,115 @@ function getWeekDates(weeksAgo) {
             });
         }
 
-        // โหลดข้อมูลตอนเข้าแอดมิน
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(loadSocialLinksAdmin, 1500);
-});
-
-        // ==========================================
-// ระบบจัดการโลโก้หมวดหมู่ (Stand-alone ปลอดภัย 100%)
-// ==========================================
-window.openCategoryModal = async function() {
-    let modal = document.getElementById('category-modal');
-    let container = document.getElementById('category-list-area');
-    
-    // ระบบป้องกันตัวเอง: ถ้าลืมใส่ HTML ระบบจะแจ้งเตือนแทนการค้าง
-    if (!modal || !container) {
-        Swal.fire('ข้อผิดพลาดรุนแรง', 'ไม่พบโครงสร้าง HTML ของหน้าต่างโลโก้ กรุณาเช็คการวางโค้ด HTML', 'error');
-        return;
-    }
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    container.innerHTML = '<div class="text-center py-8"><i class="fa-solid fa-spinner fa-spin text-3xl text-primary mb-3"></i><p class="text-gray-500">กำลังดึงข้อมูล...</p></div>';
-
-    try {
-        // ดึงข้อมูลสดจากฐานข้อมูลโดยตรง ไม่พึ่งพาตัวแปรอื่น
-        const snapshot = await db.collection("services").get();
-        let services = [];
-        snapshot.forEach(doc => { services.push({ id: doc.id, ...doc.data() }); });
-
-        if (services.length === 0) {
-            container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการในระบบ</p>';
-            return;
-        }
-
-        // จัดกลุ่มหมวดหมู่
-        let uniqueCategories = [...new Set(services.map(s => s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)))].filter(c => c && c !== 'addon');
-        
-        if (uniqueCategories.length === 0) {
-            container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีหมวดหมู่บริการ</p>';
-            return;
-        }
-
-        let html = '';
-        uniqueCategories.forEach(catId => {
-            let sampleSrv = services.find(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
-            let catName = sampleSrv.categoryName || catId;
-            let catIcon = sampleSrv.categoryIcon || 'fa-solid fa-broom';
-            html += `
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
-                <div class="w-full md:w-1/4">
-                    <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
-                    <input type="text" value="${catId}" readonly class="w-full p-2 bg-gray-50 border border-gray-200 rounded text-xs font-bold text-gray-500 outline-none cursor-not-allowed">
-                </div>
-                <div class="w-full md:w-1/4">
-                    <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
-                    <input type="text" id="cat-name-${catId}" value="${catName}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
-                </div>
-                <div class="w-full md:w-2/4 flex gap-2">
-                    <div class="flex-1">
-                        <label class="block text-[10px] font-bold text-gray-500 mb-1">ไอคอน (FontAwesome)</label>
-                        <input type="text" id="cat-icon-${catId}" value="${catIcon}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
-                    </div>
-                    <button type="button" onclick="saveCategoryMeta('${catId}')" class="bg-indigo-500 text-white px-3 py-2 rounded hover:bg-indigo-600 transition shadow-sm text-xs h-[34px] self-end shrink-0">บันทึก</button>
-                </div>
-            </div>`;
-        });
-        container.innerHTML = html;
-    } catch (error) {
-        container.innerHTML = `<p class="text-center text-sm text-red-500 py-4">พบปัญหาการเชื่อมต่อ: ${error.message}</p>`;
-    }
-}
-
-window.closeCategoryModal = function() {
-    let modal = document.getElementById('category-modal');
-    if(modal) {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-    }
-}
-
-window.saveCategoryMeta = async function(catId) {
-    let newName = document.getElementById(`cat-name-${catId}`).value.trim();
-    let newIcon = document.getElementById(`cat-icon-${catId}`).value.trim();
-    if (!newName || !newIcon) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อและไอคอนให้ครบ', 'warning');
-
-    Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-    
-    try {
-        const snapshot = await db.collection("services").get();
-        let batch = db.batch();
-        let count = 0;
-        
-        snapshot.forEach(doc => {
-            let s = doc.data();
-            let sCat = s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
-            if (sCat === catId) {
-                batch.update(doc.ref, { categoryName: newName, categoryIcon: newIcon, category: catId });
-                count++;
+        // ========================================================
+        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (Batch Update) - ฉบับแก้ไขโครงสร้าง
+        // ========================================================
+        window.openCategoryModal = function() {
+            let container = document.getElementById('category-list-area');
+            let modal = document.getElementById('category-modal');
+            
+            if (!allServices || allServices.length === 0) {
+                container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการในระบบ</p>';
+            } else {
+                // ดึงรหัสหมวดหมู่ที่ไม่ซ้ำกัน
+                let uniqueCategories = [...new Set(allServices.map(s => {
+                    return s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
+                }))].filter(c => c && c !== 'addon');
+                
+                if (uniqueCategories.length === 0) {
+                    container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีหมวดหมู่บริการ</p>';
+                } else {
+                    let html = '';
+                    uniqueCategories.forEach(catId => {
+                        let sampleSrv = allServices.find(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
+                        let catName = sampleSrv.categoryName || catId;
+                        let catIcon = sampleSrv.categoryIcon || 'fa-solid fa-broom';
+                        
+                        html += `
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
+                            <div class="w-full md:w-1/4">
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
+                                <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none">
+                            </div>
+                            <div class="w-full md:w-1/4">
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
+                                <input type="text" id="cat-name-${catId}" value="${catName}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                            </div>
+                            <div class="w-full md:w-2/4 flex gap-2">
+                                <div class="flex-1">
+                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">ไอคอน (FontAwesome)</label>
+                                    <input type="text" id="cat-icon-${catId}" value="${catIcon}" class="w-full p-2 border border-gray-300 rounded text-xs outline-none focus:border-primary">
+                                </div>
+                                <button type="button" onclick="saveCategoryMeta('${catId}')" class="bg-indigo-500 text-white px-3 py-2 rounded font-bold hover:bg-indigo-600 transition shadow-sm text-xs h-[34px] self-end shrink-0">
+                                    บันทึก
+                                </button>
+                            </div>
+                        </div>`;
+                    });
+                    container.innerHTML = html;
+                }
             }
-        });
-        
-        await batch.commit();
-        Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ!', text: `เปลี่ยนโลโก้ให้ ${count} รายการย่อยแล้ว`, showConfirmButton: false, timer: 1500 }).then(() => {
-            location.reload(); // รีเฟรชหน้าต่างเพื่อให้ตารางหลักดึงข้อมูลใหม่ทันที
-        });
-    } catch(error) {
-        Swal.fire('เกิดข้อผิดพลาด', error.message, 'error');
-    }
-}
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
 
         window.closeCategoryModal = function() {
-            document.getElementById('category-modal').classList.replace('flex', 'hidden');
+            let modal = document.getElementById('category-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         window.saveCategoryMeta = async function(catId) {
             let newName = document.getElementById(`cat-name-${catId}`).value.trim();
             let newIcon = document.getElementById(`cat-icon-${catId}`).value.trim();
+            
             if (!newName || !newIcon) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อและไอคอนให้ครบ', 'warning');
 
-            Swal.fire({ title: 'กำลังอัปเดต...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'กำลังอัปเดตข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            
             try {
                 let batch = db.batch();
                 let servicesToUpdate = allServices.filter(s => (s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type)) === catId);
+                
                 servicesToUpdate.forEach(srv => {
                     let ref = db.collection("services").doc(srv.id);
-                    batch.update(ref, { categoryName: newName, categoryIcon: newIcon, category: catId });
+                    batch.update(ref, {
+                        categoryName: newName,
+                        categoryIcon: newIcon,
+                        category: catId
+                    });
                 });
+                
                 await batch.commit();
+                
                 if(typeof renderTable === 'function') renderTable();
-                Swal.fire({ icon: 'success', title: 'เปลี่ยนโลโก้สำเร็จ!', showConfirmButton: false, timer: 1500 });
+                Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ!', text: `เปลี่ยนข้อมูลให้ ${servicesToUpdate.length} รายการย่อยแล้ว`, showConfirmButton: false, timer: 1500 });
+                
             } catch(e) {
                 Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
             }
         }
 
-        window.deleteSocialLink = async function(index) {
-            Swal.fire({
-                title: 'ยืนยันการลบ?',
-                text: "ปุ่มนี้จะหายไปจากหน้าเว็บลูกค้าทันที",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'ใช่, ลบเลย',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#ef4444'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({ title: 'กำลังลบ...', didOpen: () => Swal.showLoading() });
-                    adminSocialLinks.splice(index, 1);
-                    await db.collection('settings').doc('social_links').set({ links: adminSocialLinks });
-                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
-                    renderSocialLinksAdmin();
-                }
-            });
-        }
-
+        // โหลดข้อมูลนัดหมายและโซเชียลตอนเปิดหน้าเว็บ
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(loadSocialLinksAdmin, 1500);
         });
     </script>
 
     <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-layer-group text-primary mr-2"></i>จัดการโลโก้และชื่อหมวดหมู่</h3>
-            <button type="button" onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50">
-            <div id="category-list-area" class="space-y-3">
-                </div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-layer-group text-primary mr-2"></i>จัดการโลโก้และชื่อหมวดหมู่</h3>
+                <button type="button" onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50 shadow-inner">
+                <p class="text-xs text-gray-500 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 italic">
+                    * การเปลี่ยนโลโก้หรือชื่อที่นี่ ระบบจะอัปเดตข้อมูลให้ทุกรายการย่อยในหมวดหมู่เดียวกันทันทีครับ
+                </p>
+                <div id="category-list-area" class="space-y-3">
+                    </div>
+            </div>
         </div>
     </div>
-</div>
-
 </body>
 </html>
