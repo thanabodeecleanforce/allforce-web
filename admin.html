@@ -117,7 +117,9 @@
 
                     <div class="px-4 md:px-6 pt-4 pb-2 flex gap-2 overflow-x-auto hide-scroll border-b border-gray-100">
                         <button onclick="setServiceFilter('all')" id="sub-all" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-primary text-white shadow-sm shrink-0 transition">ทั้งหมด</button>
-                        <button onclick="setServiceFilter('house')" id="sub-house" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">แพ็กเกจบ้าน/คอนโด</button>
+                        <button onclick="setServiceFilter('house')" id="sub-house" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">บ้าน</button>
+                        <button onclick="setServiceFilter('condo')" id="sub-condo" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">คอนโด</button>
+                        <button onclick="setServiceFilter('villa')" id="sub-villa" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">วิลล่า</button>
                         <button onclick="setServiceFilter('furniture')" id="sub-furniture" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">เฟอร์นิเจอร์</button>
                         <button onclick="setServiceFilter('addon')" id="sub-addon" class="sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition">บริการเสริม</button>
                     </div>
@@ -1130,24 +1132,49 @@
             });
         }
 
-        // 4. แสดงผลตาราง
+        // ==========================================
+        // 🌟 1. ฟังก์ชันโหลดข้อมูล (บังคับแยกหมวดหมู่)
+        // ==========================================
+        window.loadServices = async function() {
+            try {
+                let snapshot = await db.collection('services').orderBy('order').get();
+                allServices = [];
+                snapshot.forEach(doc => {
+                    let data = { id: doc.id, ...doc.data() };
+                    
+                    // บังคับจัดระเบียบหมวดหมู่ให้ตรงกับปุ่ม
+                    if (data.type === 'condo') data.category = 'condo';
+                    else if (data.type === 'villa') data.category = 'villa';
+                    else if (data.type === 'furniture') data.category = 'furniture';
+                    else if (data.type === 'addon') data.category = 'addon';
+                    else if (data.type === 'house_single' || data.type === 'house') data.category = 'house';
+                    else data.category = data.type;
+                    
+                    allServices.push(data);
+                });
+                renderTable();
+                updateServicesSummary();
+            } catch (error) {
+                console.error("Error fetching services:", error);
+            }
+        }
+
+        // ==========================================
+        // 🌟 2. ฟังก์ชันวาดตารางแอดมิน
+        // ==========================================
         window.renderTable = function() {
             const tbody = document.getElementById('services-list');
-            if (!tbody) return; // ป้องกัน Error ถ้าหาตารางไม่เจอ
+            if (!tbody) return;
 
             let filtered = allServices;
 
-            // 🌟 อัปเกรดตัวกรองให้รองรับทั้งระบบเก่า (type) และระบบใหม่ (category)
-            if (currentFilter === 'house') {
-                filtered = allServices.filter(s => ['condo', 'house_single', 'villa', 'house'].includes(s.type) || s.category === 'house');
-            } else if (currentFilter === 'furniture') {
-                filtered = allServices.filter(s => s.type === 'furniture' || s.category === 'furniture');
-            } else if (currentFilter === 'addon') {
-                filtered = allServices.filter(s => s.type === 'addon' || s.category === 'addon');
+            // กรองข้อมูลตามปุ่มที่กด (ใช้ฟิลด์ category แทน type)
+            if (currentFilter !== 'all') {
+                filtered = allServices.filter(s => s.category === currentFilter);
             }
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">ไม่มีข้อมูลในหมวดหมู่นี้</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400 border-b border-gray-50">ไม่มีข้อมูลในหมวดหมู่นี้</td></tr>`;
                 return;
             }
 
@@ -1156,14 +1183,14 @@
                 let badgeColor = srv.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600';
                 let statusText = srv.isActive ? 'เปิดใช้งาน' : 'ปิดซ่อน';
                 
-                // 🌟 แก้ไขบั๊กที่ 1: ประกาศตัวแปร let ก่อน แล้วค่อยเช็คเงื่อนไข (ป้องกันเว็บพัง)
-                let typeName = srv.categoryName || srv.type;
-                if (srv.type === 'addon') typeName = 'บริการเสริม';
-                else if (srv.type === 'furniture') typeName = 'เฟอร์นิเจอร์';
-                else if (srv.type === 'condo') typeName = 'คอนโด';
-                else if (srv.type === 'house_single') typeName = 'บ้านเดี่ยว/ทาวน์โฮม';
-                else if (srv.type === 'villa') typeName = 'วิลล่า';
-                else if (srv.type === 'house') typeName = 'ทำความสะอาดบ้าน';
+                let typeName = srv.categoryName || '';
+                if (!typeName) {
+                    if (srv.category === 'addon') typeName = 'บริการเสริม';
+                    else if (srv.category === 'furniture') typeName = 'เฟอร์นิเจอร์';
+                    else if (srv.category === 'condo') typeName = 'คอนโด';
+                    else if (srv.category === 'villa') typeName = 'วิลล่า';
+                    else if (srv.category === 'house') typeName = 'บ้านเดี่ยว/ทาวน์โฮม';
+                }
                 
                 let sizesTags = '';
                 if(srv.sizes && srv.sizes.length > 0) {
@@ -1198,6 +1225,21 @@
                 </tr>`;
             });
             tbody.innerHTML = html;
+        }
+
+        // ==========================================
+        // 🌟 3. ฟังก์ชันสลับสีปุ่ม Filter
+        // ==========================================
+        window.filterServices = function(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-4 py-2 rounded-full text-sm font-bold bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 transition";
+            });
+            let activeBtn = document.getElementById('btn-filter-' + type);
+            if(activeBtn) {
+                activeBtn.className = "filter-btn px-4 py-2 rounded-full text-sm font-bold bg-groupPrimary text-white shadow-md transition";
+            }
+            renderTable();
         }
 
     
@@ -1440,9 +1482,14 @@
                 originalPrice: Number(sz.originalPrice || 0)
             }));
 
+            // 🌟 ดักหมวดหมู่ก่อนบันทึกลง Firebase เพื่อให้ข้อมูลเป๊ะ
+            let assignedCategory = type;
+            if (type === 'house_single') assignedCategory = 'house';
+
             const payload = {
                 name: name,
                 type: type,
+                category: assignedCategory, // 🌟 เพิ่มบรรทัดนี้ลงไปเพื่อให้มันจัดหมวดหมู่ได้เป๊ะ 100%
                 isActive: document.getElementById('form-active').value === 'true',
                 price: Number(document.getElementById('form-price').value || 0),
                 originalPrice: Number(document.getElementById('form-orig-price').value || 0),
@@ -1453,7 +1500,6 @@
                 durationHours: document.getElementById('form-hours').value || null,
                 unit: document.getElementById('form-unit').value || null,
                 
-                // 🌟 บันทึกข้อมูลแพ็กเกจสมาชิกลง Firebase
                 memSessions: Number(document.getElementById('form-mem-sessions').value || 0),
                 memDuration: document.getElementById('form-mem-duration').value.trim(),
                 memTerms: document.getElementById('form-mem-terms').value.trim(),
@@ -1782,18 +1828,27 @@
         };
 
         // ==========================================
-        // 🌟 ตัวกรองย่อยสำหรับจัดการบริการ (Sub-filters)
+        // 🌟 ฟังก์ชันสลับสีปุ่ม Filter และกรองข้อมูลตาราง
         // ==========================================
-        window.setServiceFilter = function(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
-                btn.className = 'sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition';
-            });
-            let activeSub = document.getElementById('sub-' + filter);
-            if(activeSub) activeSub.className = 'sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-primary text-white shadow-sm shrink-0 transition';
+        window.setServiceFilter = function(type) {
+            currentFilter = type;
             
-            renderTable();
-        };
+            // 1. ล้างสีปุ่มทั้งหมดให้เป็นสีเทา
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.className = "sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 shrink-0 transition";
+            });
+            
+            // 2. ไฮไลต์ปุ่มที่ถูกกดให้เป็นสีฟ้า
+            let activeBtn = document.getElementById('sub-' + type);
+            if(activeBtn) {
+                activeBtn.className = "sub-tab-btn px-4 py-1.5 rounded-full font-bold text-xs bg-primary text-white shadow-sm shrink-0 transition";
+            }
+            
+            // 3. สั่งวาดตารางใหม่ (ซึ่งในฟังก์ชัน renderTable เราตั้งค่าให้มันกรองด้วย category แล้ว)
+            if (typeof renderTable === 'function') {
+                renderTable();
+            }
+        }
 
         function loadUsersAdmin() {
             db.collection("users").orderBy("lastLogin", "desc").onSnapshot(snapshot => {
