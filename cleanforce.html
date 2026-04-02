@@ -735,8 +735,14 @@
                         <h3 id="step2-title" class="font-bold text-gray-800 mb-4 text-lg">
                              <i class="fa-solid fa-clipboard-list text-primary mr-2"></i>เลือกรายการบริการ
                         </h3>
-                        <div class="grid grid-cols-1 gap-4" id="services-container">
-                    </div>
+                       <div class="grid grid-cols-1 gap-4" id="services-container">
+                        </div>
+
+                        <div id="addons-section" class="mt-8 pt-6 border-t border-gray-100 hidden fade-in">
+                            <h3 class="text-lg font-bold text-[#000080] mb-4"><i class="fa-solid fa-plus-circle mr-2"></i>บริการเสริม (Add-ons)</h3>
+                            <div id="addons-container" class="space-y-3">
+                                </div>
+                        </div>
                     </div>
                     <div class="flex gap-4 mt-8">
                         
@@ -911,7 +917,17 @@
     <div id="savedCouponsContainer" class="flex flex-wrap gap-2">
         </div>
 </div>
-                            <div id="applied-coupons-area" class="space-y-2 mt-3 empty:hidden"></div>
+                           <div id="applied-coupons-area" class="space-y-2 mt-3 empty:hidden"></div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t-2 border-gray-200 flex justify-between items-end">
+                            <div>
+                                <p class="text-sm font-bold text-gray-500">ยอดชำระสุทธิ</p>
+                                <p class="text-[10px] text-gray-400">(รวมส่วนลดทั้งหมดแล้ว)</p>
+                            </div>
+                            <div id="sum-net-total" class="text-right">
+                                <span class="text-2xl md:text-3xl text-[#000080] font-black">0 บาท</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1301,19 +1317,19 @@
                 snapshot.forEach(doc => {
                     let data = { id: doc.id, ...doc.data() };
                     
-                    // 🌟 แก้ไขแล้ว: ถ้าระบบยังไม่มี category ให้ดึง type เดิมมาใช้ตรงๆ เลย (ไม่จับมัดรวมกันแล้ว)
-                    if (!data.category) {
-                        if (data.type === 'house_single' || data.type === 'house') {
-                            data.category = 'house'; 
-                        } else {
-                            data.category = data.type; // ให้ condo เป็น condo, villa เป็น villa ตามเดิมเป๊ะๆ
-                        }
-                    }
+                    // 🚨 กฎเหล็ก: บังคับใช้ "type" (ที่แอดมินกรอก) เป็นตัวแบ่งหมวดหมู่อย่างเด็ดขาด!
+                    // เพื่อล้างบางข้อมูลที่อาจจะเคยเซฟผิดพลาดในฐานข้อมูล
+                    if (data.type === 'condo') data.category = 'condo';
+                    else if (data.type === 'villa') data.category = 'villa';
+                    else if (data.type === 'house_single' || data.type === 'house') data.category = 'house';
+                    else if (data.type === 'furniture') data.category = 'furniture';
+                    else if (data.type === 'addon') data.category = 'addon';
+                    else data.category = data.type; 
 
                     allServices.push(data);
                 });
                 
-                renderCategories(); // สั่งวาดปุ่มทันที
+                renderCategories(); // สั่งวาดปุ่ม
             } catch (error) {
                 console.error("Error fetching services: ", error);
             }
@@ -1321,18 +1337,18 @@
 
         // ข้อมูลตกแต่งปุ่ม (สำรองไว้กรณีแอดมินยังไม่ได้ตั้งค่า)
         const catMeta = {
-            'house': { name: 'ทำความสะอาดบ้าน', icon: '<i class="fa-solid fa-house-chimney-broom text-2xl"></i>' },
-            'furniture': { name: 'ซักโซฟา / ที่นอน', icon: '<i class="fa-solid fa-couch text-2xl"></i>' },
-            'condo': { name: 'ทำความสะอาดคอนโด', icon: '<i class="fa-solid fa-building text-2xl"></i>' },
-            'villa': { name: 'ทำความสะอาดวิลล่า', icon: '<i class="fa-solid fa-house-flag text-2xl"></i>' }
+            'house': { name: 'ทำความสะอาดบ้าน', icon: 'fa-solid fa-house-chimney text-2xl' },
+            'furniture': { name: 'ซักโซฟา / ที่นอน', icon: 'fa-solid fa-couch text-2xl' },
+            'condo': { name: 'ทำความสะอาดคอนโด', icon: 'fa-solid fa-building text-2xl' },
+            'villa': { name: 'ทำความสะอาดวิลล่า', icon: 'fa-solid fa-house-flag text-2xl' }
         };
 
-        // 🌟 2. ฟังก์ชันวาดปุ่มหมวดหมู่ (ดึงโลโก้และชื่อจาก Admin 100%)
+        // 🌟 2. ฟังก์ชันวาดปุ่มหมวดหมู่ (ยุบรวมแล้ว สมบูรณ์ที่สุด)
         window.renderCategories = function() {
             let container = document.getElementById('category-container');
             if (!container) return;
 
-            // ดึงหมวดหมู่ที่ไม่ซ้ำกันจากบริการทั้งหมด (ตัดบริการเสริมและแพ็กเกจสมาชิกออก)
+            // ดึง Unique Categories
             let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
             
             if (uniqueCategories.length === 0) {
@@ -1342,38 +1358,60 @@
 
             let html = '';
             uniqueCategories.forEach(catId => {
-                // ค้นหาบริการสัก 1 ตัวในหมวดหมู่นี้ เพื่อดึงชื่อและไอคอนที่แอดมินตั้งไว้มาใช้
-                let sampleService = allServices.find(s => s.category === catId) || {};
-                
-                // ใช้ชื่อจากระบบ Admin เป็นหลัก ถ้าไม่มีให้ใช้ชื่อสำรอง
-                let catName = sampleService.categoryName || (catMeta[catId] ? catMeta[catId].name : catId);
-                let iconHtml = '';
-
-                // 🌟 ระบบดึงไอคอนอัจฉริยะ (เรียงลำดับความสำคัญ รูปโลโก้ -> FontAwesome -> ไอคอนสำรอง)
-                if (sampleService.categoryLogo && sampleService.categoryLogo.startsWith('http')) {
-                    iconHtml = `<img src="${sampleService.categoryLogo}" class="w-full h-full object-cover">`;
-                } else if (sampleService.categoryIcon) {
-                    iconHtml = `<i class="${sampleService.categoryIcon} text-2xl"></i>`;
-                } else {
-                    iconHtml = catMeta[catId] ? catMeta[catId].icon : '<i class="fa-solid fa-broom text-2xl"></i>';
-                }
+                let serviceInfo = allServices.find(s => s.category === catId) || {};
+                let catName  = serviceInfo.categoryName  || (catMeta[catId] ? catMeta[catId].name : catId);
+                let iconClass = serviceInfo.categoryIcon || (catMeta[catId] ? catMeta[catId].icon : 'fa-solid fa-broom text-2xl');
+                let logoUrl   = serviceInfo.categoryLogo || '';   // URL รูปภาพ
 
                 let isSelected = cart.category === catId;
                 let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
-                let iconClass = isSelected ? 'scale-110' : '';
+                let iconScale = isSelected ? 'scale-110' : '';
+
+                // ถ้ามีโลโก้รูปภาพให้แสดงรูป ถ้ารูปพังหรือไม่มี ค่อยแสดงไอคอน (ระบบ Fallback)
+                let logoHtml = logoUrl
+                    ? `<img src="${logoUrl}" alt="${catName}" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                    : '';
+                let iconFallback = `<span style="${logoUrl ? 'display:none' : 'display:flex'}" class="items-center justify-center text-primary text-2xl w-full h-full">
+                        <i class="${iconClass}"></i>
+                    </span>`;
 
                 html += `
-                <button id="cat-${catId}" type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white relative overflow-hidden group ${activeClass}">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary overflow-hidden group-hover:scale-110 transition-transform ${iconClass}">
-                        ${iconHtml}
+                <button id="cat-${catId}" type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white group ${activeClass}">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden relative group-hover:scale-110 transition-transform ${iconScale}">
+                        ${logoHtml}${iconFallback}
                     </div>
                     <span class="font-bold text-sm md:text-base text-center">${catName}</span>
-                </button>`;
+                </button>`; 
             });
             container.innerHTML = html;
         }
 
-        // 3. ฟังก์ชันเพิ่ม/ลด จำนวนสินค้า
+        // 🌟 3. ฟังก์ชันคลิกเลือกหมวดหมู่
+        window.selectCategory = function(id, nameText = 'แพ็กเกจ') {
+            cart.category = id;
+            cart.type = 'custom';
+            cart.addons = []; // ล้างตะกร้าเมื่อเปลี่ยนหมวดหมู่
+            
+            renderCategories(); // วาดปุ่มใหม่เพื่อให้สีฟ้าสลับไปปุ่มที่เลือก
+            
+            // เปลี่ยนหัวข้อให้ตรงกับหมวดหมู่ที่คลิก
+            let titleEl = document.getElementById('step2-title');
+            if (titleEl) titleEl.textContent = `เลือกบริการสำหรับ ${nameText}`;
+
+            renderTypes(); // ดึงแพ็กเกจย่อยมาโชว์
+            if (typeof renderAddons === 'function') renderAddons(); // 🌟 ปลุกบริการเสริมให้มาโชว์!
+            
+            // เปิดโชว์กล่องแพ็กเกจ
+            let serviceArea = document.getElementById('service-selection-area');
+            if (serviceArea) {
+                serviceArea.classList.remove('hidden');
+                setTimeout(() => {
+                    serviceArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
+
+        // 4. ฟังก์ชันเพิ่ม/ลด จำนวนสินค้า
         window.addTypeAddon = function(id, hasSizes) {
             let size = hasSizes ? document.getElementById('dd_type_'+id).value : '';
             updateAddonQty(id, size, 1);
@@ -1389,80 +1427,146 @@
             }
             
             renderTypes(); 
+            if (typeof renderAddons === 'function') renderAddons(); // 🌟 อัปเดตตัวเลขบริการเสริมด้วย
             calculatePricing(); 
         }
 
-        window.renderCategories = function() {
-    let container = document.getElementById('category-container');
-    if (!container) return;
+        // ==========================================
+        // 🌟 ฟังก์ชันวาดกล่อง "แพ็กเกจหลัก" (ที่เผลอลบไป)
+        // ==========================================
+        window.renderTypes = function() {
+            let container = document.getElementById('services-container');
+            if (!container) return;
 
-    // ดึง Unique Categories — ใช้ category field โดยตรง (ถูก map มาแล้วใน loadDynamicServices)
-    let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
-    
-    if (uniqueCategories.length === 0) {
-        container.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center">ยังไม่มีบริการ</p>';
-        return;
-    }
+            // ดึงบริการที่ตรงกับหมวดหมู่ที่เลือก (ไม่เอา addon)
+            let types = allServices.filter(s => s.category === cart.category && s.type !== 'addon' && s.category !== 'addon');
+            types.sort((a,b) => (a.order||99) - (b.order||99));
 
-    let html = '';
-    uniqueCategories.forEach(catId => {
-        let serviceInfo = allServices.find(s => s.category === catId) || {};
-        let catName  = serviceInfo.categoryName  || catId;
-        let iconClass = serviceInfo.categoryIcon || 'fa-solid fa-broom';
-        let logoUrl   = serviceInfo.categoryLogo || '';   // URL รูปภาพ (ถ้ามี)
-
-        let isSelected = cart.category === catId;
-        let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
-
-        // ถ้ามีโลโก้รูปภาพให้แสดงรูป ไม่งั้นแสดง FA icon
-        let logoHtml = logoUrl
-            ? `<img src="${logoUrl}" alt="${catName}" class="w-12 h-12 object-contain"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-            : '';
-        let iconFallback = `<span style="${logoUrl ? 'display:none' : 'display:flex'}" class="items-center justify-center text-primary text-2xl w-full h-full">
-                <i class="${iconClass}"></i>
-            </span>`;
-
-        html += `
-        <button type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white group ${activeClass}">
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden relative">
-                ${logoHtml}${iconFallback}
-            </div>
-            <span class="font-bold text-sm md:text-base text-center">${catName}</span>
-        </button>`; 
-    });
-    container.innerHTML = html;
-}
-
-        // 🌟 ฟังก์ชันเมื่อคลิกเลือกหมวดหมู่
-        window.selectCategory = function(id, nameText = 'แพ็กเกจ') {
-            cart.category = id;
-            cart.type = 'custom';
-            cart.addons = []; // ล้างตะกร้าเมื่อเปลี่ยนหมวดหมู่
-            
-            renderCategories(); // วาดปุ่มใหม่เพื่อให้สีฟ้าสลับไปปุ่มที่เลือก
-            
-            // เปลี่ยนหัวข้อให้ตรงกับหมวดหมู่ที่คลิก
-            let titleEl = document.getElementById('step2-title');
-            if (titleEl) titleEl.textContent = `เลือกบริการสำหรับ ${nameText}`;
-
-            renderTypes(); // ดึงแพ็กเกจย่อยมาโชว์
-            
-            // เปิดโชว์กล่องแพ็กเกจ
-            let serviceArea = document.getElementById('service-selection-area');
-            if (serviceArea) {
-                serviceArea.classList.remove('hidden');
-                setTimeout(() => {
-                    serviceArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
+            if(types.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-400 py-6 border-2 border-dashed rounded-xl">ไม่มีแพ็กเกจในหมวดหมู่นี้</p>';
+                return;
             }
+
+            let html = '';
+            types.forEach(srv => {
+                let cartItems = cart.addons.filter(a => a.id === srv.id);
+                let isSelected = cartItems.length > 0;
+                let hasSizes = srv.sizes && srv.sizes.length > 0;
+                
+                let displayPrice = hasSizes ? Math.min(...srv.sizes.map(s => Number(s.price))) : (srv.price || 0);
+                let origPrice = srv.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${srv.originalPrice.toLocaleString()} ฿</span>` : '';
+
+                let sizeOptions = hasSizes ? srv.sizes.map(sz => `<option value="${sz.name}">${sz.name} (+${Number(sz.price).toLocaleString()} ฿)</option>`).join('') : '';
+                let selectHtml = hasSizes ? `<select id="dd_type_${srv.id}" class="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold outline-none">${sizeOptions}</select>` : '';
+
+                html += `
+                <div class="p-4 rounded-xl border transition-colors ${isSelected ? 'bg-blue-50 border-primary shadow-sm' : 'bg-white border-gray-200'}">
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm md:text-base">${srv.name}</h4>
+                        <div class="flex items-center mt-1 mb-2">
+                            ${origPrice}
+                            <p class="text-xs text-primary font-bold">${hasSizes?'เริ่มต้น ':''}${displayPrice.toLocaleString()} ฿</p>
+                        </div>
+                        <p class="text-[11px] text-gray-500 mb-3 line-clamp-2">${srv.details || srv.desc || ''}</p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-100 flex flex-col gap-3">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            ${selectHtml}
+                            <button type="button" onclick="addTypeAddon('${srv.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-primary text-white font-bold text-xs rounded-lg hover:bg-blue-600 flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เลือกรายการนี้</button>
+                        </div>
+                        ${isSelected ? `
+                        <div class="flex flex-col gap-2 mt-1">
+                            ${cartItems.map(item => {
+                                let szPrice = hasSizes ? srv.sizes.find(s=>s.name === item.size)?.price : srv.price;
+                                return `
+                                <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-primary/30 shadow-sm">
+                                    <div class="flex flex-col"><span class="text-xs font-bold text-gray-700">${item.size || 'จำนวน'}</span><span class="text-[10px] text-primary font-bold">+${(szPrice || 0).toLocaleString()} ฿</span></div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" onclick="updateAddonQty('${srv.id}', '${item.size}', -1)" class="w-7 h-7 rounded bg-gray-100 border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                        <span class="font-bold text-xs w-5 text-center">${item.qty}</span>
+                                        <button type="button" onclick="updateAddonQty('${srv.id}', '${item.size}', 1)" class="w-7 h-7 rounded bg-primary text-white hover:bg-blue-600 transition flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                    </div>
+                                </div>`;
+                            }).join('')}
+                        </div>` : ''}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
         }
 
-        // 🌟 สร้างสะพานเชื่อมฟังก์ชันให้ปุ่มกด Next/Prev ทำงานได้
+        // ==========================================
+        // 🌟 ฟังก์ชันวาดกล่อง "บริการเสริม" (ล็อกเป้าเฉพาะแอดออนจริงๆ)
+        // ==========================================
+        window.renderAddons = function() {
+            let container = document.getElementById('addons-container');
+            let section = document.getElementById('addons-section');
+            if (!container || !section) return;
+
+            // 🚨 ดึงเฉพาะบริการที่แอดมินระบุ type เป็น 'addon' เป๊ะๆ เท่านั้น ป้องกันหมวดอื่นหลุดมาปน
+            let addons = allServices.filter(s => s.type === 'addon');
+            addons.sort((a,b) => (a.order||99) - (b.order||99));
+            
+            if(addons.length === 0) {
+                section.classList.add('hidden'); 
+                return;
+            }
+
+            section.classList.remove('hidden'); 
+            let html = '';
+            
+            addons.forEach(addon => {
+                let cartItems = cart.addons.filter(a => a.id === addon.id);
+                let isSelected = cartItems.length > 0;
+                let hasSizes = addon.sizes && addon.sizes.length > 0;
+                
+                let displayPrice = hasSizes ? Math.min(...addon.sizes.map(s => Number(s.price))) : (addon.price || 0);
+                let origPrice = addon.originalPrice ? `<span class="text-[10px] text-gray-400 line-through mr-1">${addon.originalPrice.toLocaleString()} ฿</span>` : '';
+
+                let sizeOptions = hasSizes ? addon.sizes.map(sz => `<option value="${sz.name}">${sz.name} (+${Number(sz.price).toLocaleString()}฿)</option>`).join('') : '';
+                let selectHtml = hasSizes ? `<select id="dd_type_${addon.id}" class="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold outline-none">${sizeOptions}</select>` : '';
+
+                html += `
+                <div class="p-4 rounded-xl border transition-colors ${isSelected ? 'bg-blue-50 border-primary shadow-sm' : 'bg-white border-gray-200'}">
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm">${addon.name}</h4>
+                        <div class="flex items-center mt-1">
+                            ${origPrice}
+                            <p class="text-[11px] text-primary font-bold">${hasSizes?'เริ่มต้น ':'+'}${displayPrice.toLocaleString()} ฿</p>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1 line-clamp-2">${addon.details || addon.desc || 'ระบุจำนวนที่ต้องการ'}</p>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-3">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            ${selectHtml}
+                            <button type="button" onclick="addTypeAddon('${addon.id}', ${hasSizes})" class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white flex justify-center items-center gap-1 transition shrink-0"><i class="fa-solid fa-plus"></i> เพิ่มบริการนี้</button>
+                        </div>
+                        ${isSelected ? `
+                        <div class="flex flex-col gap-2 mt-1">
+                            ${cartItems.map(item => {
+                                let szPrice = hasSizes ? addon.sizes.find(s=>s.name === item.size)?.price : addon.price;
+                                return `
+                                <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-primary/30 shadow-sm">
+                                    <div class="flex flex-col"><span class="text-xs font-bold text-gray-700">${item.size || 'จำนวน'}</span><span class="text-[10px] text-primary font-bold">+${(szPrice || 0).toLocaleString()} ฿</span></div>
+                                    <div class="flex items-center gap-2 bg-gray-50 rounded-lg border border-gray-200 p-0.5">
+                                        <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', -1)" class="w-7 h-7 rounded-md bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                        <span class="font-bold text-xs w-5 text-center">${item.qty}</span>
+                                        <button type="button" onclick="updateAddonQty('${addon.id}', '${item.size}', 1)" class="w-7 h-7 rounded-md bg-primary text-white hover:bg-blue-600 transition flex items-center justify-center"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                    </div>
+                                </div>`;
+                            }).join('')}
+                        </div>` : ''}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+        // ==========================================
+        // 🌟 ระบบเปลี่ยนหน้า 3 ขั้นตอน (โค้ดคุณเขียนมาดีมากแล้ว ไม่ต้องแก้)
+        // ==========================================
         window.nextStep = function() { changeStep(1); };
         window.prevStep = function() { changeStep(-1); };
 
-        // 🌟 3. อัปเดตฟังก์ชันเปลี่ยนหน้า (Next/Back) ให้รองรับ 3 Step
         window.changeStep = function(dir) {
             if (isStepChanging) return;
             isStepChanging = true;
@@ -1470,13 +1574,11 @@
 
             // 🛑 ด่านตรวจ (Validation) ตอนกด Next
             if (dir === 1) {
-                // Validate Step 1 (เลือกบริการ)
                 if(currentStep === 1) {
                     if(!cart.category) { isStepChanging = false; return alert("กรุณาเลือกหมวดหมู่บริการก่อนครับ"); }
                     if(cart.addons.length === 0) { isStepChanging = false; return alert("กรุณาเลือกแพ็กเกจอย่างน้อย 1 รายการครับ"); }
                 }
                 
-                // Validate Step 2 (ข้อมูลนัดหมาย + คำถามเพิ่มเติม)
                 if(currentStep === 2) {
                     let date = document.getElementById('bk-date') ? document.getElementById('bk-date').value : '';
                     let time = document.getElementById('bk-time') ? document.getElementById('bk-time').value : '';
@@ -1498,14 +1600,12 @@
 
             currentStep += dir;
 
-            // ป้องกัน Step ทะลุ
             if(currentStep < 1) currentStep = 1;
             if(currentStep > totalSteps) currentStep = totalSteps;
 
-            // 🌟 จัดการ UI เปลี่ยนหน้า
             document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden', 'opacity-0'));
             
-            let targetStep = document.getElementById('step' + currentStep); // ใน HTML ใหม่ ID ต้องเป็น step1, step2, step3
+            let targetStep = document.getElementById('step' + currentStep); 
             if(targetStep) {
                 targetStep.classList.remove('hidden');
                 setTimeout(() => {
@@ -1514,7 +1614,6 @@
                 }, 50);
             }
 
-            // 🌟 อัปเดต Progress Bar
             document.querySelectorAll('.step-circle').forEach(el => {
                 let stepNum = parseInt(el.getAttribute('data-step'));
                 if (stepNum < currentStep) {
@@ -1529,12 +1628,10 @@
                 }
             });
 
-            // อัปเดตแถบสี Progress
             let fillWidth = ((currentStep - 1) / (totalSteps - 1)) * 100;
             let barFill = document.getElementById('progress-bar-fill');
             if(barFill) barFill.style.width = fillWidth + '%';
 
-            // 🌟 โหลดปลั๊กอินต่างๆ ตามหน้า
             if (currentStep === 2 && typeof google !== 'undefined') {
                 setTimeout(() => {
                     if (!map) initSmartMap();
@@ -1547,19 +1644,16 @@
 
             if(currentStep === 3) {
                 if(typeof renderSummary === 'function') renderSummary();
-                // นำข้อมูลสรุปมาใส่ตัวแปรเดิม (เผื่อระบบประกอบบิลเรียกใช้)
                 let kidsEl = document.getElementById('sum-kids');
                 if(kidsEl) kidsEl.textContent = cart.details.kids === 'yes' ? 'มี' : 'ไม่มี';
                 let petsEl = document.getElementById('sum-pets');
                 if(petsEl) petsEl.textContent = cart.details.pets === 'yes' ? 'มี' : 'ไม่มี';
             }
             
-            // เลื่อนจอกลับขึ้นบนสุดอย่างนุ่มนวล
             let scrollTarget = document.getElementById('booking-cf');
             if(scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 6. เครื่องมือยิบย่อย
         window.setBtnToggle = function(field, val) {
             cart.details[field] = val;
             let btnYes = document.getElementById('btn-'+field+'-yes');
@@ -2836,199 +2930,80 @@ try {
             }
         };
 
-        // 🌟 ระบบสไลด์แจ้งเตือน 5 วินาที
+        // ==========================================
+        // 🌟 ระบบแจ้งเตือนคูปองและป๊อปอัพ (อัปเดตคลีนโค้ด)
+        // ==========================================
         let countdownTimer;
 
-        function showSlideNotification() {
+        window.showSlideNotification = function() {
             const notif = document.getElementById('slide-notification');
-            const countdownText = document.getElementById('countdown-text');
             const countdownBar = document.getElementById('countdown-bar');
+            const countdownText = document.getElementById('countdown-text');
             
-            // 1. สั่งให้สไลด์เข้ามาจากทางขวา
+            if(!notif) return;
             notif.classList.remove('-right-full');
             notif.classList.add('right-4'); 
 
-            // 2. เริ่มลดความยาวของแถบสี (จากเต็ม 100% ไป 0%) ภายใน 5 วิ
-            setTimeout(() => {
-                countdownBar.style.width = '0%';
-            }, 50); 
+            setTimeout(() => { if(countdownBar) countdownBar.style.width = '0%'; }, 50); 
 
-            // 3. เริ่มนับถอยหลังตัวเลข
             let timeLeft = 5;
-            countdownText.innerText = `จะปิดอัตโนมัติใน ${timeLeft} วินาที`;
+            if(countdownText) countdownText.innerText = `จะปิดอัตโนมัติใน ${timeLeft} วินาที`;
 
             countdownTimer = setInterval(() => {
                 timeLeft -= 1;
                 if (timeLeft > 0) {
-                    countdownText.innerText = `จะปิดอัตโนมัติใน ${timeLeft} วินาที`;
+                    if(countdownText) countdownText.innerText = `จะปิดอัตโนมัติใน ${timeLeft} วินาที`;
                 } else {
-                    hideSlideNotification(); // ครบ 5 วิแล้วสั่งซ่อน
+                    window.hideSlideNotification();
                 }
             }, 1000);
-        }
+        };
 
-        // 🌟 ฟังก์ชันซ่อนแจ้งเตือน (เลื่อนกลับไปทางขวา)
-        function hideSlideNotification() {
+        window.hideSlideNotification = function() {
             const notif = document.getElementById('slide-notification');
-            notif.classList.remove('right-4');
-            notif.classList.add('-right-full'); // สไลด์กลับไปซ่อน
-            clearInterval(countdownTimer); // หยุดการนับเวลา
-        }
-
-        // 🌟 โชว์แจ้งเตือนหลังจากลูกค้าเปิดเว็บมา 3 วินาที (ปรับเลข 3000 ได้ตามใจชอบ)
-        window.addEventListener('load', function() {
-            setTimeout(showSlideNotification, 3000);
-        });
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('coupon-modal-new');
-    const closeBtn = document.getElementById('close-coupon-btn');
-    const slideNotification = document.getElementById('slide-notification');
-
-    // 1. ฟังก์ชันเปิดป๊อปอัพและเพิ่มคลาส flex ให้อยู่ตรงกลางจอ
-    window.openAndLoadCoupons = function() {
-        if (!modal) return;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex'); // คลาสนี้บังคับให้อยู่ตรงกลาง
-        
-        loadAvailableCoupons();
-        hideSlideNotification();
-    };
-
-    // 2. ฟังก์ชันปิดป๊อปอัพ
-    function closeCouponModal() {
-        if (!modal) return;
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-
-    if (closeBtn) closeBtn.addEventListener('click', closeCouponModal);
-    
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeCouponModal();
-        });
-    }
-
-    // 3. ฟังก์ชันซ่อน Slide
-    window.hideSlideNotification = function() {
-        if (slideNotification) {
-            slideNotification.style.right = '-100%';
-        }
-    };
-
-    // 4. ฟังก์ชันดึงข้อมูลจาก Firebase
-    async function loadAvailableCoupons() {
-        const container = document.getElementById('coupon-list-container');
-        container.innerHTML = '<div class="flex flex-col items-center py-4"><i class="fa-solid fa-spinner fa-spin text-2xl text-primary mb-2"></i><p class="text-sm text-gray-500">กำลังค้นหาคูปอง...</p></div>';
-
-        try {
-            // 🔧 BUG FIX: ใช้ window.cf_db แทน db
-            if (typeof window.cf_db === 'undefined') {
-                throw new Error("ยังไม่ได้เชื่อมต่อ Firebase");
+            if(notif) {
+                notif.classList.remove('right-4');
+                notif.classList.add('-right-full');
             }
+            clearInterval(countdownTimer); 
+        };
 
-            const snapshot = await window.cf_db.collection("coupons").where("isActive", "==", true).get();
-            
-            if (snapshot.empty) {
-                container.innerHTML = `
-                    <p class="text-gray-600 mb-4 text-sm">รับส่วนลดพิเศษสำหรับการจองครั้งแรก</p>
-                    <p class="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100">ขณะนี้ไม่มีคูปองที่แจกอยู่</p>
-                `;
-                return;
+        window.openAndLoadCoupons = function() {
+            const modal = document.getElementById('coupon-modal-new');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                window.loadAvailableCoupons();
+                window.hideSlideNotification();
             }
+        };
 
-            let html = '<p class="text-gray-600 mb-4 text-sm">กดเก็บโค้ดด้านล่างเพื่อรับส่วนลดทันที</p>';
-            
-            snapshot.forEach(doc => {
-                const c = doc.data();
-                const discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue} บาท`;
-                
-                html += `
-                    <div class="border-2 border-primary rounded-xl p-4 mb-3 text-left relative overflow-hidden bg-white shadow-sm hover:shadow-md transition">
-                        <div class="absolute top-0 right-0 bg-yellow-400 text-red-700 text-[10px] font-bold px-2 py-1 rounded-bl-lg">รีบเก็บเลย!</div>
-                        <h4 class="font-bold text-primary text-xl tracking-wider">${c.code}</h4>
-                        <p class="text-sm text-gray-800 font-semibold mt-1">${discountText}</p>
-                        <p class="text-[10px] text-gray-500 mt-1">จองขั้นต่ำ: ${c.minSpend || '0'} บาท | หมดอายุ: ${c.endDate || 'ไม่ระบุ'}</p>
-                        
-                        <button onclick="claimSpecificCoupon('${c.code}')" class="mt-3 bg-primary text-white font-bold py-2 px-4 rounded-full w-full shadow hover:scale-105 transition transform duration-200 text-sm flex justify-center items-center gap-2">
-                            <i class="fa-solid fa-hand-pointer"></i> เก็บโค้ดเลย
-                        </button>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
+        window.closeCouponModal = function() {
+            const modal = document.getElementById('coupon-modal-new');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
 
-        } catch (error) {
-            console.error("Firebase Error:", error);
-            container.innerHTML = '<p class="text-red-500 text-sm">เกิดข้อผิดพลาดในการโหลดคูปอง กรุณาลองใหม่</p>';
-        }
-    }
-
-    // 5. ฟังก์ชันกดเก็บคูปอง
-    window.claimSpecificCoupon = function(code) {
-        // 🔧 BUG FIX: บันทึกลง localStorage ก่อน แล้วค่อย copy clipboard
-        let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
-        if (!myCoupons.includes(code)) {
-            myCoupons.push(code);
-            localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
-        }
-        navigator.clipboard.writeText(code).catch(() => {});
-        Swal.fire({
-            icon: 'success',
-            title: 'เก็บโค้ดสำเร็จ!',
-            text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์`,
-            showConfirmButton: false,
-            timer: 2500
-        });
-        closeCouponModal();
-    };
-
-    // 6. โชว์ Slide Notification เมื่อเปิดหน้าเว็บ (หน่วงเวลา 2 วินาที)
-    setTimeout(() => {
-        if (slideNotification) {
-            slideNotification.classList.remove('hidden');
-            slideNotification.style.right = '16px'; 
-            
-            let bar = document.getElementById('countdown-bar');
-            if (bar) bar.style.width = '0%';
-            
-            // ซ่อนอัตโนมัติใน 5 วินาที
-            setTimeout(() => {
-                hideSlideNotification();
-            }, 5000);
-        }
-    }, 2000);
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-        
-        // ฟังก์ชันดึงคูปอง
-        async function loadAvailableCouponsSafely() {
+        window.loadAvailableCoupons = async function() {
             const container = document.getElementById('coupon-list-container');
-            
-            // ถ้าไม่มีป๊อปอัพคูปองในหน้านี้ ให้หยุดทำงานเงียบๆ ไม่ให้ Error แจ้งเตือน
-            if (!container) return; 
+            if (!container) return;
 
-            // ตรวจสอบว่ามีการเชื่อม Firebase (window.cf_db) หรือยัง
             if (typeof window.cf_db === 'undefined') {
-                console.warn("ไม่พบการเชื่อมต่อฐานข้อมูล Firebase สำหรับดึงคูปอง");
+                container.innerHTML = '<p class="text-red-500 text-sm">ไม่พบการเชื่อมต่อฐานข้อมูล</p>';
                 return;
             }
 
             container.innerHTML = '<div class="flex flex-col items-center py-4"><i class="fa-solid fa-spinner fa-spin text-2xl text-primary mb-2"></i><p class="text-sm text-gray-500">กำลังค้นหาคูปอง...</p></div>';
 
             try {
-                // ดึงคูปองที่เปิดใช้งาน (isActive == true)
                 const snapshot = await window.cf_db.collection("coupons").where("isActive", "==", true).get();
                 
                 if (snapshot.empty) {
                     container.innerHTML = `
                         <p class="text-gray-600 mb-4 text-sm">รับส่วนลดพิเศษสำหรับการจองครั้งแรก</p>
-                        <p class="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100">ขณะนี้ยังไม่มีคูปองที่แจกอยู่</p>
+                        <p class="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-lg border border-red-100">ขณะนี้ไม่มีคูปองที่แจกอยู่</p>
                     `;
                     return;
                 }
@@ -3037,7 +3012,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 snapshot.forEach(doc => {
                     const c = doc.data();
-                    const discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue} บาท`;
+                    const discountText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ${c.discountValue.toLocaleString()} บาท`;
                     
                     html += `
                         <div class="border-2 border-primary rounded-xl p-4 mb-3 text-left relative overflow-hidden bg-white shadow-sm hover:shadow-md transition">
@@ -3052,100 +3027,49 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                 });
-                
                 container.innerHTML = html;
-
             } catch (error) {
-                console.error("เกิดข้อผิดพลาดในการโหลดคูปอง:", error);
-                container.innerHTML = '<p class="text-red-500 text-sm">ไม่สามารถโหลดคูปองได้ในขณะนี้ กรุณาลองใหม่</p>';
+                console.error("Firebase Error:", error);
+                container.innerHTML = '<p class="text-red-500 text-sm">เกิดข้อผิดพลาดในการโหลดคูปอง กรุณาลองใหม่</p>';
             }
-        }
+        };
 
-        // ฟังก์ชันเมื่อกดปุ่ม "เก็บโค้ดเลย"
         window.claimSpecificCoupon = function(code) {
-            // 🔧 BUG FIX: บันทึกลง localStorage ก่อน แล้วค่อย copy clipboard
             let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
             if (!myCoupons.includes(code)) {
                 myCoupons.push(code);
                 localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
             }
             navigator.clipboard.writeText(code).catch(() => {});
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'เก็บโค้ดสำเร็จ!',
+                text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์`,
+                showConfirmButton: false,
+                timer: 2500
+            });
+            
+            window.closeCouponModal();
+            if (typeof loadBookingCoupons === 'function') loadBookingCoupons();
+        };
 
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'เก็บโค้ดสำเร็จ!',
-                    text: `บันทึกโค้ด ${code} แล้ว ดูได้ที่หน้าโปรไฟล์`,
-                    showConfirmButton: false,
-                    timer: 2500
+        // ตั้งค่า Event Listeners เมื่อโหลดหน้าเว็บเสร็จ
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(window.showSlideNotification, 3000); // แจ้งเตือนเด้งเมื่อเปิดเว็บ 3 วิ
+            
+            const modal = document.getElementById('coupon-modal-new');
+            const closeBtn = document.getElementById('close-coupon-btn');
+            
+            if (closeBtn) closeBtn.addEventListener('click', window.closeCouponModal);
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) window.closeCouponModal();
                 });
-            } else {
-                alert(`เก็บโค้ดสำเร็จ! บันทึกโค้ด ${code} เรียบร้อยแล้ว`);
             }
             
-            // สั่งปิดหน้าต่างป๊อปอัพ
-            const modal = document.getElementById('coupon-modal-new');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-
-            // รีเฟรชคูปองในฟอร์มจอง (ถ้ามี)
-            if (typeof loadBookingCoupons === 'function') loadBookingCoupons();
-            };
-    
-             // ให้ดึงข้อมูลทันทีที่โหลดหน้าเว็บ
-             loadAvailableCouponsSafely();
-            });
-
-            window.loadPublicCoupons = async function() {
-            try {
-                let snapshot = await db.collection('coupons')
-                    .where('active', '==', true)
-                    .where('isPublic', '==', true)
-                    .orderBy('createdAt', 'desc').get();
-                
-                let container = document.getElementById('public-coupons-container');
-                let list = document.getElementById('public-coupons-list');
-                
-                if (snapshot.empty) {
-                    if (container) container.classList.add('hidden');
-                    return;
-                }
-
-                let html = '';
-                let now = new Date();
-
-                snapshot.forEach(doc => {
-                    let c = doc.data();
-                    
-                    // ข้ามคูปองที่หมดอายุแล้ว หรือยังไม่ถึงเวลา
-                    if (c.endDate && new Date(c.endDate) < now) return;
-                    if (c.startDate && new Date(c.startDate) > now) return;
-
-                    let discText = c.type === 'percent' ? `ลด ${c.value}%` : `ลด ฿${c.value}`;
-                    let minText = c.minSpend ? `ขั้นต่ำ ฿${c.minSpend}` : 'ไม่มีขั้นต่ำ';
-                    
-                    html += `
-                    <div onclick="autoApplyCouponAndScroll('${c.code}')" class="shrink-0 w-[160px] bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition group relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-blue-100 opacity-50 group-hover:scale-110 transition"><i class="fa-solid fa-ticket text-5xl"></i></div>
-                        <p class="text-[10px] text-gray-500 mb-1 relative z-10">${c.name || 'คูปองพิเศษ'}</p>
-                        <p class="font-bold text-lg text-[#000080] relative z-10">${discText}</p>
-                        <div class="mt-2 pt-2 border-t border-blue-100/50 flex justify-between items-center relative z-10">
-                            <span class="text-[9px] text-gray-400">${minText}</span>
-                            <span class="text-[10px] font-bold text-primary bg-white px-1.5 py-0.5 rounded shadow-sm">เก็บโค้ด</span>
-                        </div>
-                    </div>`;
-                });
-
-                if (html !== '') {
-                    list.innerHTML = html;
-                    container.classList.remove('hidden');
-                } else {
-                    container.classList.add('hidden');
-                }
-            } catch (e) { console.log('Error loading public coupons:', e); }
-        }
+            window.loadAvailableCoupons(); // โหลดคูปองมารอไว้เงียบๆ
+        });
 
         // 🌟 1. ฟังก์ชันสลับโหมดการระบุตำแหน่ง
         window.toggleLocationMode = function(mode) {

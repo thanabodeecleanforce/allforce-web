@@ -3783,6 +3783,122 @@ function getWeekDates(weeksAgo) {
             }
         };
 
+        // ==========================================
+        // 🌟 ระบบดึงและจัดการโลโก้หมวดหมู่ (Admin)
+        // ==========================================
+        window.renderCategorySettings = function() {
+            let container = document.getElementById('category-list-area');
+            if (!container) return;
+
+            // ดึงหมวดหมู่ที่ไม่ซ้ำกัน
+            let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
+
+            if (uniqueCategories.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-6 border-2 border-dashed border-gray-200 rounded-xl">ยังไม่มีหมวดหมู่บริการครับ</p>';
+                return;
+            }
+
+            let html = '';
+            uniqueCategories.forEach(catId => {
+                // ดึงข้อมูลเดิมมาแสดง
+                let sample = allServices.find(s => s.category === catId) || {};
+                let currentName = sample.categoryName || catId;
+                let currentIcon = sample.categoryIcon || 'fa-solid fa-broom';
+                let currentLogo = sample.categoryLogo || '';
+
+                // เลือกว่าจะโชว์รูปหรือไอคอน
+                let mediaHtml = currentLogo 
+                    ? `<img src="${currentLogo}" class="w-full h-full object-cover">` 
+                    : `<i class="${currentIcon}"></i>`;
+
+                html += `
+                <div class="bg-white p-4 rounded-xl border border-gray-200 mb-3 flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm hover:border-primary transition-colors">
+                    <div class="flex items-center gap-4 w-full sm:w-auto">
+                        <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-primary text-2xl overflow-hidden shrink-0 shadow-inner">
+                            ${mediaHtml}
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">รหัส: ${catId}</p>
+                            <h4 class="font-bold text-gray-800 text-base">${currentName}</h4>
+                        </div>
+                    </div>
+                    <button type="button" onclick="editCategoryInfo('${catId}', '${currentName}', '${currentIcon}', '${currentLogo}')" class="w-full sm:w-auto px-4 py-2 bg-blue-50 text-primary font-bold text-xs rounded-lg hover:bg-primary hover:text-white transition whitespace-nowrap shrink-0 border border-blue-100">
+                        <i class="fa-solid fa-pen mr-1"></i> เปลี่ยนรูป/ชื่อ
+                    </button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.editCategoryInfo = async function(catId, oldName, oldIcon, oldLogo) {
+            const { value: formValues } = await Swal.fire({
+                title: 'ตั้งค่าหมวดหมู่',
+                html: `
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <label class="text-xs font-bold text-gray-700">ชื่อหมวดหมู่ (ที่แสดงให้ลูกค้าเห็น)</label>
+                            <input id="swal-cat-name" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldName === catId ? '' : oldName}" placeholder="เช่น ทำความสะอาดบ้าน, ซักโซฟา">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-700">ไอคอน (FontAwesome Class)</label>
+                            <input id="swal-cat-icon" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldIcon}" placeholder="เช่น fa-solid fa-house">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-700">ลิงก์รูปภาพโลโก้ (URL) <span class="text-primary">*แนะนำ</span></label>
+                            <input id="swal-cat-logo" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldLogo}" placeholder="เช่น https://yourdomain.com/logo.png">
+                            <p class="text-[10px] text-gray-500 mt-1">* ถ้าระบุลิงก์รูปภาพ ระบบจะใช้รูปภาพแทนไอคอน</p>
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'บันทึกข้อมูล',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#1EA7E1',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-cat-name').value || catId,
+                        icon: document.getElementById('swal-cat-icon').value || 'fa-solid fa-broom',
+                        logo: document.getElementById('swal-cat-logo').value
+                    }
+                }
+            });
+
+            if (formValues) {
+                Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+                try {
+                    // หาแพ็กเกจทั้งหมดที่อยู่ในหมวดหมู่นี้ เพื่อสั่งอัปเดตแบบเหมาเข่ง
+                    let servicesToUpdate = allServices.filter(s => s.category === catId);
+                    let batch = db.batch(); 
+                    
+                    servicesToUpdate.forEach(srv => {
+                        let ref = db.collection("services").doc(srv.id);
+                        batch.update(ref, {
+                            categoryName: formValues.name,
+                            categoryIcon: formValues.icon,
+                            categoryLogo: formValues.logo
+                        });
+                    });
+                    
+                    await batch.commit(); // ส่งข้อมูลขึ้น Firebase
+                    
+                    // อัปเดตข้อมูลให้ตารางแอดมินทันทีโดยไม่ต้องโหลดหน้าเว็บใหม่
+                    servicesToUpdate.forEach(srv => {
+                        srv.categoryName = formValues.name;
+                        srv.categoryIcon = formValues.icon;
+                        srv.categoryLogo = formValues.logo;
+                    });
+                    
+                    renderCategorySettings(); // รีเฟรชหน้าต่าง Modal
+                    if (typeof renderTable === 'function') renderTable(); // รีเฟรชตารางหลังบ้าน
+
+                    Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
+                }
+            }
+        }
         // โหลดข้อมูลโซเชียลตอนเปิดหน้าเว็บ
         document.addEventListener('DOMContentLoaded', () => {
             if(typeof loadSocialLinksAdmin === 'function') setTimeout(loadSocialLinksAdmin, 1500);
