@@ -3416,12 +3416,34 @@ function getWeekDates(weeksAgo) {
         }
 
         // ========================================================
-        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (Batch Update)
+        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (พร้อมระบบ Self-Healing ซ่อมแซมตัวเอง)
         // ========================================================
         window.openCategoryModal = function() {
             let modal = document.getElementById('category-modal');
             let container = document.getElementById('category-list-area');
             
+            // 🛠️ ถ้าระบบหาหน้าต่างไม่เจอ (เผลอลบ HTML ไป) ให้สร้างขึ้นมาใหม่ฝังลงเว็บทันที
+            if (!modal || !container) {
+                const modalHTML = `
+                <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+                        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-layer-group text-primary mr-2"></i>จัดการโลโก้และชื่อหมวดหมู่</h3>
+                            <button type="button" onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50 shadow-inner">
+                            <p class="text-xs text-gray-500 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 italic">
+                                * การเปลี่ยนโลโก้/ชื่อที่นี่ ระบบจะอัปเดตให้ทุกรายการย่อยในหมวดหมู่เดียวกันทันที
+                            </p>
+                            <div id="category-list-area" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                modal = document.getElementById('category-modal');
+                container = document.getElementById('category-list-area');
+            }
+
             if (typeof allServices === 'undefined' || allServices.length === 0) {
                 container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการ หรือข้อมูลกำลังโหลด...</p>';
             } else {
@@ -3442,7 +3464,7 @@ function getWeekDates(weeksAgo) {
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-3 items-end mb-3">
                             <div class="w-full md:w-1/4">
                                 <label class="block text-[10px] font-bold text-gray-500 mb-1">รหัสอ้างอิง</label>
-                                <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none">
+                                <input type="text" value="${catId}" readonly class="w-full p-2 border border-gray-100 bg-gray-50 rounded text-xs font-bold text-gray-500 outline-none cursor-not-allowed">
                             </div>
                             <div class="w-full md:w-1/4">
                                 <label class="block text-[10px] font-bold text-gray-500 mb-1">ชื่อบนปุ่ม (หน้าเว็บ)</label>
@@ -3468,8 +3490,10 @@ function getWeekDates(weeksAgo) {
 
         window.closeCategoryModal = function() {
             let modal = document.getElementById('category-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
 
         window.saveCategoryMeta = async function(catId) {
