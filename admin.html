@@ -194,7 +194,7 @@
         </div>
 
 
-        <div id="sociallinks-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
+        <div id="sociallinks" class="tab-content hidden fade-in bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-bold text-[#000080]">จัดการโซเชียลมีเดีย</h1>
                     <button onclick="openAddSocialModal()" class="bg-primary text-white px-4 py-2 rounded-xl font-bold hover:bg-blue-600 transition shadow-md flex items-center gap-2">
@@ -1119,16 +1119,19 @@
         }
 
         // 4. แสดงผลตาราง
-        function renderTable() {
+        window.renderTable = function() {
             const tbody = document.getElementById('services-list');
+            if (!tbody) return; // ป้องกัน Error ถ้าหาตารางไม่เจอ
+
             let filtered = allServices;
 
+            // 🌟 อัปเกรดตัวกรองให้รองรับทั้งระบบเก่า (type) และระบบใหม่ (category)
             if (currentFilter === 'house') {
-                filtered = allServices.filter(s => ['condo', 'house_single', 'villa', 'house'].includes(s.type));
+                filtered = allServices.filter(s => ['condo', 'house_single', 'villa', 'house'].includes(s.type) || s.category === 'house');
             } else if (currentFilter === 'furniture') {
-                filtered = allServices.filter(s => s.type === 'furniture');
+                filtered = allServices.filter(s => s.type === 'furniture' || s.category === 'furniture');
             } else if (currentFilter === 'addon') {
-                filtered = allServices.filter(s => s.type === 'addon');
+                filtered = allServices.filter(s => s.type === 'addon' || s.category === 'addon');
             }
 
             if(filtered.length === 0) {
@@ -1141,13 +1144,14 @@
                 let badgeColor = srv.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600';
                 let statusText = srv.isActive ? 'เปิดใช้งาน' : 'ปิดซ่อน';
                 
-                // 🌟 แก้ปัญหาที่ 1: แยกชื่อหมวดหมู่ให้ชัดเจน
+                // 🌟 แก้ไขบั๊กที่ 1: ประกาศตัวแปร let ก่อน แล้วค่อยเช็คเงื่อนไข (ป้องกันเว็บพัง)
+                let typeName = srv.categoryName || srv.type;
                 if (srv.type === 'addon') typeName = 'บริการเสริม';
                 else if (srv.type === 'furniture') typeName = 'เฟอร์นิเจอร์';
                 else if (srv.type === 'condo') typeName = 'คอนโด';
                 else if (srv.type === 'house_single') typeName = 'บ้านเดี่ยว/ทาวน์โฮม';
                 else if (srv.type === 'villa') typeName = 'วิลล่า';
-                let typeName = srv.categoryName || srv.type;
+                else if (srv.type === 'house') typeName = 'ทำความสะอาดบ้าน';
                 
                 let sizesTags = '';
                 if(srv.sizes && srv.sizes.length > 0) {
