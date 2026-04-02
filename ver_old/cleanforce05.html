@@ -1301,15 +1301,19 @@
                 snapshot.forEach(doc => {
                     let data = { id: doc.id, ...doc.data() };
                     
-                    // ถ้า service ยังไม่มี category field ให้แปลงจาก type
-                    if (!data.category || data.category === '') {
-                        if (data.type === 'house_single') data.category = 'house';
-                        else data.category = data.type;
+                    // จัดหมวดหมู่ให้ตรงกับปุ่มกดใน Step 1
+                    if(['house_single', 'condo', 'villa'].includes(data.type) || data.type === 'house') {
+                        data.category = data.category || data.type; // ใช้ค่า category ถ้าไม่มีค่อยถอยไปใช้ type
+                    } else if (data.type === 'furniture') {
+                        data.category = 'furniture';
+                    } else {
+                        data.category = data.type; 
                     }
 
                     allServices.push(data);
-                });
+                }); // ปิด forEach
                 
+                // 🌟 เติมบรรทัดนี้ลงไป เพื่อสั่งวาดปุ่มทันทีที่ดึงข้อมูลเสร็จ!
                 renderCategories();
 
             } catch (error) {
@@ -1401,8 +1405,8 @@
     let container = document.getElementById('category-container');
     if (!container) return;
 
-    // ดึง Unique Categories — ใช้ category field โดยตรง (ถูก map มาแล้วใน loadDynamicServices)
-    let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
+    // ดึง Unique Categories จากฐานข้อมูล
+    let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon');
     
     if (uniqueCategories.length === 0) {
         container.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center">ยังไม่มีบริการ</p>';
@@ -1411,30 +1415,21 @@
 
     let html = '';
     uniqueCategories.forEach(catId => {
-        let serviceInfo = allServices.find(s => s.category === catId) || {};
-        let catName  = serviceInfo.categoryName  || catId;
-        let iconClass = serviceInfo.categoryIcon || 'fa-solid fa-broom';
-        let logoUrl   = serviceInfo.categoryLogo || '';   // URL รูปภาพ (ถ้ามี)
+        // ค้นหาข้อมูลหมวดหมู่จาก Service ตัวแรกที่มีหมวดหมู่นี้
+        let serviceInfo = allServices.find(s => s.category === catId);
+        let catName = serviceInfo.categoryName || catId; // ถ้าไม่มีชื่อให้ใช้ ID แทน
+        let iconClass = serviceInfo.categoryIcon || 'fa-solid fa-broom'; // ถ้าไม่มีไอคอนให้ใช้ไม้กวาด
 
         let isSelected = cart.category === catId;
         let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
 
-        // ถ้ามีโลโก้รูปภาพให้แสดงรูป ไม่งั้นแสดง FA icon
-        let logoHtml = logoUrl
-            ? `<img src="${logoUrl}" alt="${catName}" class="w-12 h-12 object-contain"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-            : '';
-        let iconFallback = `<span style="${logoUrl ? 'display:none' : 'display:flex'}" class="items-center justify-center text-primary text-2xl w-full h-full">
-                <i class="${iconClass}"></i>
-            </span>`;
-
         html += `
         <button type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white group ${activeClass}">
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden relative">
-                ${logoHtml}${iconFallback}
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary text-2xl">
+                <i class="${iconClass}"></i>
             </div>
             <span class="font-bold text-sm md:text-base text-center">${catName}</span>
-        </button>`; 
+        </button>`;
     });
     container.innerHTML = html;
 }

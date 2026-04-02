@@ -3450,124 +3450,72 @@ function getWeekDates(weeksAgo) {
         // ========================================================
         // 🏷️ แท็บจัดการโลโก้หมวดหมู่ (เมนูซ้าย — ไม่ต้องพึ่ง modal)
         // ========================================================
-        // หมวดหมู่พื้นฐานที่แสดงเสมอ (แม้ยังไม่มี services)
-        const PREDEFINED_CATS = [
-            { id: 'house',      defaultName: 'ทำความสะอาดบ้าน',         defaultIcon: 'fa-solid fa-house',           types: ['house_single','house'] },
-            { id: 'condo',      defaultName: 'ทำความสะอาดคอนโด',        defaultIcon: 'fa-solid fa-building',        types: ['condo'] },
-            { id: 'villa',      defaultName: 'ทำความสะอาดวิลล่า',       defaultIcon: 'fa-solid fa-umbrella-beach',  types: ['villa'] },
-            { id: 'furniture',  defaultName: 'ทำความสะอาดเฟอร์นิเจอร์', defaultIcon: 'fa-solid fa-couch',           types: ['furniture'] },
-        ];
-        const PREDEFINED_IDS = PREDEFINED_CATS.map(c => c.id);
-
-        // คำนวณ catId จาก service doc (ใช้ category field ก่อน ถ้าไม่มีค่อยแปลงจาก type)
-        function resolveCatId(s) {
-            if (s.category && s.category !== '') return s.category;
-            if (s.type === 'house_single') return 'house';
-            return s.type || 'other';
-        }
-
         window.loadCategoryTab = function() {
             const list = document.getElementById('category-tab-list');
             if (!list) return;
 
             const EXCLUDED = ['addon', 'membership'];
+            const HOUSE_TYPES = ['house_single', 'condo', 'villa'];
+            const getCatId = s => s.category || (HOUSE_TYPES.includes(s.type) ? 'house' : s.type);
 
-            // รวม predefined + dynamic categories จาก allServices
-            const dynamicIds = Array.isArray(allServices)
-                ? [...new Set(allServices.map(s => resolveCatId(s)))].filter(c => c && !EXCLUDED.includes(c) && !PREDEFINED_IDS.includes(c))
-                : [];
+            if (!Array.isArray(allServices) || allServices.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-10 text-gray-400">
+                        <i class="fa-solid fa-database text-3xl mb-3 block"></i>
+                        <p class="text-sm font-bold">ยังไม่มีข้อมูลบริการในระบบ</p>
+                        <p class="text-xs mt-1">กรุณาเพิ่มบริการก่อน แล้วกด "โหลดใหม่"</p>
+                    </div>`;
+                return;
+            }
 
-            // สร้าง array ของ category ทั้งหมดที่จะ render
-            const allCats = [
-                ...PREDEFINED_CATS.map(p => {
-                    const srv = Array.isArray(allServices) ? allServices.find(s => resolveCatId(s) === p.id) || {} : {};
-                    return {
-                        id: p.id,
-                        name: srv.categoryName || p.defaultName,
-                        icon: srv.categoryIcon || p.defaultIcon,
-                        logo: srv.categoryLogo || '',
-                        count: Array.isArray(allServices) ? allServices.filter(s => resolveCatId(s) === p.id).length : 0,
-                        isCustom: false,
-                    };
-                }),
-                ...dynamicIds.map(catId => {
-                    const srv = allServices.find(s => resolveCatId(s) === catId) || {};
-                    return {
-                        id: catId,
-                        name: srv.categoryName || catId,
-                        icon: srv.categoryIcon || 'fa-solid fa-tag',
-                        logo: srv.categoryLogo || '',
-                        count: allServices.filter(s => resolveCatId(s) === catId).length,
-                        isCustom: true,
-                    };
-                }),
-            ];
+            const uniqueCategories = [...new Set(allServices.map(s => getCatId(s)))]
+                .filter(c => c && !EXCLUDED.includes(c));
+
+            if (uniqueCategories.length === 0) {
+                list.innerHTML = '<p class="text-center text-sm text-gray-400 py-10">ยังไม่มีหมวดหมู่บริการ</p>';
+                return;
+            }
 
             let html = '';
-            allCats.forEach(cat => {
-                const hasLogo = cat.logo && cat.logo.startsWith('http');
-                const previewHtml = hasLogo
-                    ? `<img src="${cat.logo}" class="w-full h-full object-cover rounded-xl" onerror="this.style.display='none';document.getElementById('ctab-icon-fallback-${cat.id}').style.display='flex'">`
-                    : '';
-                const iconFallbackStyle = hasLogo ? 'display:none' : 'display:flex';
+            uniqueCategories.forEach(catId => {
+                const srv = allServices.find(s => getCatId(s) === catId) || {};
+                const catName = srv.categoryName || catId;
+                const catIcon = srv.categoryIcon || 'fa-solid fa-broom';
+                const count = allServices.filter(s => getCatId(s) === catId).length;
 
                 html += `
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition">
-                    <!-- Header -->
-                    <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 border-b border-gray-100">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-100 overflow-hidden flex items-center justify-center shrink-0 relative">
-                            ${previewHtml}
-                            <span id="ctab-icon-fallback-${cat.id}" style="${iconFallbackStyle}" class="absolute inset-0 items-center justify-center text-indigo-500">
-                                <i id="ctab-preview-${cat.id}" class="${cat.icon}"></i>
-                            </span>
+                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 md:p-5 hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 text-lg shrink-0">
+                            <i class="${catIcon}"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-bold text-sm text-gray-800 leading-tight">${cat.name}</p>
-                            <p class="text-[11px] text-gray-400">${cat.count} บริการ · <code class="bg-gray-100 px-1 rounded">${cat.id}</code>${cat.isCustom ? ' <span class="bg-purple-100 text-purple-600 px-1.5 rounded text-[9px] font-bold">custom</span>' : ''}</p>
+                            <p class="font-bold text-sm text-gray-800">${catName}</p>
+                            <p class="text-[11px] text-gray-400 mt-0.5">${count} บริการ · รหัส: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-[10px]">${catId}</code></p>
                         </div>
-                        <button onclick="saveCategoryFromTab('${cat.id}')"
-                            class="shrink-0 bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-floppy-disk"></i> บันทึก
+                        <button onclick="saveCategoryFromTab('${catId}')"
+                            class="shrink-0 bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white px-4 py-2 rounded-xl font-bold text-xs transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i><span class="hidden sm:inline"> บันทึก</span>
                         </button>
                     </div>
-                    <!-- Fields -->
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <!-- ชื่อ -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">ชื่อ (แสดงบนเว็บ)</label>
-                            <input type="text" id="ctab-name-${cat.id}" value="${cat.name}"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition">
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">ชื่อหมวดหมู่ (แสดงบนหน้าเว็บ)</label>
+                            <input type="text" id="ctab-name-${catId}" value="${catName}"
+                                class="w-full px-3 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
                         </div>
-                        <!-- FA Icon -->
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">ไอคอน FontAwesome (backup)</label>
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">ไอคอน FontAwesome class</label>
                             <div class="flex gap-2 items-center">
-                                <input type="text" id="ctab-icon-${cat.id}" value="${cat.icon}"
+                                <input type="text" id="ctab-icon-${catId}" value="${catIcon}"
                                     placeholder="fa-solid fa-broom"
-                                    oninput="try{document.getElementById('ctab-preview-${cat.id}').className=this.value}catch(e){}"
-                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition min-w-0">
-                                <div class="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-500 shrink-0 border border-indigo-100">
-                                    <i class="${cat.icon}"></i>
+                                    oninput="try{document.getElementById('ctab-preview-${catId}').className=this.value}catch(e){}"
+                                    class="flex-1 px-3 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
+                                <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500 text-base shrink-0 border border-indigo-100">
+                                    <i id="ctab-preview-${catId}" class="${catIcon}"></i>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Logo URL + อัปโหลด -->
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1.5 uppercase tracking-wide">โลโก้รูปภาพ (URL หรืออัปโหลด)</label>
-                            <div class="flex gap-2 items-center">
-                                <input type="text" id="ctab-logo-${cat.id}" value="${cat.logo}"
-                                    placeholder="https://... หรืออัปโหลด →"
-                                    oninput="previewCatLogo('${cat.id}', this.value)"
-                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-xs outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 transition min-w-0">
-                                <label class="shrink-0 cursor-pointer bg-white border border-gray-300 hover:border-indigo-400 text-gray-600 hover:text-indigo-600 px-2 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5" title="อัปโหลดรูป">
-                                    <i class="fa-solid fa-upload"></i>
-                                    <input type="file" class="hidden" accept="image/*" onchange="uploadCategoryLogo(event, '${cat.id}')">
-                                </label>
-                                <div id="ctab-logo-preview-${cat.id}" class="w-9 h-9 rounded-lg border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center bg-gray-50 ${hasLogo ? '' : 'hidden'}">
-                                    ${hasLogo ? `<img src="${cat.logo}" class="w-full h-full object-cover" onerror="this.parentElement.classList.add('hidden')">` : ''}
-                                </div>
-                            </div>
-                            <p class="text-[10px] text-gray-400 mt-1">ถ้ามีรูป จะแสดงรูปแทนไอคอน FA</p>
+                            <p class="text-[10px] text-gray-400 mt-1.5">เช่น <code class="bg-gray-100 px-1 rounded">fa-solid fa-house</code> หรือ <code class="bg-gray-100 px-1 rounded">fa-solid fa-broom</code></p>
                         </div>
                     </div>
                 </div>`;
@@ -3575,66 +3523,36 @@ function getWeekDates(weeksAgo) {
             list.innerHTML = html;
         };
 
-        // Preview logo ขณะพิมพ์ URL
-        window.previewCatLogo = function(catId, url) {
-            const box = document.getElementById(`ctab-logo-preview-${catId}`);
-            if (!box) return;
-            if (url && url.startsWith('http')) {
-                box.classList.remove('hidden');
-                box.innerHTML = `<img src="${url}" class="w-full h-full object-cover" onerror="this.parentElement.classList.add('hidden')">`;
-            } else {
-                box.classList.add('hidden');
-                box.innerHTML = '';
-            }
-        };
-
-        // อัปโหลดรูปโลโก้หมวดหมู่ไปที่ Firebase Storage
-        window.uploadCategoryLogo = async function(event, catId) {
-            const file = event.target.files[0];
-            if (!file) return;
-            Swal.fire({ title: 'กำลังอัปโหลด...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                const fileRef = firebase.storage().ref().child(`category_logos/${catId}_${Date.now()}_${file.name}`);
-                await fileRef.put(file);
-                const url = await fileRef.getDownloadURL();
-                const input = document.getElementById(`ctab-logo-${catId}`);
-                if (input) input.value = url;
-                previewCatLogo(catId, url);
-                Swal.fire({ icon: 'success', title: 'อัปโหลดสำเร็จ!', text: 'กด "บันทึก" เพื่อบันทึกการเปลี่ยนแปลง', showConfirmButton: false, timer: 2000 });
-            } catch(e) {
-                Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
-            }
-        };
-
         window.saveCategoryFromTab = async function(catId) {
-            const nameEl  = document.getElementById(`ctab-name-${catId}`);
-            const iconEl  = document.getElementById(`ctab-icon-${catId}`);
-            const logoEl  = document.getElementById(`ctab-logo-${catId}`);
-            if (!nameEl || !iconEl) return Swal.fire('ข้อผิดพลาด', 'หา input ไม่เจอ กรุณากด "โหลดใหม่"', 'error');
+            const nameEl = document.getElementById(`ctab-name-${catId}`);
+            const iconEl = document.getElementById(`ctab-icon-${catId}`);
+            if (!nameEl || !iconEl) return Swal.fire('ข้อผิดพลาด', 'หา input ไม่เจอ กรุณากด "โหลดใหม่" แล้วลองอีกครั้ง', 'error');
 
             const newName = nameEl.value.trim();
             const newIcon = iconEl.value.trim();
-            const newLogo = logoEl ? logoEl.value.trim() : '';
-            if (!newName) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อหมวดหมู่', 'warning');
+            if (!newName || !newIcon) return Swal.fire('แจ้งเตือน', 'กรุณากรอกชื่อและไอคอนให้ครบ', 'warning');
 
-            const toUpdate = Array.isArray(allServices) ? allServices.filter(s => resolveCatId(s) === catId) : [];
-            if (toUpdate.length === 0) return Swal.fire('แจ้งเตือน', 'ยังไม่มีบริการในหมวดหมู่นี้\n(จะมีผลเมื่อเพิ่มบริการแล้ว)', 'info');
+            const HOUSE_TYPES = ['house_single', 'condo', 'villa'];
+            const getCatId = s => s.category || (HOUSE_TYPES.includes(s.type) ? 'house' : s.type);
+            const toUpdate = allServices.filter(s => getCatId(s) === catId);
+
+            if (toUpdate.length === 0) return Swal.fire('แจ้งเตือน', 'ไม่พบบริการในหมวดหมู่นี้', 'warning');
 
             Swal.fire({ title: `กำลังบันทึก ${toUpdate.length} รายการ...`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
             try {
                 const batch = db.batch();
                 toUpdate.forEach(srv => {
                     batch.update(db.collection('services').doc(srv.id), {
                         categoryName: newName,
-                        categoryIcon: newIcon || 'fa-solid fa-broom',
-                        categoryLogo: newLogo,
-                        category: catId,
+                        categoryIcon: newIcon,
+                        category: catId
                     });
                 });
                 await batch.commit();
-                // อัปเดต icon preview
-                const iconPrev = document.getElementById(`ctab-preview-${catId}`);
-                if (iconPrev) iconPrev.className = newIcon || 'fa-solid fa-broom';
+                // อัปเดต preview icon ทันที
+                const preview = document.getElementById(`ctab-preview-${catId}`);
+                if (preview) preview.className = newIcon;
                 Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: `อัปเดต ${toUpdate.length} รายการแล้ว`, showConfirmButton: false, timer: 1500 });
             } catch(e) {
                 Swal.fire('เกิดข้อผิดพลาด', e.message, 'error');
