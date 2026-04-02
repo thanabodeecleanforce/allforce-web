@@ -870,22 +870,31 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 text-sm shadow-sm">
-                        <div class="flex justify-between border-b border-gray-100 pb-3">
-                            <span class="text-gray-500 font-bold text-xs">บริการหลัก</span>
-                            <span class="font-bold text-gray-800" id="sum-type-name">-</span>
-                        </div>
-                        
-                        <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-600 space-y-2 mt-3 mb-3 border border-gray-100">
+                    <div class="bg-gray-50 p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm mt-2 mb-4">
                             
-                            <div id="sum-addons-container" class="border-b border-gray-200 pb-2 mb-2"></div>
-                            
-                            <div class="flex justify-between items-center"><span><i class="fa-solid fa-baby text-primary w-4"></i> เด็กเล็ก:</span> <span id="sum-kids" class="font-bold text-gray-800">-</span></div>
-                            <div class="flex justify-between items-center"><span><i class="fa-solid fa-paw text-primary w-4"></i> สัตว์เลี้ยง:</span> <span id="sum-pets" class="font-bold text-gray-800">-</span></div>
-                            <div class="flex flex-col gap-1 mt-2 pt-2 border-t border-gray-200">
-                                <span class="text-[10px]"><i class="fa-solid fa-comment-dots text-primary w-4"></i> เน้นพิเศษ:</span>
+                            <div class="flex justify-between items-center border-b border-gray-200 pb-3 mb-3">
+                                <span class="text-gray-600 font-bold text-xs"><i class="fa-solid fa-broom text-primary w-4"></i> บริการหลัก</span>
+                                <span class="font-bold text-[#000080] text-sm" id="sum-type-name">-</span>
+                            </div>
+
+                            <div id="sum-addons-container" class="border-b border-gray-200 pb-1 mb-3"></div>
+
+                            <div class="space-y-2 text-xs text-gray-600">
+                                <div class="flex justify-between items-center">
+                                    <span><i class="fa-solid fa-baby text-primary w-4"></i> เด็กเล็ก:</span> 
+                                    <span id="sum-kids" class="font-bold text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span><i class="fa-solid fa-paw text-primary w-4"></i> สัตว์เลี้ยง:</span> 
+                                    <span id="sum-pets" class="font-bold text-gray-800">-</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-1 mt-3 pt-3 border-t border-gray-200">
+                                <span class="text-[10px] text-gray-600"><i class="fa-solid fa-comment-dots text-primary w-4"></i> เน้นพิเศษ:</span>
                                 <span id="sum-note" class="font-bold text-gray-800 text-[10px] pl-5 break-words whitespace-pre-wrap overflow-hidden w-full">-</span>
                             </div>
+
                         </div>
                         <div id="sum-discount-container"></div>
 
