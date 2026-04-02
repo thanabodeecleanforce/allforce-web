@@ -946,21 +946,7 @@
             </div>
         </div>
 
-       <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-layer-group text-primary mr-2"></i>จัดการโลโก้และชื่อหมวดหมู่</h3>
-            <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="p-6 overflow-y-auto hide-scroll flex-1 bg-gray-50/50">
-            <p class="text-xs text-gray-500 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
-                <i class="fa-solid fa-circle-info text-primary mr-2"></i> เปลี่ยนโลโก้/ชื่อที่นี่ ระบบจะอัปเดตให้ <b>ทุกบริการย่อย</b> ในหมวดนั้นพร้อมกันทันที
-            </p>
-            <div id="category-list-area" class="space-y-0">
-                </div>
-        </div>
-    </div>
-</div>
+       
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
@@ -3430,16 +3416,15 @@ function getWeekDates(weeksAgo) {
         }
 
         // ========================================================
-        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (Batch Update) - ฉบับแก้ไขโครงสร้าง
+        // 🟢 ระบบจัดการโลโก้หมวดหมู่แบบเหมา (Batch Update)
         // ========================================================
         window.openCategoryModal = function() {
-            let container = document.getElementById('category-list-area');
             let modal = document.getElementById('category-modal');
+            let container = document.getElementById('category-list-area');
             
-            if (!allServices || allServices.length === 0) {
-                container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการในระบบ</p>';
+            if (typeof allServices === 'undefined' || allServices.length === 0) {
+                container.innerHTML = '<p class="text-center text-sm text-gray-400 py-4">ยังไม่มีข้อมูลบริการ หรือข้อมูลกำลังโหลด...</p>';
             } else {
-                // ดึงรหัสหมวดหมู่ที่ไม่ซ้ำกัน
                 let uniqueCategories = [...new Set(allServices.map(s => {
                     return s.category || (['house_single', 'condo', 'villa'].includes(s.type) ? 'house' : s.type);
                 }))].filter(c => c && c !== 'addon');
@@ -3518,9 +3503,9 @@ function getWeekDates(weeksAgo) {
             }
         }
 
-        // โหลดข้อมูลนัดหมายและโซเชียลตอนเปิดหน้าเว็บ
+        // โหลดข้อมูลโซเชียลตอนเปิดหน้าเว็บ
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(loadSocialLinksAdmin, 1500);
+            if(typeof loadSocialLinksAdmin === 'function') setTimeout(loadSocialLinksAdmin, 1500);
         });
     </script>
 
