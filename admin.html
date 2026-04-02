@@ -3784,29 +3784,25 @@ function getWeekDates(weeksAgo) {
         };
 
         // ==========================================
-        // 🌟 ระบบดึงและจัดการโลโก้หมวดหมู่ (Admin)
+        // 🌟 ระบบจัดการโลโก้ (บังคับให้แอดมินตั้งค่าได้ 4 หมวดหมู่แยกกัน)
         // ==========================================
         window.renderCategorySettings = function() {
             let container = document.getElementById('category-list-area');
             if (!container) return;
 
-            // ดึงหมวดหมู่ที่ไม่ซ้ำกัน
-            let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
-
-            if (uniqueCategories.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500 text-center py-6 border-2 border-dashed border-gray-200 rounded-xl">ยังไม่มีหมวดหมู่บริการครับ</p>';
-                return;
-            }
+            // 🎯 ล็อกให้แอดมินเห็น 4 รายการนี้แยกกันชัดเจน
+            const fixedCategories = ['house', 'furniture', 'condo', 'villa'];
 
             let html = '';
-            uniqueCategories.forEach(catId => {
-                // ดึงข้อมูลเดิมมาแสดง
-                let sample = allServices.find(s => s.category === catId) || {};
-                let currentName = sample.categoryName || catId;
+            fixedCategories.forEach(catId => {
+                // ค้นหาข้อมูลแพ็กเกจ เพื่อดึงโลโก้ปัจจุบัน
+                let sample = allServices.find(s => s.type === catId || (catId==='house' && s.type==='house_single') || s.category === catId) || {};
+                
+                let defaultName = catId === 'house' ? 'ทำความสะอาดบ้าน' : catId === 'condo' ? 'ทำความสะอาดคอนโด' : catId === 'villa' ? 'ทำความสะอาดวิลล่า' : 'ซักโซฟา / ที่นอน';
+                let currentName = sample.categoryName || defaultName;
                 let currentIcon = sample.categoryIcon || 'fa-solid fa-broom';
                 let currentLogo = sample.categoryLogo || '';
 
-                // เลือกว่าจะโชว์รูปหรือไอคอน
                 let mediaHtml = currentLogo 
                     ? `<img src="${currentLogo}" class="w-full h-full object-cover">` 
                     : `<i class="${currentIcon}"></i>`;
@@ -3835,26 +3831,15 @@ function getWeekDates(weeksAgo) {
                 title: 'ตั้งค่าหมวดหมู่',
                 html: `
                     <div class="space-y-4 text-left">
-                        <div>
-                            <label class="text-xs font-bold text-gray-700">ชื่อหมวดหมู่ (ที่แสดงให้ลูกค้าเห็น)</label>
-                            <input id="swal-cat-name" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldName === catId ? '' : oldName}" placeholder="เช่น ทำความสะอาดบ้าน, ซักโซฟา">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-700">ไอคอน (FontAwesome Class)</label>
-                            <input id="swal-cat-icon" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldIcon}" placeholder="เช่น fa-solid fa-house">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-700">ลิงก์รูปภาพโลโก้ (URL) <span class="text-primary">*แนะนำ</span></label>
-                            <input id="swal-cat-logo" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldLogo}" placeholder="เช่น https://yourdomain.com/logo.png">
-                            <p class="text-[10px] text-gray-500 mt-1">* ถ้าระบุลิงก์รูปภาพ ระบบจะใช้รูปภาพแทนไอคอน</p>
-                        </div>
+                        <div><label class="text-xs font-bold text-gray-700">ชื่อหมวดหมู่ (ที่แสดงให้ลูกค้าเห็น)</label><input id="swal-cat-name" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldName}" placeholder="เช่น ทำความสะอาดบ้าน, ซักโซฟา"></div>
+                        <div><label class="text-xs font-bold text-gray-700">ไอคอน (FontAwesome Class)</label><input id="swal-cat-icon" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldIcon}"></div>
+                        <div><label class="text-xs font-bold text-gray-700">ลิงก์รูปภาพโลโก้ (URL)</label><input id="swal-cat-logo" class="w-full border border-gray-300 p-3 rounded-xl text-sm mt-1 focus:border-primary outline-none" value="${oldLogo}"></div>
                     </div>
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
                 confirmButtonText: 'บันทึกข้อมูล',
                 cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#1EA7E1',
                 preConfirm: () => {
                     return {
                         name: document.getElementById('swal-cat-name').value || catId,
@@ -3867,8 +3852,8 @@ function getWeekDates(weeksAgo) {
             if (formValues) {
                 Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
                 try {
-                    // หาแพ็กเกจทั้งหมดที่อยู่ในหมวดหมู่นี้ เพื่อสั่งอัปเดตแบบเหมาเข่ง
-                    let servicesToUpdate = allServices.filter(s => s.category === catId);
+                    // 🚨 กฎเหล็ก: บันทึกเข้าแพ็กเกจที่ตรงกับ Category เท่านั้น (ไม่มั่วซั่วอีกต่อไป)
+                    let servicesToUpdate = allServices.filter(s => s.type === catId || (catId==='house' && s.type==='house_single'));
                     let batch = db.batch(); 
                     
                     servicesToUpdate.forEach(srv => {
@@ -3876,21 +3861,22 @@ function getWeekDates(weeksAgo) {
                         batch.update(ref, {
                             categoryName: formValues.name,
                             categoryIcon: formValues.icon,
-                            categoryLogo: formValues.logo
+                            categoryLogo: formValues.logo,
+                            category: catId // 🌟 บังคับแก้ Category ในฐานข้อมูลให้ถูกต้องไปด้วยเลย
                         });
                     });
                     
-                    await batch.commit(); // ส่งข้อมูลขึ้น Firebase
+                    await batch.commit(); 
                     
-                    // อัปเดตข้อมูลให้ตารางแอดมินทันทีโดยไม่ต้องโหลดหน้าเว็บใหม่
                     servicesToUpdate.forEach(srv => {
                         srv.categoryName = formValues.name;
                         srv.categoryIcon = formValues.icon;
                         srv.categoryLogo = formValues.logo;
+                        srv.category = catId;
                     });
                     
-                    renderCategorySettings(); // รีเฟรชหน้าต่าง Modal
-                    if (typeof renderTable === 'function') renderTable(); // รีเฟรชตารางหลังบ้าน
+                    renderCategorySettings(); 
+                    if (typeof renderTable === 'function') renderTable(); 
 
                     Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ!', showConfirmButton: false, timer: 1500 });
                 } catch (e) {

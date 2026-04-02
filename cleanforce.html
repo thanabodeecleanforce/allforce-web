@@ -1307,7 +1307,7 @@
             "ถลาง": ["เทพกระษัตรี", "ศรีสุนทร", "เชิงทะเล", "ป่าคลอก", "ไม้ขาว", "สาคู"]
         };
 
-        // 1. ฟังก์ชันโหลดแพ็กเกจทั้งหมดจาก Firebase
+        // 1. ฟังก์ชันโหลดแพ็กเกจ (บังคับแยกหมวดหมู่เด็ดขาด)
         async function loadDynamicServices() {
             try {
                 if(!window.cf_db) return;
@@ -1316,26 +1316,23 @@
                 
                 snapshot.forEach(doc => {
                     let data = { id: doc.id, ...doc.data() };
-                    
-                    // 🚨 กฎเหล็ก: บังคับใช้ "type" (ที่แอดมินกรอก) เป็นตัวแบ่งหมวดหมู่อย่างเด็ดขาด!
-                    // เพื่อล้างบางข้อมูลที่อาจจะเคยเซฟผิดพลาดในฐานข้อมูล
+                    // 🚨 กฎเหล็ก: บังคับ Override ข้อมูลที่พังใน Firebase ให้แยกจากกันชัดเจน!
                     if (data.type === 'condo') data.category = 'condo';
                     else if (data.type === 'villa') data.category = 'villa';
-                    else if (data.type === 'house_single' || data.type === 'house') data.category = 'house';
                     else if (data.type === 'furniture') data.category = 'furniture';
                     else if (data.type === 'addon') data.category = 'addon';
-                    else data.category = data.type; 
+                    else if (data.type === 'house_single' || data.type === 'house') data.category = 'house';
+                    else data.category = data.type;
 
                     allServices.push(data);
                 });
-                
-                renderCategories(); // สั่งวาดปุ่ม
+                renderCategories();
             } catch (error) {
-                console.error("Error fetching services: ", error);
+                console.error("Error:", error);
             }
         }
 
-        // ข้อมูลตกแต่งปุ่ม (สำรองไว้กรณีแอดมินยังไม่ได้ตั้งค่า)
+        // ข้อมูลตกแต่งปุ่ม (สำรอง)
         const catMeta = {
             'house': { name: 'ทำความสะอาดบ้าน', icon: 'fa-solid fa-house-chimney text-2xl' },
             'furniture': { name: 'ซักโซฟา / ที่นอน', icon: 'fa-solid fa-couch text-2xl' },
@@ -1343,31 +1340,24 @@
             'villa': { name: 'ทำความสะอาดวิลล่า', icon: 'fa-solid fa-house-flag text-2xl' }
         };
 
-        // 🌟 2. ฟังก์ชันวาดปุ่มหมวดหมู่ (ยุบรวมแล้ว สมบูรณ์ที่สุด)
+        // 🌟 2. ฟังก์ชันวาดปุ่มหมวดหมู่ (ล็อก 4 ตำแหน่งตายตัว แต่ดึงรูปจาก Admin)
         window.renderCategories = function() {
             let container = document.getElementById('category-container');
             if (!container) return;
 
-            // ดึง Unique Categories
-            let uniqueCategories = [...new Set(allServices.map(s => s.category))].filter(c => c && c !== 'addon' && c !== 'membership');
-            
-            if (uniqueCategories.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center py-4 border-2 border-dashed rounded-xl">ยังไม่มีบริการเปิดใช้งานในขณะนี้</p>';
-                return;
-            }
+            // 🎯 ล็อก 4 ปุ่มเรียงตามที่คุณต้องการ (บ้าน, เฟอร์นิเจอร์, คอนโด, วิลล่า)
+            const fixedCategories = ['house', 'furniture', 'condo', 'villa'];
 
             let html = '';
-            uniqueCategories.forEach(catId => {
+            fixedCategories.forEach(catId => {
                 let serviceInfo = allServices.find(s => s.category === catId) || {};
                 let catName  = serviceInfo.categoryName  || (catMeta[catId] ? catMeta[catId].name : catId);
                 let iconClass = serviceInfo.categoryIcon || (catMeta[catId] ? catMeta[catId].icon : 'fa-solid fa-broom text-2xl');
-                let logoUrl   = serviceInfo.categoryLogo || '';   // URL รูปภาพ
+                let logoUrl   = serviceInfo.categoryLogo || '';
 
                 let isSelected = cart.category === catId;
                 let activeClass = isSelected ? 'border-primary bg-blue-50 ring-2 ring-blue-200 text-primary' : 'border-gray-200 text-gray-700';
-                let iconScale = isSelected ? 'scale-110' : '';
 
-                // ถ้ามีโลโก้รูปภาพให้แสดงรูป ถ้ารูปพังหรือไม่มี ค่อยแสดงไอคอน (ระบบ Fallback)
                 let logoHtml = logoUrl
                     ? `<img src="${logoUrl}" alt="${catName}" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
                     : '';
@@ -1377,11 +1367,11 @@
 
                 html += `
                 <button id="cat-${catId}" type="button" onclick="selectCategory('${catId}', '${catName}')" class="cat-btn flex flex-col items-center justify-center gap-3 p-6 border rounded-2xl hover:border-primary hover:bg-blue-50 transition-all bg-white group ${activeClass}">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden relative group-hover:scale-110 transition-transform ${iconScale}">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden relative group-hover:scale-110 transition-transform ${isSelected?'scale-110':''}">
                         ${logoHtml}${iconFallback}
                     </div>
                     <span class="font-bold text-sm md:text-base text-center">${catName}</span>
-                </button>`; 
+                </button>`;
             });
             container.innerHTML = html;
         }
