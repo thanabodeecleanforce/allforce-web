@@ -11,22 +11,15 @@
     <style>
         body { font-family: 'Noto Sans Thai', sans-serif; }
         
-        /* 🌟 ปรับปรุงส่วนนี้: เพิ่มความเข้มเงา และเส้นขอบให้ชัดเจนขึ้น */
         .glass-card { 
-            background: rgba(255, 255, 255, 0.98); /* เพิ่มความทึบแสงเล็กน้อยให้ตัดกับพื้นหลัง */
+            background: rgba(255, 255, 255, 0.98); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
-            
-            /* เส้นขอบสีฟ้าอ่อนที่ชัดเจนขึ้น */
             border: 2px solid rgba(30, 167, 225, 0.1); 
-            
-            /* 🌟 เอฟเฟกต์เงาลึก (Deep Shadow) ทำให้กล่องลอยเด่น */
             box-shadow: 0 35px 70px -15px rgba(0, 0, 80, 0.2), 0 10px 30px -10px rgba(0, 0, 0, 0.1);
-            
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
-        /* เอฟเฟกต์เมื่อ Hover (สำหรับ Desktop) */
         .glass-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 45px 80px -20px rgba(0, 0, 80, 0.25), 0 15px 35px -10px rgba(0, 0, 0, 0.1);
@@ -113,48 +106,50 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code'); // ดักจับ Code จาก LINE
+        // 🌟 1. ดักจับและคุยกับเซิร์ฟเวอร์หลังบ้านทันทีที่เปิดเว็บ
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code'); // ดักจับ Code จาก LINE ขากลับ
 
-    if (code) {
-        // แอบแสดงหน้าจอโหลด เพื่อให้รู้ว่ากำลังประมวลผล
-        Swal.fire({
-            title: 'กำลังเข้าสู่ระบบ...',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+            if (code) {
+                Swal.fire({
+                    title: 'กำลังเชื่อมต่อข้อมูล...',
+                    text: 'กรุณารอสักครู่',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
 
-        // ส่ง Code ไปให้หลังบ้าน (Cloud Function) ของเราทำงาน
-        fetch('https://us-central1-allforce-hub.cloudfunctions.net/lineLoginAuth', { // ลิงก์ API หลังบ้านของคุณ
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: code })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.customToken) {
-                // 🎯 ได้ Custom Token มาแล้ว! สั่งล็อกอินเข้า Firebase ได้เลย (ไม่พัง 100%)
-                return auth.signInWithCustomToken(data.customToken);
-            } else {
-                throw new Error("No custom token received");
+                // ส่ง Code ไปให้หลังบ้าน (Cloud Run) ตัวใหม่ล่าสุดทำงาน
+                fetch('https://lineloginauth-206898849342.us-central1.run.app', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.customToken) {
+                        // ได้กุญแจมาแล้ว สั่งล็อกอินเข้า Firebase ทะลุเข้าแอปเลย!
+                        return auth.signInWithCustomToken(data.customToken);
+                    } else {
+                        throw new Error("No custom token received");
+                    }
+                })
+                .then((userCredential) => {
+                    Swal.close();
+                    saveUserAndRedirect(userCredential.user);
+                })
+                .catch((error) => {
+                    console.error("Login Error:", error);
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่', 'error');
+                    // คืนค่าปุ่มให้กดใหม่ได้
+                    let btn = document.getElementById('btn-line');
+                    if(btn) btn.innerHTML = '<i class="fa-brands fa-line text-xl"></i> <span class="text-sm">LINE</span>';
+                });
             }
-        })
-        .then((userCredential) => {
-            Swal.close();
-            // สำเร็จ! พาเข้าสู่ระบบได้เลย
-            saveUserAndRedirect(userCredential.user);
-        })
-        .catch((error) => {
-            console.error("Login Error:", error);
-            Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่', 'error');
-        });
-    }
-};
+        };
 
-        // 🌟 ดักจับว่าลูกค้าเปิดผ่านแอป LINE หรือไม่
+        // 🌟 2. ดักจับการเปิดลิงก์ในแอป LINE 
         if (navigator.userAgent.indexOf("Line") > -1) {
-            // ถ้าใช่ ให้ล้างหน้าจอแล้วขึ้นคำแนะนำแทน
             document.body.innerHTML = `
                 <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#F3F7FB; padding:20px; text-align:center; font-family:'Noto Sans Thai', sans-serif;">
                     <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 3rem; color: #000080; margin-bottom: 1rem;"></i>
@@ -170,6 +165,7 @@ window.onload = function() {
             `;
         }
         
+        // ตั้งค่า Firebase
         var firebaseConfig = {
             apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
             authDomain: "allforce-hub.firebaseapp.com",
@@ -188,7 +184,6 @@ window.onload = function() {
         const googleProvider = new firebase.auth.GoogleAuthProvider();
         const fbProvider = new firebase.auth.FacebookAuthProvider();
         const appleProvider = new firebase.auth.OAuthProvider('apple.com');
-        const lineProvider = new firebase.auth.OAuthProvider('oidc.line');
 
         auth.onAuthStateChanged(function(user) {
             if (user) {
@@ -198,30 +193,7 @@ window.onload = function() {
             }
         });
 
-        // 🌟 ตัวดักรอรับลูกค้าเวลากลับมาจากแอป LINE
-        auth.getRedirectResult().then((result) => {
-            if (result && result.user) {
-                saveUserAndRedirect(result.user);
-            }
-        }).catch((error) => {
-            console.error("Redirect Error:", error);
-            // ดักจับ Error เผื่อลูกค้ากดยกเลิก
-            if(error.code !== 'auth/redirect-cancelled-by-user') {
-                Swal.fire({
-                    title: 'เชื่อมต่อแอปไม่สำเร็จ',
-                    text: 'กรุณาลองใหม่อีกครั้ง หรือเข้าสู่ระบบด้วยอีเมลแทนครับ',
-                    icon: 'warning',
-                    confirmButtonText: 'ตกลง',
-                    confirmButtonColor: '#000080'
-                });
-            }
-            // ดัก Error เว้นแต่ลูกค้าจงใจกดยกเลิกเอง
-            if(error.code !== 'auth/redirect-cancelled-by-user') {
-                Swal.fire('เชื่อมต่อแอปไม่สำเร็จ', 'กรุณาลองใหม่อีกครั้งครับ (' + error.message + ')', 'error');
-            }
-        let btn = document.getElementById('btn-line');
-            if(btn) btn.innerHTML = '<i class="fa-brands fa-line text-xl"></i> <span class="text-sm">LINE</span>';
-        });
+        // 🌟 ลบโค้ด auth.getRedirectResult() ตัวปัญหาทิ้งไปแล้วเรียบร้อย!
 
         function switchTab(tab) {
             document.getElementById('form-email').classList.toggle('hidden', tab !== 'email');
@@ -335,18 +307,20 @@ window.onload = function() {
             .catch(err => { showError(err); setLoading('btn-apple', false, 'Apple'); });
         }
 
-        // ฟังก์ชันนี้จะเตะลูกค้าไปหา LINE ทันที
+        // 🌟 3. ฟังก์ชันส่งลูกค้าไปล็อกอิน LINE แบบใหม่ (ไม่ต้องผ่าน Firebase ตรงๆ)
         function loginWithLine() {
             let btn = document.querySelector('button[onclick="loginWithLine()"]');
             if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span class="text-sm">กำลังโหลด...</span>';
 
-            const clientId = 'ใส่_LINE_CHANNEL_ID_ของคุณที่นี่';
-            const redirectUri = encodeURIComponent('https://all-force.com/login.html'); // ลิงก์เว็บของคุณ
-            const state = 'random_string_12345'; // รหัสกันสวมรอย
+            // ⚠️⚠️⚠️ เปลี่ยนตรงนี้เป็น Channel ID ของคุณเลยครับ ⚠️⚠️⚠️
+            const clientId = '2009681620'; 
+            
+            const redirectUri = encodeURIComponent('https://all-force.com/login.html'); 
+            const state = 'random_string_12345';
     
-            // ส่งไปขอรหัสลับ (Authorization Code) จาก LINE
+            // ส่งไปขอรหัสลับ (Authorization Code) จาก LINE โดยตรง
             const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=profile%20openid%20email`;
-    
+            
             window.location.href = lineAuthUrl;
         }
 
