@@ -266,15 +266,28 @@
             .catch(err => { showError(err); setLoading('btn-apple', false, 'Apple'); });
         }
 
-        // 🌟 4. ระบบ LINE Login (เชื่อมตรงกับ Firebase OIDC)
+        // 🌟 4. ระบบ LINE Login (เปลี่ยนมาใช้ท่า Popup เพื่อหนีระบบบล็อกของมือถือ)
         function loginWithLine() {
-            // แสดงสถานะกำลังโหลดที่ปุ่ม
             let btn = document.querySelector('button[onclick="loginWithLine()"]');
+            let oldText = btn ? btn.innerHTML : '<i class="fa-brands fa-line text-xl"></i> <span class="text-sm">LINE</span>';
             if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span class="text-sm">กำลังโหลด...</span>';
 
             const lineProvider = new firebase.auth.OAuthProvider('oidc.line');
-            // เปลี่ยนจากส่งแมนนวล เป็นให้ Firebase พาไปแบบ Redirect (เวิร์คสุดบนมือถือ)
-            auth.signInWithRedirect(lineProvider);
+            
+            // ใช้ signInWithPopup แทน signInWithRedirect
+            auth.signInWithPopup(lineProvider)
+            .then((result) => {
+                if (result.user) saveUserAndRedirect(result.user);
+            })
+            .catch((error) => {
+                console.error(error);
+                if(btn) btn.innerHTML = oldText;
+                
+                // ไม่ต้องแจ้งเตือนถ้าลูกค้าแค่กดยกเลิกป๊อปอัปไปเอง
+                if(error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อ LINE ได้: ' + error.message, 'error');
+                }
+            });
         }
 
         function saveUserAndRedirect(user) {
