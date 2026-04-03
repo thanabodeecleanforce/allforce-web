@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="facebook-domain-verification" content="1frtbb704cfaw619kbwidntmqfarof" />
     <title>Cleanforce | บริการทำความสะอาดภูเก็ต ซักโซฟา ซักพรม ขจัดไรฝุ่น ครบวงจร</title>
     
@@ -43,6 +43,10 @@
         }
     </script>
     <style>
+
+        @media screen and (max-width: 768px) {
+            input, select, textarea { font-size: 16px !important; }
+        }
 
         body { font-family: 'Noto Sans Thai', sans-serif; scroll-behavior: smooth; }
         .font-heading { font-family: 'Poppins', 'Noto Sans Thai', sans-serif; }
@@ -837,8 +841,8 @@
                     </div>
                     
                     <div class="flex gap-4 mt-8">
-                        <button onclick="prevStep()" class="w-1/3 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition" data-i18n="btn_back">กลับ</button>
-                        <button onclick="nextStep()" class="w-2/3 py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md"><span data-i18n="btn_next_summary">ตรวจสอบสรุปยอด</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                        <button type="button" onclick="prevStep()" class="w-1/3 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition" data-i18n="btn_back">กลับ</button>
+<button type="button" onclick="nextStep()" class="w-2/3 py-4 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md"><span data-i18n="btn_next_summary">ตรวจสอบสรุปยอด</span> <i class="fa-solid fa-arrow-right ml-2"></i></button>
                     </div>
                 </div>
 
@@ -1656,12 +1660,18 @@
                 let inputNote = document.getElementById('bk-special-note');
                 if(noteEl && inputNote) noteEl.textContent = inputNote.value.trim() || '-';
             }
-            // 🌟 ซ่อน/โชว์ปุ่มลอยให้สัมพันธ์กับ Step ปัจจุบัน
-            let floatNextBtn = document.getElementById('floating-next-btn');
-            if (floatNextBtn) {
-                if (currentStep === 1 && cart.addons.length > 0) floatNextBtn.classList.remove('hidden');
-                else floatNextBtn.classList.add('hidden');
+            // 🌟 ซ่อน/โชว์ตะกร้าลอยให้สัมพันธ์กับ Step ปัจจุบัน (ปิดทิ้ง 100% ในหน้าสุดท้าย)
+            let floatCart = document.getElementById('floating-cart');
+            if (currentStep >= 3) {
+                if (floatCart) floatCart.classList.add('hidden');
+            } else {
+                if (cart.addons.length > 0) {
+                    if (floatCart) floatCart.classList.remove('hidden');
+                } else {
+                    if (floatCart) floatCart.classList.add('hidden');
+                }
             }
+            
             let scrollTarget = document.getElementById('booking-cf');
             if(scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth' });
         }
@@ -1757,8 +1767,11 @@ window.selectDetail = function(field, val, element) {
                 if (c.category && c.category !== 'all') {
                     let isMatch = cart.addons.some(item => {
                         let a = allServices.find(s => s.id === item.id);
-                        if (c.category === 'house') return a && ['house_single', 'condo', 'villa'].includes(a.type);
-                        return a && a.type === c.category; 
+                        if (!a) return false;
+                        
+                        // 🔴 ตรงนี้ที่ AI ตัวเก่าทำพัง! ต้องเช็คจาก a.category ครับ
+                        if (c.category === 'house') return ['house_single', 'house', 'condo', 'villa'].includes(a.category);
+                        return a.category === c.category; 
                     });
 
                     if (!isMatch) {
@@ -3040,59 +3053,96 @@ window.useCurrentLocation = function(btnEl) {
         });
 
         // ==========================================
-        // ระบบจัดการคูปองที่ลูกค้าเก็บไว้ (Coupon Wallet)
-// ==========================================
+        // 🌟 ระบบดึงคูปองของจริง (ซิงค์ Firebase 100%)
+        // ==========================================
+        window.renderSavedCoupons = async function() {
+            const container = document.getElementById('savedCouponsContainer');
+            if (!container) return;
 
-// จำลองข้อมูลคูปองที่ลูกค้ามี (ในอนาคตคุณสามารถดึงจาก Firebase ตาม UID ของลูกค้าได้)
-const userSavedCoupons = [
-    { code: "NEWUSER50", description: "ลด 50 บาท สำหรับลูกค้าใหม่" },
-    { code: "SOFA10", description: "ลด 10% ซักโซฟา" }
-];
+            let currentUser = window.cf_auth ? window.cf_auth.currentUser : null;
+            if (!currentUser) {
+                container.innerHTML = '<span class="text-sm text-gray-500 italic flex items-center gap-2"><i class="fa-solid fa-lock text-gray-400"></i> กรุณาเข้าสู่ระบบเพื่อดูคูปองของคุณ</span>';
+                return;
+            }
 
-// ฟังก์ชันแสดงปุ่มคูปองบนหน้าเว็บ
-function renderSavedCoupons() {
-    const container = document.getElementById('savedCouponsContainer');
-    if (!container) return;
+            // 1. ดึงคูปองที่เก็บไว้แล้วมาโชว์ให้กดใช้
+            let myCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+            try {
+                let userDoc = await window.cf_db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists && userDoc.data().myCoupons) {
+                    myCoupons = [...new Set([...myCoupons, ...userDoc.data().myCoupons])];
+                    localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
+                }
+            } catch(e) { console.warn('ดึงข้อมูลไม่ได้', e); }
 
-    if (userSavedCoupons.length === 0) {
-        container.innerHTML = '<span class="text-sm text-gray-400">ยังไม่มีคูปองที่เก็บไว้</span>';
-        return;
-    }
+            if (myCoupons.length === 0) {
+                container.innerHTML = '<span class="text-sm text-gray-400">คุณยังไม่มีคูปองที่เก็บไว้</span>';
+            } else {
+                let html = '';
+                for (let code of myCoupons) {
+                    try {
+                        let cDoc = await window.cf_db.collection("coupons").where("code", "==", code).where("isActive", "==", true).get();
+                        if (!cDoc.empty) {
+                            let cData = cDoc.docs[0].data();
+                            let discText = cData.discountType === 'percent' ? `ลด ${cData.discountValue}%` : `ลด ${cData.discountValue} ฿`;
+                            html += `
+                                <button type="button" onclick="autoApplyCoupon('${cData.code}')" 
+                                        class="px-3 py-1.5 bg-blue-50 text-primary border border-blue-200 rounded-lg hover:bg-blue-100 transition-all flex flex-col items-start text-left shadow-sm">
+                                    <span class="font-bold text-sm">${cData.code}</span>
+                                    <span class="text-[10px] text-gray-500">${cData.name || discText}</span>
+                                </button>
+                            `;
+                        }
+                    } catch(e) {}
+                }
+                container.innerHTML = html;
+            }
 
-    let html = '';
-    userSavedCoupons.forEach(coupon => {
-        html += `
-            <button type="button" onclick="applySavedCoupon('${coupon.code}')" 
-                    class="px-3 py-1.5 bg-blue-50 text-primary border border-blue-200 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-all flex flex-col items-start text-left">
-                <span>${coupon.code}</span>
-                <span class="text-xs font-normal text-gray-500">${coupon.description}</span>
-            </button>
-        `;
-    });
-    container.innerHTML = html;
-}
+            // 2. ดึงคูปองส่วนกลาง (ที่ยังไม่ได้เก็บ) มาโชว์ให้กดเก็บตรงนี้เลย!
+            loadPublicCouponsForStep3(myCoupons);
+        }
 
-// ฟังก์ชันเมื่อลูกค้ากดปุ่มคูปอง
-window.applySavedCoupon = function(code) {
-    // 1. นำโค้ดไปใส่ในช่อง Input
-    const inputField = document.getElementById('promo-code-input'); // 🌟 แก้ ID ให้ตรง
-    if(inputField) {
-        inputField.value = code;
-    }
+        window.loadPublicCouponsForStep3 = async function(myCoupons) {
+            let list = document.getElementById('public-coupons-list');
+            let container = document.getElementById('public-coupons-container');
+            if(!list || !container) return;
 
-    // 2. จำลองการกดปุ่ม "ใช้โค้ด"
-    const applyBtn = document.getElementById('btn-apply-promo'); // 🌟 แก้ ID ให้ตรง
-    if(applyBtn) {
-        applyBtn.click(); 
-    }
-}
+            try {
+                let snapshot = await window.cf_db.collection('coupons').where('isPublic', '==', true).where('isActive', '==', true).get();
+                let html = '';
+                
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    if (!myCoupons.includes(c.code)) {
+                        let discText = c.discountType === 'percent' ? `ลด ${c.discountValue}%` : `ลด ฿${Number(c.discountValue).toLocaleString()}`;
+                        html += `
+                        <div onclick="claimSpecificCoupon('${c.code}')" class="shrink-0 w-[160px] bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition group">
+                            <p class="text-[10px] text-gray-500 mb-1">${c.name || 'คูปองพิเศษ'}</p>
+                            <p class="font-bold text-lg text-pink-600">${discText}</p>
+                            <div class="mt-2 pt-2 border-t border-pink-100/50 flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-white bg-pink-500 px-2 py-1 rounded-full shadow-sm hover:bg-pink-600 transition"><i class="fa-solid fa-download"></i> เก็บโค้ด</span>
+                            </div>
+                        </div>`;
+                    }
+                });
 
-// เรียกใช้งานตอนโหลดหน้าเว็บเสร็จ
-document.addEventListener('DOMContentLoaded', () => {
-    renderSavedCoupons();
-});
+                if (html !== '') {
+                    list.innerHTML = html;
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            } catch(e) {}
+        }
 
-// ==========================================
+        // รีเฟรชคูปองเมื่อเข้ามาหน้าสรุปยอด
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if(typeof renderSavedCoupons === 'function') renderSavedCoupons();
+            }, 1000); // หน่วงเวลารอ Firebase ตื่นนิดนึง
+        });
+
+        // ==========================================
         // 🌟 ฟังก์ชันดึงปุ่มโซเชียลมีเดียแบบ Dynamic (ดึงจากที่แอดมินตั้งค่า)
         // ==========================================
         window.loadDynamicSocialLinks = async function() {
@@ -3152,7 +3202,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let container = document.getElementById('modal-addons-container');
             if (!container) return;
 
-            let addons = allServices.filter(s => s.type === 'addon');
+            // ดึงบริการทั้งหมดมาให้ซื้อเพิ่ม (ยกเว้นแพ็กเกจ Custom)
+            let addons = allServices.filter(s => s.category !== 'custom_package');
             addons.sort((a,b) => (a.order||99) - (b.order||99));
             
             if(addons.length === 0) {
@@ -3217,9 +3268,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // 🌟 2. ดักให้กลับมาหน้าเดิมหลัง Login
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
-            let returnStep = sessionStorage.getItem('return_to_step');
+            let returnStep = localStorage.getItem('return_to_step');
             if (returnStep) {
-                sessionStorage.removeItem('return_to_step');
+                localStorage.removeItem('return_to_step');
                 setTimeout(() => {
                     currentStep = parseInt(returnStep);
                     changeStep(0); 
@@ -3245,7 +3296,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cancelButtonText: 'ยกเลิก'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        sessionStorage.setItem('return_to_step', '3'); // บังคับให้เด้งกลับมาที่หน้าสรุปยอดทันที
+                        localStorage.setItem('return_to_step', '3');
                         window.location.href = 'login.html';
                     }
                 });
