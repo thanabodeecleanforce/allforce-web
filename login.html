@@ -33,13 +33,13 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#F3F7FB] py-10">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center overflow-x-hidden py-12">
 
     <div class="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 via-white to-[#1EA7E1]/20">
         <div class="absolute inset-0 opacity-40" style="background-image: radial-gradient(#1EA7E1 1px, transparent 1px); background-size: 30px 30px;"></div>
     </div>
 
-    <div class="glass-card p-6 md:p-10 rounded-[2.5rem] max-w-md w-full w-[90%] text-center relative z-20">
+    <div class="glass-card mx-4 p-6 md:p-10 rounded-[2.5rem] max-w-md w-full w-[90%] text-center relative z-20">
         <button onclick="window.history.back()" class="absolute top-6 left-6 text-gray-400 hover:text-primary transition bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm border border-gray-100">
             <i class="fa-solid fa-arrow-left"></i>
         </button>
@@ -139,6 +139,18 @@
                 let prevPage = document.referrer;
                 if (prevPage && prevPage.includes("profile.html")) window.location.href = "profile.html";
                 else window.location.href = "cleanforce.html";
+            }
+        });
+
+        // 🌟 2.5 เพิ่มตัวดักรอรับข้อมูล เมื่อลูกค้าเด้งกลับมาจาก LINE/Facebook
+        auth.getRedirectResult().then((result) => {
+            if (result && result.user) {
+                saveUserAndRedirect(result.user);
+            }
+        }).catch((error) => {
+            console.error("Redirect Error:", error);
+            if(error.code !== 'auth/redirect-cancelled-by-user') {
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อโซเชียลได้: ' + error.message, 'error');
             }
         });
 
@@ -254,15 +266,15 @@
             .catch(err => { showError(err); setLoading('btn-apple', false, 'Apple'); });
         }
 
+        // 🌟 4. ระบบ LINE Login (เชื่อมตรงกับ Firebase OIDC)
         function loginWithLine() {
-            setLoading('btn-line', true);
-            auth.signInWithPopup(lineProvider)
-            .then(res => saveUserAndRedirect(res.user))
-            .catch(err => {
-                console.error(err);
-                Swal.fire('ข้อผิดพลาด', 'ยังไม่ได้เชื่อมต่อ LINE กับ Firebase หรือเกิดข้อผิดพลาดในการดึงข้อมูล', 'error');
-                setLoading('btn-line', false, 'LINE');
-            });
+            // แสดงสถานะกำลังโหลดที่ปุ่ม
+            let btn = document.querySelector('button[onclick="loginWithLine()"]');
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span class="text-sm">กำลังโหลด...</span>';
+
+            const lineProvider = new firebase.auth.OAuthProvider('oidc.line');
+            // เปลี่ยนจากส่งแมนนวล เป็นให้ Firebase พาไปแบบ Redirect (เวิร์คสุดบนมือถือ)
+            auth.signInWithRedirect(lineProvider);
         }
 
         function saveUserAndRedirect(user) {
