@@ -113,6 +113,45 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code'); // ดักจับ Code จาก LINE
+
+    if (code) {
+        // แอบแสดงหน้าจอโหลด เพื่อให้รู้ว่ากำลังประมวลผล
+        Swal.fire({
+            title: 'กำลังเข้าสู่ระบบ...',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        // ส่ง Code ไปให้หลังบ้าน (Cloud Function) ของเราทำงาน
+        fetch('https://us-central1-allforce-hub.cloudfunctions.net/lineLoginAuth', { // ลิงก์ API หลังบ้านของคุณ
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.customToken) {
+                // 🎯 ได้ Custom Token มาแล้ว! สั่งล็อกอินเข้า Firebase ได้เลย (ไม่พัง 100%)
+                return auth.signInWithCustomToken(data.customToken);
+            } else {
+                throw new Error("No custom token received");
+            }
+        })
+        .then((userCredential) => {
+            Swal.close();
+            // สำเร็จ! พาเข้าสู่ระบบได้เลย
+            saveUserAndRedirect(userCredential.user);
+        })
+        .catch((error) => {
+            console.error("Login Error:", error);
+            Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่', 'error');
+        });
+    }
+};
+
         // 🌟 ดักจับว่าลูกค้าเปิดผ่านแอป LINE หรือไม่
         if (navigator.userAgent.indexOf("Line") > -1) {
             // ถ้าใช่ ให้ล้างหน้าจอแล้วขึ้นคำแนะนำแทน
@@ -296,24 +335,19 @@
             .catch(err => { showError(err); setLoading('btn-apple', false, 'Apple'); });
         }
 
-        // 🌟 4. ระบบ LINE Login (เวอร์ชันบังคับฝังความจำ เพื่อรองรับการเข้าสู่ระบบด้วยแอป)
+        // ฟังก์ชันนี้จะเตะลูกค้าไปหา LINE ทันที
         function loginWithLine() {
             let btn = document.querySelector('button[onclick="loginWithLine()"]');
-            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span class="text-sm">กำลังสลับแอป...</span>';
+            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span class="text-sm">กำลังโหลด...</span>';
 
-            const lineProvider = new firebase.auth.OAuthProvider('oidc.line');
-            
-            // 🎯 หัวใจสำคัญ: บังคับให้ Firebase จำค่าลงเครื่อง (LOCAL) ให้ทนทานต่อการสลับแอป
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-            .then(() => {
-                // ใช้ท่า Redirect เพื่อให้มือถือสลับไปแอป LINE ได้อย่างสมบูรณ์
-                return auth.signInWithRedirect(lineProvider);
-            })
-            .catch((error) => {
-                console.error("Persistence Error:", error);
-                Swal.fire('ข้อผิดพลาด', 'ระบบความจำของเบราว์เซอร์มีปัญหา', 'error');
-                if(btn) btn.innerHTML = '<i class="fa-brands fa-line text-xl"></i> <span class="text-sm">LINE</span>';
-            });
+            const clientId = 'ใส่_LINE_CHANNEL_ID_ของคุณที่นี่';
+            const redirectUri = encodeURIComponent('https://all-force.com/login.html'); // ลิงก์เว็บของคุณ
+            const state = 'random_string_12345'; // รหัสกันสวมรอย
+    
+            // ส่งไปขอรหัสลับ (Authorization Code) จาก LINE
+            const lineAuthUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=profile%20openid%20email`;
+    
+            window.location.href = lineAuthUrl;
         }
 
         function saveUserAndRedirect(user) {
