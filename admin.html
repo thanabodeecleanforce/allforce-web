@@ -3986,11 +3986,60 @@ function getWeekDates(weeksAgo) {
             }
         }
 
-        // 🌟 1. ฟังก์ชันพรีวิวรูปโปรไฟล์ (Base64)
+        // 🌟 1. ระบบจัดการ Media แบบหลายไฟล์
+let reviewsMediaData = [[], [], []]; // เก็บลิสต์ไฟล์แยกตามกล่องรีวิว
+
+function renderMediaStack(index) {
+    const container = document.getElementById(`media-stack-${index}`);
+    if (!container) return;
+    
+    let html = '';
+    reviewsMediaData[index].forEach((url, mIdx) => {
+        const isVideo = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.webm');
+        html += `
+        <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-white group shadow-sm">
+            ${isVideo ? `<video src="${url}" class="w-full h-full object-cover"></video>` : `<img src="${url}" class="w-full h-full object-cover">`}
+            <button onclick="removeMediaFromStack(${index}, ${mIdx})" class="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function removeMediaFromStack(revIdx, mediaIdx) {
+    reviewsMediaData[revIdx].splice(mediaIdx, 1);
+    renderMediaStack(revIdx);
+}
+
+// 🌟 2. ฟังก์ชันอัปโหลดสื่อ (เข้าพรีวิวทันที)
+async function uploadReviewMedia(input, index) {
+    let file = input.files[0];
+    if(!file) return;
+
+    if(file.size > 20 * 1024 * 1024) return Swal.fire('ไฟล์ใหญ่เกินไป', 'จำกัดขนาด 20MB ต่อไฟล์ครับ', 'warning');
+
+    Swal.fire({ title: 'กำลังอัปโหลด...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    
+    try {
+        let storageRef = firebase.storage().ref(`reviews_media/${Date.now()}_${file.name}`);
+        await storageRef.put(file);
+        let url = await storageRef.getDownloadURL();
+        
+        reviewsMediaData[index].push(url);
+        renderMediaStack(index);
+        Swal.close();
+    } catch(e) {
+        Swal.fire('อัปโหลดล้มเหลว', e.message, 'error');
+    }
+    input.value = ''; // เคลียร์ input ให้กดซ้ำได้
+}
+
+// 🌟 3. พรีวิวรูปโปรไฟล์ (สไตล์เดิมแต่คลีนขึ้น)
 function previewReviewImg(input, index) {
     if (input.files && input.files[0]) {
         let reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = (e) => {
             document.getElementById(`rev-img-base64-${index}`).value = e.target.result;
             document.getElementById(`rev-preview-container-${index}`).innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
         }
@@ -3998,34 +4047,7 @@ function previewReviewImg(input, index) {
     }
 }
 
-// 🌟 2. ฟังก์ชันอัปโหลดรูป/คลิปผลงานขึ้น Firebase Storage
-async function uploadReviewMedia(input, index) {
-    let file = input.files[0];
-    if(!file) return;
-
-    // เช็คขนาดไฟล์ (ไม่เกิน 15MB สำหรับคลิปสั้น)
-    if(file.size > 15 * 1024 * 1024) {
-        return Swal.fire('ไฟล์ใหญ่เกินไป', 'กรุณาอัปโหลดคลิปหรือรูปขนาดไม่เกิน 15MB ครับ', 'warning');
-    }
-
-    Swal.fire({ title: 'กำลังอัปโหลดไฟล์...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-    
-    try {
-        // อัปโหลดขึ้น Storage
-        let storageRef = firebase.storage().ref('reviews_media/' + Date.now() + '_' + file.name);
-        await storageRef.put(file);
-        let url = await storageRef.getDownloadURL();
-        
-        // เอาลิงก์ไปใส่ในช่อง
-        document.getElementById(`rev-media-url-${index}`).value = url;
-        Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'อัปโหลดสื่อสำเร็จ!', showConfirmButton: false, timer: 1500 });
-    } catch(e) {
-        console.error(e);
-        Swal.fire('อัปโหลดล้มเหลว', 'กรุณาลองใหม่อีกครั้ง หรือวางลิงก์เองครับ', 'error');
-    }
-}
-
-// 🌟 3. โหลดข้อมูลมาแสดงตอนเปิดหน้าแอดมิน
+// 🌟 4. โหลดข้อมูลมาแสดง
 async function loadReviewsAdmin() {
     const doc = await db.collection('settings').doc('reviews_settings').get();
     const container = document.getElementById('admin-reviews-list');
@@ -4035,58 +4057,66 @@ async function loadReviewsAdmin() {
     
     let html = '';
     for(let i=0; i<3; i++) {
-        let r = data.reviews[i] || { rating: 5, initial: 'A', color: 'bg-blue-100 text-primary' };
-        
-        let imgPreview = r.profileImg 
-            ? `<img src="${r.profileImg}" class="w-full h-full object-cover">` 
-            : `<span class="text-[10px] text-gray-400">ไม่มีรูป</span>`;
+        let r = data.reviews[i] || { rating: 5, initial: 'A', color: 'bg-blue-100 text-primary', mediaList: [] };
+        reviewsMediaData[i] = r.mediaList || (r.mediaUrl ? [r.mediaUrl] : []); // ย้ายข้อมูลเก่าเข้าลิสต์ใหม่
+
+        let imgPreview = r.profileImg ? `<img src="${r.profileImg}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-gray-300"></i>`;
 
         html += `
-        <div class="p-4 border rounded-xl bg-gray-50 space-y-3 relative shadow-sm">
-            <p class="font-bold text-xs text-[#000080] mb-2 border-b pb-2"><i class="fa-solid fa-box mr-1"></i> รีวิวที่ ${i+1}</p>
+        <div class="p-5 border rounded-2xl bg-white space-y-4 shadow-sm relative">
+            <p class="font-bold text-xs text-[#000080] border-b pb-2 uppercase tracking-widest"><i class="fa-solid fa-comment-dots mr-2 text-primary"></i> รีวิวที่ ${i+1}</p>
             
-            <div class="flex items-center gap-3 bg-white p-2 border rounded-lg">
-                <div id="rev-preview-container-${i}" class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0">
+            <div class="flex items-center gap-4">
+                <div id="rev-preview-container-${i}" class="w-12 h-12 rounded-full overflow-hidden bg-gray-50 border-2 border-white shadow-inner flex items-center justify-center shrink-0">
                     ${imgPreview}
                 </div>
-                <div class="flex-1 overflow-hidden">
-                    <label class="block text-[10px] font-bold text-gray-500 mb-1">รูปโปรไฟล์ (ไม่บังคับ)</label>
-                    <input type="file" accept="image/*" class="text-[10px] w-full" onchange="previewReviewImg(this, ${i})">
+                <div class="flex-1">
+                    <label class="block text-[10px] font-bold text-gray-400 mb-1">รูปโปรไฟล์</label>
+                    <label class="bg-blue-50 text-primary px-3 py-1.5 rounded-lg cursor-pointer transition inline-flex items-center gap-2 border border-blue-100 hover:bg-primary hover:text-white text-xs font-bold">
+                        <i class="fa-solid fa-image"></i> เลือกรูป
+                        <input type="file" accept="image/*" class="hidden" onchange="previewReviewImg(this, ${i})">
+                    </label>
                     <input type="hidden" id="rev-img-base64-${i}" value="${r.profileImg || ''}">
                 </div>
             </div>
 
-            <input type="text" id="rev-name-${i}" value="${r.name || ''}" class="w-full p-2 text-xs border rounded-lg" placeholder="ชื่อลูกค้า">
-            <input type="text" id="rev-service-${i}" value="${r.service || ''}" class="w-full p-2 text-xs border rounded-lg" placeholder="บริการที่ใช้ เช่น ซักโซฟา">
-            <textarea id="rev-text-${i}" class="w-full p-2 text-xs border rounded-lg" rows="3" placeholder="ข้อความรีวิว">${r.text || ''}</textarea>
-            
-            <div class="mt-2 pt-2 border-t border-gray-200">
-                <label class="block text-[10px] font-bold text-[#000080] mb-1"><i class="fa-solid fa-photo-film"></i> แนบรูป/วิดีโอรีวิว (โชว์ด้านล่างข้อความ)</label>
-                <div class="flex gap-2 items-center">
-                    <input type="file" accept="image/*,video/mp4" class="text-[10px] w-1/3" onchange="uploadReviewMedia(this, ${i})">
-                    <input type="text" id="rev-media-url-${i}" value="${r.mediaUrl || ''}" class="w-2/3 p-2 text-xs border rounded-lg bg-white" placeholder="อัปโหลดซ้ายมือ หรือวางลิงก์ที่นี่">
-                </div>
+            <div class="space-y-2">
+                <input type="text" id="rev-name-${i}" value="${r.name || ''}" class="w-full p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none" placeholder="ชื่อลูกค้า">
+                <input type="text" id="rev-service-${i}" value="${r.service || ''}" class="w-full p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none" placeholder="บริการที่ใช้">
+                <textarea id="rev-text-${i}" class="w-full p-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none" rows="3" placeholder="ข้อความรีวิว">${r.text || ''}</textarea>
             </div>
             
-            <div class="flex gap-2 border-t border-gray-200 pt-2">
-                <div class="w-1/3">
-                    <label class="text-[10px] text-gray-500">อักษรย่อ</label>
-                    <input type="text" id="rev-init-${i}" value="${r.initial || ''}" class="w-full p-2 text-xs border rounded-lg" placeholder="เช่น ก" maxlength="2">
+            <div class="pt-3 border-t border-gray-100">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="text-[10px] font-bold text-[#000080] uppercase tracking-wide"><i class="fa-solid fa-photo-film mr-1"></i> แนบรูป/วิดีโอผลงาน</label>
+                    <label class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg cursor-pointer border border-indigo-100 hover:bg-indigo-600 hover:text-white transition text-[10px] font-bold">
+                        <i class="fa-solid fa-plus-circle"></i> เพิ่มสื่อ
+                        <input type="file" accept="image/*,video/mp4" class="hidden" onchange="uploadReviewMedia(this, ${i})">
+                    </label>
                 </div>
-                <div class="w-2/3">
-                    <label class="text-[10px] text-gray-500">คะแนนดาว</label>
-                    <select id="rev-rating-${i}" class="w-full p-2 text-xs border rounded-lg">
-                        <option value="5" ${r.rating==5?'selected':''}>⭐⭐⭐⭐⭐ (5 ดาว)</option>
-                        <option value="4" ${r.rating==4?'selected':''}>⭐⭐⭐⭐ (4 ดาว)</option>
+                <div id="media-stack-${i}" class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400">อักษรย่อ</label>
+                    <input type="text" id="rev-init-${i}" value="${r.initial || ''}" class="w-full p-2 bg-gray-50 border rounded-lg text-xs" maxlength="2">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400">คะแนน</label>
+                    <select id="rev-rating-${i}" class="w-full p-2 bg-gray-50 border rounded-lg text-xs font-bold text-yellow-600">
+                        <option value="5" ${r.rating==5?'selected':''}>⭐⭐⭐⭐⭐ 5 ดาว</option>
+                        <option value="4" ${r.rating==4?'selected':''}>⭐⭐⭐⭐ 4 ดาว</option>
                     </select>
                 </div>
             </div>
         </div>`;
     }
     container.innerHTML = html;
+    for(let i=0; i<3; i++) renderMediaStack(i); // วาดพรีวิว Media ที่โหลดมา
 }
 
-// 🌟 4. ฟังก์ชันบันทึกข้อมูล
 async function saveReviewsAdmin() {
     let reviews = [];
     const colors = ['bg-blue-100 text-primary', 'bg-pink-100 text-pink-500', 'bg-green-100 text-green-600']; 
@@ -4100,7 +4130,7 @@ async function saveReviewsAdmin() {
             rating: parseInt(document.getElementById(`rev-rating-${i}`).value),
             color: colors[i],
             profileImg: document.getElementById(`rev-img-base64-${i}`).value,
-            mediaUrl: document.getElementById(`rev-media-url-${i}`).value // บันทึกลิงก์รูป/คลิป
+            mediaList: reviewsMediaData[i] // บันทึกเป็นอาร์เรย์ของลิงก์
         });
     }
 
@@ -4110,7 +4140,8 @@ async function saveReviewsAdmin() {
             reviews: reviews,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        Swal.fire('บันทึกสำเร็จ', 'อัปเดตข้อมูลและรูปโปรไฟล์เรียบร้อยแล้ว!', 'success');
+        Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', showConfirmButton: false, timer: 1500 });
+        markSystemUpdated();
     } catch(e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
 }
 
@@ -4122,7 +4153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('DOMContentLoaded', () => {
             if(typeof loadSocialLinksAdmin === 'function') setTimeout(loadSocialLinksAdmin, 1500);
         });
-    </script>
+</script>
 
     <div id="category-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
