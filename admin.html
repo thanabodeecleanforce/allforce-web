@@ -146,6 +146,7 @@
                         <tr>
                             <th class="p-4">โปรไฟล์</th>
                             <th class="p-4">ชื่อ / อีเมล</th>
+                            <th class="p-4 text-center">ช่องทาง</th>
                             <th class="p-4 text-center">สถานะ</th>
                             <th class="p-4 text-center">แพ็กเกจส่วนตัว</th>
                             <th class="p-4 text-center">ใช้งานล่าสุด</th>
@@ -1876,26 +1877,22 @@
             db.collection("users").orderBy("lastLogin", "desc").onSnapshot(snapshot => {
                 let html = '';
                 if(snapshot.empty) {
-                    html = '<tr><td colspan="6" class="p-8 text-center text-gray-400">ยังไม่มีผู้ใช้งานในระบบ</td></tr>';
+                    html = '<tr><td colspan="7" class="p-8 text-center text-gray-400">ยังไม่มีผู้ใช้งานในระบบ</td></tr>';
                 } else {
                     snapshot.forEach(doc => {
                         let u = doc.data();
                     
-                        // 🌟 แก้ไขการตรวจสอบเวลา (รองรับทั้ง String และ Firebase Timestamp)
                         let lastActiveTime = null;
                         if (u.lastLogin) {
-                            if (typeof u.lastLogin.toDate === 'function') {
-                                lastActiveTime = u.lastLogin.toDate();
-                            } else {
-                                lastActiveTime = new Date(u.lastLogin);
-                            }
+                            if (typeof u.lastLogin.toDate === 'function') lastActiveTime = u.lastLogin.toDate();
+                            else lastActiveTime = new Date(u.lastLogin);
                         }
 
-                        let isOnlineHtml = '<span class="text-gray-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i>ออฟไลน์</span>';
+                        let isOnlineHtml = '<span class="text-gray-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i> ออฟไลน์</span>';
                         if (lastActiveTime) { 
                             let diffMinutes = (new Date() - lastActiveTime) / (1000 * 60);
                             if (diffMinutes <= 5) {
-                                isOnlineHtml = '<span class="text-green-500 animate-pulse"><i class="fa-solid fa-circle text-[8px] mr-1"></i>ออนไลน์</span>';
+                                isOnlineHtml = '<span class="text-green-500 animate-pulse"><i class="fa-solid fa-circle text-[8px] mr-1"></i> ออนไลน์</span>';
                             }
                         }
 
@@ -1909,14 +1906,25 @@
 
                         let lastDate = lastActiveTime ? lastActiveTime.toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) + ' น.' : '-';
                         
+                        // 🌟 วิเคราะห์ช่องทางล็อกอิน
+                        let providerHtml = '<span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[9px]"><i class="fa-solid fa-envelope"></i> Email</span>';
+                        if (u.email && u.email.includes('@gmail.com')) providerHtml = '<span class="bg-red-50 text-red-500 border border-red-100 px-2 py-0.5 rounded text-[9px]"><i class="fa-brands fa-google"></i> Google</span>';
+                        if ((u.email && u.email.includes('line.me')) || (!u.email && u.photoURL && u.photoURL.includes('line-scdn.net'))) providerHtml = '<span class="bg-green-50 text-green-600 border border-green-100 px-2 py-0.5 rounded text-[9px]"><i class="fa-brands fa-line"></i> LINE</span>';
+                        if (u.email && u.email.includes('apple')) providerHtml = '<span class="bg-black text-white px-2 py-0.5 rounded text-[9px]"><i class="fa-brands fa-apple"></i> Apple</span>';
+                        if (u.email && u.email.includes('facebook')) providerHtml = '<span class="bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded text-[9px]"><i class="fa-brands fa-facebook"></i> Facebook</span>';
+
                         html += `
-                        <tr class="hover:bg-gray-50 border-b border-gray-50">
-                            <td class="p-4"><img src="${u.photoURL || 'https://placehold.co/100'}" class="w-10 h-10 rounded-full border border-gray-200 object-cover"></td>
-                            <td class="p-4"><p class="font-bold text-gray-800">${u.name || 'ไม่มีชื่อ'}</p><p class="text-[10px] text-gray-500">${u.email || '-'}</p></td>
+                        <tr class="hover:bg-blue-50 border-b border-gray-50 cursor-pointer transition-colors" onclick="openUserDetailModal('${doc.id}')" title="คลิกเพื่อดูข้อมูลอย่างละเอียด">
+                            <td class="p-4"><img src="${u.photoURL || 'https://placehold.co/100'}" class="w-10 h-10 rounded-full border border-gray-200 object-cover shadow-sm"></td>
+                            <td class="p-4">
+                                <p class="font-bold text-[#000080] hover:text-primary transition">${u.name || 'ไม่มีชื่อ'}</p>
+                                <p class="text-[10px] text-gray-500">${u.email || '-'}</p>
+                            </td>
+                            <td class="p-4 text-center">${providerHtml}</td>
                             <td class="p-4 text-center">${isOnlineHtml}</td>
                             <td class="p-4 text-center">${pkgBadge}</td>
                             <td class="p-4 text-center text-xs text-gray-500">${lastDate}</td>
-                            <td class="p-4 text-center">
+                            <td class="p-4 text-center" onclick="event.stopPropagation();">
                                 <button onclick="openUserPkgModal('${doc.id}', '${u.name || 'ไม่มีชื่อ'}')" class="text-[10px] bg-white text-yellow-600 border border-yellow-300 px-3 py-1.5 rounded-lg font-bold hover:bg-yellow-50 transition shadow-sm whitespace-nowrap">
                                     <i class="fa-solid fa-crown mr-1"></i> มอบแพ็กเกจ
                                 </button>
@@ -1926,9 +1934,123 @@
                 }
                 document.getElementById('users-list').innerHTML = html;
             }, error => {
-                console.error("Error loading users: ", error);
-                document.getElementById('users-list').innerHTML = '<tr><td colspan="6" class="p-8 text-center text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+                document.getElementById('users-list').innerHTML = '<tr><td colspan="7" class="p-8 text-center text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
             });
+        }
+
+        // 🌟 ฟังก์ชันดึงประวัติและแสดงหน้าจอรายละเอียด
+        async function openUserDetailModal(uid) {
+            Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            try {
+                let doc = await db.collection("users").doc(uid).get();
+                if(!doc.exists) throw new Error("ไม่พบผู้ใช้งาน");
+                let u = doc.data();
+
+                // ค้นหาประวัติการจองทั้งหมดของคนนี้
+                let bookingsSnap = await db.collection("bookings").where("userId", "==", uid).orderBy("createdAt", "desc").get();
+                let bookings = [];
+                let totalSpent = 0;
+                let latestPhone = u.phone || '-';
+                let latestAddress = u.address || '-';
+                let usedCouponsList = [];
+
+                bookingsSnap.forEach(bDoc => {
+                    let b = bDoc.data();
+                    bookings.push(b);
+                    if (b.status === "สำเร็จ") totalSpent += (b.totalPrice || 0);
+                    if (b.phone && latestPhone === '-') latestPhone = b.phone;
+                    if (b.address && latestAddress === '-') latestAddress = b.address;
+                    if (b.promoCodes && b.promoCodes !== "-") {
+                        usedCouponsList = usedCouponsList.concat(b.promoCodes.split(',').map(c => c.trim()));
+                    }
+                });
+
+                usedCouponsList = [...new Set(usedCouponsList)]; // ลบตัวที่ซ้ำออก
+
+                // เช็คเวลาสร้างบัญชี
+                let createdAtStr = "ไม่ระบุ (ผู้ใช้เก่า)";
+                if (u.createdAt) {
+                    if(typeof u.createdAt.toDate === 'function') createdAtStr = u.createdAt.toDate().toLocaleDateString('th-TH');
+                    else createdAtStr = new Date(u.createdAt).toLocaleDateString('th-TH');
+                }
+
+                let lastActiveStr = "ไม่ระบุ";
+                if (u.lastLogin) {
+                    if(typeof u.lastLogin.toDate === 'function') lastActiveStr = u.lastLogin.toDate().toLocaleString('th-TH', {dateStyle:'medium', timeStyle:'short'}) + ' น.';
+                    else lastActiveStr = new Date(u.lastLogin).toLocaleString('th-TH', {dateStyle:'medium', timeStyle:'short'}) + ' น.';
+                }
+
+                // วิเคราะห์ช่องทาง
+                let providerHtml = '<i class="fa-solid fa-envelope"></i> Email / สมัครปกติ';
+                if (u.email && u.email.includes('@gmail.com')) providerHtml = '<i class="fa-brands fa-google text-red-500"></i> Google Account';
+                if ((u.email && u.email.includes('line.me')) || (u.photoURL && u.photoURL.includes('line-scdn.net'))) providerHtml = '<i class="fa-brands fa-line text-green-500"></i> LINE Account';
+
+                // ยัดข้อมูลใส่ HTML
+                document.getElementById('udm-name').textContent = u.name || 'ไม่มีชื่อ';
+                document.getElementById('udm-email').textContent = u.email || '-';
+                document.getElementById('udm-phone').textContent = latestPhone;
+                document.getElementById('udm-address').textContent = latestAddress;
+                document.getElementById('udm-created').textContent = createdAtStr;
+                document.getElementById('udm-last-login').textContent = lastActiveStr;
+                document.getElementById('udm-provider').innerHTML = providerHtml;
+                document.getElementById('udm-total-bookings').textContent = bookings.length;
+                document.getElementById('udm-total-spent').textContent = totalSpent.toLocaleString() + ' ฿';
+                document.getElementById('udm-profile-img').src = u.photoURL || 'https://placehold.co/150';
+
+                // โชว์รายการจอง
+                let bHtml = '';
+                if (bookings.length === 0) {
+                    bHtml = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg border border-gray-200">ยังไม่มีประวัติการจอง</p>';
+                } else {
+                    bookings.slice(0, 5).forEach(b => {
+                        let statusColor = b.status === 'สำเร็จ' ? 'text-green-600 bg-green-50 border-green-200' : (b.status === 'ยกเลิก' ? 'text-red-600 bg-red-50 border-red-200' : 'text-blue-600 bg-blue-50 border-blue-200');
+                        bHtml += `
+                        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg border border-gray-100 mb-2 shadow-sm">
+                            <div>
+                                <p class="font-bold text-gray-800 text-xs"><i class="fa-regular fa-calendar text-primary mr-1"></i> ${b.bookingDate || b.date || '-'}</p>
+                                <p class="text-[10px] text-gray-500 mt-0.5 truncate w-32 sm:w-48">${b.baseService || b.serviceMode || '-'}</p>
+                            </div>
+                            <div class="text-right flex flex-col items-end gap-1">
+                                <p class="font-bold text-primary text-xs">${(b.totalPrice||0).toLocaleString()} ฿</p>
+                                <span class="text-[9px] font-bold border px-1.5 py-0.5 rounded ${statusColor}">${b.status}</span>
+                            </div>
+                        </div>`;
+                    });
+                    if(bookings.length > 5) bHtml += `<p class="text-[10px] text-center text-gray-400 mt-2 italic">...และรายการอื่นๆ อีก ${bookings.length - 5} รายการ</p>`;
+                }
+                document.getElementById('udm-bookings-list').innerHTML = bHtml;
+
+                // โชว์คูปอง
+                let cHtml = '';
+                let myCoupons = u.myCoupons || [];
+                if(myCoupons.length === 0 && usedCouponsList.length === 0) {
+                    cHtml = '<p class="text-xs text-gray-400 italic text-center py-4">ไม่เคยเก็บหรือใช้คูปอง</p>';
+                } else {
+                    if (myCoupons.length > 0) {
+                        cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1"><i class="fa-solid fa-ticket text-pink-500"></i> คูปองที่เก็บไว้ (ยังไม่ใช้):</p><div class="flex flex-wrap gap-1.5 mb-3">';
+                        myCoupons.forEach(c => { cHtml += `<span class="bg-pink-50 text-pink-600 border border-pink-200 px-2 py-1 rounded text-[10px] font-bold shadow-sm">${c}</span>`; });
+                        cHtml += '</div>';
+                    }
+                    if (usedCouponsList.length > 0) {
+                        cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1"><i class="fa-solid fa-check-double text-green-500"></i> ประวัติที่เคยใช้แล้ว:</p><div class="flex flex-wrap gap-1.5">';
+                        usedCouponsList.forEach(c => { cHtml += `<span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-1 rounded text-[10px] font-bold"><i class="fa-solid fa-check"></i> ${c}</span>`; });
+                        cHtml += '</div>';
+                    }
+                }
+                document.getElementById('udm-coupons-list').innerHTML = cHtml;
+
+                Swal.close();
+                document.getElementById('user-detail-modal').classList.remove('hidden');
+                document.getElementById('user-detail-modal').classList.add('flex');
+
+            } catch (e) {
+                Swal.fire('Error', e.message, 'error');
+            }
+        }
+
+        window.closeUserDetailModal = function() {
+            document.getElementById('user-detail-modal').classList.add('hidden');
+            document.getElementById('user-detail-modal').classList.remove('flex');
         }
 
         let currentPkgUserId = '';
@@ -4179,6 +4301,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 </p>
                 <div id="category-list-area" class="space-y-3">
                     </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="user-detail-modal" class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
+                <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-id-card text-primary mr-2"></i>ข้อมูลเชิงลึกของลูกค้า (User Insight)</h3>
+                <button onclick="closeUserDetailModal()" class="text-gray-400 hover:text-red-500 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50/50 hide-scroll">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-16 bg-[#000080]"></div>
+                            <img id="udm-profile-img" src="https://placehold.co/150" class="w-24 h-24 rounded-full border-4 border-white shadow-md mx-auto relative z-10 object-cover bg-white">
+                            <h4 id="udm-name" class="font-bold text-lg text-gray-800 mt-3">-</h4>
+                            <p id="udm-provider" class="text-[10px] font-bold text-gray-500 mt-1">-</p>
+                        </div>
+                        
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                            <h5 class="font-bold text-sm text-[#000080] border-b pb-2"><i class="fa-solid fa-address-book text-primary mr-1"></i> ช่องทางติดต่อ</h5>
+                            <div><p class="text-[10px] text-gray-400 font-bold uppercase mb-0.5">อีเมล</p><p id="udm-email" class="text-xs font-bold text-gray-700 truncate">-</p></div>
+                            <div><p class="text-[10px] text-gray-400 font-bold uppercase mb-0.5">เบอร์โทรศัพท์ (ล่าสุด)</p><p id="udm-phone" class="text-xs font-bold text-gray-700">-</p></div>
+                            <div><p class="text-[10px] text-gray-400 font-bold uppercase mb-0.5">ที่อยู่จัดส่ง (ล่าสุด)</p><p id="udm-address" class="text-xs font-bold text-gray-700 leading-snug line-clamp-3">-</p></div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                            <h5 class="font-bold text-sm text-[#000080] border-b pb-2"><i class="fa-solid fa-clock-rotate-left text-primary mr-1"></i> ประวัติระบบ</h5>
+                            <div class="flex justify-between items-center"><span class="text-xs text-gray-500">สมัครสมาชิกเมื่อ</span><span id="udm-created" class="text-xs font-bold text-gray-700">-</span></div>
+                            <div class="flex justify-between items-center"><span class="text-xs text-gray-500">ออนไลน์ล่าสุด</span><span id="udm-last-login" class="text-xs font-bold text-primary">-</span></div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-primary text-xl"><i class="fa-solid fa-cart-flatbed"></i></div>
+                                <div><p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ยอดจองสำเร็จ</p><p class="text-xl font-bold text-gray-800"><span id="udm-total-bookings">0</span> <span class="text-xs font-normal">ครั้ง</span></p></div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 text-xl"><i class="fa-solid fa-coins"></i></div>
+                                <div><p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ใช้จ่ายไปแล้ว</p><p id="udm-total-spent" class="text-xl font-bold text-green-600">0 ฿</p></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                            <h5 class="font-bold text-sm text-[#000080] mb-4"><i class="fa-solid fa-list text-primary mr-1"></i> 5 รายการจองล่าสุด</h5>
+                            <div id="udm-bookings-list" class="space-y-1"></div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                            <h5 class="font-bold text-sm text-[#000080] mb-4"><i class="fa-solid fa-ticket text-primary mr-1"></i> พฤติกรรมการใช้คูปอง</h5>
+                            <div id="udm-coupons-list"></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
