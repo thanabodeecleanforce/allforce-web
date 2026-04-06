@@ -1938,113 +1938,103 @@
             });
         }
 
-        // 🌟 ฟังก์ชันดึงประวัติและแสดงหน้าจอรายละเอียด
         async function openUserDetailModal(uid) {
             Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
+                // 1. ดึงข้อมูล User
                 let doc = await db.collection("users").doc(uid).get();
-                if(!doc.exists) throw new Error("ไม่พบผู้ใช้งาน");
+                if(!doc.exists) throw new Error("ไม่พบข้อมูลผู้ใช้งานรายนี้ในระบบ");
                 let u = doc.data();
 
-                // ค้นหาประวัติการจองทั้งหมดของคนนี้
-                let bookingsSnap = await db.collection("bookings").where("userId", "==", uid).orderBy("createdAt", "desc").get();
+                // 2. ดึงประวัติการจอง (ถ้า Index ยังไม่เสร็จ หรือ Error ตรงนี้จะเด้งไป catch)
+                let bookingsSnap;
+                try {
+                    bookingsSnap = await db.collection("bookings").where("userId", "==", uid).orderBy("createdAt", "desc").get();
+                } catch (idxErr) {
+                    console.warn("Index Error - Falling back to local sort");
+                    // ถ้า Index ยังไม่เสร็จ ให้ดึงมาแบบไม่เรียงลำดับก่อน แล้วค่อยมาเรียงใน JS แทน
+                    bookingsSnap = await db.collection("bookings").where("userId", "==", uid).get();
+                }
+
                 let bookings = [];
                 let totalSpent = 0;
-                let latestPhone = u.phone || '-';
-                let latestAddress = u.address || '-';
                 let usedCouponsList = [];
+                
+                // ข้อมูลพื้นฐาน ดักจับค่าว่าง
+                let latestPhone = u.phone || u.phoneNumber || '-';
+                let latestAddress = u.address || '-';
 
                 bookingsSnap.forEach(bDoc => {
                     let b = bDoc.data();
                     bookings.push(b);
-                    if (b.status === "สำเร็จ") totalSpent += (b.totalPrice || 0);
-                    if (b.phone && latestPhone === '-') latestPhone = b.phone;
-                    if (b.address && latestAddress === '-') latestAddress = b.address;
+                    if (b.status === "สำเร็จ") totalSpent += (Number(b.totalPrice) || 0);
+                    if (b.phone && (latestPhone === '-' || latestPhone === '')) latestPhone = b.phone;
+                    if (b.address && (latestAddress === '-' || latestAddress === '')) latestAddress = b.address;
                     if (b.promoCodes && b.promoCodes !== "-") {
-                        usedCouponsList = usedCouponsList.concat(b.promoCodes.split(',').map(c => c.trim()));
+                        usedCouponsList = usedCouponsList.concat(String(b.promoCodes).split(',').map(c => c.trim()));
                     }
                 });
 
-                usedCouponsList = [...new Set(usedCouponsList)]; // ลบตัวที่ซ้ำออก
+                // เรียงลำดับเองกรณี Index ไม่พร้อม
+                bookings.sort((a, b) => {
+                    let timeA = a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0;
+                    let timeB = b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0;
+                    return timeB - timeA;
+                });
 
-                // เช็คเวลาสร้างบัญชี
-                let createdAtStr = "ไม่ระบุ (ผู้ใช้เก่า)";
-                if (u.createdAt) {
-                    if(typeof u.createdAt.toDate === 'function') createdAtStr = u.createdAt.toDate().toLocaleDateString('th-TH');
-                    else createdAtStr = new Date(u.createdAt).toLocaleDateString('th-TH');
-                }
+                usedCouponsList = [...new Set(usedCouponsList)];
 
-                let lastActiveStr = "ไม่ระบุ";
-                if (u.lastLogin) {
-                    if(typeof u.lastLogin.toDate === 'function') lastActiveStr = u.lastLogin.toDate().toLocaleString('th-TH', {dateStyle:'medium', timeStyle:'short'}) + ' น.';
-                    else lastActiveStr = new Date(u.lastLogin).toLocaleString('th-TH', {dateStyle:'medium', timeStyle:'short'}) + ' น.';
-                }
-
-                // วิเคราะห์ช่องทาง
-                let providerHtml = '<i class="fa-solid fa-envelope"></i> Email / สมัครปกติ';
-                if (u.email && u.email.includes('@gmail.com')) providerHtml = '<i class="fa-brands fa-google text-red-500"></i> Google Account';
-                if ((u.email && u.email.includes('line.me')) || (u.photoURL && u.photoURL.includes('line-scdn.net'))) providerHtml = '<i class="fa-brands fa-line text-green-500"></i> LINE Account';
-
-                // ยัดข้อมูลใส่ HTML
+                // ส่วนแสดงผล HTML (ดักจับ Error ทุกจุด)
                 document.getElementById('udm-name').textContent = u.name || 'ไม่มีชื่อ';
                 document.getElementById('udm-email').textContent = u.email || '-';
                 document.getElementById('udm-phone').textContent = latestPhone;
                 document.getElementById('udm-address').textContent = latestAddress;
-                document.getElementById('udm-created').textContent = createdAtStr;
-                document.getElementById('udm-last-login').textContent = lastActiveStr;
-                document.getElementById('udm-provider').innerHTML = providerHtml;
                 document.getElementById('udm-total-bookings').textContent = bookings.length;
                 document.getElementById('udm-total-spent').textContent = totalSpent.toLocaleString() + ' ฿';
                 document.getElementById('udm-profile-img').src = u.photoURL || 'https://placehold.co/150';
 
-                // โชว์รายการจอง
+                // วันที่สมัคร
+                let createdStr = "-";
+                if(u.createdAt) createdStr = u.createdAt.toDate ? u.createdAt.toDate().toLocaleDateString('th-TH') : new Date(u.createdAt).toLocaleDateString('th-TH');
+                document.getElementById('udm-created').textContent = createdStr;
+
+                // ใช้งานล่าสุด
+                let loginStr = "-";
+                if(u.lastLogin) loginStr = u.lastLogin.toDate ? u.lastLogin.toDate().toLocaleString('th-TH') : new Date(u.lastLogin).toLocaleString('th-TH');
+                document.getElementById('udm-last-login').textContent = loginStr;
+
+                // รายการจอง
                 let bHtml = '';
                 if (bookings.length === 0) {
-                    bHtml = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg border border-gray-200">ยังไม่มีประวัติการจอง</p>';
+                    bHtml = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg">ไม่พบประวัติการจอง</p>';
                 } else {
                     bookings.slice(0, 5).forEach(b => {
-                        let statusColor = b.status === 'สำเร็จ' ? 'text-green-600 bg-green-50 border-green-200' : (b.status === 'ยกเลิก' ? 'text-red-600 bg-red-50 border-red-200' : 'text-blue-600 bg-blue-50 border-blue-200');
-                        bHtml += `
-                        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg border border-gray-100 mb-2 shadow-sm">
-                            <div>
-                                <p class="font-bold text-gray-800 text-xs"><i class="fa-regular fa-calendar text-primary mr-1"></i> ${b.bookingDate || b.date || '-'}</p>
-                                <p class="text-[10px] text-gray-500 mt-0.5 truncate w-32 sm:w-48">${b.baseService || b.serviceMode || '-'}</p>
-                            </div>
-                            <div class="text-right flex flex-col items-end gap-1">
-                                <p class="font-bold text-primary text-xs">${(b.totalPrice||0).toLocaleString()} ฿</p>
-                                <span class="text-[9px] font-bold border px-1.5 py-0.5 rounded ${statusColor}">${b.status}</span>
-                            </div>
+                        let statusColor = b.status === 'สำเร็จ' ? 'text-green-600 bg-green-50 border-green-200' : 'text-blue-600 bg-blue-50 border-blue-200';
+                        bHtml += `<div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg border mb-2">
+                            <div><p class="font-bold text-xs">${b.bookingDate || '-'}</p><p class="text-[9px] text-gray-500">${b.baseService || '-'}</p></div>
+                            <div class="text-right"><p class="font-bold text-primary text-xs">${(b.totalPrice||0).toLocaleString()} ฿</p><span class="text-[9px] px-1.5 rounded border ${statusColor}">${b.status || 'รอ'}</span></div>
                         </div>`;
                     });
-                    if(bookings.length > 5) bHtml += `<p class="text-[10px] text-center text-gray-400 mt-2 italic">...และรายการอื่นๆ อีก ${bookings.length - 5} รายการ</p>`;
                 }
                 document.getElementById('udm-bookings-list').innerHTML = bHtml;
 
-                // โชว์คูปอง
+                // คูปอง
                 let cHtml = '';
                 let myCoupons = u.myCoupons || [];
-                if(myCoupons.length === 0 && usedCouponsList.length === 0) {
-                    cHtml = '<p class="text-xs text-gray-400 italic text-center py-4">ไม่เคยเก็บหรือใช้คูปอง</p>';
-                } else {
-                    if (myCoupons.length > 0) {
-                        cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1"><i class="fa-solid fa-ticket text-pink-500"></i> คูปองที่เก็บไว้ (ยังไม่ใช้):</p><div class="flex flex-wrap gap-1.5 mb-3">';
-                        myCoupons.forEach(c => { cHtml += `<span class="bg-pink-50 text-pink-600 border border-pink-200 px-2 py-1 rounded text-[10px] font-bold shadow-sm">${c}</span>`; });
-                        cHtml += '</div>';
-                    }
-                    if (usedCouponsList.length > 0) {
-                        cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1"><i class="fa-solid fa-check-double text-green-500"></i> ประวัติที่เคยใช้แล้ว:</p><div class="flex flex-wrap gap-1.5">';
-                        usedCouponsList.forEach(c => { cHtml += `<span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-1 rounded text-[10px] font-bold"><i class="fa-solid fa-check"></i> ${c}</span>`; });
-                        cHtml += '</div>';
-                    }
+                if(myCoupons.length > 0) {
+                    cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1">คูปองที่เก็บไว้:</p><div class="flex flex-wrap gap-1">';
+                    myCoupons.forEach(c => cHtml += `<span class="bg-pink-50 text-pink-600 border border-pink-100 px-2 py-1 rounded text-[9px] font-bold">${c}</span>`);
+                    cHtml += '</div>';
                 }
-                document.getElementById('udm-coupons-list').innerHTML = cHtml;
+                document.getElementById('udm-coupons-list').innerHTML = cHtml || '<p class="text-xs text-gray-400 italic">ไม่มีข้อมูลคูปอง</p>';
 
                 Swal.close();
                 document.getElementById('user-detail-modal').classList.remove('hidden');
                 document.getElementById('user-detail-modal').classList.add('flex');
 
             } catch (e) {
-                Swal.fire('Error', e.message, 'error');
+                console.error(e);
+                Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลได้: ' + e.message, 'error');
             }
         }
 
