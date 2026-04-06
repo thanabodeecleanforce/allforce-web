@@ -4021,10 +4021,83 @@ async function loadReviewsAdmin() {
     container.innerHTML = html;
 }
 
-// ฟังก์ชันบันทึกข้อมูล
+// 🌟 1. ฟังก์ชันอัปโหลดและพรีวิวรูปภาพ (แปลงเป็น Base64 เล็กๆ เก็บลงฐานข้อมูล)
+function previewReviewImg(input, index) {
+    if (input.files && input.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            // เก็บข้อมูลรูปลง Input ลับ และโชว์พรีวิว
+            document.getElementById(`rev-img-base64-${index}`).value = e.target.result;
+            document.getElementById(`rev-preview-container-${index}`).innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// 🌟 2. โหลดข้อมูลมาแสดงตอนเปิดหน้าแอดมิน
+async function loadReviewsAdmin() {
+    const doc = await db.collection('settings').doc('reviews_settings').get();
+    const container = document.getElementById('admin-reviews-list');
+    let data = doc.exists ? doc.data() : { 
+        mapsLink: '', 
+        reviews: [
+            { name: 'คุณ กิตติศักดิ์', text: 'บริการดีมากครับ...', service: 'บริการทำความสะอาดโซฟา', rating: 5, initial: 'ก', color: 'bg-blue-100 text-primary', profileImg: '' },
+            { name: 'คุณ Ann', text: 'เรียกใช้บริการ...', service: 'บริการ Big Cleaning', rating: 5, initial: 'A', color: 'bg-pink-100 text-pink-500', profileImg: '' },
+            { name: 'คุณ เมย์', text: 'น้ำยาที่ใช้...', service: 'บริการทำความสะอาดคอนโด', rating: 5, initial: 'M', color: 'bg-green-100 text-green-600', profileImg: '' }
+        ] 
+    };
+
+    document.getElementById('review-maps-link').value = data.mapsLink || '';
+    
+    let html = '';
+    data.reviews.forEach((r, i) => {
+        // เช็คว่ามีรูปไหม ถ้ามีโชว์รูป ถ้าไม่มีโชว์ตัวหนังสือ
+        let imgPreview = r.profileImg 
+            ? `<img src="${r.profileImg}" class="w-full h-full object-cover">` 
+            : `<span class="text-[10px] text-gray-400">ไม่มีรูป</span>`;
+
+        html += `
+        <div class="p-4 border rounded-xl bg-gray-50 space-y-3 relative">
+            <p class="font-bold text-xs text-[#000080] mb-2 border-b pb-2"><i class="fa-solid fa-box mr-1"></i> กล่องรีวิวที่ ${i+1}</p>
+            
+            <div class="flex items-center gap-3 bg-white p-2 border rounded-lg">
+                <div id="rev-preview-container-${i}" class="w-12 h-12 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+                    ${imgPreview}
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <label class="block text-[10px] font-bold text-gray-500 mb-1">รูปโปรไฟล์ (ไม่บังคับ)</label>
+                    <input type="file" id="rev-file-${i}" accept="image/*" class="text-[10px] w-full" onchange="previewReviewImg(this, ${i})">
+                    <input type="hidden" id="rev-img-base64-${i}" value="${r.profileImg || ''}">
+                </div>
+                <button onclick="document.getElementById('rev-img-base64-${i}').value=''; document.getElementById('rev-preview-container-${i}').innerHTML='<span class=\\'text-[10px] text-gray-400\\'>ไม่มีรูป</span>';" class="text-red-400 hover:text-red-600 p-1" title="ลบรูป"><i class="fa-solid fa-trash text-xs"></i></button>
+            </div>
+
+            <input type="text" id="rev-name-${i}" value="${r.name}" class="w-full p-2 text-xs border rounded-lg" placeholder="ชื่อลูกค้า">
+            <input type="text" id="rev-service-${i}" value="${r.service}" class="w-full p-2 text-xs border rounded-lg" placeholder="บริการที่ใช้ เช่น ซักโซฟา">
+            <textarea id="rev-text-${i}" class="w-full p-2 text-xs border rounded-lg" rows="3" placeholder="ข้อความรีวิว">${r.text}</textarea>
+            
+            <div class="flex gap-2">
+                <div class="w-1/3">
+                    <label class="text-[10px] text-gray-500">อักษรย่อ</label>
+                    <input type="text" id="rev-init-${i}" value="${r.initial}" class="w-full p-2 text-xs border rounded-lg" placeholder="เช่น ก" maxlength="2">
+                </div>
+                <div class="w-2/3">
+                    <label class="text-[10px] text-gray-500">คะแนนดาว</label>
+                    <select id="rev-rating-${i}" class="w-full p-2 text-xs border rounded-lg">
+                        <option value="5" ${r.rating==5?'selected':''}>⭐⭐⭐⭐⭐ (5 ดาว)</option>
+                        <option value="4" ${r.rating==4?'selected':''}>⭐⭐⭐⭐ (4 ดาว)</option>
+                    </select>
+                </div>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+// 🌟 3. ฟังก์ชันบันทึกข้อมูลและรูปภาพลงฐานข้อมูล
 async function saveReviewsAdmin() {
     let reviews = [];
-    const colors = ['bg-blue-100 text-primary', 'bg-pink-100 text-pink-500', 'bg-green-100 text-green-600'];
+    const colors = ['bg-blue-100 text-primary', 'bg-pink-100 text-pink-500', 'bg-green-100 text-green-600']; // สีพื้นหลังถ้าไม่มีรูป
     
     for(let i=0; i<3; i++) {
         reviews.push({
@@ -4033,7 +4106,8 @@ async function saveReviewsAdmin() {
             text: document.getElementById(`rev-text-${i}`).value,
             initial: document.getElementById(`rev-init-${i}`).value,
             rating: parseInt(document.getElementById(`rev-rating-${i}`).value),
-            color: colors[i]
+            color: colors[i],
+            profileImg: document.getElementById(`rev-img-base64-${i}`).value // ดึงรูป Base64 ไปด้วย
         });
     }
 
@@ -4043,11 +4117,10 @@ async function saveReviewsAdmin() {
             reviews: reviews,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        Swal.fire('บันทึกสำเร็จ', 'ข้อมูลรีวิวบนหน้าเว็บถูกอัปเดตแล้ว', 'success');
+        Swal.fire('บันทึกสำเร็จ', 'อัปเดตข้อมูลและรูปโปรไฟล์เรียบร้อยแล้ว!', 'success');
     } catch(e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
 }
 
-// เรียกโหลดข้อมูลตอนเปิดหน้า
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadReviewsAdmin, 2000);
 });
