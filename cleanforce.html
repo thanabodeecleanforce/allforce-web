@@ -3564,7 +3564,70 @@ window.useCurrentLocation = function(btnEl) {
                 if (floatNextBtn) floatNextBtn.classList.add('hidden');
             }
         }
-        loadReviewsWeb
+        async function loadReviewsWeb() {
+    try {
+        const doc = await window.cf_db.collection('settings').doc('reviews_settings').get();
+        if(doc.exists) {
+            const data = doc.data();
+            const container = document.getElementById('web-reviews-container');
+            const mapsBtn = document.getElementById('web-maps-btn');
+
+            if(mapsBtn && data.mapsLink) mapsBtn.href = data.mapsLink;
+
+            let html = '';
+            data.reviews.forEach(r => {
+                // 1. สร้างดาว
+                let stars = '';
+                for(let i=0; i<r.rating; i++) stars += '<i class="fa-solid fa-star"></i>';
+
+                // 2. จัดการรูปโปรไฟล์ (Avatar)
+                let avatarHtml = r.profileImg 
+                    ? `<img src="${r.profileImg}" class="w-10 h-10 rounded-full object-cover shadow-sm shrink-0">`
+                    : `<div class="w-10 h-10 ${r.color} rounded-full flex items-center justify-center font-bold shadow-sm shrink-0">${r.initial}</div>`;
+
+                // 3. จัดการไฟล์แนบ (รูปภาพ หรือ วิดีโอ)
+                let mediaHtml = '';
+                if (r.mediaUrl) {
+                    let url = r.mediaUrl.toLowerCase();
+                    // เช็คว่าเป็นวิดีโอหรือไม่ (รองรับ .mp4 หรือลิงก์จาก Firebase Storage ที่มีคำว่า mp4)
+                    if (url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')) {
+                        mediaHtml = `
+                            <div class="mt-4 rounded-xl overflow-hidden bg-black shadow-sm">
+                                <video src="${r.mediaUrl}" controls playsinline class="w-full max-h-48 object-contain"></video>
+                            </div>`;
+                    } else {
+                        mediaHtml = `
+                            <div class="mt-4 rounded-xl overflow-hidden shadow-sm cursor-pointer border border-gray-100" onclick="window.open('${r.mediaUrl}', '_blank')">
+                                <img src="${r.mediaUrl}" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                            </div>`;
+                    }
+                }
+
+                // 4. ประกอบร่างกล่องรีวิวสไตล์ Social Media
+                html += `
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col h-full relative">
+                    <i class="fa-brands fa-google absolute top-6 right-6 text-xl text-gray-200"></i>
+                    
+                    <div class="flex items-center gap-3 mb-3">
+                        ${avatarHtml}
+                        <div>
+                            <p class="font-bold text-sm text-gray-800">${r.name}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <div class="flex text-yellow-400 text-[10px]">${stars}</div>
+                                <span class="text-[9px] text-gray-400"><i class="fa-solid fa-circle-check text-[#000080]"></i> บริการ${r.service}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 text-sm leading-relaxed mb-1 flex-1">"${r.text}"</p>
+                    
+                    ${mediaHtml}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+    } catch(e) { console.error("Error loading reviews:", e); }
+}
 
 // เพิ่มการเรียกใช้งานใน DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
