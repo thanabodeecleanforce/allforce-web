@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์ของฉัน | Cleanforce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Noto Sans Thai', sans-serif; background-color: #F3F7FB; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#1EA7E1', background: '#F3F7FB' } } }
+        }
+    </script>
+</head>
+<body class="text-gray-800 pb-24">
+
+    <header class="bg-white border-b border-gray-100 p-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <a href="cleanforce.html" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:text-primary transition"><i class="fa-solid fa-arrow-left"></i></a>
+            <h1 class="font-bold text-[#000080] text-lg">โปรไฟล์ของฉัน</h1>
+        </div>
+    </header>
+
+    <div class="max-w-2xl mx-auto mt-6 px-4">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative mb-8">
+            <div class="h-28 bg-gradient-to-r from-primary to-blue-600 relative">
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
+            </div>
+            <div class="px-6 pb-6 relative">
+                <div class="flex justify-between items-end -mt-12 mb-4">
+                    <img id="user-avatar" src="https://placehold.co/150" class="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-white object-cover">
+                    <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+                    </button>
+                </div>
+                <h2 id="user-name" class="text-2xl font-bold text-[#000080] leading-tight">กำลังโหลด...</h2>
+                <p id="user-email" class="text-gray-500 text-sm mt-1">-</p>
+            </div>
+        </div>
+
+        <div id="vip-section" class="mb-8 hidden">
+            <div class="flex items-center gap-3 mb-4 px-2">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-100 to-yellow-50 text-yellow-600 border border-yellow-200 flex items-center justify-center text-lg shadow-sm"><i class="fa-solid fa-crown"></i></div>
+                <div>
+                    <h3 class="font-bold text-lg text-yellow-700 leading-tight">แพ็กเกจ VIP / องค์กร</h3>
+                    <p class="text-xs text-gray-500">สิทธิพิเศษและจำนวนครั้งที่เหลือของคุณ</p>
+                </div>
+            </div>
+            <div id="user-custom-packages" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div>
+            <div class="flex items-center gap-3 mb-4 px-2">
+                <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-lg"><i class="fa-solid fa-ticket"></i></div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800 leading-tight">คูปองส่วนลดของฉัน</h3>
+                    <p class="text-xs text-gray-500">คูปองที่คุณเก็บไว้พร้อมใช้งาน</p>
+                </div>
+            </div>
+            
+            <div id="coupons-container" class="space-y-4">
+                <div class="text-center py-10 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <i class="fa-solid fa-spinner fa-spin text-3xl text-primary mb-3"></i>
+                    <p class="text-sm font-bold text-gray-500">กำลังตรวจสอบคูปอง...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyCUMp1enqGwuXLhoa-3W6Fro6UfGWCEE70",
+            authDomain: "allforce-hub.firebaseapp.com",
+            projectId: "allforce-hub",
+            storageBucket: "allforce-hub.firebasestorage.app",
+            messagingSenderId: "206898849342",
+            appId: "1:206898849342:web:35bc0462818da86fb1136f"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // 1. ตรวจสอบการล็อกอิน และดึงข้อมูลทั้งหมด
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                document.getElementById('user-name').textContent = user.displayName || 'ลูกค้า Cleanforce';
+                document.getElementById('user-email').textContent = user.email || '';
+                document.getElementById('user-avatar').src = user.photoURL || 'https://placehold.co/150';
+                
+                // โหลดคูปอง
+                loadMyCoupons(user.uid);
+
+                // 🌟 กู้คืนระบบ: สั่งดึงแพ็กเกจ VIP แบบ Real-time
+                db.collection("users").doc(user.uid).onSnapshot(doc => {
+                    if(doc.exists) {
+                        let data = doc.data();
+                        if(data.customPackages && data.customPackages.length > 0) {
+                            document.getElementById('vip-section').classList.remove('hidden');
+                            renderVIPPackages(data.customPackages);
+                        } else {
+                            document.getElementById('vip-section').classList.add('hidden');
+                        }
+                    }
+                });
+
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // 🌟 กู้คืนระบบ: ฟังก์ชันวาดการ์ด VIP ให้สวยงามเข้ากับหน้าโปรไฟล์
+        function renderVIPPackages(pkgs) {
+            let html = '';
+            pkgs.forEach((pkg) => {
+                if(pkg.remain > 0) {
+                   let expText = pkg.expireDate ? new Date(pkg.expireDate).toLocaleDateString('th-TH') : 'ไม่มีกำหนด';
+                   let nextDateHtml = (pkg.showNextDate && pkg.nextServiceDate) 
+                        ? `<div class="bg-yellow-50 text-yellow-800 p-2.5 rounded-lg text-[11px] font-bold mt-3 border border-yellow-100 flex items-center shadow-inner"><i class="fa-solid fa-calendar-check text-yellow-600 mr-2"></i> รอบถัดไป: ${new Date(pkg.nextServiceDate).toLocaleDateString('th-TH', { dateStyle: 'long' })}</div>` 
+                        : '';
+
+                   let payStatusHtml = '';
+                   if (pkg.totalPrice > 0) {
+                       let due = pkg.totalPrice - (pkg.paidAmount || 0);
+                       payStatusHtml = (due <= 0) 
+                            ? `<span class="text-[10px] bg-green-100 text-green-700 border border-green-200 px-2 py-1 rounded font-bold"><i class="fa-solid fa-check-circle"></i> ชำระครบแล้ว</span>` 
+                            : `<span class="text-[10px] bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded font-bold"><i class="fa-solid fa-clock"></i> ค้างชำระ ${(due).toLocaleString()} ฿</span>`;
+                   }
+
+                   html += `
+                   <div class="bg-white border border-yellow-300 shadow-sm p-5 rounded-2xl relative overflow-hidden group hover:shadow-md transition flex flex-col h-full">
+                       <div class="absolute right-0 top-0 bg-yellow-400 text-yellow-900 text-[11px] font-bold px-4 py-1.5 rounded-bl-xl shadow-sm">เหลือ ${pkg.remain} สิทธิ์</div>
+                       <h4 class="font-bold text-[#000080] text-sm md:text-base mb-1 pr-16 leading-tight">${pkg.name}</h4>
+                       ${pkg.desc ? `<p class="text-[11px] text-gray-500 mb-3 line-clamp-2">${pkg.desc}</p>` : ''}
+                       <div class="flex flex-wrap items-center gap-2 mb-2">
+                           <span class="text-[10px] bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded font-bold"><i class="fa-regular fa-calendar-xmark"></i> หมดอายุ: ${expText}</span>
+                           ${payStatusHtml}
+                       </div>
+                       ${nextDateHtml}
+                       <div class="mt-auto pt-3">
+                           <a href="cleanforce.html" class="inline-block bg-white text-primary border border-primary px-4 py-2 rounded-xl text-[11px] font-bold hover:bg-blue-50 transition w-full text-center shadow-sm">ไปหน้าจองเพื่อใช้สิทธิ์</a>
+                       </div>
+                   </div>`;
+                }
+            });
+            let container = document.getElementById('user-custom-packages');
+            if(container) container.innerHTML = html;
+        }
+
+        // 2. โหลดคูปองของจริงที่ลูกค้าเก็บไว้
+        async function loadMyCoupons(uid) {
+            const container = document.getElementById('coupons-container');
+            try {
+                // ดึงคูปองที่ลูกค้าบันทึกไว้ใน Firebase + LocalStorage
+                let userDoc = await db.collection('users').doc(uid).get();
+                let myCoupons = [];
+                let localCoupons = JSON.parse(localStorage.getItem('my_coupons') || '[]');
+                
+                if (userDoc.exists && userDoc.data().myCoupons) {
+                    myCoupons = [...new Set([...localCoupons, ...userDoc.data().myCoupons])];
+                } else {
+                    myCoupons = localCoupons;
+                }
+                
+                // อัปเดตกลับลงไปในเครื่อง
+                localStorage.setItem('my_coupons', JSON.stringify(myCoupons));
+
+                if (myCoupons.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center justify-center">
+                            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-300">
+                                <i class="fa-solid fa-box-open text-2xl"></i>
+                            </div>
+                            <p class="font-bold text-gray-600">คุณยังไม่มีคูปองส่วนลด</p>
+                            <p class="text-xs text-gray-400 mt-1">สามารถกดเก็บคูปองได้ที่หน้าจองบริการครับ</p>
+                            <a href="cleanforce.html#booking-cf" class="mt-4 px-6 py-2 bg-blue-50 text-primary rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition">ไปเก็บคูปองกันเลย</a>
+                        </div>`;
+                    return;
+                }
+
+                // ดึงข้อมูลรายละเอียดของคูปองนั้นๆ จากฐานข้อมูลกลาง
+                const snapshot = await db.collection('coupons').where('isActive', '==', true).get();
+                let html = '';
+                let hasVisible = false;
+
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+                    if (myCoupons.includes(c.code)) {
+                        hasVisible = true;
+                        let isPercent = c.discountType === 'percent';
+                        let discValue = isPercent ? `${c.discountValue}%` : `฿${c.discountValue.toLocaleString()}`;
+                        let minText = c.minSpend ? `ขั้นต่ำ ${c.minSpend.toLocaleString()}฿` : 'ไม่มีขั้นต่ำ';
+                        let expireText = c.endDate ? new Date(c.endDate).toLocaleDateString('th-TH') : 'ไม่มีวันหมดอายุ';
+                        
+                        html += `
+                        <div class="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex items-stretch">
+                            <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#F3F7FB] rounded-full z-10 border-r border-gray-100"></div>
+                            <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#F3F7FB] rounded-full z-10 border-l border-gray-100"></div>
+
+                            <div class="w-1/3 max-w-[110px] bg-gradient-to-br from-primary to-[#000080] flex flex-col items-center justify-center text-white p-3 border-r-2 border-dashed border-blue-200 relative">
+                                <i class="fa-solid fa-ticket text-3xl opacity-30 absolute top-2 right-2"></i>
+                                <span class="text-xs font-bold opacity-80">ส่วนลด</span>
+                                <span class="font-bold text-xl md:text-2xl leading-none text-center">${discValue}</span>
+                            </div>
+                            
+                            <div class="flex-1 p-4 md:p-5 flex justify-between items-center bg-white pl-6">
+                                <div>
+                                    <h4 class="font-bold text-[#000080] text-sm md:text-base leading-tight">${c.name || 'โค้ดส่วนลดพิเศษ'}</h4>
+                                    <p class="text-[10px] md:text-xs text-gray-500 mt-1">${minText} | หมดอายุ: ${expireText}</p>
+                                    <div class="inline-flex items-center gap-2 mt-2 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg text-primary shadow-inner">
+                                        <span class="font-mono font-bold text-xs md:text-sm tracking-wider">${c.code}</span>
+                                    </div>
+                                </div>
+                                <button onclick="copyCoupon('${c.code}')" class="shrink-0 w-10 h-10 rounded-full bg-gray-50 text-gray-400 hover:bg-primary hover:text-white transition-colors flex items-center justify-center shadow-sm" title="คัดลอกโค้ด">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                    }
+                });
+
+                if (!hasVisible) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                            <p class="font-bold text-gray-600">คูปองที่คุณมีอาจหมดอายุ หรือถูกใช้งานไปแล้วครับ</p>
+                        </div>`;
+                } else {
+                    container.innerHTML = html;
+                }
+
+            } catch (error) {
+                console.error("Error loading coupons:", error);
+                container.innerHTML = '<p class="text-xs text-red-500 text-center">เกิดข้อผิดพลาดในการโหลดข้อมูลคูปอง</p>';
+            }
+        }
+
+        window.copyCoupon = function(code) {
+            navigator.clipboard.writeText(code);
+            Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'คัดลอกโค้ดสำเร็จ!', text: 'นำไปวางในช่องส่วนลดตอนจองได้เลยครับ', showConfirmButton: false, timer: 2000 });
+        }
+
+        window.logout = function() {
+            Swal.fire({
+                title: 'ต้องการออกจากระบบ?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ใช่, ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // แจ้งสถานะออฟไลน์ก่อนออก
+                    if(auth.currentUser) db.collection("users").doc(auth.currentUser.uid).set({ isOnline: false }, { merge: true });
+                    
+                    auth.signOut().then(() => {
+                        localStorage.removeItem('cf_user');
+                        localStorage.removeItem('my_coupons'); // ล้างคูปองในเครื่องทิ้ง
+                        window.location.href = "index.html";
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -638,6 +638,26 @@
         </div>
     </section>
 
+    <section id="reviews-cf" class="py-24 px-6 bg-[#F3F7FB] border-t border-gray-100 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-5xl font-bold font-heading text-[#000080]" data-i18n="review-title">รีวิวจากลูกค้าของเรา</h2>
+            <p class="text-gray-500 font-body mt-4" data-i18n="review-sub">ความประทับใจจากผู้ใช้บริการจริงที่ Cleanforce</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" id="web-reviews-container">
+            <p class="text-center col-span-full text-gray-400 animate-pulse">กำลังโหลดรีวิวล่าสุด...</p>
+        </div>
+
+        <div class="text-center">
+            <a href="#" id="web-maps-btn" target="_blank" class="inline-flex items-center gap-3 bg-white border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-full font-bold hover:border-[#4285F4] hover:text-[#4285F4] transition-all shadow-sm">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" class="w-5 h-5">
+                เขียนรีวิวบน Google Maps
+            </a>
+        </div>
+    </div>
+</section>
+
     <section id="social-cf" class="py-24 px-6 bg-background rounded-t-[3rem] md:rounded-t-[5rem] text-text border-t border-gray-100">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
@@ -1729,7 +1749,7 @@ window.selectDetail = function(field, val, element) {
             
             // ถ้าไม่พบโค้ด และไม่ใช่โหมดเงียบ ให้แจ้งเตือน
             if(!code) {
-                if(!isSilent) Swal.fire({ toast: true, position: 'top', icon: 'warning', title: sysAlerts[window.currentLang].errInput || 'กรุณากรอกโค้ดส่วนลด', showConfirmButton: false, timer: 1500 });
+                if(!isSilent) Swal.fire({ toast: true, position: 'top', icon: 'warning', title: sysAlerts?.[window.currentLang]?.errInput || 'กรุณากรอกโค้ดส่วนลด', showConfirmButton: false, timer: 1500 });
                 return;
             }
 
@@ -1750,7 +1770,7 @@ window.selectDetail = function(field, val, element) {
                 const snapshot = await window.cf_db.collection("coupons").where("code", "==", code).where("isActive", "==", true).get();
                 
                 if (snapshot.empty) {
-                    throw new Error(sysAlerts[window.currentLang].promoNo || "โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว");
+                    throw new Error(sysAlerts?.[window.currentLang]?.promoNo || "โค้ดส่วนลดไม่ถูกต้อง หรือหมดอายุแล้ว");
                 }
 
                 let couponDoc = snapshot.docs[0];
@@ -1821,14 +1841,11 @@ window.selectDetail = function(field, val, element) {
 
                 // 🎉 ผ่านทุกด่าน! นำคูปองใส่ตะกร้า
                 appliedCoupons.push(c);
-                if(inputEl) inputEl.value = ''; 
-                
-                // 🌟 โชว์แจ้งเตือนเฉพาะตอนที่ลูกค้ากดปุ่มด้วยตัวเองเท่านั้น
-                if(!isSilent) {
-                    Swal.fire({ toast: true, position: 'top', icon: 'success', title: sysAlerts[window.currentLang].promoYes || 'ใช้งานโค้ดส่วนลดสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                    if(inputEl) inputEl.value = '';
+                    calculatePricing(); // ← update UI ก่อนเสมอ ไม่ว่า Swal จะ throw หรือไม่
+                    if(!isSilent) {
+                    Swal.fire({ toast: true, position: 'top', icon: 'success', title: sysAlerts?.[window.currentLang]?.promoYes || 'ใช้งานโค้ดส่วนลดสำเร็จ!', showConfirmButton: false, timer: 1500 });
                 }
-                
-                calculatePricing(); // อัปเดตยอดเงินทันที
 
             } catch (error) {
                 // 🌟 โชว์ Error เฉพาะตอนที่ลูกค้ากดปุ่มด้วยตัวเองเท่านั้น
@@ -3002,12 +3019,6 @@ window.useCurrentLocation = function(btnEl) {
         // ==========================================
         const allTimeSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            let today = new Date().toISOString().split('T')[0];
-            let dateInput = document.getElementById('bk-date');
-            if (dateInput) dateInput.setAttribute('min', today);
-        });
-
         document.getElementById('bk-date').addEventListener('change', async function() {
             let selectedDate = this.value;
             let timeSelect = document.getElementById('bk-time');
@@ -3553,6 +3564,45 @@ window.useCurrentLocation = function(btnEl) {
                 if (floatNextBtn) floatNextBtn.classList.add('hidden');
             }
         }
+        async function loadReviewsWeb() {
+    try {
+        const doc = await window.cf_db.collection('settings').doc('reviews_settings').get();
+        if(doc.exists) {
+            const data = doc.data();
+            const container = document.getElementById('web-reviews-container');
+            const mapsBtn = document.getElementById('web-maps-btn');
+
+            if(mapsBtn && data.mapsLink) mapsBtn.href = data.mapsLink;
+
+            let html = '';
+            data.reviews.forEach(r => {
+                let stars = '';
+                for(let i=0; i<r.rating; i++) stars += '<i class="fa-solid fa-star"></i>';
+
+                html += `
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group">
+                    <i class="fa-brands fa-google absolute top-6 right-6 text-2xl text-gray-200 group-hover:text-blue-500 transition-colors"></i>
+                    <div class="flex text-yellow-400 text-sm mb-4">${stars}</div>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6 font-medium">"${r.text}"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 ${r.color} rounded-full flex items-center justify-center font-bold">${r.initial}</div>
+                        <div>
+                            <p class="font-bold text-sm text-gray-800">${r.name}</p>
+                            <p class="text-[10px] text-gray-400">${r.service}</p>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+    } catch(e) { console.error("Error loading reviews:", e); }
+}
+
+// เพิ่มการเรียกใช้งานใน DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadReviewsWeb, 1500);
+});
+        
     </script>
     
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDse9ZYd5v_NXDXJiyT5xKdjCADAiBO1qA&libraries=places" async defer></script>

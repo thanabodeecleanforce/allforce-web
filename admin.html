@@ -81,7 +81,7 @@
                 <button onclick="switchMainTab('booking')" id="nav-booking" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-calendar-check w-5 text-center"></i> <span class="whitespace-nowrap">รายการจอง</span></button>
                 <button onclick="switchMainTab('coupons')" id="nav-coupons" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-ticket w-5 text-center"></i> <span class="whitespace-nowrap">ส่วนลด & คูปอง</span></button>
                 <button onclick="switchMainTab('line')" id="nav-line" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-brands fa-line text-green-500 w-5 text-center text-lg"></i> <span class="whitespace-nowrap">ตั้งค่าบิล & LINE</span></button>
-                <button onclick="switchMainTab('clients')" id="nav-clients" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-handshake w-5 text-center"></i> <span class="whitespace-nowrap">ลูกค้าของเรา</span></button>
+                <button onclick="switchMainTab('clients')" id="nav-clients" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-handshake w-5 text-center"></i> <span class="whitespace-nowrap">ลูกค้าของเราแ & รีวิวกูเกิ้ลแม็พ</span></button>
                 <button onclick="switchMainTab('portfolio')" id="nav-portfolio" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-images w-5 text-center"></i> <span class="whitespace-nowrap">ผลงานของเรา</span></button>
                 <button onclick="switchMainTab('sociallinks')" id="nav-sociallinks" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-hashtag w-5 text-center text-lg text-blue-500"></i> <span class="whitespace-nowrap">จัดการปุ่มโซเชียล</span></button>
                 <button onclick="switchMainTab('categories')" id="nav-categories" class="nav-btn w-auto md:w-full text-left px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition shrink-0 flex items-center gap-3"><i class="fa-solid fa-layer-group w-5 text-center text-indigo-500"></i> <span class="whitespace-nowrap">โลโก้หมวดหมู่</span></button>
@@ -310,6 +310,28 @@
             <div class="mt-6 text-right border-t border-gray-100 pt-6">
                 <button onclick="saveClientsSettings(event)" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-save"></i> บันทึกข้อมูลลูกค้า</button>
             </div>
+            <div class="mt-8 bg-white p-6 rounded-2xl border border-blue-100 shadow-sm">
+    <div class="flex items-center justify-between mb-6 border-b pb-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-800">จัดการรีวิวจากลูกค้า</h3>
+                <p class="text-xs text-gray-500">แก้ไขข้อความรีวิว 3 กล่องหลัก และลิงก์ Google Maps</p>
+            </div>
+        </div>
+        <button onclick="saveReviewsAdmin()" class="bg-primary text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-blue-600 transition">บันทึกข้อมูลรีวิว</button>
+    </div>
+
+    <div class="mb-6">
+        <label class="block text-xs font-bold text-gray-500 mb-2">ลิงก์ Google Maps สำหรับปุ่ม "เขียนรีวิว"</label>
+        <input type="text" id="review-maps-link" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none focus:border-primary" placeholder="วางลิงก์ Google Business ของคุณที่นี่">
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="admin-reviews-list">
+        </div>
+</div>
         </div>
 
         <div id="portfolio-container" class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6 animate-in fade-in">
@@ -3963,6 +3985,73 @@ function getWeekDates(weeksAgo) {
                 }
             }
         }
+
+        // ฟังก์ชันโหลดข้อมูลรีวิวมาโชว์ในแอดมิน
+async function loadReviewsAdmin() {
+    const doc = await db.collection('settings').doc('reviews_settings').get();
+    const container = document.getElementById('admin-reviews-list');
+    let data = doc.exists ? doc.data() : { 
+        mapsLink: '', 
+        reviews: [
+            { name: 'คุณ กิตติศักดิ์', text: 'บริการดีมากครับ...', service: 'บริการทำความสะอาดโซฟา', rating: 5, initial: 'ก', color: 'bg-blue-100 text-primary' },
+            { name: 'คุณ Ann', text: 'เรียกใช้บริการ...', service: 'บริการ Big Cleaning', rating: 5, initial: 'A', color: 'bg-pink-100 text-pink-500' },
+            { name: 'คุณ เมย์', text: 'น้ำยาที่ใช้...', service: 'บริการทำความสะอาดคอนโด', rating: 5, initial: 'M', color: 'bg-green-100 text-green-600' }
+        ] 
+    };
+
+    document.getElementById('review-maps-link').value = data.mapsLink || '';
+    
+    let html = '';
+    data.reviews.forEach((r, i) => {
+        html += `
+        <div class="p-4 border rounded-xl bg-gray-50 space-y-3">
+            <p class="font-bold text-xs text-primary">กล่องที่ ${i+1}</p>
+            <input type="text" id="rev-name-${i}" value="${r.name}" class="w-full p-2 text-xs border rounded-lg" placeholder="ชื่อลูกค้า">
+            <input type="text" id="rev-service-${i}" value="${r.service}" class="w-full p-2 text-xs border rounded-lg" placeholder="บริการที่ใช้">
+            <textarea id="rev-text-${i}" class="w-full p-2 text-xs border rounded-lg" rows="3" placeholder="ข้อความรีวิว">${r.text}</textarea>
+            <div class="flex gap-2">
+                <input type="text" id="rev-init-${i}" value="${r.initial}" class="w-1/3 p-2 text-xs border rounded-lg" placeholder="ตัวอักษร">
+                <select id="rev-rating-${i}" class="w-2/3 p-2 text-xs border rounded-lg">
+                    <option value="5" ${r.rating==5?'selected':''}>5 ดาว</option>
+                    <option value="4" ${r.rating==4?'selected':''}>4 ดาว</option>
+                </select>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+// ฟังก์ชันบันทึกข้อมูล
+async function saveReviewsAdmin() {
+    let reviews = [];
+    const colors = ['bg-blue-100 text-primary', 'bg-pink-100 text-pink-500', 'bg-green-100 text-green-600'];
+    
+    for(let i=0; i<3; i++) {
+        reviews.push({
+            name: document.getElementById(`rev-name-${i}`).value,
+            service: document.getElementById(`rev-service-${i}`).value,
+            text: document.getElementById(`rev-text-${i}`).value,
+            initial: document.getElementById(`rev-init-${i}`).value,
+            rating: parseInt(document.getElementById(`rev-rating-${i}`).value),
+            color: colors[i]
+        });
+    }
+
+    try {
+        await db.collection('settings').doc('reviews_settings').set({
+            mapsLink: document.getElementById('review-maps-link').value,
+            reviews: reviews,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        Swal.fire('บันทึกสำเร็จ', 'ข้อมูลรีวิวบนหน้าเว็บถูกอัปเดตแล้ว', 'success');
+    } catch(e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
+}
+
+// เรียกโหลดข้อมูลตอนเปิดหน้า
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadReviewsAdmin, 2000);
+});
+
         // โหลดข้อมูลโซเชียลตอนเปิดหน้าเว็บ
         document.addEventListener('DOMContentLoaded', () => {
             if(typeof loadSocialLinksAdmin === 'function') setTimeout(loadSocialLinksAdmin, 1500);
