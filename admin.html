@@ -1938,78 +1938,25 @@
             });
         }
 
-        // 🌟 ฟังก์ชันดึงประวัติและแสดงหน้าจอรายละเอียด (Auto-Generate HTML)
+        // 🌟 ฟังก์ชันดึงประวัติและแสดงหน้าจอรายละเอียด (แบบล้างบาง สร้างใหม่ทุกครั้ง ป้องกันบั๊ก 100%)
         window.openUserDetailModal = async function(uid) {
-            Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            
-            try {
-                // 1. ตรวจสอบและสร้างโครงหน้าต่าง Popup อัตโนมัติถ้ายังไม่มี
-                if (!document.getElementById('user-detail-modal')) {
-                    const modalHtml = `
-                    <div id="user-detail-modal" class="fixed inset-0 bg-black/60 z-[9999] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
-                        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col overflow-hidden">
-                            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
-                                <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-id-card text-primary mr-2"></i>ข้อมูลเชิงลึกลูกค้า</h3>
-                                <button onclick="closeUserDetailModal()" class="text-gray-400 hover:text-red-500 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                            <div class="flex-1 overflow-y-auto p-6 bg-gray-50/50">
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                    <div class="lg:col-span-1 space-y-6">
-                                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center relative overflow-hidden">
-                                            <div class="absolute top-0 left-0 w-full h-16 bg-[#000080]"></div>
-                                            <img id="udm-profile-img" src="https://placehold.co/150" class="w-24 h-24 rounded-full border-4 border-white shadow-md mx-auto relative z-10 object-cover bg-white">
-                                            <h4 id="udm-name" class="font-bold text-lg text-gray-800 mt-3">-</h4>
-                                            <p id="udm-provider" class="text-[10px] font-bold text-gray-500 mt-1">-</p>
-                                        </div>
-                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-                                            <h5 class="font-bold text-sm text-[#000080] border-b pb-2"><i class="fa-solid fa-address-book text-primary mr-1"></i> ติดต่อ</h5>
-                                            <div><p class="text-[10px] text-gray-400 font-bold mb-0.5">อีเมล</p><p id="udm-email" class="text-xs font-bold text-gray-700">-</p></div>
-                                            <div><p class="text-[10px] text-gray-400 font-bold mb-0.5">เบอร์โทรศัพท์</p><p id="udm-phone" class="text-xs font-bold text-gray-700">-</p></div>
-                                            <div><p class="text-[10px] text-gray-400 font-bold mb-0.5">ที่อยู่</p><p id="udm-address" class="text-xs font-bold text-gray-700 line-clamp-3">-</p></div>
-                                        </div>
-                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
-                                            <h5 class="font-bold text-sm text-[#000080] border-b pb-2"><i class="fa-solid fa-clock-rotate-left text-primary mr-1"></i> ประวัติระบบ</h5>
-                                            <div class="flex justify-between"><span class="text-xs text-gray-500">สมัครเมื่อ</span><span id="udm-created" class="text-xs font-bold text-gray-700">-</span></div>
-                                            <div class="flex justify-between"><span class="text-xs text-gray-500">ออนไลน์ล่าสุด</span><span id="udm-last-login" class="text-xs font-bold text-primary">-</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="lg:col-span-2 space-y-6">
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-primary text-lg"><i class="fa-solid fa-cart-flatbed"></i></div>
-                                                <div><p class="text-[10px] font-bold text-gray-400">ยอดจองสำเร็จ</p><p class="text-xl font-bold text-gray-800"><span id="udm-total-bookings">0</span></p></div>
-                                            </div>
-                                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 text-lg"><i class="fa-solid fa-coins"></i></div>
-                                                <div><p class="text-[10px] font-bold text-gray-400">ใช้จ่ายไปแล้ว</p><p id="udm-total-spent" class="text-xl font-bold text-green-600">0 ฿</p></div>
-                                            </div>
-                                        </div>
-                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                                            <h5 class="font-bold text-sm text-[#000080] mb-4"><i class="fa-solid fa-list text-primary mr-1"></i> รายการจองล่าสุด</h5>
-                                            <div id="udm-bookings-list" class="space-y-1"></div>
-                                        </div>
-                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                                            <h5 class="font-bold text-sm text-[#000080] mb-4"><i class="fa-solid fa-ticket text-primary mr-1"></i> คูปอง</h5>
-                                            <div id="udm-coupons-list"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                    document.body.insertAdjacentHTML('beforeend', modalHtml);
-                }
+            Swal.fire({ title: 'กำลังดึงข้อมูลเชิงลึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-                // 2. ดึงข้อมูลผู้ใช้
+            try {
+                // 1. ลบ Modal เก่าทิ้งก่อน (ถ้ามีค้างอยู่) จะได้ไม่บั๊กซ้อนกัน
+                let oldModal = document.getElementById('user-detail-modal');
+                if (oldModal) oldModal.remove();
+
+                // 2. ดึงข้อมูลผู้ใช้งานหลัก
                 let doc = await db.collection("users").doc(uid).get();
-                if(!doc.exists) throw new Error("ไม่พบข้อมูลผู้ใช้งานรายนี้ในระบบ");
+                if(!doc.exists) throw new Error("ไม่พบข้อมูลผู้ใช้งานนี้");
                 let u = doc.data();
 
-                // 3. ดึงประวัติการจอง (รองรับทั้งกรณีมี Index และไม่มี Index)
+                // 3. ดึงข้อมูลการจอง (รองรับทั้งกรณีรอ Index และมี Index แล้ว)
                 let bookingsSnap;
                 try {
                     bookingsSnap = await db.collection("bookings").where("userId", "==", uid).orderBy("createdAt", "desc").get();
-                } catch (idxErr) {
+                } catch (e) {
                     bookingsSnap = await db.collection("bookings").where("userId", "==", uid).get();
                 }
 
@@ -2030,80 +1977,135 @@
                     }
                 });
 
-                // เรียงวันที่เองเพื่อความชัวร์
+                // เรียงลำดับวันที่ใหม่ล่าสุดไว้บนสุด
                 bookings.sort((a, b) => {
                     let timeA = a.createdAt ? (a.createdAt.seconds || new Date(a.createdAt).getTime()) : 0;
                     let timeB = b.createdAt ? (b.createdAt.seconds || new Date(b.createdAt).getTime()) : 0;
                     return timeB - timeA;
                 });
-
                 usedCouponsList = [...new Set(usedCouponsList)];
 
-                // 4. เอาข้อมูลยัดใส่ HTML
-                document.getElementById('udm-name').textContent = u.name || 'ไม่มีชื่อ';
-                document.getElementById('udm-email').textContent = u.email || '-';
-                document.getElementById('udm-phone').textContent = latestPhone;
-                document.getElementById('udm-address').textContent = latestAddress;
-                document.getElementById('udm-total-bookings').textContent = bookings.length;
-                document.getElementById('udm-total-spent').textContent = totalSpent.toLocaleString() + ' ฿';
-                document.getElementById('udm-profile-img').src = u.photoURL || 'https://placehold.co/150';
-
-                let providerStr = 'สมัครปกติ/อีเมล';
-                if (u.email && u.email.includes('@gmail.com')) providerStr = '<i class="fa-brands fa-google text-red-500"></i> Google';
-                if ((u.email && u.email.includes('line.me')) || (u.photoURL && u.photoURL.includes('line-scdn.net'))) providerStr = '<i class="fa-brands fa-line text-green-500"></i> LINE';
-                document.getElementById('udm-provider').innerHTML = providerStr;
+                // 4. เตรียมข้อมูลต่างๆ ให้พร้อมแสดงผล
+                let providerStr = '<span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-envelope"></i> สมัครด้วยอีเมล</span>';
+                if (u.email && u.email.includes('@gmail.com')) providerStr = '<span class="bg-red-50 text-red-500 border border-red-100 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fa-brands fa-google"></i> Google</span>';
+                if ((u.email && u.email.includes('line.me')) || (u.photoURL && u.photoURL.includes('line-scdn.net'))) providerStr = '<span class="bg-green-50 text-green-600 border border-green-100 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fa-brands fa-line"></i> LINE</span>';
 
                 let createdStr = "-";
                 if(u.createdAt) createdStr = typeof u.createdAt.toDate === 'function' ? u.createdAt.toDate().toLocaleDateString('th-TH') : new Date(u.createdAt).toLocaleDateString('th-TH');
-                document.getElementById('udm-created').textContent = createdStr;
 
                 let loginStr = "-";
                 if(u.lastLogin) loginStr = typeof u.lastLogin.toDate === 'function' ? u.lastLogin.toDate().toLocaleString('th-TH') : new Date(u.lastLogin).toLocaleString('th-TH');
-                document.getElementById('udm-last-login').textContent = loginStr;
 
+                // สร้าง HTML รายการจอง
                 let bHtml = '';
                 if (bookings.length === 0) {
-                    bHtml = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg">ไม่พบประวัติการจอง</p>';
+                    bHtml = '<p class="text-xs text-gray-400 italic text-center py-4 bg-gray-50 rounded-lg border border-gray-200">ไม่พบประวัติการจอง</p>';
                 } else {
                     bookings.slice(0, 5).forEach(b => {
-                        let statusColor = b.status === 'สำเร็จ' ? 'text-green-600 bg-green-50 border-green-200' : 'text-blue-600 bg-blue-50 border-blue-200';
-                        bHtml += `<div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg border mb-2">
-                            <div><p class="font-bold text-xs">${b.bookingDate || '-'}</p><p class="text-[9px] text-gray-500">${b.baseService || '-'}</p></div>
-                            <div class="text-right"><p class="font-bold text-primary text-xs">${(b.totalPrice||0).toLocaleString()} ฿</p><span class="text-[9px] px-1.5 rounded border ${statusColor}">${b.status || 'รอ'}</span></div>
+                        let statusColor = b.status === 'สำเร็จ' ? 'text-green-600 bg-green-50 border-green-200' : (b.status === 'ยกเลิก' ? 'text-red-600 bg-red-50 border-red-200' : 'text-blue-600 bg-blue-50 border-blue-200');
+                        bHtml += `<div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-lg border border-gray-100 mb-2 shadow-sm">
+                            <div><p class="font-bold text-xs text-gray-800">${b.bookingDate || '-'}</p><p class="text-[9px] text-gray-500">${b.baseService || '-'}</p></div>
+                            <div class="text-right"><p class="font-bold text-primary text-xs">${(b.totalPrice||0).toLocaleString()} ฿</p><span class="text-[9px] px-1.5 py-0.5 rounded border font-bold ${statusColor}">${b.status || 'รอ'}</span></div>
                         </div>`;
                     });
                 }
-                document.getElementById('udm-bookings-list').innerHTML = bHtml;
 
+                // สร้าง HTML คูปอง
                 let cHtml = '';
                 let myCoupons = u.myCoupons || [];
                 if(myCoupons.length > 0) {
-                    cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1">คูปองที่เก็บไว้:</p><div class="flex flex-wrap gap-1">';
-                    myCoupons.forEach(c => cHtml += `<span class="bg-pink-50 text-pink-600 border border-pink-100 px-2 py-1 rounded text-[9px] font-bold">${c}</span>`);
+                    cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1">คูปองที่เก็บไว้ (รอใช้):</p><div class="flex flex-wrap gap-1 mb-3">';
+                    myCoupons.forEach(c => cHtml += `<span class="bg-pink-50 text-pink-600 border border-pink-100 px-2 py-1 rounded text-[9px] font-bold shadow-sm">${c}</span>`);
                     cHtml += '</div>';
                 }
-                document.getElementById('udm-coupons-list').innerHTML = cHtml || '<p class="text-xs text-gray-400 italic">ไม่มีข้อมูลคูปอง</p>';
+                if(usedCouponsList.length > 0) {
+                    cHtml += '<p class="text-[10px] font-bold text-gray-500 mb-1">เคยใช้คูปองแล้ว:</p><div class="flex flex-wrap gap-1">';
+                    usedCouponsList.forEach(c => cHtml += `<span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-1 rounded text-[9px] font-bold"><i class="fa-solid fa-check text-green-500"></i> ${c}</span>`);
+                    cHtml += '</div>';
+                }
+                if(!cHtml) cHtml = '<p class="text-xs text-gray-400 italic text-center py-2">ไม่เคยเก็บหรือใช้งานคูปอง</p>';
 
-                // 5. ปิด Loader และเปิดหน้าต่าง
-                Swal.close();
-                document.getElementById('user-detail-modal').classList.remove('hidden');
-                document.getElementById('user-detail-modal').classList.add('flex');
+                // 5. ประกอบร่าง HTML ของ Popup แบบยัดข้อมูลลงไปให้เสร็จสรรพ
+                const modalHtml = `
+                    <div id="user-detail-modal" style="z-index: 99999;" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                            
+                            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                <h3 class="font-bold text-lg text-[#000080]"><i class="fa-solid fa-id-card text-primary mr-2"></i>ข้อมูลเชิงลึกลูกค้า</h3>
+                                <button onclick="closeUserDetailModal()" class="text-gray-400 hover:text-red-500 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 transition"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto p-6 bg-gray-50/50 hide-scroll">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    
+                                    <div class="lg:col-span-1 space-y-6">
+                                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center relative overflow-hidden">
+                                            <div class="absolute top-0 left-0 w-full h-16 bg-[#000080]"></div>
+                                            <img src="${u.photoURL || 'https://placehold.co/150'}" class="w-24 h-24 rounded-full border-4 border-white shadow-md mx-auto relative z-10 object-cover bg-white">
+                                            <h4 class="font-bold text-lg text-gray-800 mt-3">${u.name || 'ไม่มีชื่อ'}</h4>
+                                            <div class="mt-2">${providerStr}</div>
+                                        </div>
+                                        
+                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                                            <h5 class="font-bold text-sm text-[#000080] border-b pb-2"><i class="fa-solid fa-address-book text-primary mr-1"></i> ข้อมูลติดต่อ</h5>
+                                            <div><p class="text-[10px] text-gray-400 font-bold mb-0.5 uppercase">อีเมล</p><p class="text-xs font-bold text-gray-700">${u.email || '-'}</p></div>
+                                            <div><p class="text-[10px] text-gray-400 font-bold mb-0.5 uppercase">เบอร์โทรศัพท์ (ล่าสุด)</p><p class="text-xs font-bold text-gray-700">${latestPhone}</p></div>
+                                            <div><p class="text-[10px] text-gray-400 font-bold mb-0.5 uppercase">ที่อยู่ (ล่าสุด)</p><p class="text-xs font-bold text-gray-700 line-clamp-3">${latestAddress}</p></div>
+                                        </div>
+
+                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
+                                            <h5 class="font-bold text-sm text-[#000080] border-b pb-2"><i class="fa-solid fa-clock-rotate-left text-primary mr-1"></i> ประวัติระบบ</h5>
+                                            <div class="flex justify-between items-center"><span class="text-[10px] text-gray-500">สมัครเมื่อ</span><span class="text-[10px] font-bold text-gray-700">${createdStr}</span></div>
+                                            <div class="flex justify-between items-center"><span class="text-[10px] text-gray-500">ออนไลน์ล่าสุด</span><span class="text-[10px] font-bold text-primary">${loginStr}</span></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="lg:col-span-2 space-y-6">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                                                <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-primary text-xl"><i class="fa-solid fa-cart-flatbed"></i></div>
+                                                <div><p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ยอดจองสำเร็จ</p><p class="text-xl font-bold text-gray-800">${bookings.length} <span class="text-xs font-normal">ครั้ง</span></p></div>
+                                            </div>
+                                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                                                <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600 text-xl"><i class="fa-solid fa-coins"></i></div>
+                                                <div><p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ใช้จ่ายไปแล้ว</p><p class="text-xl font-bold text-green-600">${totalSpent.toLocaleString()} ฿</p></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                                            <h5 class="font-bold text-sm text-[#000080] mb-4"><i class="fa-solid fa-list text-primary mr-1"></i> รายการจองล่าสุด</h5>
+                                            <div class="space-y-1">${bHtml}</div>
+                                        </div>
+                                        
+                                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                                            <h5 class="font-bold text-sm text-[#000080] mb-4"><i class="fa-solid fa-ticket text-primary mr-1"></i> พฤติกรรมการใช้คูปอง</h5>
+                                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">${cHtml}</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                // 6. แทรก HTML ที่สร้างเสร็จแล้ว ลงไปแสดงผลในหน้าจอทันที
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                document.body.style.overflow = 'hidden'; // ล็อกพื้นหลังไม่ให้เลื่อน
+
+                Swal.close(); // ปิด Loader
 
             } catch (e) {
-                console.error("User Modal Error: ", e);
-                // ดักบั๊กแจ้งเตือนทับซ้อนของ SweetAlert
-                setTimeout(() => {
-                    Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้: ' + e.message, 'error');
-                }, 300);
+                console.error("User Insight Error:", e);
+                Swal.close();
+                setTimeout(() => Swal.fire('เกิดข้อผิดพลาด', 'โหลดข้อมูลไม่สำเร็จ: ' + e.message, 'error'), 300);
             }
         }
 
+        // 🌟 ฟังก์ชันปิดหน้าจอ (กดปิดปุ๊บ ลบ HTML ทิ้งทันที ป้องกันบั๊ก)
         window.closeUserDetailModal = function() {
             let modal = document.getElementById('user-detail-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
+            if (modal) modal.remove(); 
+            document.body.style.overflow = ''; 
         }
 
         let currentPkgUserId = '';
