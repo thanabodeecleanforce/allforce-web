@@ -1017,6 +1017,7 @@
 
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
+        window.cf_db = db;
         const auth = firebase.auth();
 
         // ============================================================

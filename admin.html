@@ -647,6 +647,41 @@
                     <tbody id="coupons-list" class="divide-y divide-gray-100"></tbody>
                 </table>
             </div>
+
+            <!-- 🤝 CRM: ส่วนลดลูกค้าเก่าอัตโนมัติ -->
+            <div class="p-4 md:p-6 border-t border-gray-100 bg-purple-50/50">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-bold text-sm text-purple-800"><i class="fa-solid fa-user-clock mr-1"></i> ระบบ CRM: ส่วนลดลูกค้าเก่าอัตโนมัติ</h3>
+                        <p class="text-[11px] text-purple-600 mt-0.5">เมื่อลูกค้ากรอกเบอร์โทรแล้วพบประวัติการจองเก่า ระบบจะ Auto-Apply โค้ดให้อัตโนมัติ (ต้องสร้างโค้ดในตาราง "คูปอง" ด้านบนก่อน)</p>
+                    </div>
+                    <button onclick="saveCrmSettings()" class="text-[10px] bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-purple-700 transition shadow-sm flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-floppy-disk"></i> บันทึก
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-3 rounded-xl border border-purple-200 shadow-sm flex items-center justify-between">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase block">เปิดใช้งาน CRM</label>
+                            <p class="text-xs text-gray-500 mt-0.5">Auto-Apply โค้ดให้ลูกค้าเก่า</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="crm-enabled" class="sr-only peer">
+                            <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                        </label>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-purple-200 shadow-sm">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">โค้ดส่วนลดลูกค้าเก่า</label>
+                        <input type="text" id="crm-code" class="w-full text-lg font-bold outline-none text-purple-600 uppercase mt-1" placeholder="เช่น LOYAL10">
+                        <p class="text-[9px] text-gray-400 mt-1">ต้องสร้างโค้ดนี้ในตารางคูปองด้านบนก่อน</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-purple-200 shadow-sm">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">ข้อความยินดีต้อนรับ</label>
+                        <input type="text" id="crm-msg" class="w-full text-sm font-medium outline-none text-gray-700 mt-1" placeholder="ยินดีต้อนรับกลับครับ! 🎉">
+                    </div>
+                </div>
+                <div id="crm-status-msg" class="mt-3 text-xs text-gray-500 hidden"></div>
+            </div>
         </div>
 
         
@@ -1017,6 +1052,7 @@
 
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
+        window.cf_db = db;
         const auth = firebase.auth();
 
         // ============================================================
@@ -1819,7 +1855,9 @@
                 loadNewsAdmin();
             } else if (type === 'coupons') {
                 document.getElementById('coupons-container').classList.remove('hidden'); 
-                loadCouponsAdmin(); 
+                loadCouponsAdmin();
+                if (typeof loadGlobalDiscountRules === 'function') loadGlobalDiscountRules();
+                if (typeof loadCrmSettings === 'function') loadCrmSettings();
             } else if (type === 'contact') {
                 document.getElementById('contact-container').classList.remove('hidden');
                 loadContactAdmin();
@@ -3246,6 +3284,74 @@ function getWeekDates(weeksAgo) {
                 await db.collection('settings').doc('discount_rules').set(data);
                 Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'บันทึกกฎระบบแล้ว', showConfirmButton: false, timer: 1500});
             } catch (e) { Swal.fire('Error', e.message, 'error'); }
+        }
+
+        // ==========================================
+        // 🤝 CRM: ส่วนลดลูกค้าเก่าอัตโนมัติ
+        // ==========================================
+        window.loadCrmSettings = async function() {
+            try {
+                let doc = await db.collection('settings').doc('crm_settings').get();
+                if (doc.exists) {
+                    let d = doc.data();
+                    document.getElementById('crm-enabled').checked = d.enabled || false;
+                    document.getElementById('crm-code').value = d.code || '';
+                    document.getElementById('crm-msg').value = d.welcomeMsg || '';
+                    let statusEl = document.getElementById('crm-status-msg');
+                    if (statusEl && d.enabled && d.code) {
+                        statusEl.className = 'mt-3 text-xs text-green-600 font-bold';
+                        statusEl.textContent = `✅ CRM เปิดอยู่: ลูกค้าเก่าจะได้รับโค้ด "${d.code}" อัตโนมัติ`;
+                        statusEl.classList.remove('hidden');
+                    }
+                }
+            } catch(e) { console.log("ยังไม่มีการตั้งค่า CRM"); }
+        }
+
+        window.saveCrmSettings = async function() {
+            let code = document.getElementById('crm-code').value.trim().toUpperCase();
+            let enabled = document.getElementById('crm-enabled').checked;
+            let welcomeMsg = document.getElementById('crm-msg').value.trim();
+            let statusEl = document.getElementById('crm-status-msg');
+
+            if (enabled && !code) {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: 'กรุณาระบุโค้ดส่วนลดก่อนเปิดใช้งาน', showConfirmButton: false, timer: 2000 });
+                return;
+            }
+
+            // ตรวจสอบว่าโค้ดที่ระบุมีอยู่จริงในระบบหรือไม่
+            if (enabled && code) {
+                try {
+                    let snap = await db.collection('coupons').where('code', '==', code).where('isActive', '==', true).get();
+                    if (snap.empty) {
+                        let confirm = await Swal.fire({
+                            icon: 'warning',
+                            title: `ไม่พบโค้ด "${code}" ในระบบ`,
+                            text: 'โค้ดนี้ยังไม่ได้ถูกสร้าง หรือถูกปิดใช้งานอยู่ ต้องการบันทึกต่อไปไหม?',
+                            showCancelButton: true,
+                            confirmButtonText: 'บันทึกต่อ',
+                            cancelButtonText: 'ยกเลิก'
+                        });
+                        if (!confirm.isConfirmed) return;
+                    }
+                } catch(e) {}
+            }
+
+            try {
+                await db.collection('settings').doc('crm_settings').set({
+                    enabled,
+                    code,
+                    welcomeMsg: welcomeMsg || 'ยินดีต้อนรับกลับครับ! เราเพิ่มส่วนลดลูกค้าเก่าให้เรียบร้อยแล้ว 🎉',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                if (statusEl) {
+                    statusEl.className = 'mt-3 text-xs font-bold ' + (enabled ? 'text-green-600' : 'text-gray-400');
+                    statusEl.textContent = enabled
+                        ? `✅ CRM เปิดอยู่: ลูกค้าเก่าจะได้รับโค้ด "${code}" อัตโนมัติ`
+                        : '⏸ ระบบ CRM ถูกปิดอยู่';
+                    statusEl.classList.remove('hidden');
+                }
+                Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'บันทึกการตั้งค่า CRM แล้ว', showConfirmButton: false, timer: 1500});
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
         }
 
         // ==========================================

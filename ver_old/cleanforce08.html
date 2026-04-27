@@ -1857,12 +1857,11 @@ window.selectDetail = function(field, val, element) {
                 if(!isSilent) {
                     Swal.fire({ toast: true, position: 'top', icon: 'error', title: error.message, showConfirmButton: false, timer: 3000 });
                 }
-            } finally {
-                // ✅ [แก้บัก] ใช้ finally เพื่อให้ปุ่มคืนค่าเสมอ ไม่ว่าจะ success หรือ error
-                if(btn) {
-                    btn.innerHTML = originalBtnText || 'ใช้โค้ด';
-                    btn.disabled = false;
-                }
+            }
+
+            if(btn) {
+                btn.innerHTML = originalBtnText || 'ใช้โค้ด'; 
+                btn.disabled = false;
             }
         }
 
@@ -2339,44 +2338,20 @@ try {
             if (phoneInput) {
                 phoneInput.addEventListener('blur', async function() {
                     let phoneStr = this.value.trim();
-                    if(phoneStr.length >= 9) {
+                    if(phoneStr.length >= 9) { // ถ้ากรอกเบอร์ครบ
                         try {
-                            // 1. โหลดการตั้งค่า CRM จาก Firebase (แอดมินตั้งค่าได้)
-                            let crmSettings = { enabled: false, code: '', welcomeMsg: '' };
-                            try {
-                                let crmDoc = await window.cf_db.collection('settings').doc('crm_settings').get();
-                                if (crmDoc.exists) crmSettings = { ...crmSettings, ...crmDoc.data() };
-                            } catch(e) { console.warn('โหลด CRM Settings ไม่ได้', e); }
-
-                            // 2. ถ้าแอดมินปิดฟีเจอร์ CRM หรือไม่มีโค้ด → ไม่ทำอะไร
-                            if (!crmSettings.enabled || !crmSettings.code) return;
-
-                            // 3. ตรวจสอบว่าเป็นลูกค้าเก่าไหม
+                            // จำลองการวิ่งไปค้นหาในฐานข้อมูล Bookings / Users
                             let snap = await window.cf_db.collection("bookings").where("phone", "==", phoneStr).limit(1).get();
-                            if (snap.empty) return; // ลูกค้าใหม่ → ไม่ทำอะไร
-                            if (appliedCoupons.length > 0) return; // มีคูปองอยู่แล้ว → ข้าม
-
-                            // 4. Auto-Apply แบบเงียบ
-                            console.log("✅ CRM: พบลูกค้าเก่า กำลัง Auto-Apply โค้ด:", crmSettings.code);
-                            let inputEl = document.getElementById('promo-code-input');
-                            if(inputEl) inputEl.value = crmSettings.code;
-
-                            let countBefore = appliedCoupons.length;
-                            await applyPromoCode(true); // silent = true
-                            let wasApplied = appliedCoupons.length > countBefore;
-
-                            // 5. แสดง Toast เฉพาะเมื่อคูปองถูก Apply จริงๆ พร้อมแสดงจำนวนส่วนลด
-                            if (wasApplied) {
-                                let appliedCode = crmSettings.code.toUpperCase();
-                                let couponData = appliedCoupons.find(c => c.code === appliedCode);
-                                let discText = '';
-                                if (couponData) {
-                                    discText = couponData.discountType === 'percent'
-                                        ? ` (ลด ${couponData.discountValue}%)`
-                                        : ` (ลด ฿${Number(couponData.discountValue).toLocaleString()})`;
-                                }
-                                let msg = crmSettings.welcomeMsg || 'ยินดีต้อนรับกลับครับ! เราเพิ่มส่วนลดลูกค้าเก่าให้เรียบร้อยแล้ว 🎉';
-                                Swal.fire({ toast: true, position: 'top', icon: 'success', title: msg + discText, showConfirmButton: false, timer: 4000 });
+                            if(!snap.empty && appliedCoupons.length === 0) {
+                                // ถ้าเคยจองแล้ว = ลูกค้าเก่า Auto-apply ส่วนลดลูกค้าประจำทันที (สมมติโค้ด VIP10)
+                                console.log("พบประวัติลูกค้าเก่า Auto-Apply โค้ดส่วนลด");
+                                let vipCode = "VIP10"; 
+                                let inputEl = document.getElementById('promo-code-input');
+                                if(inputEl) inputEl.value = vipCode;
+                                
+                                // สั่งทำงานแบบเงียบๆ
+                                await applyPromoCode(true); // เพิ่ม Parameter (true) เพื่อไม่ให้แสดง Swal รบกวน
+                                Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'ยินดีต้อนรับกลับครับ! ระบบเพิ่มส่วนลดลูกค้าเก่าให้เรียบร้อย', showConfirmButton: false, timer: 3000 });
                             }
                         } catch(e) { console.warn("CRM Check error:", e); }
                     }
